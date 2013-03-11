@@ -1,0 +1,14 @@
+*.dvi
+*.ps
+*.aux
+*.bbl
+*.blg
+*.log
+*.toc
+*.url
+*.bak
+*.ilg
+.DS_Store
+.project
+.texlipse
+
