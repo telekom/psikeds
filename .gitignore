@@ -1,3 +1,4 @@
+*.old
 *.dvi
 *.ps
 *.aux
