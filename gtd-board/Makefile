@@ -7,6 +7,7 @@ erase-task-carcasses:
 	cat gtd-free-data.xml.sav | grep -v DELETED > gtd-free-data.xml
 
 clean:
-	rm gtd-free-*backup*
+	rm *.lock
 	rm log/*.*
+	rm gtd-free-*backup*
 	
