@@ -1,0 +1,4 @@
+gtd-free-options.properties
+*.lock
+gtd-free*backup*
+log

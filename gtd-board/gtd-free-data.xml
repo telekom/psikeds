@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<gtd-data version="2.2" modified="2013-03-12T13:37:07.501+0100" lastActionID="350">
+
+<lists>
+  <list id="1" name="WRK.DESK.OS" type="ACTION" closed="true" modified="1363091755499" resolved="1304927482571">
+  </list>
+  <list id="2" name="MJ.TeleDesk" type="ACTION" closed="false" modified="1363091755501">
+    <action id="330" created="1324466711288" resolution="DELETED" resolved="1363080468655" modified="1363091755501" description="org: Hex-Code-Editor für Eclipse" project="9" priority="None"></action>
+  </list>
+  <list id="3" name="MJ.TeleTalks" type="ACTION" closed="false" modified="1363091755504">
+    <action id="297" created="1313738969272" resolution="DELETED" resolved="1363080472063" modified="1363091755503" description="org: P&amp;I Intranetartikel : Abstimmung Kamossa" project="37" priority="None"></action>
+    <action id="289" created="1313738666148" resolution="DELETED" resolved="1363080472237" modified="1363091755503" description="insert: libxml2 (MIT) in Gnome als AntiCase in 10 Myth aufnehmen" project="37" priority="None"></action>
+    <action id="290" created="1313738671163" resolution="DELETED" resolved="1363080472404" modified="1363091755503" description="insert: xwindow (MIT) in GNU als Anticase in 10 Myth aufnehmen" project="37" priority="None"></action>
+    <action id="305" created="1313739342570" resolution="DELETED" resolved="1363080472567" modified="1363091755503" description="eval: linuxmagazion: Lizenzbeispiel gegen nach unten propagierung" project="37" priority="None"></action>
+    <action id="57" created="1304864337596" resolution="DELETED" resolved="1363080472733" modified="1363091755504" description="do: PMI agile certification" project="27" priority="None"></action>
+  </list>
+  <list id="4" name="WRK.FACE" type="ACTION" closed="true" modified="1363091755504" resolved="1363080857667">
+  </list>
+  <list id="5" name="WRK.PHONE" type="ACTION" closed="true" modified="1363091755504" resolved="1363080860670">
+  </list>
+  <list id="6" name="PRV.DESK.myMarriage" type="ACTION" closed="true" modified="1363091755504" resolved="1304927482586">
+  </list>
+  <list id="7" name="PRV.DESK.myKeds" type="ACTION" closed="true" modified="1363091755504" resolved="1304927482587">
+  </list>
+  <list id="11" name="RequestorEngine" type="SOMEDAY" closed="false" modified="1363091755511">
+    <action id="68" created="1303199994935" resolution="DELETED" resolved="1363080477665" modified="1363091755505" description="myXtras.road.buy: Lunge-Laufschuhe (http://www.lunge.com/)" priority="None"></action>
+    <action id="90" created="1303843777578" resolution="DELETED" resolved="1363080477843" modified="1363091755505" description="myKeds.org: SWI-Prolog Aktivierung (Keds übersetzbar?)" priority="None"></action>
+    <action id="86" created="1303842513530" resolution="DELETED" resolved="1363080477979" modified="1363091755505" description="myPmps.integ: Earned Value Technique" priority="None"></action>
+    <action id="85" created="1303842459338" resolution="DELETED" resolved="1363080478145" modified="1363091755506" description="myPmps.integ: Costmanagement\n" priority="None"></action>
+    <action id="84" created="1303842406562" resolution="DELETED" resolved="1363080478299" modified="1363091755507" description="myPmps.exec: Typo 4.3-Umstellung" priority="None"></action>
+    <action id="82" created="1303842240953" resolution="DELETED" resolved="1363080478456" modified="1363091755507" description="myXtras.relearn: Französischvokabeln" priority="None"></action>
+    <action id="76" created="1303842271379" resolution="DELETED" resolved="1363080478619" modified="1363091755508" description="myXtras.desj.order: CITA-DVDs" priority="None"></action>
+    <action id="74" created="1303842432418" resolution="DELETED" resolved="1363080478795" modified="1363091755508" description="myPmps.integ: Qualitymanagement" priority="None"></action>
+    <action id="73" created="1303842488050" resolution="DELETED" resolved="1363080478956" modified="1363091755508" description="myPmps.integ: Zaml3" priority="None"></action>
+    <action id="72" created="1303842689410" resolution="DELETED" resolved="1363080479123" modified="1363091755508" description="myXtras.learn: Rumänisch" priority="None"></action>
+    <action id="71" created="1303842572538" resolution="DELETED" resolved="1363080479282" modified="1363091755509" description="myPmps.integ: Scrum/Agile-Docs" priority="None"></action>
+    <action id="66" created="1303199827169" resolution="DELETED" resolved="1363080479449" modified="1363091755509" description="myFodina.code: c++-Projekt mit Autotools" priority="None"></action>
+    <action id="65" created="1303199787716" resolution="DELETED" resolved="1363080481234" modified="1363091755509" description="myFodina.code: c++ Doygen GNU Header" priority="None"></action>
+    <action id="64" created="1303199742403" resolution="DELETED" resolved="1363080481669" modified="1363091755510" description="myFodina.code: Springbeispiel DI" priority="None"></action>
+    <action id="63" created="1303199648497" resolution="DELETED" resolved="1363080481850" modified="1363091755511" description="myFodina.code: Filehandler in ECL nachbauen" priority="None"></action>
+    <action id="62" created="1303199709356" resolution="DELETED" resolved="1363080482023" modified="1363091755511" description="myFodina.code: Swing-Jiglo-Beispiel" priority="None"></action>
+    <action id="61" created="1303199755981" resolution="DELETED" resolved="1363080482183" modified="1363091755511" description="myFodina.code: Springbeispiel AO" priority="None"></action>
+  </list>
+  <list id="12" name="ResolutionEngine" type="SOMEDAY" closed="false" modified="1363091755511">
+  </list>
+  <list id="13" name="KR.HomeDesk" type="ACTION" closed="false" modified="1363091755513">
+    <action id="347" created="1363090887887" resolution="OPEN" modified="1363091815090" description="clone: OSLiC github site (2013-03-12)" queued="true" project="38" priority="None"></action>
+    <action id="349" created="1363091033556" resolution="OPEN" modified="1363091816025" description="push: psikeds Github frame (2013-03-12)" queued="true" project="38" priority="None"></action>
+    <action id="348" created="1363090919223" resolution="OPEN" modified="1363091816743" description="extract: psikeds github frame (2013-03-12)" queued="true" project="38" priority="None"></action>
+    <action id="350" created="1363091107299" resolution="OPEN" modified="1363091817434" description="generate: psiked Telekom icon (2013-03-12)" queued="true" project="38" priority="None"></action>
+  </list>
+  <list id="14" name="MJ.HomeDesk" type="ACTION" closed="false" modified="1363091755513">
+  </list>
+  <list id="15" name="WRK.DESK.PC&amp;S" type="ACTION" closed="true" modified="1363091755513" resolved="1304927482609">
+  </list>
+  <list id="17" name="KR.TeleTalks" type="ACTION" closed="false" modified="1363091755513">
+  </list>
+  <list id="16" name="KR.TeleDesk" type="ACTION" closed="false" modified="1363091755514">
+  </list>
+  <list id="19" name="PRV.DESK.MARRIAGE" type="ACTION" closed="true" modified="1363091755514" resolved="1304927482621">
+  </list>
+  <list id="18" name="PRV.DESK.MYKEDS" type="ACTION" closed="true" modified="1363091755514" resolved="1304927482618">
+  </list>
+  <list id="21" name="PRV.DESK.SELFMNG" type="ACTION" closed="true" modified="1363091755514" resolved="1304927482625">
+  </list>
+  <list id="20" name="PRV.DESK.CODING" type="ACTION" closed="true" modified="1363091755514" resolved="1304927482623">
+  </list>
+  <list id="23" name="PRV.DESK.FODINA" type="ACTION" closed="true" modified="1363091755515" resolved="1304927482634">
+  </list>
+  <list id="22" name="WRK.DESK.OS" type="ACTION" closed="true" modified="1363091755515" resolved="1304927482629">
+  </list>
+  <list id="-3" name="In-Bucket" type="INBUCKET" closed="false" modified="1363091755515">
+    <action id="345" created="1363080106240" resolution="DELETED" resolved="1363080447491" modified="1363091755515" description="test" project="25" priority="None"></action>
+    <action id="344" created="1363079814635" resolution="DELETED" resolved="1363080449471" modified="1363091755515" description="test" priority="None"></action>
+  </list>
+  <list id="28" name="ROAD" type="REFERENCE" closed="true" modified="1363091755518" resolved="1304927482641">
+  </list>
+  <list id="42" name="Xtras" type="SOMEDAY" closed="false" modified="1363091755518">
+  </list>
+  <list id="43" name="EngineeringEngine" type="REFERENCE" closed="true" modified="1363091755518" resolved="1363091692108">
+  </list>
+  <list id="40" name="EngineeringEngine" type="SOMEDAY" closed="false" modified="1363091755518">
+  </list>
+  <list id="41" name="W7kbsrPractice" type="SOMEDAY" closed="false" modified="1363091755518">
+  </list>
+  <list id="46" name="W7kbsrPractice" type="REFERENCE" closed="true" modified="1363091755518" resolved="1363091697650">
+  </list>
+  <list id="47" name="prjMaintenance" type="REFERENCE" closed="false" modified="1363091755518" resolved="1363091755518">
+    <action id="346" created="1363090481594" resolution="OPEN" modified="1363091814248" description="create: Internetsite like OSLiC (2013-03-12)" queued="true" project="38" priority="None"></action>
+  </list>
+  <list id="44" name="RequestorEngine" type="REFERENCE" closed="true" modified="1363091755518" resolved="1363091694035">
+  </list>
+  <list id="45" name="ResolutionEngine" type="REFERENCE" closed="true" modified="1363091755518" resolved="1363091695975">
+  </list>
+  <list id="48" name="prjCommunication" type="REFERENCE" closed="true" modified="1363091755518" resolved="1363082103524">
+  </list>
+</lists>
+<projects>
+  <project id="34" name="WRK.OS.blog" closed="true" modified="1363091755519" resolved="1363081767101" actions=""></project>
+  <project id="35" name="WRK.OS.orga" closed="true" modified="1363091755519" resolved="1363081769426" actions=""></project>
+  <project id="32" name="PRV.myXtras" closed="true" modified="1363091755519" resolved="1313740923308" actions=""></project>
+  <project id="33" name="PRV.myPmps" closed="true" modified="1363091755520" resolved="1363081394535" actions=""></project>
+  <project id="38" name="prjMaintenance" closed="false" modified="1363091755522" actions="350,348,349,347,346"></project>
+  <project id="39" name="WRK.nearShore" closed="true" modified="1363091755520" resolved="1328451084889" actions=""></project>
+  <project id="36" name="PRV.ourSocialActs" closed="true" modified="1363091755521" resolved="1363081399402" actions=""></project>
+  <project id="37" name="envMaintenance" closed="false" modified="1363091755522" actions="305,289,290,297"></project>
+  <project id="8" name="WRK.OS" closed="true" modified="1363091755521" resolved="1313740900212" actions=""></project>
+  <project id="9" name="EngineeringEngine" closed="false" modified="1363091755522" actions="330"></project>
+  <project id="10" name="PRV.myMarriage" closed="true" modified="1363091755522" resolved="1305915564219" actions=""></project>
+  <project id="49" name="prjCommunication" closed="true" modified="1363091755522" resolved="1363082107366" actions=""></project>
+  <project id="25" name="ResolutionEngine" closed="false" modified="1363091755522" actions="345"></project>
+  <project id="24" name="RequestorEngine" closed="false" modified="1363091755522" actions=""></project>
+  <project id="27" name="W7kbsrPractice" closed="false" modified="1363091755522" actions="57"></project>
+  <project id="26" name="PRV.mySelfMng" closed="true" modified="1363091755522" resolved="1363081397013" actions=""></project>
+  <project id="29" name="WRK.CT" closed="true" modified="1363091755522" resolved="1313740878152" actions=""></project>
+  <project id="31" name="WRK.selfDeveloping" closed="true" modified="1363091755522" resolved="1313740949453" actions=""></project>
+  <project id="30" name="WRK.ImproveEnglish" closed="true" modified="1363091755522" resolved="1304927482650" actions=""></project>
+</projects>
+<queue id="-4" name="Next Actions" actions="346,347,349,348,350"></queue>
+</gtd-data>
