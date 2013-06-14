@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 *.old
 *.dvi
 *.ps
@@ -13,3 +14,6 @@
 .project
 .texlipse
 
+=======
+*~
+>>>>>>> origin/kreincke
