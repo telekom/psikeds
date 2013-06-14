@@ -1,0 +1,20 @@
+/*******************************************************************************
+ * psiKeds :- ps induced knowledge entity delivery system
+ *
+ * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ *
+ * This file is free software: you can redistribute
+ * it and/or modify it under the terms of the
+ * [ ] GNU Affero General Public License
+ * [x] GNU General Public License
+ * [ ] GNU Lesser General Public License
+ * [ ] Creatice Commons ShareAlike License
+ *
+ * For details see file LICENSING in the top project directory
+ *******************************************************************************/
+
+.level0 { margin-left: 3px; font-weight:bold; font-variant:small-caps; }
+.level1 { margin-left: 28px; font-weight:bold; font-variant:small-caps; }
+.level2 { margin-left: 53px; font-style:italic; }
+.level3 { margin-left: 78px; font-style:italic; }
+.level4 { margin-left: 103px; font-style:italic; }

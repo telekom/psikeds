@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="org.psikeds.resolutionengine"
+	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http"
+	name="ChocolateService" targetNamespace="org.psikeds.resolutionengine">
+	<wsdl:types>
+		<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+			xmlns:tns="org.psikeds.resolutionengine" elementFormDefault="unqualified"
+			targetNamespace="org.psikeds.resolutionengine" version="1.0">
+			<xs:element name="Chocolate" type="tns:chocolate" />
+			<xs:element name="Chocolatelist" type="tns:chocolatelist" />
+			<xs:element name="add" type="tns:add" />
+			<xs:element name="addResponse" type="tns:addResponse" />
+			<xs:element name="list" type="tns:list" />
+			<xs:element name="listResponse" type="tns:listResponse" />
+			<xs:element name="select" type="tns:select" />
+			<xs:element name="selectResponse" type="tns:selectResponse" />
+			<xs:complexType name="list">
+				<xs:sequence />
+			</xs:complexType>
+			<xs:complexType name="listResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="tns:Chocolatelist" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="chocolatelist">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="chocolates"
+						nillable="true" type="tns:chocolate" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="chocolate">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="description" type="xs:string" />
+					<xs:element minOccurs="0" name="refid" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="select">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="refid" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="selectResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="tns:Chocolate" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="add">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="chocolate" type="tns:chocolate" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="addResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" ref="tns:Chocolatelist" />
+				</xs:sequence>
+			</xs:complexType>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="select">
+		<wsdl:part element="tns:select" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="selectResponse">
+		<wsdl:part element="tns:selectResponse" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="addResponse">
+		<wsdl:part element="tns:addResponse" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="add">
+		<wsdl:part element="tns:add" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="list">
+		<wsdl:part element="tns:list" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="listResponse">
+		<wsdl:part element="tns:listResponse" name="parameters">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:portType name="ChocolateService">
+		<wsdl:operation name="list">
+			<wsdl:input message="tns:list" name="list">
+			</wsdl:input>
+			<wsdl:output message="tns:listResponse" name="listResponse">
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="select">
+			<wsdl:input message="tns:select" name="select">
+			</wsdl:input>
+			<wsdl:output message="tns:selectResponse" name="selectResponse">
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="add">
+			<wsdl:input message="tns:add" name="add">
+			</wsdl:input>
+			<wsdl:output message="tns:addResponse" name="addResponse">
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="ChocolateServiceSoapBinding" type="tns:ChocolateService">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="list">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="list">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="listResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="add">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="add">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="addResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="select">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="select">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="selectResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="ChocolateService">
+		<wsdl:port binding="tns:ChocolateServiceSoapBinding" name="ChocolateServicePort">
+			<soap:address location="http://localhost:8080/resolutionengine/services/soap/" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

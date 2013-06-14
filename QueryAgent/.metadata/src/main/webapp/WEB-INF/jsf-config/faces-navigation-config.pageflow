@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pageflow:Pageflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pageflow="http://www.sybase.com/suade/pageflow" id="pf13684518043564" configfile="/QueryAgent/src/main/webapp/WEB-INF/jsf-config/faces-navigation-config.xml">
+  <nodes xsi:type="pageflow:PFPage" name="home.xhtml" x="338" y="199" id="pf13684518160625" referenceLink="//@navigationRule.4/@navigationCase.0/@toViewId|" outlinks="pf13685529896920 pf13685529896921 pf13685529896922" inlinks="pf13685529896923 pf13685529896924 pf13685529896925" path="/gui/home.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="*" x="122" y="806" id="pf136845181606323" referenceLink="//@navigationRule.5/@fromViewId|" outlinks="pf13685529896925 pf13685529896926" path="*"/>
+  <nodes xsi:type="pageflow:PFPage" name="gui/list.xhtml" id="pf13685529896927" referenceLink="//@navigationRule.3/@navigationCase.0/@toViewId|" outlinks="pf13685529896928 pf13685529896929 pf13685529896924 pf136855298969210" inlinks="pf13685529896920 pf13685529896921 pf136855298969211 pf13685529896929 pf136855298969212" path="/gui/list.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="gui/input.xhtml" id="pf136855298969213" referenceLink="//@navigationRule.1/@fromViewId|" outlinks="pf136855298969211 pf13685529896923 pf136855298969214" inlinks="pf13685529896922" path="/gui/input.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="gui/error.xhtml" id="pf136855298969215" referenceLink="//@navigationRule.5/@navigationCase.0/@toViewId|" inlinks="pf136855298969214 pf136855298969210 pf136855298969216 pf13685529896926" path="/gui/error.xhtml"/>
+  <nodes xsi:type="pageflow:PFPage" name="gui/selected.xhtml" id="pf136855298969217" referenceLink="//@navigationRule.3/@fromViewId|" outlinks="pf136855298969212 pf136855298969216" inlinks="pf13685529896928" path="/gui/selected.xhtml"/>
+  <links id="pf13685529896920" target="pf13685529896927" source="pf13684518160625" outcome="load" redirect="true"/>
+  <links id="pf13685529896921" target="pf13685529896927" source="pf13684518160625" outcome="display" redirect="true"/>
+  <links id="pf13685529896922" target="pf136855298969213" source="pf13684518160625" outcome="add" redirect="true"/>
+  <links id="pf136855298969211" target="pf13685529896927" source="pf136855298969213" outcome="success" redirect="true"/>
+  <links id="pf13685529896923" target="pf13684518160625" source="pf136855298969213" outcome="back" redirect="true"/>
+  <links id="pf136855298969214" target="pf136855298969215" source="pf136855298969213" redirect="true"/>
+  <links id="pf13685529896928" target="pf136855298969217" source="pf13685529896927" outcome="success" redirect="true"/>
+  <links id="pf13685529896929" target="pf13685529896927" source="pf13685529896927" outcome="load"/>
+  <links id="pf13685529896924" target="pf13684518160625" source="pf13685529896927" outcome="back" redirect="true"/>
+  <links id="pf136855298969210" target="pf136855298969215" source="pf13685529896927" redirect="true"/>
+  <links id="pf136855298969212" target="pf13685529896927" source="pf136855298969217" outcome="back" redirect="true"/>
+  <links id="pf136855298969216" target="pf136855298969215" source="pf136855298969217" redirect="true"/>
+  <links id="pf13685529896925" target="pf13684518160625" source="pf136845181606323" outcome="home" redirect="true"/>
+  <links id="pf13685529896926" target="pf136855298969215" source="pf136845181606323" outcome="error" redirect="true"/>
+</pageflow:Pageflow>

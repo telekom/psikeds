@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+psiKeds :- ps induced knowledge entity delivery system
+
+Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+
+This file is free software: you can redistribute
+it and/or modify it under the terms of the
+[ ] GNU Affero General Public License
+[ ] GNU General Public License
+[ ] GNU Lesser General Public License
+[X] Creatice Commons ShareAlike 3.0 License
+
+For details see file LICENSING in the top project directory
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://org.psikeds.knowledgebase"
+    targetNamespace="http://org.psikeds.knowledgebase">
+
+    <!-- This XSD describes the syntax of a psiKeds Knowledge Base.
+
+	     Note: XSD is written using the Salami Slice Design, i.e. it is 
+		 using references to elements which are all specified globally.
+		 This might not be best practices from an XSD point of view,
+		 but it results in JAXB-Classes that are very nice for the
+		 StAX-Parser. ;-)
+    -->
+
+    <!-- ==============================================================
+               XML-Root-Element, entry point of our knowledge base
+         ============================================================== -->
+
+	<xs:element name="chocolatelist">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="chocolate" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+    <!-- ==============================================================
+               Sub-Elements, defined in global scope
+         ============================================================== -->
+
+	<xs:element name="chocolate">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="chocokey" minOccurs="1" maxOccurs="1" />
+				<xs:element ref="description" minOccurs="1" maxOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="chocokey" type="xs:string" />
+
+	<xs:element name="description" type="xs:string" />
+
+</xs:schema>
