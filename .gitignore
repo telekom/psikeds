@@ -1,5 +1,12 @@
-<<<<<<< HEAD
+*~
+*.bak
 *.old
+
+*.class
+*.jar
+*.war
+*.ear
+
 *.dvi
 *.ps
 *.aux
@@ -8,12 +15,7 @@
 *.log
 *.toc
 *.url
-*.bak
 *.ilg
 .DS_Store
-.project
 .texlipse
-
-=======
-*~
->>>>>>> origin/kreincke
+.pmd
