@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+psiKeds :- ps induced knowledge entity delivery system
+
+Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+
+This file is free software: you can redistribute
+it and/or modify it under the terms of the
+[ ] GNU Affero General Public License
+[x] GNU General Public License
+[ ] GNU Lesser General Public License
+[ ] Creatice Commons ShareAlike License
+
+For details see file LICENSING in the top project directory
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:t="http://myfaces.apache.org/tomahawk">
+<f:view locale="#{facesContext.externalContext.requestLocale}">
+	<h:head>
+		<title>#{msg['error.page.name']}</title>
+		<link href="./css/layout.css" rel="stylesheet" type="text/css" />
+	</h:head>
+	<h:body>
+		<h:form id="naviForm">
+			<h2>
+				<h:outputFormat value="#{msg['error.page.text']}" />
+			</h2>
+			<p>
+                <h:messages showDetail="true" showSummary="true" />
+            </p>
+			<p>
+				<h:commandButton value="#{msg['error.home.button']}"
+					action="#{NavigationController.home()}" />
+			</p>
+		</h:form>
+	</h:body>
+</f:view>
+</html>

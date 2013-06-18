@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+psiKeds :- ps induced knowledge entity delivery system
+
+Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+
+This file is free software: you can redistribute
+it and/or modify it under the terms of the
+[ ] GNU Affero General Public License
+[ ] GNU General Public License
+[x] GNU Lesser General Public License
+[ ] Creatice Commons ShareAlike License
+
+For details see file LICENSING in the top project directory
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>psikeds</artifactId>
+        <groupId>org.psikeds</groupId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>QueryAgentInterfaces</artifactId>
+    <packaging>jar</packaging>
+    <name>QueryAgentInterfaces</name>
+    <description>Interfaces of the Query Agent of psiKeds (RelNi)</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <springframework.version>3.2.1.RELEASE</springframework.version>
+        <cxf.version>2.7.3</cxf.version>
+        <slf4j.version>1.7.5</slf4j.version>
+        <jackson.version>1.8.6</jackson.version>
+        <junit.version>4.11</junit.version>
+    </properties>
+
+    <dependencies>
+        <!-- These Libs are required for the Interfaces of the Query Agent of
+            psiKeds, however we do not want to package them into this JAR but
+            expect them to be provided by either the WAR or the Runtime-Environemt -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${springframework.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+            <version>${cxf.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+            <version>${cxf.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.psikeds</groupId>
+            <artifactId>Common</artifactId>
+            <version>0.1.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- The following Libs are not required for the Interface-JAR but only 
+            for running the Unit-Tests -->
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
+            <version>${jackson.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>${jackson.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-jaxrs</artifactId>
+            <version>${jackson.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

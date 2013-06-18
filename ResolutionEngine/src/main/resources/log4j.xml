@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration PUBLIC "-//APACHE//DTD LOG4J 1.2//EN" "http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+
+    <!-- ============================== -->
+    <!-- Append messages to the console -->
+    <!-- ============================== -->
+
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+        <param name="Threshold" value="INFO"/>
+        <param name="Target" value="System.out"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5r %-5p [%c] [%X{REQ}] [%X{SRVC}] [%X{CTX}] %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="FILE" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="Threshold" value="TRACE"/>
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <param name="Append" value="true"/>
+        <param name="File" value="psikeds.resolutionengine.log"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5r %-5p [%c] [%X{REQ}] [%X{SRVC}] [%X{CTX}] %m%n"/>
+        </layout>
+    </appender>
+
+    <!-- ================ -->
+    <!-- Limit categories -->
+    <!-- ================ -->
+
+    <category name="org.apache">
+        <priority value="INFO"/>
+    </category>
+
+    <category name="org.springframework">
+        <priority value="INFO"/>
+    </category>
+
+    <category name="org.codehaus">
+        <priority value="WARN"/>
+    </category>
+
+    <category name="com.sun">
+        <priority value="WARN"/>
+    </category>
+
+    <category name="org.psikeds">
+        <priority value="INFO"/>
+    </category>
+
+    <category name="org.psikeds.common">
+        <priority value="TRACE"/>
+    </category>
+
+    <category name="org.psikeds.resolutionengine">
+        <priority value="TRACE"/>
+    </category>
+
+    <!-- ======================= -->
+    <!-- Setup the Root category -->
+    <!-- ======================= -->
+
+    <root>
+        <level value="INFO" />
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</log4j:configuration>

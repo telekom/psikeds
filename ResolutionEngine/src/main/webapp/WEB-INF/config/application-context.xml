@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+psiKeds :- ps induced knowledge entity delivery system
+
+Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+
+This file is free software: you can redistribute
+it and/or modify it under the terms of the
+[x] GNU Affero General Public License
+[ ] GNU General Public License
+[ ] GNU Lesser General Public License
+[ ] Creatice Commons ShareAlike License
+
+For details see file LICENSING in the top project directory
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+	<!-- First of all activate all CXF Features -->
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+
+	<context:annotation-config />
+
+	<!-- All properties defined here, will be set as java system properties. 
+		Can be used for proxy settings, config directory, ... -->
+	<bean class="org.psikeds.common.util.SystemPropertySetter">
+		<constructor-arg>
+			<props>
+				<!-- no props yet -->
+			</props>
+		</constructor-arg>
+	</bean>
+
+	<!-- For debugging: dump all system-properties and environment-variable 
+		to the Logfile -->
+	<bean class="org.psikeds.common.util.SystemPropertyDumper" init-method="init">
+		<property name="dumpEnvironmentVariables" value="false" />
+		<property name="dumpSystemProperties" value="false" />
+	</bean>
+
+	<!-- This is like the normal Spring-PropertyPlaceholderConfigurer,
+        however you can just specify just a filename and it will be resolved
+        within the configuration directory. -->
+	<bean class="org.psikeds.common.config.PropertiesConfigurer">
+		<property name="locations">
+			<list>
+				<value>file:///resolutionengine.properties</value>
+			</list>
+		</property>
+	</bean>
+
+</beans>

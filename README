@@ -1,9 +1,13 @@
-psikeds be metonymic with 
+psikeds be metonymic with "ps indicated knowledge entity delivery system"
 
-"ps indicated knowledge entity delivery system"
+(c) K. Reincke, M. Juliano, Deutsche Telekom AG, Darmstadt 2013
 
-Description: tbd.
+README: The ps induced knowledge entity delivery system shall enable knowledge 
+engineers to represent the domain specific knowledge in a knowledge base by 
+following a domain independent approach; and it shall enable knowledge users 
+to request the ps induced knowledge entity delivery system for inferred
+knowledge entities as the descriptions of the domain objects.
 
-(c) K. Reincke, Deutsche Telekom AG, Darmstadt 2013
-
+LICENSING: see file LICENSING in the top project directory
+ORGANIZATION: see file CODEX in the top project directory
 

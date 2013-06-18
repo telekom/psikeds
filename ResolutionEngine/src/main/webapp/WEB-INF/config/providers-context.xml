@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+psiKeds :- ps induced knowledge entity delivery system
+
+Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+
+This file is free software: you can redistribute
+it and/or modify it under the terms of the
+[x] GNU Affero General Public License
+[ ] GNU General Public License
+[ ] GNU Lesser General Public License
+[ ] Creatice Commons ShareAlike License
+
+For details see file LICENSING in the top project directory
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+	xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:cxf="http://cxf.apache.org/core"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+
+	<util:list id="xmlTypes">
+		<value>application/xml</value>
+		<value>text/xml</value>
+	</util:list>
+
+	<util:map id="xmlProviderSettings">
+		<entry key="jaxb.formatted.output">
+			<value type="java.lang.Boolean">true</value>
+		</entry>
+	</util:map>
+
+	<bean id="xmlProvider" class="org.apache.cxf.jaxrs.provider.JAXBElementProvider">
+		<property name="produceMediaTypes" ref="xmlTypes" />
+		<property name="consumeMediaTypes" ref="xmlTypes" />
+		<property name="marshallerProperties" ref="xmlProviderSettings" />
+	</bean>
+
+	<bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
+</beans>

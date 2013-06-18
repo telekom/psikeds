@@ -1,0 +1,103 @@
+psiKeds :- ps induced knowledge entity delivery system
+
+Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+
+LICENSING: Components of psikeds are licensed in the following way:
+
+[A] All parts of the psikeds:server:server (ResolutionEngine) which are 
+    inaugurated by the psikeds project itself are free software: you can 
+    redistribute it and/or modify it under the terms of the Affero General 
+    Public License published by the Free Software Foundation, either version 3 
+    of the License, or (at your option) any later version:
+    
+    <http://www.gnu.org/licenses/agpl-3.0.html>
+
+    The psiKedsResolutionEngine is distributed in the hope that it will be 
+    useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero
+    General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program (see psikeds/licensing/licenses).  If not, see
+    <http://www.gnu.org/licenses/>
+
+    This act of licensing concerns the resolution engine itself as the
+    overarching server application and all its constituting libraries which 
+    are inaugurated by the psiKeds project. [Additionally, the psikeds 
+    resolution engine = the psikeds:server:server might use other open source 
+    libraries / plugins / snippets, which in most cases will have their own 
+    licensing statements. It is up to the psiKeds project to deal with the 
+    license compatibility. For details of the used sub components and their 
+    licenses, see the psikeds-os-sub-component-mindmap]
+--------------------------------------------------------------------------------
+
+[B] The psikeds:client:server (QueryAgent) as whole is free software: you can 
+    redistribute it and/or modify it under the terms of the GNU General Public
+    License as published by the Free Software Foundation, either version 3 of 
+    the License, or (at your option) any later version.
+
+    The QueryAgent is distributed in the hope that it will be useful, but 
+    WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+    or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
+    for more details.
+
+    <http://www.gnu.org/licenses/gpl-3.0.html>
+
+    You should have received a copy of the GNU General Public License
+    along with this program (see psikeds/licensing/licenses). If not, see 
+    <http://www.gnu.org/licenses/>.
+    
+    The libraries which are constituting the QueryAgent may be licensed under 
+    different open source licenses. For details see the
+    psikeds-os-sub-component-mindmap.
+--------------------------------------------------------------------------------
+
+[C] All libraries which constitute the QueryAgent (= psikeds:client:server) and 
+    which are inaugurated by the psikeds project itself are free software: you 
+    can redistribute it and/or modify it under the terms of the GNU Lesser 
+    General Public License as published by the Free Software Foundation, either 
+    version 3 of the license, or (at your option) any later version.
+
+    The psikeds libraries of the QueryAgent are distributed in the hope that
+    they will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+    GNU Lesser General Public License for more details.
+
+    <http://www.gnu.org/licenses/lgpl-3.0.html>
+    
+    You should have received a copy of the GNU Lesser General Public License
+    along with this program (see psikeds/licensing/licenses). If not, see 
+    <http://www.gnu.org/licenses/>.  
+    
+    [Additionally, psikeds Query Agent and all its constituting libraries 
+    might use other open source software as sub components which follow their 
+    own licensings. It is up to the psiKeds project to deal with the license 
+    compatibility. [For details of the sub components and their licenses, see 
+    the psikeds-os-sub-component-mindmap]
+--------------------------------------------------------------------------------
+
+[D] The psiKeds xml knowledge bases belong to the developing knowledge engineers
+    (and/or their hiring companies). The psiKeds project does not require to 
+    publish these knowledge bases as open documents. It is up to the copyright
+    holder to distribute them as free or closed sources.
+--------------------------------------------------------------------------------
+
+[E] The psiKeds knowledge base XSD is a free document: you can redistribute it 
+    and/or modify it under the terms of the Creative Commons License 
+    Attribution-ShareAlike 3.0: Feel free to share (= to copy, distribute and 
+    transmit this XSD) and/or to remix it (=to adapt the work, to make 
+    commercial use of the work), provided you 
+    (a) attribute your modification as a modification, 
+    (b) attribute your version as a derivation of specific psiKeds XSD
+    (c) inserts a link to the original psiKeds project page
+    (d) distribute the your modified version only under the same or 
+    similar license to this one. 
+--------------------------------------------------------------------------------
+
+[F] Some additional tools, like the XML editors or anything else will be
+    published under specific open source licenses. The licensing files
+    will be integrated into the specific directories. [For a first overview
+    see the psikeds-os-sub-component-mindmap]
+
+
+
