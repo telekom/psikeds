@@ -2,9 +2,7 @@ psiKeds :- ps induced knowledge entity delivery system
 
 Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
 
-LICENSING:
-==========
-Components of psikeds are licensed in the following way:
+LICENSING: Components of psikeds are licensed in the following way:
 
 [A] All parts of the psikeds:server:server (ResolutionEngine) which are 
     inaugurated by the psikeds project itself are free software: you can 

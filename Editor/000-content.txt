@@ -1,0 +1,6 @@
+psiKeds :- ps induced knowledge entity delivery system
+
+Copyright (c) ${date} Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+
+This directory contains sources for the initial xtext based psikeds 
+knowledge base eclipse editor
