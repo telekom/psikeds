@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+psiKeds :- ps induced knowledge entity delivery system
+
+Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+
+This file is free software: you can redistribute
+it and/or modify it under the terms of the
+[ ] GNU Affero General Public License
+[x] GNU General Public License
+[ ] GNU Lesser General Public License
+[ ] Creatice Commons ShareAlike License
+
+For details see file LICENSING in the top project directory
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:t="http://myfaces.apache.org/tomahawk">
+<f:view locale="#{facesContext.externalContext.requestLocale}">
+	<h:head>
+		<title>#{msg['list.page.name']}</title>
+		<link href="./css/layout.css" rel="stylesheet" type="text/css" />
+	</h:head>
+	<h:body>
+		<ui:fragment rendered="#{!AllItemsView.havingSiblings}">
+			<h2>
+				<h:outputFormat value="#{msg['list.empty.text']}" />
+			</h2>
+		</ui:fragment>
+		<ui:fragment rendered="#{AllItemsView.havingSiblings}">
+			<h2>
+				<h:outputFormat value="#{msg['list.welcome.text']}" />
+			</h2>
+			<h:form id="selectForm">
+				<h:outputLabel for="itemlist" value="#{msg['list.selection.text']}" />
+				<!-- radio button selection with layout=spread, i.e. only data structure but nothing rendered yet -->
+				<t:selectOneRadio id="itemlist" required="true" layout="spread"
+					forceId="true" forceIdIndex="false"
+					value="#{SelectionController.selectedItem}">
+					<f:selectItems var="item" itemLabel="#{item.value}"
+						itemValue="#{item.key}" value="#{SelectionController.listOfItems}" />
+				</t:selectOneRadio>
+				<!-- loop through list of items and render the radio buttons defined above within our own custom html -->
+				<t:dataList var="item" rowIndexVar="idx" layout="simple"
+					value="#{SelectionController.listOfItems}">
+					<p class="level#{item.hierarchyLevel}"><t:radio for=":selectForm:itemlist" index="#{idx}" /></p>
+				</t:dataList>
+				<h:commandButton value="#{msg['list.select.button']}"
+					action="#{SelectionController.doSelect()}" type="submit" />
+                <h:commandButton value="#{msg['list.refresh.button']}"
+                    action="#{NavigationController.loadItems()}" />
+			</h:form>
+		</ui:fragment>
+		<p>
+			<h:messages showDetail="true" showSummary="false" />
+		</p>
+		<p>
+			<h:form id="naviForm">
+				<h:commandButton value="#{msg['list.back.button']}"
+					action="#{NavigationController.back()}" />
+			</h:form>
+		</p>
+	</h:body>
+</f:view>
+</html>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+psiKeds :- ps induced knowledge entity delivery system
+
+Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+
+This file is free software: you can redistribute
+it and/or modify it under the terms of the
+[ ] GNU Affero General Public License
+[x] GNU General Public License
+[ ] GNU Lesser General Public License
+[ ] Creatice Commons ShareAlike License
+
+For details see file LICENSING in the top project directory
+-->
+<faces-config xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_1.xsd"
+	version="2.1">
+
+	<!-- ===================================================================== -->
+	<!-- Define your Controllers for each Scope here. -->
+	<!-- ===================================================================== -->
+
+	<managed-bean>
+		<managed-bean-name>NavigationController</managed-bean-name>
+		<managed-bean-class>org.psikeds.queryagent.presenter.jsf.controller.impl.ChocolateListController</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+		<managed-property>
+			<property-name>service</property-name>
+			<value>#{chocolateBusinessService}</value>
+		</managed-property>
+        <managed-property>
+            <property-name>allItemsBean</property-name>
+            <value>#{allItemsBean}</value>
+        </managed-property>
+	</managed-bean>
+
+	<managed-bean>
+		<managed-bean-name>SelectionController</managed-bean-name>
+		<managed-bean-class>org.psikeds.queryagent.presenter.jsf.controller.impl.ChocolateSelectionController</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+        <managed-property>
+            <property-name>service</property-name>
+            <value>#{chocolateBusinessService}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>allItemsBean</property-name>
+            <value>#{allItemsBean}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>selectedItemBean</property-name>
+            <value>#{selectedItemBean}</value>
+        </managed-property>
+    </managed-bean>
+
+	<managed-bean>
+		<managed-bean-name>AddItemController</managed-bean-name>
+		<managed-bean-class>org.psikeds.queryagent.presenter.jsf.controller.impl.AddChocolateController</managed-bean-class>
+        <managed-bean-scope>request</managed-bean-scope>
+        <managed-property>
+            <property-name>service</property-name>
+            <value>#{chocolateBusinessService}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>allItemsBean</property-name>
+            <value>#{allItemsBean}</value>
+        </managed-property>
+        <managed-property>
+            <property-name>selectedItemBean</property-name>
+            <value>#{selectedItemBean}</value>
+        </managed-property>
+    </managed-bean>
+
+</faces-config>
