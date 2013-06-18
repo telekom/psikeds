@@ -1,0 +1,49 @@
+psiKeds :- ps induced knowledge entity delivery system
+
+Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+
+The psiKeds CODEX [Draft]
+
+
+(I) Basic Constitution
+======================
+
+(A.1) psiKeds is a project which delivers open source software.
+
+(A.2) The sources are hosted publicly and can freely be loaded down.
+
+
+(B.1) Each contributor signs the psikeds contributor license agreement.
+
+(B.2) Each github collaborator signs the psikeds contributor license agreement.
+
+
+(C.1) The psiKeds Core Team (psiKedsCT) is steering the psiKeds project
+
+(C.2) The size of the psiKedsCT is defined by the psiKedsCT itself - but it
+      must ever have an odd number of members.
+
+(C.3) The psiKedsCT uses the rule: one member, one vote
+
+(C.4) Members of the psiKedsCT can be excluded from the psiKedsCT on the base 
+      of a two-thirds majority decision. The initial members can't be
+      excluded, but can leave the board voluntarily.
+
+(C.5) Basic Constitution Rules can not be changed after having been finalized.    
+      
+(C.6) Initial members of the psiKedsCT are
+      (a) Karsten Reincke
+      (b) Marco Juliano
+      (c) A representative of Deutsche Telekom AG 
+          (current: Robert Schegler)
+          
+ Finalized Darmstadt, Germany YYYY-MM-DD:
+    
+    K. Reincke
+    M. Juliano
+    R. Schwegler
+  
+      
+(II) Additional Agreements
+==========================
+ 
