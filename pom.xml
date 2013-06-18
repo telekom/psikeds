@@ -27,11 +27,11 @@ For details see file LICENSING in the top project directory
 
 	<modules>
         <module>Common</module>
-		<module>KnowledgeBase</module>
-        <module>Editor</module>
-		<module>ResolutionEngineDataLayer</module>
-		<module>ResolutionEngineInterfaces</module>
-		<module>ResolutionEngine</module>
+	<module>KnowledgeBase</module>
+        <module>psikedsKnowledgeBaseEclipseEditor</module>
+	<module>ResolutionEngineDataLayer</module>
+	<module>ResolutionEngineInterfaces</module>
+	<module>ResolutionEngine</module>
         <module>QueryAgentDataLayer</module>
         <module>QueryAgentInterfaces</module>
         <module>QueryAgent</module>

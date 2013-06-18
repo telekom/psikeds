@@ -28,7 +28,7 @@ LICENSING: Components of psikeds are licensed in the following way:
     libraries / plugins / snippets, which in most cases will have their own 
     licensing statements. It is up to the psiKeds project to deal with the 
     license compatibility. For details of the used sub components and their 
-    licenses, see the os-sub-component-mindmap]
+    licenses, see the psikeds-os-sub-component-mindmap]
 --------------------------------------------------------------------------------
 
 [B] The psikeds:client:server (QueryAgent) as whole is free software: you can 
@@ -49,7 +49,7 @@ LICENSING: Components of psikeds are licensed in the following way:
     
     The libraries which are constituting the QueryAgent may be licensed under 
     different open source licenses. For details see the
-    os-sub-component-mindmap.
+    psikeds-os-sub-component-mindmap.
 --------------------------------------------------------------------------------
 
 [C] All libraries which constitute the QueryAgent (= psikeds:client:server) and 
@@ -73,7 +73,7 @@ LICENSING: Components of psikeds are licensed in the following way:
     might use other open source software as sub components which follow their 
     own licensings. It is up to the psiKeds project to deal with the license 
     compatibility. [For details of the sub components and their licenses, see 
-    the os-sub-component-mindmap]
+    the psikeds-os-sub-component-mindmap]
 --------------------------------------------------------------------------------
 
 [D] The psiKeds xml knowledge bases belong to the developing knowledge engineers
@@ -97,7 +97,7 @@ LICENSING: Components of psikeds are licensed in the following way:
 [F] Some additional tools, like the XML editors or anything else will be
     published under specific open source licenses. The licensing files
     will be integrated into the specific directories. [For a first overview
-    see the os-sub-component-mindmap]
+    see the psikeds-os-sub-component-mindmap]
 
 
 

@@ -24,10 +24,10 @@ For details see file LICENSING in the top project directory
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>Editor</artifactId>
+    <artifactId>psikedsKnowledgeBaseEclipseEditor</artifactId>
 	<packaging>war</packaging>
-	<name>Editor</name>
-	<description>Editor(s) for the Knowledge Base of psiKeds (RelNi)</description>
+	<name>psikedsKnowledgeBaseEclipseEditor</name>
+	<description>XText based Eclipse Editor for the Knowledge Base of psiKeds (RelNi)</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
