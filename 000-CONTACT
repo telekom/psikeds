@@ -1,0 +1,27 @@
+psiKeds :- ps induced knowledge entity delivery system
+
+Copyright (c) 201 - 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+
+CONTACT:
+
+hosted sources: 
+  https://github.com/dtag-dbu/psikeds
+  
+hosted site:
+  http://www.psikeds.org/ 
+    ( currently a redirect to http://dtag-dbu.github.com/psikeds/ 
+      which itself is a redirect to http://dtag-dbu.github.io/psikeds/ )
+      
+general email addresses:
+  info@psikeds.org [general contact]
+  ct@psikeds.org [core team of the psikeds project]
+  
+contributor email addresses:
+
+Karsten Reincke  
+  k.reincke@telekom.de
+  k.reincke@fodina.de
+  
+Marco Juliano
+  m.juliano@external.telekom.de
+  marco@juliano.de

@@ -1,3 +1,17 @@
+*.old
+*.dvi
+*.ps
+*.aux
+*.bbl
+*.blg
+*.log
+*.toc
+*.url
+*.bak
+*.ilg
+.DS_Store
+.project
+.texlipse
 *~
 *.bak
 *.old
@@ -6,6 +20,11 @@
 *.jar
 *.war
 *.ear
+
+target
+.project
+.settings
+
 
 *.dvi
 *.ps
