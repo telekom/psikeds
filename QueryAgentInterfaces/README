@@ -1,6 +1,6 @@
 psiKeds :- ps induced knowledge entity delivery system
 
-Copyright (c) ${date} Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+Copyright (c) 2013-2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
 
 This directory contains the REST- and SOAP-Services and the interface objects
 for the psikedsQueryAgent. 
