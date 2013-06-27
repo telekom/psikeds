@@ -21,13 +21,13 @@ For details see file LICENSING in the top project directory
     <parent>
         <artifactId>psikeds</artifactId>
         <groupId>org.psikeds</groupId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>0.3.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>QueryAgentInterfaces</artifactId>
+    <artifactId>QaInterfaces</artifactId>
     <packaging>jar</packaging>
-    <name>QueryAgentInterfaces</name>
-    <description>Interfaces of the Query Agent of psiKeds (RelNi)</description>
+    <name>QaInterfaces</name>
+    <description>Interfaces of the Query Agent of psiKeds (RelCu)</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -75,7 +75,7 @@ For details see file LICENSING in the top project directory
         <dependency>
             <groupId>org.psikeds</groupId>
             <artifactId>Common</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>0.3.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
