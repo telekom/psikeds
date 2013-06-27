@@ -25,6 +25,31 @@ For details see file LICENSING in the top project directory
 	<name>psikeds</name>
 	<description>The parent POM of all components of psiKeds (RelCu)</description>
 
+    <properties>
+        <!-- general build settings -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- environment settings for doxygen -->
+        <doxygen.executable>C:/Program Files/doxygen/bin/doxygen.exe</doxygen.executable>
+        <doxygen.config.dir>${basedir}/src/doxygen</doxygen.config.dir>
+        <doxygen.source.dir>${basedir}</doxygen.source.dir>
+        <doxygen.destination.dir>${project.build.directory}/apidocs</doxygen.destination.dir>
+        <!-- overall version of psikeds -->
+        <psikeds.version>${project.version}</psikeds.version>
+        <!-- versions of required dependencies -->
+        <springframework.version>3.2.1.RELEASE</springframework.version>
+        <cxf.version>2.7.3</cxf.version>
+        <jackson.version>1.8.6</jackson.version>
+        <tomcat.version>7.0.37</tomcat.version>
+        <myfaces.version>2.1.11</myfaces.version>
+        <tomahawk.version>1.1.14</tomahawk.version>
+        <el.impl.version>2.2.1-b05</el.impl.version>
+        <el.api.version>2.2.1-b04</el.api.version>
+        <commons.lang.version>2.6</commons.lang.version>
+        <commons.codec.version>1.7</commons.codec.version>
+        <slf4j.version>1.7.5</slf4j.version>
+        <junit.version>4.11</junit.version>
+    </properties>
+
 	<modules>
     <module>Common</module>
 	<module>KnowledgeBase</module>
@@ -48,15 +73,6 @@ For details see file LICENSING in the top project directory
 			</releases>
 		</pluginRepository>
 	</pluginRepositories>
-
-	<!-- general environment settings for doxygen -->
-	<properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<doxygen.executable>C:/Program Files/doxygen/bin/doxygen.exe</doxygen.executable>
-		<doxygen.config.dir>${basedir}/src/doxygen</doxygen.config.dir>
-		<doxygen.source.dir>${basedir}</doxygen.source.dir>
-		<doxygen.destination.dir>${project.build.directory}/apidocs</doxygen.destination.dir>
-	</properties>
 
 	<build>
 		<!-- Use doxygen to generate api docs for all modules -->

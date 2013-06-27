@@ -29,13 +29,6 @@ For details see file LICENSING in the top project directory
 	<name>KnowledgeBase</name>
 	<description>The KnowledgeBase of psiKeds (RelCu)</description>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <springframework.version>3.2.1.RELEASE</springframework.version>
-        <slf4j.version>1.7.5</slf4j.version>
-        <junit.version>4.11</junit.version>
-    </properties>
-
     <dependencies>
         <!-- These Libs are required for the KnowledgeBase of psiKeds, 
             however we do not want to package them into this JAR but expect them
