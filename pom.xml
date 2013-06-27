@@ -20,21 +20,21 @@ For details see file LICENSING in the top project directory
 
 	<groupId>org.psikeds</groupId>
 	<artifactId>psikeds</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.3.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>psikeds</name>
-	<description>The parent POM of all components of psiKeds (RelNi)</description>
+	<description>The parent POM of all components of psiKeds (RelCu)</description>
 
 	<modules>
-        <module>Common</module>
+    <module>Common</module>
 	<module>KnowledgeBase</module>
-        <module>psikedsKnowledgeBaseEclipseEditor</module>
-	<module>ResolutionEngineDataLayer</module>
-	<module>ResolutionEngineInterfaces</module>
+    <module>KbEclipseEditor</module>
+	<module>ReDataLayer</module>
+	<module>ReInterfaces</module>
 	<module>ResolutionEngine</module>
-        <module>QueryAgentDataLayer</module>
-        <module>QueryAgentInterfaces</module>
-        <module>QueryAgent</module>
+    <module>QaDataLayer</module>
+    <module>QaInterfaces</module>
+    <module>QueryAgent</module>
 	</modules>
 
 	<pluginRepositories>

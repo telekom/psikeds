@@ -21,13 +21,13 @@ For details see file LICENSING in the top project directory
     <parent>
         <artifactId>psikeds</artifactId>
         <groupId>org.psikeds</groupId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>0.3.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>Common</artifactId>
     <packaging>jar</packaging>
 	<name>Common</name>
-	<description>Common utils and helpers used by various components of psiKeds (RelNi)</description>
+	<description>Common utils and helpers used by various components of psiKeds (RelCu)</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

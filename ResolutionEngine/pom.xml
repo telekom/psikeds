@@ -21,13 +21,13 @@ For details see file LICENSING in the top project directory
 	<parent>
 		<artifactId>psikeds</artifactId>
 		<groupId>org.psikeds</groupId>
-		<version>0.1.0-SNAPSHOT</version>
+		<version>0.3.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>ResolutionEngine</artifactId>
 	<packaging>war</packaging>
 	<name>ResolutionEngine</name>
-	<description>The ResolutionEngine of psiKeds (RelNi)</description>
+	<description>The ResolutionEngine of psiKeds (RelCu)</description>
 
 	<properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -116,25 +116,25 @@ For details see file LICENSING in the top project directory
         <dependency>
 			<groupId>org.psikeds</groupId>
 			<artifactId>Common</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
+			<version>0.3.0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
         <dependency>
             <groupId>org.psikeds</groupId>
             <artifactId>KnowledgeBase</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>0.3.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 		<dependency>
 			<groupId>org.psikeds</groupId>
-			<artifactId>ResolutionEngineDataLayer</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
+			<artifactId>ReDataLayer</artifactId>
+			<version>0.3.0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.psikeds</groupId>
-			<artifactId>ResolutionEngineInterfaces</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
+			<artifactId>ReInterfaces</artifactId>
+			<version>0.3.0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 
