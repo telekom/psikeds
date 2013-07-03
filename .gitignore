@@ -1,3 +1,6 @@
+# ignore flag files regarding branch
+000-branch-*
+
 # ignore all artefacts created by maven
 target
 target/**/*
