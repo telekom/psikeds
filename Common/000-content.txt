@@ -1,9 +1,0 @@
-psiKeds :- ps induced knowledge entity delivery system
-
-Copyright (c) ${date} Karsten Reincke, Marco Juliano, Deutsche Telekom AG
-
-This directory contains general tools and general supporting classes:
-  *
-  *
-  
- The compilation result is delivered as JAR file.

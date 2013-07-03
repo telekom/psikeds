@@ -21,20 +21,13 @@ For details see file LICENSING in the top project directory
     <parent>
 		<groupId>org.psikeds</groupId>
 		<artifactId>psikeds</artifactId>
-		<version>0.1.0-SNAPSHOT</version>
+		<version>0.3.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>KnowledgeBase</artifactId>
 	<packaging>jar</packaging>
 	<name>KnowledgeBase</name>
-	<description>The KnowledgeBase of psiKeds (RelNi)</description>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <springframework.version>3.2.1.RELEASE</springframework.version>
-        <slf4j.version>1.7.5</slf4j.version>
-        <junit.version>4.11</junit.version>
-    </properties>
+	<description>The KnowledgeBase of psiKeds (RelCu)</description>
 
     <dependencies>
         <!-- These Libs are required for the KnowledgeBase of psiKeds, 

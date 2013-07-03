@@ -1,0 +1,8 @@
+psiKeds :- ps induced knowledge entity delivery system
+
+Copyright (c) 2013-2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+
+This directory contains the web application of the psikedsQueryAgent and the 
+corresponding JSF templates and Spring-Config files
+
+The result of a compilation will be a war file.

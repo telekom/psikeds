@@ -19,26 +19,15 @@ For details see file LICENSING in the top project directory
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
+        <groupId>org.psikeds</groupId>
 		<artifactId>psikeds</artifactId>
-		<groupId>org.psikeds</groupId>
-		<version>0.1.0-SNAPSHOT</version>
+		<version>0.3.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>ResolutionEngine</artifactId>
 	<packaging>war</packaging>
 	<name>ResolutionEngine</name>
-	<description>The ResolutionEngine of psiKeds (RelNi)</description>
-
-	<properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<springframework.version>3.2.1.RELEASE</springframework.version>
-		<cxf.version>2.7.3</cxf.version>
-		<slf4j.version>1.7.5</slf4j.version>
-		<jackson.version>1.8.6</jackson.version>
-		<junit.version>4.11</junit.version>
-        <commons.lang.version>2.6</commons.lang.version>
-        <commons.codec.version>1.7</commons.codec.version>
-	</properties>
+	<description>The ResolutionEngine of psiKeds (RelCu)</description>
 
     <dependencies>
         <!-- Spring-Framework for DI -->
@@ -116,28 +105,27 @@ For details see file LICENSING in the top project directory
         <dependency>
 			<groupId>org.psikeds</groupId>
 			<artifactId>Common</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
+			<version>${psikeds.version}</version>
 			<scope>compile</scope>
 		</dependency>
         <dependency>
             <groupId>org.psikeds</groupId>
             <artifactId>KnowledgeBase</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${psikeds.version}</version>
             <scope>compile</scope>
         </dependency>
 		<dependency>
 			<groupId>org.psikeds</groupId>
-			<artifactId>ResolutionEngineDataLayer</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
+			<artifactId>ReDataLayer</artifactId>
+			<version>${psikeds.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.psikeds</groupId>
-			<artifactId>ResolutionEngineInterfaces</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
+			<artifactId>ReInterfaces</artifactId>
+			<version>${psikeds.version}</version>
 			<scope>compile</scope>
 		</dependency>
-
         <!-- JUnit is only required for running Tests -->
         <dependency>
             <groupId>junit</groupId>

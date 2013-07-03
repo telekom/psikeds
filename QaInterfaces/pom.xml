@@ -6,9 +6,9 @@ Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
 
 This file is free software: you can redistribute
 it and/or modify it under the terms of the
-[x] GNU Affero General Public License
+[ ] GNU Affero General Public License
 [ ] GNU General Public License
-[ ] GNU Lesser General Public License
+[x] GNU Lesser General Public License
 [ ] Creatice Commons ShareAlike License
 
 For details see file LICENSING in the top project directory
@@ -24,15 +24,15 @@ For details see file LICENSING in the top project directory
         <version>0.3.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>Common</artifactId>
+    <artifactId>QaInterfaces</artifactId>
     <packaging>jar</packaging>
-	<name>Common</name>
-	<description>Common utils and helpers used by various components of psiKeds (RelCu)</description>
+    <name>QaInterfaces</name>
+    <description>Interfaces of the Query Agent of psiKeds (RelCu)</description>
 
     <dependencies>
-        <!-- These Libs are required for the common helpers and utils of psiKeds,
-            however we do not want to package them into this JAR but expect them to
-            be provieded by either the EAR/WAR or the Runtime-Environemt -->
+        <!-- These Libs are required for the Interfaces of the Query Agent of
+            psiKeds, however we do not want to package them into this JAR but
+            expect them to be provided by either the WAR or the Runtime-Environemt -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
@@ -64,26 +64,32 @@ For details see file LICENSING in the top project directory
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-servlet-api</artifactId>
-            <version>${tomcat.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>${commons.codec.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>${commons.lang.version}</version>
+            <groupId>org.psikeds</groupId>
+            <artifactId>Common</artifactId>
+            <version>${psikeds.version}</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- The following Libs are not required for the Common-Package itself
-            but only for running the Unit-Tests -->
+        <!-- The following Libs are not required for the Interface-JAR but only 
+            for running the Unit-Tests -->
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
+            <version>${jackson.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>${jackson.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-jaxrs</artifactId>
+            <version>${jackson.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
