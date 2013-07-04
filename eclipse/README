@@ -2,15 +2,18 @@ psiKeds :- ps induced knowledge entity delivery system
 
 Copyright (c) 2013-2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
 
+
 ECLIPSE INTEGRATION:
 --------------------
 psiKeds uses Maven for building and does not require any special IDE. However,
 if you would like to use Eclipse IDE for developing and building psiKeds, then
 this is a short description of how to achieve that:
 
-1. Checkout psiKeds from GitHub
+0. Install software packages for Eclipse, Git, Maven and JDK.
 
-2. Run Eclipse IDE
+1. Checkout psiKeds from GitHub using git.
+
+2. Run Eclipse IDE.
 
 3. Start Import-Wizard of Eclipse:
       Menu --> File --> Import --> Existing Maven Projects

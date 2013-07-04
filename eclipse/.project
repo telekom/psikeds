@@ -1,9 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+psiKeds :- ps induced knowledge entity delivery system
+
+Copyright (c) 2013-2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+
+This file is free software: you can redistribute it and/or modify it
+under the terms of the GNU Lesser General Public License
+
+For details see file LICENSING in the top project directory
+-->
 <projectDescription>
+
 	<name>psiKeds Project Template</name>
 	<comment>A template for an Eclipse-Project for psiKeds</comment>
+
 	<projects>
 	</projects>
+
     <!-- This is a Maven-Java-Project, therefore we use those two Natures and Build-Commands -->
 	<buildSpec>
 		<buildCommand>
