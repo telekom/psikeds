@@ -15,7 +15,9 @@ For details see file LICENSING in the top project directory
 -->
 <!DOCTYPE jboss-web []> <!-- Workaround for Eclipse Validator -->
 <jboss-web>
-	<!-- Unfortunately you cannot specify the context root of a WAR-file in 
-		an application-server-agnostic way. So this is the solution for JBOSS. -->
-	<context-root>/resolutionengine</context-root>
+  <!-- Unfortunately you cannot specify the context root of a WAR-file
+       in an application-server-agnostic way.
+       So this is the solution for JBOSS.
+  -->
+  <context-root>/resolutionengine</context-root>
 </jboss-web>

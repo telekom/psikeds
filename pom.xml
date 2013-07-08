@@ -13,92 +13,93 @@ it and/or modify it under the terms of the
 
 For details see file LICENSING in the top project directory
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.psikeds</groupId>
-	<artifactId>psikeds</artifactId>
-	<version>0.3.0-SNAPSHOT</version>
-	<packaging>pom</packaging>
-	<name>psikeds</name>
-	<description>The parent POM of all components of psiKeds (RelCu)</description>
+  <groupId>org.psikeds</groupId>
+  <artifactId>psikeds</artifactId>
+  <version>0.3.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>psikeds</name>
+  <description>The parent POM of all components of psiKeds (RelCu)</description>
 
-	<properties>
-		<!-- general build settings -->
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- environment settings for doxygen -->
-		<doxygen.executable>C:/Program Files/doxygen/bin/doxygen.exe</doxygen.executable>
-		<doxygen.config.dir>${basedir}/src/doxygen</doxygen.config.dir>
-		<doxygen.source.dir>${basedir}</doxygen.source.dir>
-		<doxygen.destination.dir>${project.build.directory}/apidocs</doxygen.destination.dir>
-		<!-- overall version of psikeds -->
-		<psikeds.version>${project.version}</psikeds.version>
-		<!-- versions of required dependencies -->
-		<springframework.version>3.2.1.RELEASE</springframework.version>
-		<cxf.version>2.7.3</cxf.version>
-		<jackson.version>1.8.6</jackson.version>
-		<tomcat.version>7.0.37</tomcat.version>
-		<myfaces.version>2.1.11</myfaces.version>
-		<tomahawk.version>1.1.14</tomahawk.version>
-		<el.impl.version>2.2.1-b05</el.impl.version>
-		<el.api.version>2.2.1-b04</el.api.version>
-		<commons.lang.version>2.6</commons.lang.version>
-		<commons.codec.version>1.7</commons.codec.version>
-		<slf4j.version>1.7.5</slf4j.version>
-		<junit.version>4.11</junit.version>
-	</properties>
+  <properties>
+    <!-- general build settings -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- environment settings for doxygen -->
+    <doxygen.executable>C:/Program Files/doxygen/bin/doxygen.exe</doxygen.executable>
+    <doxygen.config.dir>${basedir}/src/doxygen</doxygen.config.dir>
+    <doxygen.source.dir>${basedir}</doxygen.source.dir>
+    <doxygen.destination.dir>${project.build.directory}/apidocs</doxygen.destination.dir>
+    <!-- overall version of psikeds -->
+    <psikeds.version>${project.version}</psikeds.version>
+    <!-- versions of required dependencies -->
+    <springframework.version>3.2.1.RELEASE</springframework.version>
+    <cxf.version>2.7.3</cxf.version>
+    <jackson.version>1.8.6</jackson.version>
+    <tomcat.version>7.0.37</tomcat.version>
+    <myfaces.version>2.1.11</myfaces.version>
+    <tomahawk.version>1.1.14</tomahawk.version>
+    <el.impl.version>2.2.1-b05</el.impl.version>
+    <el.api.version>2.2.1-b04</el.api.version>
+    <commons.lang.version>2.6</commons.lang.version>
+    <commons.codec.version>1.7</commons.codec.version>
+    <slf4j.version>1.7.5</slf4j.version>
+    <junit.version>4.11</junit.version>
+  </properties>
 
-	<modules>
-		<module>Common</module>
-		<module>KnowledgeBase</module>
-		<module>KbEclipseEditor</module>
-		<module>ReDataLayer</module>
-		<module>ReInterfaces</module>
-		<module>ResolutionEngine</module>
-		<module>QaDataLayer</module>
-		<module>QaInterfaces</module>
-		<module>QueryAgent</module>
-	</modules>
+  <modules>
+    <module>Common</module>
+    <module>KnowledgeBase</module>
+    <module>KbEclipseEditor</module>
+    <module>ReDataLayer</module>
+    <module>ReInterfaces</module>
+    <module>ResolutionEngine</module>
+    <module>QaDataLayer</module>
+    <module>QaInterfaces</module>
+    <module>QueryAgent</module>
+  </modules>
 
-	<pluginRepositories>
-		<!-- Define repository for doxygen plugin -->
-		<pluginRepository>
-			<id>doodleproject-repo</id>
-			<name>DoodleProject Maven 2 Repository</name>
-			<url>http://doodleproject.sourceforge.net/maven2/release</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</pluginRepository>
-	</pluginRepositories>
+  <pluginRepositories>
+    <!-- Define repository for doxygen plugin -->
+    <pluginRepository>
+      <id>doodleproject-repo</id>
+      <name>DoodleProject Maven 2 Repository</name>
+      <url>http://doodleproject.sourceforge.net/maven2/release</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
 
-	<build>
-		<!-- Use doxygen to generate api docs for all modules -->
-		<plugins>
-			<plugin>
-				<groupId>net.sf.doodleproject</groupId>
-				<artifactId>doxygen-maven-plugin</artifactId>
-				<version>2.2</version>
-				<configuration>
-					<executable>${doxygen.executable}</executable>
-					<filePatterns>*.java *.idl *.inc</filePatterns>
-					<inputDirectory>${doxygen.source.dir}</inputDirectory>
-					<outputDirectory>${doxygen.destination.dir}</outputDirectory>
-					<workDirectory>${doxygen.destination.dir}</workDirectory>
-					<generateHtml>true</generateHtml>
-					<generateLatex>false</generateLatex>
-					<recursive>true</recursive>
-					<alphabeticalIndex>true</alphabeticalIndex>
-					<columnsInAlphabeticalIndex>3</columnsInAlphabeticalIndex>
-					<htmlFooter>${doxygen.config.dir}/footer.html</htmlFooter>
-					<htmlHeader>${doxygen.config.dir}/header.html</htmlHeader>
-					<!-- File containing ADDITIONAL doxygen settings MUST NOT be overlapping 
-						and/or conflicting!!! -->
-					<configurationFile>${doxygen.config.dir}/doxygen.config</configurationFile>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+  <build>
+    <!-- Use doxygen to generate api docs for all modules -->
+    <plugins>
+      <plugin>
+        <groupId>net.sf.doodleproject</groupId>
+        <artifactId>doxygen-maven-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <executable>${doxygen.executable}</executable>
+          <filePatterns>*.java *.idl *.inc</filePatterns>
+          <inputDirectory>${doxygen.source.dir}</inputDirectory>
+          <outputDirectory>${doxygen.destination.dir}</outputDirectory>
+          <workDirectory>${doxygen.destination.dir}</workDirectory>
+          <generateHtml>true</generateHtml>
+          <generateLatex>false</generateLatex>
+          <recursive>true</recursive>
+          <alphabeticalIndex>true</alphabeticalIndex>
+          <columnsInAlphabeticalIndex>3</columnsInAlphabeticalIndex>
+          <htmlFooter>${doxygen.config.dir}/footer.html</htmlFooter>
+          <htmlHeader>${doxygen.config.dir}/header.html</htmlHeader>
+          <!--File containing ADDITIONAL doxygen settings
+            MUST NOT be overlapping and/or conflicting!!! -->
+          <configurationFile>${doxygen.config.dir}/doxygen.config</configurationFile>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

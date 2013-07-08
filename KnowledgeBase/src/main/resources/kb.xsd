@@ -30,29 +30,30 @@ For details see file LICENSING in the top project directory
            XML-Root-Element, entry point of our knowledge base
        ============================================================== -->
 
-	<xs:element name="chocolatelist">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="chocolate" minOccurs="0" maxOccurs="unbounded" />
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+  <xs:element name="chocolatelist">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="chocolate" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
 
   <!-- ==============================================================
            Sub-Elements, defined in global scope
        ============================================================== -->
 
-	<xs:element name="chocolate">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="chocokey" minOccurs="1" maxOccurs="1" />
-				<xs:element ref="description" minOccurs="1" maxOccurs="1" />
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+  <xs:element name="chocolate">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="chocokey" minOccurs="1" maxOccurs="1" />
+        <xs:element ref="description" minOccurs="1"
+          maxOccurs="1" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
 
-	<xs:element name="chocokey" type="xs:string" />
+  <xs:element name="chocokey" type="xs:string" />
 
-	<xs:element name="description" type="xs:string" />
+  <xs:element name="description" type="xs:string" />
 
 </xs:schema>

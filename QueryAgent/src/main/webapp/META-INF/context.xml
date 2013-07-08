@@ -6,15 +6,17 @@ Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
 
 This file is free software: you can redistribute
 it and/or modify it under the terms of the
-[x] GNU Affero General Public License
+[ ] GNU Affero General Public License
 [ ] GNU General Public License
-[ ] GNU Lesser General Public License
+[x] GNU Lesser General Public License
+[ ] Creatice Commons ShareAlike License
 
 For details see file LICENSING in the top project directory
 -->
 <!DOCTYPE Context []> <!-- Workaround for Eclipse Validator -->
-<!-- This is a Context-file for TOMCAT application server. Please note that 
-	you _MUST_NOT_ specify a context-path or doc-base here. This has to be done 
-	within the tomcat-server-config.
-	For details see http://tomcat.apache.org/tomcat-7.0-doc/config/context.html -->
+<!-- This is a Context-file for TOMCAT application server. Please note that
+     you _MUST_NOT_ specify a context-path or doc-base here. This has to be
+     done within the tomcat-server-config.
+     For details see http://tomcat.apache.org/tomcat-7.0-doc/config/context.html
+-->
 <Context />

@@ -14,35 +14,36 @@ it and/or modify it under the terms of the
 For details see file LICENSING in the top project directory
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xsi:schemaLocation="
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-	<bean id="xmlParserCallbackHandler"
-		class="org.psikeds.resolutionengine.datalayer.knowledgebase.impl.ChocoCallbackHandler" />
+  <bean id="xmlParserCallbackHandler"
+    class="org.psikeds.resolutionengine.datalayer.knowledgebase.impl.ChocoCallbackHandler" />
 
-	<bean id="xmlParser" class="org.psikeds.knowledgebase.xml.impl.XMLParser">
-		<constructor-arg>
-			<list>
-				<ref bean="kbXmlSource" />  <!-- defined in knowledgebase-datasource-context.xml -->
-				<ref bean="xmlParserCallbackHandler" />
-			</list>
-		</constructor-arg>
-	</bean>
+  <bean id="xmlParser" class="org.psikeds.knowledgebase.xml.impl.XMLParser">
+    <constructor-arg>
+      <list>
+        <ref bean="kbXmlSource" />  <!-- defined in knowledgebase-datasource-context.xml -->
+        <ref bean="xmlParserCallbackHandler" />
+      </list>
+    </constructor-arg>
+  </bean>
 
-	<bean id="knowledgeBaseFactory"
-		class="org.psikeds.resolutionengine.datalayer.knowledgebase.impl.KnowledgeBaseFactoryImpl">
-		<constructor-arg>
-			<list>
-				<ref bean="xmlParser" />
-			</list>
-		</constructor-arg>
-	</bean>
+  <bean id="knowledgeBaseFactory"
+    class="org.psikeds.resolutionengine.datalayer.knowledgebase.impl.KnowledgeBaseFactoryImpl">
+    <constructor-arg>
+      <list>
+        <ref bean="xmlParser" />
+      </list>
+    </constructor-arg>
+  </bean>
 
-	<bean id="knowledgeBase" factory-bean="knowledgeBaseFactory"
-		factory-method="create" />
+  <bean id="knowledgeBase" factory-bean="knowledgeBaseFactory"
+    factory-method="create" />
 
 </beans>

@@ -13,59 +13,63 @@ it and/or modify it under the terms of the
 
 For details see file LICENSING in the top project directory
 -->
-<project
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.psikeds</groupId>
-		<artifactId>psikeds</artifactId>
-		<version>0.3.0-SNAPSHOT</version>
-	</parent>
+  <parent>
+    <groupId>org.psikeds</groupId>
+    <artifactId>psikeds</artifactId>
+    <version>0.3.0-SNAPSHOT</version>
+  </parent>
 
-	<artifactId>QaDataLayer</artifactId>
-	<packaging>jar</packaging>
-	<name>QaDataLayer</name>
-	<description>The DataLayer for the Query Agent of psiKeds (RelCu)</description>
+  <artifactId>QaDataLayer</artifactId>
+  <packaging>jar</packaging>
+  <name>QaDataLayer</name>
+  <description>The DataLayer for the Query Agent of psiKeds (RelCu)</description>
 
-	<dependencies>
-		<!-- These Libs are required for the common helpers and utils of psiKeds, 
-			however we do not want to package them into this JAR but expect them to be 
-			provided by either the EAR/WAR or the Runtime-Environemt -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<version>${springframework.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-			<version>${springframework.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${slf4j.version}</version>
-			<scope>provided</scope>
-		</dependency>
+  <dependencies>
+    <!--
+      These Libs are required for the common helpers and utils of psiKeds, 
+      however we do not want to package them into this JAR but expect them to be 
+      provided by either the EAR/WAR or the Runtime-Environemt
+    -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>${springframework.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+      <version>${springframework.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>provided</scope>
+    </dependency>
 
-		<!-- The following Libs are not required for the DataLayer-JAR but only 
-			for running the Unit-Tests -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+    <!--
+      The following Libs are not required for the DataLayer-JAR but only 
+      for running the Unit-Tests
+    -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>
