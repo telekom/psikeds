@@ -30,46 +30,46 @@ For details see file LICENSING in the top project directory
 			<property-name>service</property-name>
 			<value>#{chocolateBusinessService}</value>
 		</managed-property>
-        <managed-property>
-            <property-name>allItemsBean</property-name>
-            <value>#{allItemsBean}</value>
-        </managed-property>
+		<managed-property>
+			<property-name>allItemsBean</property-name>
+			<value>#{allItemsBean}</value>
+		</managed-property>
 	</managed-bean>
 
 	<managed-bean>
 		<managed-bean-name>SelectionController</managed-bean-name>
 		<managed-bean-class>org.psikeds.queryagent.presenter.jsf.controller.impl.ChocolateSelectionController</managed-bean-class>
-        <managed-bean-scope>request</managed-bean-scope>
-        <managed-property>
-            <property-name>service</property-name>
-            <value>#{chocolateBusinessService}</value>
-        </managed-property>
-        <managed-property>
-            <property-name>allItemsBean</property-name>
-            <value>#{allItemsBean}</value>
-        </managed-property>
-        <managed-property>
-            <property-name>selectedItemBean</property-name>
-            <value>#{selectedItemBean}</value>
-        </managed-property>
-    </managed-bean>
+		<managed-bean-scope>request</managed-bean-scope>
+		<managed-property>
+			<property-name>service</property-name>
+			<value>#{chocolateBusinessService}</value>
+		</managed-property>
+		<managed-property>
+			<property-name>allItemsBean</property-name>
+			<value>#{allItemsBean}</value>
+		</managed-property>
+		<managed-property>
+			<property-name>selectedItemBean</property-name>
+			<value>#{selectedItemBean}</value>
+		</managed-property>
+	</managed-bean>
 
 	<managed-bean>
 		<managed-bean-name>AddItemController</managed-bean-name>
 		<managed-bean-class>org.psikeds.queryagent.presenter.jsf.controller.impl.AddChocolateController</managed-bean-class>
-        <managed-bean-scope>request</managed-bean-scope>
-        <managed-property>
-            <property-name>service</property-name>
-            <value>#{chocolateBusinessService}</value>
-        </managed-property>
-        <managed-property>
-            <property-name>allItemsBean</property-name>
-            <value>#{allItemsBean}</value>
-        </managed-property>
-        <managed-property>
-            <property-name>selectedItemBean</property-name>
-            <value>#{selectedItemBean}</value>
-        </managed-property>
-    </managed-bean>
+		<managed-bean-scope>request</managed-bean-scope>
+		<managed-property>
+			<property-name>service</property-name>
+			<value>#{chocolateBusinessService}</value>
+		</managed-property>
+		<managed-property>
+			<property-name>allItemsBean</property-name>
+			<value>#{allItemsBean}</value>
+		</managed-property>
+		<managed-property>
+			<property-name>selectedItemBean</property-name>
+			<value>#{selectedItemBean}</value>
+		</managed-property>
+	</managed-bean>
 
 </faces-config>

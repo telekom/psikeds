@@ -17,5 +17,6 @@ For details see file LICENSING in the top project directory
 <!-- This is a Context-file for TOMCAT application server. Please note that 
 	you _MUST_NOT_ specify a context-path or doc-base here. This has to be done 
 	within the tomcat-server-config.
-	For details see http://tomcat.apache.org/tomcat-7.0-doc/config/context.html -->
+	For details see http://tomcat.apache.org/tomcat-7.0-doc/config/context.html
+-->
 <Context />

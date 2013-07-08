@@ -28,33 +28,33 @@ import org.junit.Test;
 
 public class ChocolateBusinessServiceTest {
 
-    private static String endpointUrl;
+  private static String endpointUrl;
 
-    @BeforeClass
-    public static void beforeClass() {
-        endpointUrl = System.getProperty("service.url");
-        System.out.println("Service URL = " + endpointUrl);
-    }
+  @BeforeClass
+  public static void beforeClass() {
+    endpointUrl = System.getProperty("service.url");
+    System.out.println("Service URL = " + endpointUrl);
+  }
 
-    @Test
-    public void testList() throws Exception {
-        // WebClient client = WebClient.create(endpointUrl + "/chocolate/list");
-        // Response r = client.accept(MediaType.APPLICATION_JSON).get();
-        // assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
-        // String value = IOUtils.toString((InputStream) r.getEntity());
-        // System.out.println(value);
-    }
+  @Test
+  public void testList() throws Exception {
+    // WebClient client = WebClient.create(endpointUrl + "/chocolate/list");
+    // Response r = client.accept(MediaType.APPLICATION_JSON).get();
+    // assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
+    // String value = IOUtils.toString((InputStream) r.getEntity());
+    // System.out.println(value);
+  }
 
-    @Test
-    public void testJsonRoundtrip() throws Exception {
-        // WebClient client = WebClient.create(endpointUrl +
-        // "/chocolate/select");
-        // Response r = client.accept(MediaType.APPLICATION_JSON)
-        // .type(MediaType.APPLICATION_JSON)
-        // .post("IDX4711");
-        // assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
-        // assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
-        // String value = IOUtils.toString((InputStream) r.getEntity());
-        // System.out.println(value);
-    }
+  @Test
+  public void testJsonRoundtrip() throws Exception {
+    // WebClient client = WebClient.create(endpointUrl +
+    // "/chocolate/select");
+    // Response r = client.accept(MediaType.APPLICATION_JSON)
+    // .type(MediaType.APPLICATION_JSON)
+    // .post("IDX4711");
+    // assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
+    // assertEquals(Response.Status.OK.getStatusCode(), r.getStatus());
+    // String value = IOUtils.toString((InputStream) r.getEntity());
+    // System.out.println(value);
+  }
 }

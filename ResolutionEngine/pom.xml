@@ -19,7 +19,7 @@ For details see file LICENSING in the top project directory
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-        <groupId>org.psikeds</groupId>
+		<groupId>org.psikeds</groupId>
 		<artifactId>psikeds</artifactId>
 		<version>0.3.0-SNAPSHOT</version>
 	</parent>
@@ -29,91 +29,91 @@ For details see file LICENSING in the top project directory
 	<name>ResolutionEngine</name>
 	<description>The ResolutionEngine of psiKeds (RelCu)</description>
 
-    <dependencies>
-        <!-- Spring-Framework for DI -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${springframework.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- CXF for REST and SOAP -->
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-frontend-jaxws</artifactId>
-            <version>${cxf.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-            <version>${cxf.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-rs-extension-providers</artifactId>
-            <version>${cxf.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- Logging -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- JSON Parsing and Marshalling -->
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
-            <version>${jackson.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>${jackson.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-jaxrs</artifactId>
-            <version>${jackson.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- Helpers from Commons, e.g. Base64 or StringUtils -->
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>${commons.codec.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>${commons.lang.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- Other psiKeds Components -->
-        <dependency>
+	<dependencies>
+		<!-- Spring-Framework for DI -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${springframework.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<!-- CXF for REST and SOAP -->
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxws</artifactId>
+			<version>${cxf.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
+			<version>${cxf.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-rs-extension-providers</artifactId>
+			<version>${cxf.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<!-- JSON Parsing and Marshalling -->
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-core-asl</artifactId>
+			<version>${jackson.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>${jackson.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-jaxrs</artifactId>
+			<version>${jackson.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<!-- Helpers from Commons, e.g. Base64 or StringUtils -->
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>${commons.codec.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>${commons.lang.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<!-- Other psiKeds Components -->
+		<dependency>
 			<groupId>org.psikeds</groupId>
 			<artifactId>Common</artifactId>
 			<version>${psikeds.version}</version>
 			<scope>compile</scope>
 		</dependency>
-        <dependency>
-            <groupId>org.psikeds</groupId>
-            <artifactId>KnowledgeBase</artifactId>
-            <version>${psikeds.version}</version>
-            <scope>compile</scope>
-        </dependency>
+		<dependency>
+			<groupId>org.psikeds</groupId>
+			<artifactId>KnowledgeBase</artifactId>
+			<version>${psikeds.version}</version>
+			<scope>compile</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.psikeds</groupId>
 			<artifactId>ReDataLayer</artifactId>
@@ -126,19 +126,19 @@ For details see file LICENSING in the top project directory
 			<version>${psikeds.version}</version>
 			<scope>compile</scope>
 		</dependency>
-        <!-- JUnit is only required for running Tests -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+		<!-- JUnit is only required for running Tests -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 
-    <build>
-        <finalName>resolutionengine</finalName>
+	<build>
+		<finalName>resolutionengine</finalName>
 
-        <pluginManagement>
+		<pluginManagement>
 			<plugins>
 				<plugin>
 					<groupId>org.apache.tomcat.maven</groupId>
@@ -165,8 +165,8 @@ For details see file LICENSING in the top project directory
 						<source>1.6</source>
 						<target>1.6</target>
 						<fork>true</fork>
-                        <meminitial>512m</meminitial>
-                        <maxmem>2048m</maxmem>
+						<meminitial>512m</meminitial>
+						<maxmem>2048m</maxmem>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -215,9 +215,9 @@ For details see file LICENSING in the top project directory
 						<configuration>
 							<port>${test.server.port}</port>
 							<path>/jaxrs-service</path>
-						    <fork>true</fork>
-                            <meminitial>512m</meminitial>
-                            <maxmem>2048m</maxmem>
+							<fork>true</fork>
+							<meminitial>512m</meminitial>
+							<maxmem>2048m</maxmem>
 							<useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
 						</configuration>
 					</execution>

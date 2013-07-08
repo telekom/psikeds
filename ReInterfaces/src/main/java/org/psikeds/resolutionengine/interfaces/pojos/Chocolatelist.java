@@ -26,60 +26,59 @@ import javax.xml.bind.annotation.XmlRootElement;
  * annotation is required.
  * 
  * @author marco@juliano.de
- * 
  */
 @XmlRootElement(name = "Chocolatelist")
 public class Chocolatelist {
 
-    private List<Chocolate> chocolates;
+  private List<Chocolate> chocolates;
 
-    public Chocolatelist() {
-        this.chocolates = new ArrayList<Chocolate>();
+  public Chocolatelist() {
+    this.chocolates = new ArrayList<Chocolate>();
+  }
+
+  public Chocolatelist(final List<Chocolate> chocolates) {
+    this.chocolates = chocolates;
+  }
+
+  public List<Chocolate> getChocolates() {
+    return this.chocolates;
+  }
+
+  public void setChocolates(final List<Chocolate> chocolates) {
+    this.chocolates = chocolates;
+  }
+
+  // -----------------------------------------------------
+
+  public int size() {
+    return this.chocolates == null ? 0 : this.chocolates.size();
+  }
+
+  public void clear() {
+    this.chocolates.clear();
+  }
+
+  public boolean add(final Chocolate choco) {
+    return this.chocolates.add(choco);
+  }
+
+  public boolean addAll(final Collection<? extends Chocolate> col) {
+    return this.chocolates.addAll(col);
+  }
+
+  // -----------------------------------------------------
+
+  /**
+   * @return
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder(super.toString());
+    for (int i = 0; i < size(); i++) {
+      sb.append('\n');
+      sb.append(String.valueOf(this.chocolates.get(i)));
     }
-
-    public Chocolatelist(final List<Chocolate> chocolates) {
-        this.chocolates = chocolates;
-    }
-
-    public List<Chocolate> getChocolates() {
-        return this.chocolates;
-    }
-
-    public void setChocolates(final List<Chocolate> chocolates) {
-        this.chocolates = chocolates;
-    }
-
-    // -----------------------------------------------------
-
-    public int size() {
-        return this.chocolates == null ? 0 : this.chocolates.size();
-    }
-
-    public void clear() {
-        this.chocolates.clear();
-    }
-
-    public boolean add(final Chocolate choco) {
-        return this.chocolates.add(choco);
-    }
-
-    public boolean addAll(final Collection<? extends Chocolate> col) {
-        return this.chocolates.addAll(col);
-    }
-
-    // -----------------------------------------------------
-
-    /**
-     * @return
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder(super.toString());
-        for (int i = 0; i < size(); i++) {
-            sb.append('\n');
-            sb.append(String.valueOf(this.chocolates.get(i)));
-        }
-        return sb.toString();
-    }
+    return sb.toString();
+  }
 }

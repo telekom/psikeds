@@ -18,17 +18,16 @@ package org.psikeds.queryagent.presenter.jsf.controller;
  * Simple Controller used for initially loading all Items and basic navigation.
  * 
  * @author marco@juliano.de
- * 
  */
 public interface NavigationController {
 
-    String home();
+  String home();
 
-    String back();
+  String back();
 
-    String addItem();
+  String addItem();
 
-    String displayItems();
+  String displayItems();
 
-    String loadItems();
+  String loadItems();
 }

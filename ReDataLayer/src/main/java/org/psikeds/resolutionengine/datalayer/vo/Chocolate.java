@@ -16,32 +16,32 @@ package org.psikeds.resolutionengine.datalayer.vo;
 
 public class Chocolate {
 
-    private String refid;
-    private String description;
+  private String refid;
+  private String description;
 
-    public Chocolate() {
-        this.refid = null;
-        this.description = null;
-    }
+  public Chocolate() {
+    this.refid = null;
+    this.description = null;
+  }
 
-    public Chocolate(final String refid, final String description) {
-        this.refid = refid;
-        this.description = description;
-    }
+  public Chocolate(final String refid, final String description) {
+    this.refid = refid;
+    this.description = description;
+  }
 
-    public String getRefid() {
-        return this.refid;
-    }
+  public String getRefid() {
+    return this.refid;
+  }
 
-    public void setRefid(final String refid) {
-        this.refid = refid;
-    }
+  public void setRefid(final String refid) {
+    this.refid = refid;
+  }
 
-    public String getDescription() {
-        return this.description;
-    }
+  public String getDescription() {
+    return this.description;
+  }
 
-    public void setDescription(final String description) {
-        this.description = description;
-    }
+  public void setDescription(final String description) {
+    this.description = description;
+  }
 }

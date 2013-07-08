@@ -21,16 +21,15 @@ import java.util.concurrent.Executor;
  * current Thread.
  * 
  * @author marco@juliano.de
- * 
  */
 public class SynchronousExecutor implements Executor {
 
-    /**
-     * @param command
-     * @see java.util.concurrent.Executor#execute(java.lang.Runnable)
-     */
-    @Override
-    public void execute(final Runnable command) {
-        command.run();
-    }
+  /**
+   * @param command
+   * @see java.util.concurrent.Executor#execute(java.lang.Runnable)
+   */
+  @Override
+  public void execute(final Runnable command) {
+    command.run();
+  }
 }

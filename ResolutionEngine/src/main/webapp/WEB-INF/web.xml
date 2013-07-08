@@ -14,117 +14,117 @@ it and/or modify it under the terms of the
 For details see file LICENSING in the top project directory
 -->
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
-    xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+	xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 
-    <display-name>psiKeds Resolution Engine</display-name>
+	<display-name>psiKeds Resolution Engine</display-name>
 	<description>psiKeds Resolution Engine</description>
 
-    <!-- ============================================================== -->
-    <!-- Spring Config -->
+	<!-- ============================================================== -->
+	<!-- Spring Config -->
 
-    <context-param>
+	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-            WEB-INF/config/application-context.xml
-            WEB-INF/config/knowledgebase-datasource-context.xml
-            WEB-INF/config/knowledgebase-context.xml
-            WEB-INF/config/business-services-context.xml
-            WEB-INF/config/providers-context.xml
-            WEB-INF/config/cxf-interceptor-context.xml
-            WEB-INF/config/rest-services-context.xml
-            WEB-INF/config/soap-services-context.xml
+      WEB-INF/config/application-context.xml
+      WEB-INF/config/knowledgebase-datasource-context.xml
+      WEB-INF/config/knowledgebase-context.xml
+      WEB-INF/config/business-services-context.xml
+      WEB-INF/config/providers-context.xml
+      WEB-INF/config/cxf-interceptor-context.xml
+      WEB-INF/config/rest-services-context.xml
+      WEB-INF/config/soap-services-context.xml
 		</param-value>
 	</context-param>
 
-    <!-- Please note that we use a custom Spring-Context-Loader that can override 
-        context files. It is therefore recommended to to specify several config locations 
-        instead of one big file. -->
+	<!-- Please note that we use a custom Spring-Context-Loader that can override 
+		context files. It is therefore recommended to to specify several config locations 
+		instead of one big file. -->
 
-    <listener>
-        <listener-class>org.psikeds.common.config.ContextLoaderListener</listener-class>
-    </listener>
+	<listener>
+		<listener-class>org.psikeds.common.config.ContextLoaderListener</listener-class>
+	</listener>
 
-    <listener>
-        <listener-class>org.psikeds.common.util.Jul2Slf4jListener</listener-class>
-    </listener>
+	<listener>
+		<listener-class>org.psikeds.common.util.Jul2Slf4jListener</listener-class>
+	</listener>
 
-    <!-- ============================================================== -->
-    <!-- CXF Config -->
+	<!-- ============================================================== -->
+	<!-- CXF Config -->
 
-    <!-- The CXF-Servlet handles all Requests for both REST and SOAP -->
+	<!-- The CXF-Servlet handles all Requests for both REST and SOAP -->
 
-    <servlet>
-        <servlet-name>CXFServlet</servlet-name>
-        <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-        <!-- This must be explicitly enabled in order to leverage the Servlet3's 
-            async feature on Tomcat -->
-        <async-supported>true</async-supported>
-    </servlet>
+	<servlet>
+		<servlet-name>CXFServlet</servlet-name>
+		<servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+		<!-- This must be explicitly enabled in order to leverage the Servlet3's 
+			async feature on Tomcat -->
+		<async-supported>true</async-supported>
+	</servlet>
 
-    <servlet-mapping>
-        <servlet-name>CXFServlet</servlet-name>
-        <url-pattern>/services/*</url-pattern>
-    </servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>CXFServlet</servlet-name>
+		<url-pattern>/services/*</url-pattern>
+	</servlet-mapping>
 
-    <!-- ============================================================== -->
-    <!-- Welcome files and error pages -->
+	<!-- ============================================================== -->
+	<!-- Welcome files and error pages -->
 
-    <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
-    </welcome-file-list>
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
 
-    <error-page>
-        <error-code>400</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>401</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>403</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>404</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>406</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>409</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>410</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>412</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>415</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>500</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>501</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>502</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>503</error-code>
-        <location>/index.html</location>
-    </error-page>
+	<error-page>
+		<error-code>400</error-code>
+		<location>/index.html</location>
+	</error-page>
+	<error-page>
+		<error-code>401</error-code>
+		<location>/index.html</location>
+	</error-page>
+	<error-page>
+		<error-code>403</error-code>
+		<location>/index.html</location>
+	</error-page>
+	<error-page>
+		<error-code>404</error-code>
+		<location>/index.html</location>
+	</error-page>
+	<error-page>
+		<error-code>406</error-code>
+		<location>/index.html</location>
+	</error-page>
+	<error-page>
+		<error-code>409</error-code>
+		<location>/index.html</location>
+	</error-page>
+	<error-page>
+		<error-code>410</error-code>
+		<location>/index.html</location>
+	</error-page>
+	<error-page>
+		<error-code>412</error-code>
+		<location>/index.html</location>
+	</error-page>
+	<error-page>
+		<error-code>415</error-code>
+		<location>/index.html</location>
+	</error-page>
+	<error-page>
+		<error-code>500</error-code>
+		<location>/index.html</location>
+	</error-page>
+	<error-page>
+		<error-code>501</error-code>
+		<location>/index.html</location>
+	</error-page>
+	<error-page>
+		<error-code>502</error-code>
+		<location>/index.html</location>
+	</error-page>
+	<error-page>
+		<error-code>503</error-code>
+		<location>/index.html</location>
+	</error-page>
 </web-app>

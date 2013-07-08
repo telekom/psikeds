@@ -19,7 +19,7 @@ For details see file LICENSING in the top project directory
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-        <groupId>org.psikeds</groupId>
+		<groupId>org.psikeds</groupId>
 		<artifactId>psikeds</artifactId>
 		<version>0.3.0-SNAPSHOT</version>
 	</parent>
@@ -30,9 +30,9 @@ For details see file LICENSING in the top project directory
 	<description>Interfaces of the Resolution Engine of psiKeds (RelCu)</description>
 
 	<dependencies>
-		<!-- These Libs are required for the Interfaces of the Resolution Engine
-		    of psiKeds, however we do not want to package them into this JAR but
-		    expect them to be provided by either the WAR or the Runtime-Environemt -->
+		<!-- These Libs are required for the Interfaces of the Resolution Engine 
+			of psiKeds, however we do not want to package them into this JAR but expect 
+			them to be provided by either the WAR or the Runtime-Environemt -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
@@ -63,12 +63,12 @@ For details see file LICENSING in the top project directory
 			<version>${slf4j.version}</version>
 			<scope>provided</scope>
 		</dependency>
-        <dependency>
-            <groupId>org.psikeds</groupId>
-            <artifactId>Common</artifactId>
-            <version>${psikeds.version}</version>
-            <scope>provided</scope>
-        </dependency>
+		<dependency>
+			<groupId>org.psikeds</groupId>
+			<artifactId>Common</artifactId>
+			<version>${psikeds.version}</version>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- The following Libs are not required for the Interface-JAR but only 
 			for running the Unit-Tests -->

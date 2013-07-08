@@ -56,19 +56,19 @@ For details see file LICENSING in the top project directory
 			<version>${cxf.version}</version>
 			<scope>compile</scope>
 		</dependency>
-        <!-- Logging -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>compile</scope>
-        </dependency>
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>compile</scope>
+		</dependency>
 		<!-- JSON Parsing and Marshalling -->
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
@@ -149,12 +149,12 @@ For details see file LICENSING in the top project directory
 
 		<!-- Expression-Language-Lib, provided by Appl. Server, but required for 
 			compilation. We use the reference implementation of Oracle's Glassfish Server. -->
-        <dependency>
-            <groupId>javax.el</groupId>
-            <artifactId>el-api</artifactId>
-            <version>${el.api.version}</version>
-            <scope>provided</scope>
-        </dependency>
+		<dependency>
+			<groupId>javax.el</groupId>
+			<artifactId>el-api</artifactId>
+			<version>${el.api.version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.glassfish.web</groupId>
 			<artifactId>el-impl</artifactId>
@@ -171,13 +171,13 @@ For details see file LICENSING in the top project directory
 		</dependency>
 	</dependencies>
 
-    <!-- Maven-Repository of Glassfish Server -->
+	<!-- Maven-Repository of Glassfish Server -->
 	<repositories>
-        <repository>
-            <id>glassfish-repository</id>
-            <name>Java.net Repository for Maven 2</name>
-            <url>http://download.java.net/maven/glassfish</url>
-        </repository>
+		<repository>
+			<id>glassfish-repository</id>
+			<name>Java.net Repository for Maven 2</name>
+			<url>http://download.java.net/maven/glassfish</url>
+		</repository>
 	</repositories>
 
 	<build>
@@ -210,8 +210,8 @@ For details see file LICENSING in the top project directory
 						<source>1.6</source>
 						<target>1.6</target>
 						<fork>true</fork>
-                        <meminitial>512m</meminitial>
-                        <maxmem>2048m</maxmem>
+						<meminitial>512m</meminitial>
+						<maxmem>2048m</maxmem>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -260,9 +260,9 @@ For details see file LICENSING in the top project directory
 						<configuration>
 							<port>${test.server.port}</port>
 							<path>/jaxrs-service</path>
-						    <fork>true</fork>
-                            <meminitial>512m</meminitial>
-                            <maxmem>2048m</maxmem>
+							<fork>true</fork>
+							<meminitial>512m</meminitial>
+							<maxmem>2048m</maxmem>
 							<useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
 						</configuration>
 					</execution>

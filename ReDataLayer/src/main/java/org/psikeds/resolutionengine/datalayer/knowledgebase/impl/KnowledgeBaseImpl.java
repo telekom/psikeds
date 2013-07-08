@@ -24,59 +24,59 @@ import org.psikeds.resolutionengine.datalayer.vo.Chocolatelist;
 
 public class KnowledgeBaseImpl implements KnowledgeBase {
 
-    private static final String KEY_ALL_CHOCOLATES = "all.choco.list";
-    private static final String KEY_PREFIX_CHOCOLATE = "choco.ref.";
+  private static final String KEY_ALL_CHOCOLATES = "all.choco.list";
+  private static final String KEY_PREFIX_CHOCOLATE = "choco.ref.";
 
-    protected final Map<String, Object> chocolates;
+  protected final Map<String, Object> chocolates;
 
-    public KnowledgeBaseImpl() {
-        this.chocolates = new ConcurrentHashMap<String, Object>();
+  public KnowledgeBaseImpl() {
+    this.chocolates = new ConcurrentHashMap<String, Object>();
+  }
+
+  public KnowledgeBaseImpl(final List<Chocolate> chocolst) {
+    this();
+    setChocolates(chocolst);
+  }
+
+  public KnowledgeBaseImpl(final Chocolatelist chocolst) {
+    this(chocolst.getChocolates());
+  }
+
+  public void setChocolates(final List<Chocolate> chocolst) {
+    this.chocolates.clear();
+    storeChocolatelist(chocolst);
+    for (final Chocolate choco : chocolst) {
+      storeChocolate(choco);
     }
+  }
 
-    public KnowledgeBaseImpl(final List<Chocolate> chocolst) {
-        this();
-        setChocolates(chocolst);
-    }
+  // -------------------------------------------------------------
 
-    public KnowledgeBaseImpl(final Chocolatelist chocolst) {
-        this(chocolst.getChocolates());
-    }
+  @Override
+  @SuppressWarnings("unchecked")
+  // we know that this is a list of chocolates
+  public List<Chocolate> getChocolates() {
+    return (List<Chocolate>) this.chocolates.get(KEY_ALL_CHOCOLATES);
+  }
 
-    public void setChocolates(final List<Chocolate> chocolst) {
-        this.chocolates.clear();
-        storeChocolatelist(chocolst);
-        for (final Chocolate choco : chocolst) {
-            storeChocolate(choco);
-        }
-    }
+  @Override
+  public Chocolate getChocolate(final String refid) {
+    return (Chocolate) this.chocolates.get(KEY_PREFIX_CHOCOLATE + refid);
+  }
 
-    // -------------------------------------------------------------
+  @Override
+  public void addChocolate(final Chocolate c) {
+    this.getChocolates().add(c);
+    storeChocolate(c);
+  }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    // we know that this is a list of chocolates
-    public List<Chocolate> getChocolates() {
-        return (List<Chocolate>) this.chocolates.get(KEY_ALL_CHOCOLATES);
-    }
+  // -------------------------------------------------------------
 
-    @Override
-    public Chocolate getChocolate(final String refid) {
-        return (Chocolate) this.chocolates.get(KEY_PREFIX_CHOCOLATE + refid);
-    }
+  private void storeChocolatelist(final List<Chocolate> chocolst) {
+    this.chocolates.put(KEY_ALL_CHOCOLATES, chocolst);
+  }
 
-    @Override
-    public void addChocolate(final Chocolate c) {
-        this.getChocolates().add(c);
-        storeChocolate(c);
-    }
-
-    // -------------------------------------------------------------
-
-    private void storeChocolatelist(final List<Chocolate> chocolst) {
-        this.chocolates.put(KEY_ALL_CHOCOLATES, chocolst);
-    }
-
-    private void storeChocolate(final Chocolate choco) {
-        this.chocolates.put(KEY_PREFIX_CHOCOLATE + choco.getRefid(), choco);
-    }
+  private void storeChocolate(final Chocolate choco) {
+    this.chocolates.put(KEY_PREFIX_CHOCOLATE + choco.getRefid(), choco);
+  }
 }

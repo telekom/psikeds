@@ -18,17 +18,16 @@ package org.psikeds.queryagent.presenter.jsf.controller;
  * Controller used for adding a new Item via the JSF-Tag "inputText".
  * 
  * @author marco@juliano.de
- * 
  */
 public interface AddItemController {
 
-    String getKey();
+  String getKey();
 
-    void setKey(String key);
+  void setKey(String key);
 
-    String getValue();
+  String getValue();
 
-    void setValue(String value);
+  void setValue(String value);
 
-    String doAdd();
+  String doAdd();
 }

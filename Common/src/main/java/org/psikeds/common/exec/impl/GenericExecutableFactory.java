@@ -22,19 +22,18 @@ import org.psikeds.common.exec.ExecutableFactory;
  * the GenericExecutable.
  * 
  * @author marco@juliano.de
- * 
  */
 public class GenericExecutableFactory implements ExecutableFactory {
 
-    /**
-     * @param delegate
-     * @param serviceName
-     * @return GenericExecutable
-     * @see org.psikeds.common.exec.ExecutableFactory#getExecutable(java.lang.Object,
-     *      java.lang.String)
-     */
-    @Override
-    public Executable getExecutable(final Object delegate, final String serviceName) {
-        return new GenericExecutable(delegate, serviceName);
-    }
+  /**
+   * @param delegate
+   * @param serviceName
+   * @return GenericExecutable
+   * @see org.psikeds.common.exec.ExecutableFactory#getExecutable(java.lang.Object,
+   *      java.lang.String)
+   */
+  @Override
+  public Executable getExecutable(final Object delegate, final String serviceName) {
+    return new GenericExecutable(delegate, serviceName);
+  }
 }

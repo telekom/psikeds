@@ -14,10 +14,9 @@ it and/or modify it under the terms of the
 For details see file LICENSING in the top project directory
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:util="http://www.springframework.org/schema/util"
-    xsi:schemaLocation="
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
@@ -32,8 +31,8 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 	</bean>
 
 <!--
-    <bean id="chocolateBusinessService" scope="singleton"
-        class="org.psikeds.queryagent.presenter.services.ChocolateMockService" />
+  <bean id="chocolateBusinessService" scope="singleton"
+      class="org.psikeds.queryagent.presenter.services.ChocolateMockService" />
 -->
 
 </beans>

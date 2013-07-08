@@ -29,8 +29,8 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 		<constructor-arg index="0" value="example.xml" />
 	</bean>
 
-    <!-- bean id="kbXmlSource" class="org.springframework.core.io.FileSystemResource">
-        <constructor-arg index="0" value="~/psikeds/schokolade.xml" />
-    </bean -->
+	<!-- bean id="kbXmlSource" class="org.springframework.core.io.FileSystemResource">
+		<constructor-arg index="0" value="~/psikeds/schokolade.xml" />
+	</bean -->
 
 </beans>

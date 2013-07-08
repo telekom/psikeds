@@ -33,57 +33,56 @@ import org.springframework.web.context.ContextLoader;
  * overrides the location of the Spring-Context-Files.
  * 
  * @author marco@juliano.de
- * 
  */
 public class ContextLoaderListener extends ContextLoader implements ServletContextListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ContextLoaderListener.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ContextLoaderListener.class);
 
-    private ContextLoader contextLoader;
+  private ContextLoader contextLoader;
 
-    public ContextLoaderListener() {
-        super();
-        this.contextLoader = null;
+  public ContextLoaderListener() {
+    super();
+    this.contextLoader = null;
+  }
+
+  /**
+   * Initialization of web application is starting. Install context-loader and
+   * -proxy.
+   */
+  @Override
+  public void contextInitialized(final ServletContextEvent event) {
+    if (this.contextLoader == null) {
+      this.contextLoader = this;
     }
+    final ServletContext ctx = ServletContextProxy.newInstance(event.getServletContext());
+    this.contextLoader.initWebApplicationContext(ctx);
+  }
 
-    /**
-     * Initialization of web application is starting. Install context-loader and
-     * -proxy.
-     */
-    @Override
-    public void contextInitialized(final ServletContextEvent event) {
-        if (this.contextLoader == null) {
-            this.contextLoader = this;
-        }
-        final ServletContext ctx = ServletContextProxy.newInstance(event.getServletContext());
-        this.contextLoader.initWebApplicationContext(ctx);
+  /**
+   * Servlet is shutting down. Close context and destroy Spring-Beans.
+   */
+  @Override
+  public void contextDestroyed(final ServletContextEvent event) {
+    if (this.contextLoader != null) {
+      this.contextLoader.closeWebApplicationContext(event.getServletContext());
     }
-
-    /**
-     * Servlet is shutting down. Close context and destroy Spring-Beans.
-     */
-    @Override
-    public void contextDestroyed(final ServletContextEvent event) {
-        if (this.contextLoader != null) {
-            this.contextLoader.closeWebApplicationContext(event.getServletContext());
+    final ServletContext sc = event.getServletContext();
+    final Enumeration<?> attrNames = sc.getAttributeNames();
+    while (attrNames.hasMoreElements()) {
+      final String attrName = (String) attrNames.nextElement();
+      if (attrName.startsWith("org.springframework.")) {
+        final Object attrValue = sc.getAttribute(attrName);
+        if (attrValue instanceof DisposableBean) {
+          try {
+            ((DisposableBean) attrValue).destroy();
+          }
+          catch (final Exception ex) {
+            LOGGER.error(
+                "Couldn't invoke destroy method of attribute with name '"
+                    + attrName + "'", ex);
+          }
         }
-        final ServletContext sc = event.getServletContext();
-        final Enumeration<?> attrNames = sc.getAttributeNames();
-        while (attrNames.hasMoreElements()) {
-            final String attrName = (String) attrNames.nextElement();
-            if (attrName.startsWith("org.springframework.")) {
-                final Object attrValue = sc.getAttribute(attrName);
-                if (attrValue instanceof DisposableBean) {
-                    try {
-                        ((DisposableBean) attrValue).destroy();
-                    }
-                    catch (final Exception ex) {
-                        LOGGER.error(
-                                "Couldn't invoke destroy method of attribute with name '"
-                                        + attrName + "'", ex);
-                    }
-                }
-            }
-        }
+      }
     }
+  }
 }

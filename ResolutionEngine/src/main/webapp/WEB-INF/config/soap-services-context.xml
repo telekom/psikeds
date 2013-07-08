@@ -39,15 +39,16 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
 
 	<!-- Definition of SOAP endpoints -->
 
-	<jaxws:endpoint implementor="#chocolateSOAPService" address="${cxf.soap.address}">
+	<jaxws:endpoint implementor="#chocolateSOAPService"
+		address="${cxf.soap.address}">
 		<jaxws:properties>
 			<entry key="schema-validation-enabled" value="false" />
 		</jaxws:properties>
 		<jaxws:features>
-            <cxf:logging />
+			<cxf:logging />
 		</jaxws:features>
-        <jaxws:inInterceptors>
-            <ref bean="requestIdGenerationInterceptor" />
-        </jaxws:inInterceptors>
+		<jaxws:inInterceptors>
+			<ref bean="requestIdGenerationInterceptor" />
+		</jaxws:inInterceptors>
 	</jaxws:endpoint>
 </beans>

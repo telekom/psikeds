@@ -20,15 +20,15 @@ For details see file LICENSING in the top project directory
 
 	<application>
 		<locale-config>
-		      <default-locale>de</default-locale>
-		      <supported-locale>en</supported-locale>
-		      <supported-locale>de</supported-locale>
+			<default-locale>de</default-locale>
+			<supported-locale>en</supported-locale>
+			<supported-locale>de</supported-locale>
 		</locale-config>
 		<resource-bundle>
 			<base-name>org.psikeds.queryagent.presenter.jsf.messages</base-name>
 			<var>msg</var>
 		</resource-bundle>
-        <!-- Enable usage of Spring-Beans in Faces-Config and as Managed-Beans -->
+		<!-- Enable usage of Spring-Beans in Faces-Config and as Managed-Beans -->
 		<el-resolver>org.springframework.web.jsf.el.SpringBeanFacesELResolver</el-resolver>
 	</application>
 

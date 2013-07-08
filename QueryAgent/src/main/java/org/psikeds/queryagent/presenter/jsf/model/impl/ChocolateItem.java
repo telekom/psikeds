@@ -25,91 +25,90 @@ import org.psikeds.queryagent.presenter.jsf.model.Item;
  * Item used for displaying/selecting a single kind of chocolate.
  * 
  * @author marco@juliano.de
- * 
  */
 public class ChocolateItem implements Item {
 
-    private final List<IngredientItem> ingredlist = new ArrayList<IngredientItem>();
+  private final List<IngredientItem> ingredlist = new ArrayList<IngredientItem>();
 
-    private Chocolate choco;
+  private Chocolate choco;
 
-    public ChocolateItem() {
-        this(null);
+  public ChocolateItem() {
+    this(null);
+  }
+
+  public ChocolateItem(final Chocolate choco) {
+    setChocolate(choco);
+  }
+
+  public Chocolate getChocolate() {
+    return this.choco;
+  }
+
+  public void setChocolate(final Chocolate choco) {
+    clear();
+    this.choco = choco;
+    if (this.choco != null) {
+      for (final Ingredient ingr : this.choco.getIngredients()) {
+        final IngredientItem item = new IngredientItem(ingr);
+        this.ingredlist.add(item);
+      }
     }
+  }
 
-    public ChocolateItem(final Chocolate choco) {
-        setChocolate(choco);
-    }
+  public void clear() {
+    this.ingredlist.clear();
+  }
 
-    public Chocolate getChocolate() {
-        return this.choco;
-    }
+  /**
+   * @return
+   * @see org.psikeds.queryagent.presenter.jsf.model.Item#isHavingSiblings()
+   */
+  @Override
+  public boolean isHavingSiblings() {
+    return this.ingredlist.size() > 0;
+  }
 
-    public void setChocolate(final Chocolate choco) {
-        clear();
-        this.choco = choco;
-        if (this.choco != null) {
-            for (final Ingredient ingr : this.choco.getIngredients()) {
-                final IngredientItem item = new IngredientItem(ingr);
-                this.ingredlist.add(item);
-            }
-        }
-    }
+  /**
+   * @return
+   * @see org.psikeds.queryagent.presenter.jsf.model.Item#getSiblings()
+   */
+  @Override
+  public List<IngredientItem> getSiblings() {
+    return this.ingredlist;
+  }
 
-    public void clear() {
-        this.ingredlist.clear();
-    }
+  /**
+   * @return
+   * @see org.psikeds.queryagent.presenter.jsf.model.Item#getKey()
+   */
+  @Override
+  public String getKey() {
+    return this.choco == null ? "" : this.choco.getRefid();
+  }
 
-    /**
-     * @return
-     * @see org.psikeds.queryagent.presenter.jsf.model.Item#isHavingSiblings()
-     */
-    @Override
-    public boolean isHavingSiblings() {
-        return this.ingredlist.size() > 0;
-    }
+  /**
+   * @return
+   * @see org.psikeds.queryagent.presenter.jsf.model.Item#getValue()
+   */
+  @Override
+  public String getValue() {
+    return this.choco == null ? "" : this.choco.getDescription();
+  }
 
-    /**
-     * @return
-     * @see org.psikeds.queryagent.presenter.jsf.model.Item#getSiblings()
-     */
-    @Override
-    public List<IngredientItem> getSiblings() {
-        return this.ingredlist;
-    }
+  /**
+   * @return
+   * @see org.psikeds.queryagent.presenter.jsf.model.Item#getHierarchyLevel()
+   */
+  @Override
+  public int getHierarchyLevel() {
+    return 1;
+  }
 
-    /**
-     * @return
-     * @see org.psikeds.queryagent.presenter.jsf.model.Item#getKey()
-     */
-    @Override
-    public String getKey() {
-        return this.choco == null ? "" : this.choco.getRefid();
-    }
-
-    /**
-     * @return
-     * @see org.psikeds.queryagent.presenter.jsf.model.Item#getValue()
-     */
-    @Override
-    public String getValue() {
-        return this.choco == null ? "" : this.choco.getDescription();
-    }
-
-    /**
-     * @return
-     * @see org.psikeds.queryagent.presenter.jsf.model.Item#getHierarchyLevel()
-     */
-    @Override
-    public int getHierarchyLevel() {
-        return 1;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder(super.toString());
-        sb.append('\n');
-        sb.append(String.valueOf(this.choco));
-        return sb.toString();
-    }
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder(super.toString());
+    sb.append('\n');
+    sb.append(String.valueOf(this.choco));
+    return sb.toString();
+  }
 }

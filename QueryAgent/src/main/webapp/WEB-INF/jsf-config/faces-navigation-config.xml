@@ -73,7 +73,7 @@ For details see file LICENSING in the top project directory
 			<redirect />
 		</navigation-case>
 		<navigation-case>
-            <!-- no from-outcome; everything else is an error -->
+			<!-- no from-outcome; everything else is an error -->
 			<to-view-id>/gui/error.xhtml</to-view-id>
 			<redirect />
 		</navigation-case>
@@ -87,14 +87,14 @@ For details see file LICENSING in the top project directory
 			<redirect />
 		</navigation-case>
 		<navigation-case>
-            <!-- no from-outcome; everything else is an error -->
+			<!-- no from-outcome; everything else is an error -->
 			<to-view-id>/gui/error.xhtml</to-view-id>
 			<redirect />
 		</navigation-case>
 	</navigation-rule>
 
 	<navigation-rule>
-        <!-- wildcard from-view-id; everywhere "home" leads to homepage -->	
+		<!-- wildcard from-view-id; everywhere "home" leads to homepage -->
 		<from-view-id>*</from-view-id>
 		<navigation-case>
 			<from-outcome>home</from-outcome>
@@ -104,7 +104,7 @@ For details see file LICENSING in the top project directory
 	</navigation-rule>
 
 	<navigation-rule>
-        <!-- wildcard from-view-id; everywhere "error" leads to error page -->
+		<!-- wildcard from-view-id; everywhere "error" leads to error page -->
 		<from-view-id>*</from-view-id>
 		<navigation-case>
 			<from-outcome>error</from-outcome>

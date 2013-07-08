@@ -25,51 +25,49 @@ import org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transfor
  * within the Datalayer being aware of JAXB and the XML format.
  * 
  * @author m.juliano
- * 
  */
 public class ChocoCallbackHandler implements KBParserCallback {
 
-    private final org.psikeds.resolutionengine.datalayer.vo.Chocolatelist voCL;
+  private final org.psikeds.resolutionengine.datalayer.vo.Chocolatelist voCL;
 
-    public ChocoCallbackHandler() {
-        this.voCL = new org.psikeds.resolutionengine.datalayer.vo.Chocolatelist();
-    }
+  public ChocoCallbackHandler() {
+    this.voCL = new org.psikeds.resolutionengine.datalayer.vo.Chocolatelist();
+  }
 
-    public org.psikeds.resolutionengine.datalayer.vo.Chocolatelist getChocolates() {
-        return this.voCL;
-    }
+  public org.psikeds.resolutionengine.datalayer.vo.Chocolatelist getChocolates() {
+    return this.voCL;
+  }
 
-    /**
-     * 
-     * @param element
-     * @see org.psikeds.knowledgebase.xml.KBParserCallback#handleElement(java.lang.Object)
-     */
-    @Override
-    public void handleElement(final Object element) {
-        if (element != null) {
-            if (element instanceof org.psikeds.knowledgebase.jaxb.Chocolatelist) {
-                final org.psikeds.knowledgebase.jaxb.Chocolatelist jaxbCL = (org.psikeds.knowledgebase.jaxb.Chocolatelist) element;
-                handleChocolatelist(jaxbCL);
-            }
-            else if (element instanceof org.psikeds.knowledgebase.jaxb.Chocolate) {
-                final org.psikeds.knowledgebase.jaxb.Chocolate jaxbChoco = (org.psikeds.knowledgebase.jaxb.Chocolate) element;
-                handleChocolate(jaxbChoco);
-            }
-            else {
-                throw new IllegalArgumentException("Unknown XML object: " + element);
-            }
-        }
+  /**
+   * @param element
+   * @see org.psikeds.knowledgebase.xml.KBParserCallback#handleElement(java.lang.Object)
+   */
+  @Override
+  public void handleElement(final Object element) {
+    if (element != null) {
+      if (element instanceof org.psikeds.knowledgebase.jaxb.Chocolatelist) {
+        final org.psikeds.knowledgebase.jaxb.Chocolatelist jaxbCL = (org.psikeds.knowledgebase.jaxb.Chocolatelist) element;
+        handleChocolatelist(jaxbCL);
+      }
+      else if (element instanceof org.psikeds.knowledgebase.jaxb.Chocolate) {
+        final org.psikeds.knowledgebase.jaxb.Chocolate jaxbChoco = (org.psikeds.knowledgebase.jaxb.Chocolate) element;
+        handleChocolate(jaxbChoco);
+      }
+      else {
+        throw new IllegalArgumentException("Unknown XML object: " + element);
+      }
     }
+  }
 
-    private void handleChocolatelist(final org.psikeds.knowledgebase.jaxb.Chocolatelist jaxbCL) {
-        final List<org.psikeds.knowledgebase.jaxb.Chocolate> lst = jaxbCL.getChocolate();
-        for (final org.psikeds.knowledgebase.jaxb.Chocolate jaxbChoco : lst) {
-            handleChocolate(jaxbChoco);
-        }
+  private void handleChocolatelist(final org.psikeds.knowledgebase.jaxb.Chocolatelist jaxbCL) {
+    final List<org.psikeds.knowledgebase.jaxb.Chocolate> lst = jaxbCL.getChocolate();
+    for (final org.psikeds.knowledgebase.jaxb.Chocolate jaxbChoco : lst) {
+      handleChocolate(jaxbChoco);
     }
+  }
 
-    private void handleChocolate(final org.psikeds.knowledgebase.jaxb.Chocolate jaxbChoco) {
-        final org.psikeds.resolutionengine.datalayer.vo.Chocolate voChoco = Transformer.xml2ValueObject(jaxbChoco);
-        this.voCL.add(voChoco);
-    }
+  private void handleChocolate(final org.psikeds.knowledgebase.jaxb.Chocolate jaxbChoco) {
+    final org.psikeds.resolutionengine.datalayer.vo.Chocolate voChoco = Transformer.xml2ValueObject(jaxbChoco);
+    this.voCL.add(voChoco);
+  }
 }

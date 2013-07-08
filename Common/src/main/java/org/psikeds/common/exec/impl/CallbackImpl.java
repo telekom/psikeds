@@ -18,61 +18,60 @@ import org.psikeds.common.exec.Callback;
 
 /**
  * @author marco@juliano.de
- * 
  */
 public class CallbackImpl implements Callback {
 
-    protected String reqId;
-    protected Object payload;
-    protected boolean finished;
+  protected String reqId;
+  protected Object payload;
+  protected boolean finished;
 
-    public CallbackImpl(final String reqId, final Object payload) {
-        this.reqId = reqId;
-        this.payload = payload;
-        this.finished = false;
-    }
+  public CallbackImpl(final String reqId, final Object payload) {
+    this.reqId = reqId;
+    this.payload = payload;
+    this.finished = false;
+  }
 
-    /**
-     * @return
-     * @see org.psikeds.common.exec.Callback#getReqId()
-     */
-    @Override
-    public String getReqId() {
-        return this.reqId;
-    }
+  /**
+   * @return
+   * @see org.psikeds.common.exec.Callback#getReqId()
+   */
+  @Override
+  public String getReqId() {
+    return this.reqId;
+  }
 
-    /**
-     * @return
-     * @see org.psikeds.common.exec.Callback#getPayload()
-     */
-    @Override
-    public Object getPayload() {
-        return this.payload;
-    }
+  /**
+   * @return
+   * @see org.psikeds.common.exec.Callback#getPayload()
+   */
+  @Override
+  public Object getPayload() {
+    return this.payload;
+  }
 
-    /**
-     * @param payload
-     * @see org.psikeds.common.exec.Callback#setPayload(java.lang.Object)
-     */
-    @Override
-    public void setPayload(final Object payload) {
-        this.payload = payload;
-    }
+  /**
+   * @param payload
+   * @see org.psikeds.common.exec.Callback#setPayload(java.lang.Object)
+   */
+  @Override
+  public void setPayload(final Object payload) {
+    this.payload = payload;
+  }
 
-    /**
-     * @see org.psikeds.common.exec.Callback#done()
-     */
-    @Override
-    public void done() {
-        this.finished = true;
-    }
+  /**
+   * @see org.psikeds.common.exec.Callback#done()
+   */
+  @Override
+  public void done() {
+    this.finished = true;
+  }
 
-    /**
-     * @return
-     * @see org.psikeds.common.exec.Callback#isFinished()
-     */
-    @Override
-    public boolean isFinished() {
-        return this.finished;
-    }
+  /**
+   * @return
+   * @see org.psikeds.common.exec.Callback#isFinished()
+   */
+  @Override
+  public boolean isFinished() {
+    return this.finished;
+  }
 }

@@ -30,45 +30,45 @@ import org.psikeds.resolutionengine.datalayer.vo.Chocolatelist;
 
 public class KnowledgeBaseFactoryImpl implements KnowledgeBaseFactory {
 
-    private KBParser parser;
+  private KBParser parser;
 
-    public KnowledgeBaseFactoryImpl() {
-        this.parser = null;
-    }
+  public KnowledgeBaseFactoryImpl() {
+    this.parser = null;
+  }
 
-    @Autowired
-    public KnowledgeBaseFactoryImpl(final KBParser parser) {
-        this.parser = parser;
-    }
+  @Autowired
+  public KnowledgeBaseFactoryImpl(final KBParser parser) {
+    this.parser = parser;
+  }
 
-    public KBParser getParser() {
-        return this.parser;
-    }
+  public KBParser getParser() {
+    return this.parser;
+  }
 
-    @Autowired
-    public void setParser(final KBParser parser) {
-        this.parser = parser;
-    }
+  @Autowired
+  public void setParser(final KBParser parser) {
+    this.parser = parser;
+  }
 
-    @Override
-    public KnowledgeBase create() {
-        try {
-            this.parser.parseXmlElements();
-            final ChocoCallbackHandler ccbh = (ChocoCallbackHandler) this.parser.getCallbackHandler();
-            final Chocolatelist chocolst = ccbh.getChocolates();
-            return new KnowledgeBaseImpl(chocolst);
-        }
-        catch (final XMLStreamException xmlex) {
-            throw new IllegalArgumentException(xmlex);
-        }
-        catch (final SAXException saxex) {
-            throw new IllegalArgumentException(saxex);
-        }
-        catch (final JAXBException jaxbex) {
-            throw new IllegalArgumentException(jaxbex);
-        }
-        catch (final IOException ioex) {
-            throw new IllegalArgumentException(ioex);
-        }
+  @Override
+  public KnowledgeBase create() {
+    try {
+      this.parser.parseXmlElements();
+      final ChocoCallbackHandler ccbh = (ChocoCallbackHandler) this.parser.getCallbackHandler();
+      final Chocolatelist chocolst = ccbh.getChocolates();
+      return new KnowledgeBaseImpl(chocolst);
     }
+    catch (final XMLStreamException xmlex) {
+      throw new IllegalArgumentException(xmlex);
+    }
+    catch (final SAXException saxex) {
+      throw new IllegalArgumentException(saxex);
+    }
+    catch (final JAXBException jaxbex) {
+      throw new IllegalArgumentException(jaxbex);
+    }
+    catch (final IOException ioex) {
+      throw new IllegalArgumentException(ioex);
+    }
+  }
 }
