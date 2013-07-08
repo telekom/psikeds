@@ -1,15 +1,15 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
- *
+ * 
  * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
- *
+ * 
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
  * [x] GNU Affero General Public License
  * [ ] GNU General Public License
  * [ ] GNU Lesser General Public License
  * [ ] Creatice Commons ShareAlike License
- *
+ * 
  * For details see file LICENSING in the top project directory
  *******************************************************************************/
 package org.psikeds.common.config;
@@ -59,6 +59,7 @@ final class ServletContextProxy implements InvocationHandler {
      * @see java.lang.reflect.InvocationHandler#invoke(java.lang.Object,
      *      java.lang.reflect.Method, java.lang.Object[])
      */
+    @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
         // Always invoke the original first
         Object result = method.invoke(this.servletContext, args);

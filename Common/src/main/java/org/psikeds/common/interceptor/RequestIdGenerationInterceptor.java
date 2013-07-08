@@ -1,15 +1,15 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
- *
+ * 
  * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
- *
+ * 
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
  * [x] GNU Affero General Public License
  * [ ] GNU General Public License
  * [ ] GNU Lesser General Public License
  * [ ] Creatice Commons ShareAlike License
- *
+ * 
  * For details see file LICENSING in the top project directory
  *******************************************************************************/
 package org.psikeds.common.interceptor;
@@ -137,6 +137,7 @@ public class RequestIdGenerationInterceptor<T extends Message> extends AbstractP
      * @see org.apache.cxf.interceptor.Interceptor#handleMessage(org.apache.cxf.message.Message)
      * 
      */
+    @Override
     public void handleMessage(final T message) throws UncheckedException {
         try {
             if (message != null) {

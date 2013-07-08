@@ -1,15 +1,15 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
- *
+ * 
  * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
- *
+ * 
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
  * [x] GNU Affero General Public License
  * [ ] GNU General Public License
  * [ ] GNU Lesser General Public License
  * [ ] Creatice Commons ShareAlike License
- *
+ * 
  * For details see file LICENSING in the top project directory
  *******************************************************************************/
 package org.psikeds.common.exec.impl;
@@ -36,6 +36,7 @@ public class CallbackImpl implements Callback {
      * @return
      * @see org.psikeds.common.exec.Callback#getReqId()
      */
+    @Override
     public String getReqId() {
         return this.reqId;
     }
@@ -44,6 +45,7 @@ public class CallbackImpl implements Callback {
      * @return
      * @see org.psikeds.common.exec.Callback#getPayload()
      */
+    @Override
     public Object getPayload() {
         return this.payload;
     }
@@ -52,6 +54,7 @@ public class CallbackImpl implements Callback {
      * @param payload
      * @see org.psikeds.common.exec.Callback#setPayload(java.lang.Object)
      */
+    @Override
     public void setPayload(final Object payload) {
         this.payload = payload;
     }
@@ -59,6 +62,7 @@ public class CallbackImpl implements Callback {
     /**
      * @see org.psikeds.common.exec.Callback#done()
      */
+    @Override
     public void done() {
         this.finished = true;
     }
@@ -67,6 +71,7 @@ public class CallbackImpl implements Callback {
      * @return
      * @see org.psikeds.common.exec.Callback#isFinished()
      */
+    @Override
     public boolean isFinished() {
         return this.finished;
     }

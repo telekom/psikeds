@@ -1,15 +1,15 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
- *
+ * 
  * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
- *
+ * 
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
  * [x] GNU Affero General Public License
  * [ ] GNU General Public License
  * [ ] GNU Lesser General Public License
  * [ ] Creatice Commons ShareAlike License
- *
+ * 
  * For details see file LICENSING in the top project directory
  *******************************************************************************/
 package org.psikeds.common.util;
@@ -42,6 +42,7 @@ public class Jul2Slf4jListener implements ServletContextListener {
      * @param sce
      * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
      */
+    @Override
     public void contextInitialized(final ServletContextEvent sce) {
         // Remove old JUL-Handlers
         final Logger rootLogger = LogManager.getLogManager().getLogger("");
@@ -61,6 +62,7 @@ public class Jul2Slf4jListener implements ServletContextListener {
      * @param sce
      * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
      */
+    @Override
     public void contextDestroyed(final ServletContextEvent sce) {
         // Remove our own SLF4J-Handler
         final Logger rootLogger = LogManager.getLogManager().getLogger("");

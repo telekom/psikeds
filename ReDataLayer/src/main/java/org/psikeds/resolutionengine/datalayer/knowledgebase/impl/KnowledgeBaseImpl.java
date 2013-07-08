@@ -1,15 +1,15 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
- *
+ * 
  * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
- *
+ * 
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
  * [x] GNU Affero General Public License
  * [ ] GNU General Public License
  * [ ] GNU Lesser General Public License
  * [ ] Creatice Commons ShareAlike License
- *
+ * 
  * For details see file LICENSING in the top project directory
  *******************************************************************************/
 package org.psikeds.resolutionengine.datalayer.knowledgebase.impl;
@@ -52,16 +52,19 @@ public class KnowledgeBaseImpl implements KnowledgeBase {
 
     // -------------------------------------------------------------
 
+    @Override
     @SuppressWarnings("unchecked")
     // we know that this is a list of chocolates
     public List<Chocolate> getChocolates() {
         return (List<Chocolate>) this.chocolates.get(KEY_ALL_CHOCOLATES);
     }
 
+    @Override
     public Chocolate getChocolate(final String refid) {
         return (Chocolate) this.chocolates.get(KEY_PREFIX_CHOCOLATE + refid);
     }
 
+    @Override
     public void addChocolate(final Chocolate c) {
         this.getChocolates().add(c);
         storeChocolate(c);

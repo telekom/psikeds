@@ -1,15 +1,15 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
- *
+ * 
  * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
- *
+ * 
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
  * [x] GNU Affero General Public License
  * [ ] GNU General Public License
  * [ ] GNU Lesser General Public License
  * [ ] Creatice Commons ShareAlike License
- *
+ * 
  * For details see file LICENSING in the top project directory
  *******************************************************************************/
 package org.psikeds.knowledgebase.xml.impl;
@@ -72,6 +72,7 @@ public class XMLParser implements KBParser {
      */
     private static final EventFilter DEFAULT_EVENT_FILTER = new EventFilter() {
 
+        @Override
         public boolean accept(final XMLEvent event) {
             return event != null && event.isStartElement();
         }
@@ -313,6 +314,7 @@ public class XMLParser implements KBParser {
     /**
      * @return the callbackHandler
      */
+    @Override
     public KBParserCallback getCallbackHandler() {
         return this.callbackHandler;
     }
@@ -321,6 +323,7 @@ public class XMLParser implements KBParser {
      * @param callbackHandler
      *            the callbackHandler to set
      */
+    @Override
     @Autowired
     public void setCallbackHandler(final KBParserCallback callbackHandler) {
         this.callbackHandler = callbackHandler;
@@ -373,6 +376,7 @@ public class XMLParser implements KBParser {
      * @throws IOException
      * 
      */
+    @Override
     public long parseXmlElements() throws XMLStreamException, SAXException, JAXBException, IOException {
         Reader xml = null;
         try {

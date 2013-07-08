@@ -1,15 +1,15 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
- *
+ * 
  * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
- *
+ * 
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
  * [x] GNU Affero General Public License
  * [ ] GNU General Public License
  * [ ] GNU Lesser General Public License
  * [ ] Creatice Commons ShareAlike License
- *
+ * 
  * For details see file LICENSING in the top project directory
  *******************************************************************************/
 package org.psikeds.common.config;
@@ -50,6 +50,7 @@ public class ContextLoaderListener extends ContextLoader implements ServletConte
      * Initialization of web application is starting. Install context-loader and
      * -proxy.
      */
+    @Override
     public void contextInitialized(final ServletContextEvent event) {
         if (this.contextLoader == null) {
             this.contextLoader = this;
@@ -61,6 +62,7 @@ public class ContextLoaderListener extends ContextLoader implements ServletConte
     /**
      * Servlet is shutting down. Close context and destroy Spring-Beans.
      */
+    @Override
     public void contextDestroyed(final ServletContextEvent event) {
         if (this.contextLoader != null) {
             this.contextLoader.closeWebApplicationContext(event.getServletContext());
