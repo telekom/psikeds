@@ -34,6 +34,10 @@ this is a short description of how to achieve that:
 7. Right click on the Root-Project "psikeds" and select "Run as" --> "Maven install"
       ==> A full build of all psiKeds-Components will be performed.
 
+If Eclipse should display compiler-erros, please verify that in the settings
+for project "KnowledgeBase" the Source-Folder "target/generated-sources/jaxb"
+is defined. This directory contains JAXB-Classes generated from the KB-XSD.
+
 
 NOTE 1:
 -------
@@ -63,8 +67,10 @@ directory.
 2. Edit each .project and specify the Project's Name from Maven-POM as Name
    for the Eclipse-Project.
 
-3. Within Eclipse select "Import Existing Projects into Workspace"
+3. Within Eclipse select "Import Existing Projects into Workspace".
 
 
+DOCUMENTATION:
+--------------
 For further details regarding Maven-Eclipse-Integration see:
    http://maven.apache.org/eclipse-plugin.html
