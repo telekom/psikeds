@@ -29,6 +29,7 @@ For details see file LICENSING in the top project directory
   <properties>
     <!-- general build settings -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- environment settings for doxygen -->
     <doxygen.executable>C:/Program Files/doxygen/bin/doxygen.exe</doxygen.executable>
     <doxygen.config.dir>${basedir}/src/doxygen</doxygen.config.dir>
@@ -36,7 +37,7 @@ For details see file LICENSING in the top project directory
     <doxygen.destination.dir>${project.build.directory}/apidocs</doxygen.destination.dir>
     <!-- overall version of psikeds -->
     <psikeds.version>${project.version}</psikeds.version>
-    <!-- versions of required dependencies -->
+    <!-- versions of required dependencies/libraries -->
     <springframework.version>3.2.1.RELEASE</springframework.version>
     <cxf.version>2.7.3</cxf.version>
     <jackson.version>1.8.6</jackson.version>
@@ -49,6 +50,8 @@ For details see file LICENSING in the top project directory
     <commons.codec.version>1.7</commons.codec.version>
     <slf4j.version>1.7.5</slf4j.version>
     <junit.version>4.11</junit.version>
+    <!-- versions of required maven plugins -->
+    <!-- TODO -->
   </properties>
 
   <modules>
