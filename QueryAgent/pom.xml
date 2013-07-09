@@ -149,9 +149,10 @@ For details see file LICENSING in the top project directory
     </dependency>
 
     <!--
-      Expression-Language-Lib, provided by Appl. Server, but required
-      for compilation.
-      We use the reference implementation of Oracle's Glassfish Server. -->
+    Expression-Language-Lib, provided by Appl. Server, but required 
+    for compilation. We use the reference implementation of Oracle's
+    Glassfish Server.
+    -->
     <dependency>
       <groupId>javax.el</groupId>
       <artifactId>el-api</artifactId>
@@ -232,6 +233,15 @@ For details see file LICENSING in the top project directory
 
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.1.1</version>
+        <configuration>
+          <packagingExcludes>WEB-INF/web.xml</packagingExcludes>
+          <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <version>1.5</version>
@@ -306,5 +316,7 @@ For details see file LICENSING in the top project directory
         </executions>
       </plugin>
     </plugins>
+
   </build>
+
 </project>
