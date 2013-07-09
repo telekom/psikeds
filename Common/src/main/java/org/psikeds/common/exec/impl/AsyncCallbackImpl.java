@@ -20,28 +20,27 @@ import org.psikeds.common.exec.Callback;
 
 /**
  * @author marco@juliano.de
- * 
  */
 public class AsyncCallbackImpl extends CallbackImpl implements Callback {
 
-    protected Continuation continuation;
+  protected Continuation continuation;
 
-    public AsyncCallbackImpl(final String name, final Continuation continuation, final Object payload) {
-        super(name, payload);
-        // Callback has reference to Continuation and vice versa
-        this.continuation = continuation;
-        this.continuation.setObject(this);
-    }
+  public AsyncCallbackImpl(final String name, final Continuation continuation, final Object payload) {
+    super(name, payload);
+    // Callback has reference to Continuation and vice versa
+    this.continuation = continuation;
+    this.continuation.setObject(this);
+  }
 
-    /**
-     * @see org.psikeds.common.exec.Callback#done()
-     */
-    @Override
-    public void done() {
-        synchronized (this.continuation) {
-            this.finished = true;
-            // signal continuation/request to wake up
-            this.continuation.resume();
-        }
+  /**
+   * @see org.psikeds.common.exec.Callback#done()
+   */
+  @Override
+  public void done() {
+    synchronized (this.continuation) {
+      this.finished = true;
+      // signal continuation/request to wake up
+      this.continuation.resume();
     }
+  }
 }

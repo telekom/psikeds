@@ -19,9 +19,8 @@ package org.psikeds.common.exec;
  * the result and the finished notification.
  * 
  * @author marco@juliano.de
- * 
  */
 public interface Executable extends Runnable {
 
-    void setCallback(Callback callback);
+  void setCallback(Callback callback);
 }

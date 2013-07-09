@@ -40,75 +40,74 @@ import org.psikeds.resolutionengine.interfaces.services.ChocolateService;
  * {@link org.psikeds.resolutionengine.interfaces.services.ChocolateService}
  * 
  * @author marco@juliano.de
- * 
  */
 @Path("/chocolate")
 public class ChocolateRESTService extends AbstractRESTService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ChocolateRESTService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ChocolateRESTService.class);
 
-    @Override
-    protected Logger getLogger() {
-        return LOGGER;
+  @Override
+  protected Logger getLogger() {
+    return LOGGER;
+  }
+
+  private final ChocolateService delegate;
+
+  @Autowired
+  public ChocolateRESTService(final ChocolateService delegate) {
+    this.delegate = delegate;
+    this.context = null;
+  }
+
+  // -----------------------------------------------------
+
+  @GET
+  @Path("/list")
+  @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+  public Response getChocolates(final String reqid) {
+    try {
+      final Chocolatelist lst = (Chocolatelist) handleRequest(reqid, getExecutable(this.delegate, "getChocolates"));
+      if (lst != null && lst.size() > 0) {
+        return buildResponse(Status.OK, lst);
+      }
+      return buildResponse(Status.SERVICE_UNAVAILABLE, "No Chocolates available!");
     }
-
-    private final ChocolateService delegate;
-
-    @Autowired
-    public ChocolateRESTService(final ChocolateService delegate) {
-        this.delegate = delegate;
-        this.context = null;
+    catch (final Exception ex) {
+      return buildResponse(ex);
     }
+  }
 
-    // -----------------------------------------------------
-
-    @GET
-    @Path("/list")
-    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public Response getChocolates(final String reqid) {
-        try {
-            final Chocolatelist lst = (Chocolatelist) handleRequest(reqid, getExecutable(this.delegate, "getChocolates"));
-            if (lst != null && lst.size() > 0) {
-                return buildResponse(Status.OK, lst);
-            }
-            return buildResponse(Status.SERVICE_UNAVAILABLE, "No Chocolates available!");
-        }
-        catch (final Exception ex) {
-            return buildResponse(ex);
-        }
+  @POST
+  @Path("/select")
+  @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+  @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
+  public Response selectChocolate(final String refid, final String reqid) {
+    try {
+      final Chocolate choco = (Chocolate) handleRequest(reqid, getExecutable(this.delegate, "selectChocolate"), refid);
+      if (choco != null) {
+        return buildResponse(Status.OK, choco);
+      }
+      return buildResponse(Status.BAD_REQUEST, "There is no Chocolate with refid = " + String.valueOf(refid));
     }
-
-    @POST
-    @Path("/select")
-    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_PLAIN })
-    public Response selectChocolate(final String refid, final String reqid) {
-        try {
-            final Chocolate choco = (Chocolate) handleRequest(reqid, getExecutable(this.delegate, "selectChocolate"), refid);
-            if (choco != null) {
-                return buildResponse(Status.OK, choco);
-            }
-            return buildResponse(Status.BAD_REQUEST, "There is no Chocolate with refid = " + String.valueOf(refid));
-        }
-        catch (final Exception ex) {
-            return buildResponse(ex);
-        }
+    catch (final Exception ex) {
+      return buildResponse(ex);
     }
+  }
 
-    @PUT
-    @Path("/add")
-    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public Response addChocolate(final Chocolate choco, final String reqid) {
-        try {
-            final Chocolatelist lst = (Chocolatelist) handleRequest(reqid, getExecutable(this.delegate, "addChocolate"), choco);
-            if (lst != null && lst.size() > 0) {
-                return buildResponse(Status.OK, lst);
-            }
-            return buildResponse(Status.SERVICE_UNAVAILABLE, "Could not add new Chocolate");
-        }
-        catch (final Exception ex) {
-            return buildResponse(ex);
-        }
+  @PUT
+  @Path("/add")
+  @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+  @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+  public Response addChocolate(final Chocolate choco, final String reqid) {
+    try {
+      final Chocolatelist lst = (Chocolatelist) handleRequest(reqid, getExecutable(this.delegate, "addChocolate"), choco);
+      if (lst != null && lst.size() > 0) {
+        return buildResponse(Status.OK, lst);
+      }
+      return buildResponse(Status.SERVICE_UNAVAILABLE, "Could not add new Chocolate");
     }
+    catch (final Exception ex) {
+      return buildResponse(ex);
+    }
+  }
 }

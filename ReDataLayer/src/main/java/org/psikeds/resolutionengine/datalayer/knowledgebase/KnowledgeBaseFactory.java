@@ -16,5 +16,5 @@ package org.psikeds.resolutionengine.datalayer.knowledgebase;
 
 public interface KnowledgeBaseFactory {
 
-    KnowledgeBase create();
+  KnowledgeBase create();
 }

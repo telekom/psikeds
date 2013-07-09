@@ -22,13 +22,12 @@ import org.psikeds.resolutionengine.interfaces.pojos.Chocolatelist;
  * implementation can choose how to do this (REST, SOAP, Mocking, ...)
  * 
  * @author marco@juliano.de
- * 
  */
 public interface ResolutionEngineClient {
 
-    Chocolatelist invokeListService();
+  Chocolatelist invokeListService();
 
-    Chocolate invokeSelectService(String refid);
+  Chocolate invokeSelectService(String refid);
 
-    Chocolatelist invokeAddService(Chocolate choco);
+  Chocolatelist invokeAddService(Chocolate choco);
 }

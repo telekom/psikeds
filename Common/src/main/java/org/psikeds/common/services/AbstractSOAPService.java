@@ -24,29 +24,28 @@ import org.apache.cxf.continuations.ContinuationProvider;
  * Base for all SOAP-Services.
  * 
  * @author marco@juliano.de
- * 
  */
 public abstract class AbstractSOAPService extends AbstractBaseService {
 
-    @Context
-    protected WebServiceContext context;
+  @Context
+  protected WebServiceContext context;
 
-    /**
-     * @see org.psikeds.common.services.AbstractBaseService#getContinuationProvider()
-     */
-    @Override
-    protected ContinuationProvider getContinuationProvider() {
-        getLogger().trace("--> getContinuationProvider()");
-        ContinuationProvider prov = null;
-        try {
-            final MessageContext ctx = this.context == null ? null : this.context.getMessageContext();
-            final String key = ContinuationProvider.class.getName();
-            getLogger().debug("Getting {} from {}", key, String.valueOf(ctx));
-            prov = ctx == null ? null : (ContinuationProvider) ctx.get(key);
-            return prov;
-        }
-        finally {
-            getLogger().trace("<-- getContinuationProvider(); prov = {}", prov);
-        }
+  /**
+   * @see org.psikeds.common.services.AbstractBaseService#getContinuationProvider()
+   */
+  @Override
+  protected ContinuationProvider getContinuationProvider() {
+    getLogger().trace("--> getContinuationProvider()");
+    ContinuationProvider prov = null;
+    try {
+      final MessageContext ctx = this.context == null ? null : this.context.getMessageContext();
+      final String key = ContinuationProvider.class.getName();
+      getLogger().debug("Getting {} from {}", key, String.valueOf(ctx));
+      prov = ctx == null ? null : (ContinuationProvider) ctx.get(key);
+      return prov;
     }
+    finally {
+      getLogger().trace("<-- getContinuationProvider(); prov = {}", prov);
+    }
+  }
 }

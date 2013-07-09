@@ -22,35 +22,34 @@ import org.psikeds.queryagent.presenter.jsf.model.Item;
  * Controller used for selecting an Item via the JSF-Tag "selectOneRadio".
  * 
  * @author marco@juliano.de
- * 
  */
 public interface SelectionController {
 
-    /**
-     * Get List of all Items currently available for Selection.
-     * 
-     * @return
-     */
-    List<? extends Item> getListOfItems();
+  /**
+   * Get List of all Items currently available for Selection.
+   * 
+   * @return
+   */
+  List<? extends Item> getListOfItems();
 
-    /**
-     * Get unique ID of selected Item.
-     * 
-     * @return String Key / Unique ID
-     */
-    String getSelectedItem();
+  /**
+   * Get unique ID of selected Item.
+   * 
+   * @return String Key / Unique ID
+   */
+  String getSelectedItem();
 
-    /**
-     * Set unique ID of selected Item.
-     * 
-     * @param key Key / Unique ID
-     */
-    void setSelectedItem(String key);
+  /**
+   * Set unique ID of selected Item.
+   * 
+   * @param key Key / Unique ID
+   */
+  void setSelectedItem(String key);
 
-    /**
-     * Perform the actual Selection including Calls to Backend, etc.
-     * 
-     * @return String JSF-Navigation-Outcome
-     */
-    String doSelect();
+  /**
+   * Perform the actual Selection including Calls to Backend, etc.
+   * 
+   * @return String JSF-Navigation-Outcome
+   */
+  String doSelect();
 }

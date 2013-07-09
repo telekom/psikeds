@@ -16,17 +16,16 @@ package org.psikeds.common.exec;
 
 /**
  * @author marco@juliano.de
- * 
  */
 public interface Callback {
 
-    String getReqId();
+  String getReqId();
 
-    Object getPayload();
+  Object getPayload();
 
-    void setPayload(Object payload);
+  void setPayload(Object payload);
 
-    void done();
+  void done();
 
-    boolean isFinished();
+  boolean isFinished();
 }

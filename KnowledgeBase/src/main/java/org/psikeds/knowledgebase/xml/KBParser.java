@@ -26,35 +26,32 @@ import org.xml.sax.SAXException;
  * Used by other Packages (e.g. Data Layer of Resolution Engine).
  * 
  * @author marco@juliano.de
- * 
  */
 public interface KBParser {
 
-    /**
-     * Parse the specified XML.
-     * 
-     * @return Total number of found XML elements
-     * 
-     * @throws XMLStreamException
-     * @throws SAXException
-     * @throws JAXBException
-     * @throws IOException
-     * 
-     */
-    long parseXmlElements() throws XMLStreamException, SAXException, JAXBException, IOException;
+  /**
+   * Parse the specified XML.
+   * 
+   * @return Total number of found XML elements
+   * @throws XMLStreamException
+   * @throws SAXException
+   * @throws JAXBException
+   * @throws IOException
+   */
+  long parseXmlElements() throws XMLStreamException, SAXException, JAXBException, IOException;
 
-    /**
-     * Retrieve the Callback-Object registered for handling Parsing-Events of
-     * this Parser.
-     * 
-     * @return the callbackHandler
-     */
-    KBParserCallback getCallbackHandler();
+  /**
+   * Retrieve the Callback-Object registered for handling Parsing-Events of
+   * this Parser.
+   * 
+   * @return the callbackHandler
+   */
+  KBParserCallback getCallbackHandler();
 
-    /**
-     * Register a Callback-Object for handling Parsing-Events of this Parser.
-     * 
-     * @param callbackHandler the callbackHandler to set
-     */
-    void setCallbackHandler(final KBParserCallback callbackHandler);
+  /**
+   * Register a Callback-Object for handling Parsing-Events of this Parser.
+   * 
+   * @param callbackHandler the callbackHandler to set
+   */
+  void setCallbackHandler(final KBParserCallback callbackHandler);
 }

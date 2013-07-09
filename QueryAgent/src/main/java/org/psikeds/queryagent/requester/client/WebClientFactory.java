@@ -20,9 +20,8 @@ import org.apache.cxf.jaxrs.client.WebClient;
  * Factory creating CXF-WebClients for a given URL.
  * 
  * @author marco@juliano.de
- * 
  */
 public interface WebClientFactory {
 
-    WebClient getClient(final String url);
+  WebClient getClient(final String url);
 }

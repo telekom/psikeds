@@ -13,258 +13,270 @@ it and/or modify it under the terms of the
 
 For details see file LICENSING in the top project directory
 -->
-<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
-    xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+<web-app version="3.0"
+  xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:xi="http://www.w3.org/2001/XInclude"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 
-	<display-name>psiKeds Query Agent</display-name>
-	<description>psiKeds Query Agent</description>
+  <display-name>psiKeds Query Agent</display-name>
+  <description>psiKeds Query Agent</description>
 
-	<!-- ======================================================================== -->
-	<!-- General Spring Config -->
+  <!-- ======================================================================== -->
+  <!-- General Spring Config -->
 
-	<context-param>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>
-            WEB-INF/spring-config/application-context.xml
-            WEB-INF/spring-config/cxf-interceptor-context.xml
-            WEB-INF/spring-config/providers-context.xml
-            WEB-INF/spring-config/requester-rest-client-context.xml
-            WEB-INF/spring-config/business-services-context.xml
-            WEB-INF/spring-config/presenter-rest-services-context.xml
-            WEB-INF/spring-config/presenter-soap-services-context.xml
-            WEB-INF/spring-config/jsf-session-data-context.xml
-        </param-value>
-	</context-param>
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+      WEB-INF/spring-config/application-context.xml
+      WEB-INF/spring-config/cxf-interceptor-context.xml
+      WEB-INF/spring-config/providers-context.xml
+      WEB-INF/spring-config/requester-rest-client-context.xml
+      WEB-INF/spring-config/business-services-context.xml
+      WEB-INF/spring-config/presenter-rest-services-context.xml
+      WEB-INF/spring-config/presenter-soap-services-context.xml
+      WEB-INF/spring-config/jsf-session-data-context.xml
+    </param-value>
+  </context-param>
 
-	<!-- Please note that we use a custom Spring-Context-Loader that can override 
-		 context files. It is therefore recommended to to specify several config
-		 locations instead of one big file. -->
-	<listener>
-		<listener-class>org.psikeds.common.config.ContextLoaderListener</listener-class>
-	</listener>
+  <!--
+  Please note that we use a custom Spring-Context-Loader that can override 
+  context files. It is therefore recommended to to specify several config
+  locations instead of one big file.
+  -->
+  <listener>
+    <listener-class>org.psikeds.common.config.ContextLoaderListener</listener-class>
+  </listener>
 
-    <!-- Enable JSF-Scopes like "request" and "session" in Spring-Context-Files.
-         Otherwise scope is always "application". -->
-    <listener>
-        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
-    </listener>
+  <!--
+  Enable JSF-Scopes like "request" and "session" in Spring-Context-Files. 
+  Otherwise scope is always "application".
+  -->
+  <listener>
+    <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+  </listener>
 
-    <!-- Forward all Java-Util-Logging to Simple-Logging-Facade-4-Java -->
-    <listener>
-        <listener-class>org.psikeds.common.util.Jul2Slf4jListener</listener-class>
-    </listener>
+  <!-- Forward all Java-Util-Logging to Simple-Logging-Facade-4-Java -->
+  <listener>
+    <listener-class>org.psikeds.common.util.Jul2Slf4jListener</listener-class>
+  </listener>
 
-    <!-- ======================================================================== -->
-	<!-- CXF Config -->
+  <!-- ======================================================================== -->
+  <!-- CXF Config -->
 
-	<!-- The CXF-Servlet handles all Requests for both REST and SOAP -->
-	<servlet>
-		<servlet-name>CXFServlet</servlet-name>
-		<servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
-		<load-on-startup>1</load-on-startup>
-		<!-- This must be explicitly enabled in order to leverage the Servlet3's 
-			 Async-Feature on some Application-Servers like Tomcat -->
-		<async-supported>true</async-supported>
-	</servlet>
+  <!-- The CXF-Servlet handles all Requests for both REST and SOAP -->
+  <servlet>
+    <servlet-name>CXFServlet</servlet-name>
+    <servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+    <!--
+    This must be explicitly enabled in order to leverage the Servlet3's 
+    Async-Feature on some Application-Servers like Tomcat
+    -->
+    <async-supported>true</async-supported>
+  </servlet>
 
-	<servlet-mapping>
-		<servlet-name>CXFServlet</servlet-name>
-		<url-pattern>/services/*</url-pattern>
-	</servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>CXFServlet</servlet-name>
+    <url-pattern>/services/*</url-pattern>
+  </servlet-mapping>
 
-    <!-- ======================================================================== -->
-    <!-- JSF Config -->
+  <!-- ======================================================================== -->
+  <!-- JSF Config -->
 
-    <context-param>
-        <param-name>javax.faces.CONFIG_FILES</param-name>
-        <param-value>
-            /WEB-INF/jsf-config/faces-application-config.xml,
-            /WEB-INF/jsf-config/faces-controller-config.xml,
-            /WEB-INF/jsf-config/faces-view-config.xml,
-            /WEB-INF/jsf-config/faces-navigation-config.xml
-        </param-value>
-    </context-param>
+  <context-param>
+    <param-name>javax.faces.CONFIG_FILES</param-name>
+    <param-value>
+      /WEB-INF/jsf-config/faces-application-config.xml,
+      /WEB-INF/jsf-config/faces-controller-config.xml,
+      /WEB-INF/jsf-config/faces-view-config.xml,
+      /WEB-INF/jsf-config/faces-navigation-config.xml
+    </param-value>
+  </context-param>
 
-    <context-param>
-        <param-name>javax.faces.PROJECT_STAGE</param-name>
-        <param-value>Development</param-value>
-    </context-param>
+  <context-param>
+    <param-name>javax.faces.PROJECT_STAGE</param-name>
+    <param-value>Development</param-value>
+  </context-param>
 
-    <!-- General Setting for JSF, MyFaces and Tomahawk -->
-    <context-param>
-        <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
-        <param-value>server</param-value>
-    </context-param>
-    <context-param>
-        <param-name>org.apache.myfaces.NUMBER_OF_VIEWS_IN_SESSION</param-name>
-        <param-value>20</param-value>
-    </context-param>
-    <context-param>
-        <param-name>org.apache.myfaces.SERIALIZE_STATE_IN_SESSION</param-name>
-        <param-value>true</param-value>
-    </context-param>
-    <context-param>
-        <param-name>org.apache.myfaces.COMPRESS_STATE_IN_SESSION</param-name>
-        <param-value>true</param-value>
-    </context-param>
-    <context-param>
-        <param-name>org.apache.myfaces.ALLOW_JAVASCRIPT</param-name>
-        <param-value>true</param-value>
-    </context-param>
-    <context-param>
-        <param-name>org.apache.myfaces.DETECT_JAVASCRIPT</param-name>
-        <param-value>false</param-value>
-    </context-param>
-    <context-param>
-        <param-name>org.apache.myfaces.PRETTY_HTML</param-name>
-        <param-value>true</param-value>
-    </context-param>
-    <context-param>
-        <param-name>org.apache.myfaces.AUTO_SCROLL</param-name>
-        <param-value>true</param-value>
-    </context-param>
-    <context-param>
-        <param-name>org.apache.myfaces.VALIDATE</param-name>
-        <param-value>true</param-value>
-    </context-param>
-    <context-param>
-        <param-name>org.apache.myfaces.READONLY_AS_DISABLED_FOR_SELECTS</param-name>
-        <param-value>true</param-value>
-    </context-param>
-    <context-param>
-        <param-name>org.apache.myfaces.ADD_RESOURCE_CLASS</param-name>
-        <param-value>org.apache.myfaces.renderkit.html.util.DefaultAddResource</param-value>
-    </context-param>
-    <context-param>
-        <param-name>org.apache.myfaces.RESOURCE_VIRTUAL_PATH</param-name>
-        <param-value>/faces/myFacesExtensionResource</param-value>
-    </context-param>
-    <context-param>
-        <param-name>org.apache.myfaces.CHECK_EXTENSIONS_FILTER</param-name>
-        <param-value>true</param-value>
-    </context-param>
-    <context-param>
-        <param-name>javax.faces.PARTIAL_STATE_SAVING</param-name>
-        <param-value>false</param-value>
-    </context-param>
+  <!-- General Setting for JSF, MyFaces and Tomahawk -->
+  <context-param>
+    <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+    <param-value>server</param-value>
+  </context-param>
+  <context-param>
+    <param-name>org.apache.myfaces.NUMBER_OF_VIEWS_IN_SESSION</param-name>
+    <param-value>20</param-value>
+  </context-param>
+  <context-param>
+    <param-name>org.apache.myfaces.SERIALIZE_STATE_IN_SESSION</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <context-param>
+    <param-name>org.apache.myfaces.COMPRESS_STATE_IN_SESSION</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <context-param>
+    <param-name>org.apache.myfaces.ALLOW_JAVASCRIPT</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <context-param>
+    <param-name>org.apache.myfaces.DETECT_JAVASCRIPT</param-name>
+    <param-value>false</param-value>
+  </context-param>
+  <context-param>
+    <param-name>org.apache.myfaces.PRETTY_HTML</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <context-param>
+    <param-name>org.apache.myfaces.AUTO_SCROLL</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <context-param>
+    <param-name>org.apache.myfaces.VALIDATE</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <context-param>
+    <param-name>org.apache.myfaces.READONLY_AS_DISABLED_FOR_SELECTS</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <context-param>
+    <param-name>org.apache.myfaces.ADD_RESOURCE_CLASS</param-name>
+    <param-value>org.apache.myfaces.renderkit.html.util.DefaultAddResource</param-value>
+  </context-param>
+  <context-param>
+    <param-name>org.apache.myfaces.RESOURCE_VIRTUAL_PATH</param-name>
+    <param-value>/faces/myFacesExtensionResource</param-value>
+  </context-param>
+  <context-param>
+    <param-name>org.apache.myfaces.CHECK_EXTENSIONS_FILTER</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <context-param>
+    <param-name>javax.faces.PARTIAL_STATE_SAVING</param-name>
+    <param-value>false</param-value>
+  </context-param>
 
-    <!-- Security Settings for GUI-Components -->
-    <context-param>
-        <param-name>org.apache.myfaces.USE_ENCRYPTION</param-name>
-        <param-value>true</param-value>
-    </context-param>
-    <context-param>
-        <param-name>org.apache.myfaces.SECRET.CACHE</param-name>
-        <param-value>true</param-value>
-    </context-param>
-    <context-param>
-        <param-name>org.apache.myfaces.MAC_SECRET.CACHE</param-name>
-        <param-value>true</param-value>
-    </context-param>
+  <!-- Security Settings for GUI-Components -->
+  <context-param>
+    <param-name>org.apache.myfaces.USE_ENCRYPTION</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <context-param>
+    <param-name>org.apache.myfaces.SECRET.CACHE</param-name>
+    <param-value>true</param-value>
+  </context-param>
+  <context-param>
+    <param-name>org.apache.myfaces.MAC_SECRET.CACHE</param-name>
+    <param-value>true</param-value>
+  </context-param>
 
-    <!-- ExtensionsFilter -->
-    <filter>
-        <filter-name>ExtensionsFilter</filter-name>
-        <filter-class>org.apache.myfaces.webapp.filter.ExtensionsFilter</filter-class>
-        <init-param>
-            <param-name>uploadMaxFileSize</param-name>
-            <param-value>10m</param-value>
-        </init-param>
-        <init-param>
-            <param-name>uploadThresholdSize</param-name>
-            <param-value>500k</param-value>
-        </init-param>
-    </filter>
+  <!-- ExtensionsFilter -->
+  <filter>
+    <filter-name>ExtensionsFilter</filter-name>
+    <filter-class>org.apache.myfaces.webapp.filter.ExtensionsFilter</filter-class>
+    <init-param>
+      <param-name>uploadMaxFileSize</param-name>
+      <param-value>10m</param-value>
+    </init-param>
+    <init-param>
+      <param-name>uploadThresholdSize</param-name>
+      <param-value>500k</param-value>
+    </init-param>
+  </filter>
 
-    <!-- Add ExtensionsFilter to FacesServlet for <script/>, <link/>, and other 
-         resource tags within JSF-pages -->
-    <filter-mapping>
-        <filter-name>ExtensionsFilter</filter-name>
-        <servlet-name>FacesServlet</servlet-name>
-    </filter-mapping>
+  <!--
+  Add ExtensionsFilter to FacesServlet for <script/>, <link/>
+  and other resource tags within JSF-pages
+  -->
+  <filter-mapping>
+    <filter-name>ExtensionsFilter</filter-name>
+    <servlet-name>FacesServlet</servlet-name>
+  </filter-mapping>
 
-    <!-- Additional mapping for serving page-independent resources like javascript, 
-         stylesheets, images, ... -->
-    <!-- See also Context-Param org.apache.myfaces.RESOURCE_VIRTUAL_PATH -->
-    <filter-mapping>
-        <filter-name>ExtensionsFilter</filter-name>
-        <url-pattern>/faces/*</url-pattern>
-    </filter-mapping>
+  <!--
+  Additional mapping for serving page-independent resources like
+  javascript, stylesheets, images, ...
+  See also Context-Param org.apache.myfaces.RESOURCE_VIRTUAL_PATH
+  -->
+  <filter-mapping>
+    <filter-name>ExtensionsFilter</filter-name>
+    <url-pattern>/faces/*</url-pattern>
+  </filter-mapping>
 
-    <listener>
-        <listener-class>org.apache.myfaces.webapp.StartupServletContextListener</listener-class>
-    </listener>
+  <listener>
+    <listener-class>org.apache.myfaces.webapp.StartupServletContextListener</listener-class>
+  </listener>
 
-    <!-- The Faces-Servlet handles all GUI-Requests -->
-    <servlet>
-        <servlet-name>FacesServlet</servlet-name>
-        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>FacesServlet</servlet-name>
-        <url-pattern>*.jsf</url-pattern>
-    </servlet-mapping>
+  <!-- The Faces-Servlet handles all GUI-Requests -->
+  <servlet>
+    <servlet-name>FacesServlet</servlet-name>
+    <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>FacesServlet</servlet-name>
+    <url-pattern>*.jsf</url-pattern>
+  </servlet-mapping>
 
-    <!-- ======================================================================== -->
-	<!-- Welcome files and error pages -->
+  <!-- ======================================================================== -->
+  <!-- Welcome files and error pages -->
 
-    <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
-        <welcome-file>index.html</welcome-file>
-    </welcome-file-list>
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
 
-    <error-page>
-        <error-code>400</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>401</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>403</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>404</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>406</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>409</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>410</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>412</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>415</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>500</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>501</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>502</error-code>
-        <location>/index.html</location>
-    </error-page>
-    <error-page>
-        <error-code>503</error-code>
-        <location>/index.html</location>
-    </error-page>
+  <error-page>
+    <error-code>400</error-code>
+    <location>/index.html</location>
+  </error-page>
+  <error-page>
+    <error-code>401</error-code>
+    <location>/index.html</location>
+  </error-page>
+  <error-page>
+    <error-code>403</error-code>
+    <location>/index.html</location>
+  </error-page>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/index.html</location>
+  </error-page>
+  <error-page>
+    <error-code>406</error-code>
+    <location>/index.html</location>
+  </error-page>
+  <error-page>
+    <error-code>409</error-code>
+    <location>/index.html</location>
+  </error-page>
+  <error-page>
+    <error-code>410</error-code>
+    <location>/index.html</location>
+  </error-page>
+  <error-page>
+    <error-code>412</error-code>
+    <location>/index.html</location>
+  </error-page>
+  <error-page>
+    <error-code>415</error-code>
+    <location>/index.html</location>
+  </error-page>
+  <error-page>
+    <error-code>500</error-code>
+    <location>/index.html</location>
+  </error-page>
+  <error-page>
+    <error-code>501</error-code>
+    <location>/index.html</location>
+  </error-page>
+  <error-page>
+    <error-code>502</error-code>
+    <location>/index.html</location>
+  </error-page>
+  <error-page>
+    <error-code>503</error-code>
+    <location>/index.html</location>
+  </error-page>
 </web-app>

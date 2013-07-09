@@ -20,45 +20,45 @@ import java.util.List;
 
 public class Chocolatelist {
 
-    private List<Chocolate> chocolates;
+  private List<Chocolate> chocolates;
 
-    public Chocolatelist() {
-        this.chocolates = new ArrayList<Chocolate>();
-    }
+  public Chocolatelist() {
+    this.chocolates = new ArrayList<Chocolate>();
+  }
 
-    public Chocolatelist(final List<Chocolate> chocolates) {
-        this.chocolates = chocolates;
-    }
+  public Chocolatelist(final List<Chocolate> chocolates) {
+    this.chocolates = chocolates;
+  }
 
-    public List<Chocolate> getChocolates() {
-        return this.chocolates;
-    }
+  public List<Chocolate> getChocolates() {
+    return this.chocolates;
+  }
 
-    public void setChocolates(final List<Chocolate> chocolates) {
-        this.chocolates = chocolates;
-    }
+  public void setChocolates(final List<Chocolate> chocolates) {
+    this.chocolates = chocolates;
+  }
 
-    public int size() {
-        return this.chocolates == null ? 0 : this.chocolates.size();
-    }
+  public int size() {
+    return this.chocolates == null ? 0 : this.chocolates.size();
+  }
 
-    public boolean isEmpty() {
-        return size() <= 0;
-    }
+  public boolean isEmpty() {
+    return size() <= 0;
+  }
 
-    public boolean contains(final Chocolate choco) {
-        return this.chocolates.contains(choco);
-    }
+  public boolean contains(final Chocolate choco) {
+    return this.chocolates.contains(choco);
+  }
 
-    public boolean add(final Chocolate choco) {
-        return this.chocolates.add(choco);
-    }
+  public boolean add(final Chocolate choco) {
+    return this.chocolates.add(choco);
+  }
 
-    public boolean addAll(final Collection<? extends Chocolate> col) {
-        return this.chocolates.addAll(col);
-    }
+  public boolean addAll(final Collection<? extends Chocolate> col) {
+    return this.chocolates.addAll(col);
+  }
 
-    public void clear() {
-        this.chocolates.clear();
-    }
+  public void clear() {
+    this.chocolates.clear();
+  }
 }

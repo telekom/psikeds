@@ -24,65 +24,64 @@ import org.apache.cxf.common.util.StringUtils;
  * <hostname>-<current time in ms>-<random ascii characters>
  * 
  * @author marco@juliano.de
- * 
  */
 public class UniqueIdGenerator extends RandomStringGenerator {
 
-    private boolean includeHostname;
-    private boolean includeTimestamp;
-    private String hostName;
+  private boolean includeHostname;
+  private boolean includeTimestamp;
+  private String hostName;
 
-    /**
-     * @throws NoSuchAlgorithmException
-     */
-    public UniqueIdGenerator() throws NoSuchAlgorithmException {
-        super();
-        this.includeTimestamp = true;
-        initHostName();
-    }
+  /**
+   * @throws NoSuchAlgorithmException
+   */
+  public UniqueIdGenerator() throws NoSuchAlgorithmException {
+    super();
+    this.includeTimestamp = true;
+    initHostName();
+  }
 
-    private void initHostName() {
-        try {
-            final InetAddress localMachine = InetAddress.getLocalHost();
-            this.hostName = localMachine.getHostName();
-            this.includeHostname = true;
-        }
-        catch (final Exception ex) {
-            this.hostName = null;
-            this.includeHostname = false;
-        }
+  private void initHostName() {
+    try {
+      final InetAddress localMachine = InetAddress.getLocalHost();
+      this.hostName = localMachine.getHostName();
+      this.includeHostname = true;
     }
+    catch (final Exception ex) {
+      this.hostName = null;
+      this.includeHostname = false;
+    }
+  }
 
-    /**
-     * @param includeHostname the includeHostname to set
-     */
-    public void setIncludeHostname(final boolean includeHostname) {
-        this.includeHostname = includeHostname;
-    }
+  /**
+   * @param includeHostname the includeHostname to set
+   */
+  public void setIncludeHostname(final boolean includeHostname) {
+    this.includeHostname = includeHostname;
+  }
 
-    /**
-     * @param includeTimestamp the includeTimestamp to set
-     */
-    public void setIncludeTimestamp(final boolean includeTimestamp) {
-        this.includeTimestamp = includeTimestamp;
-    }
+  /**
+   * @param includeTimestamp the includeTimestamp to set
+   */
+  public void setIncludeTimestamp(final boolean includeTimestamp) {
+    this.includeTimestamp = includeTimestamp;
+  }
 
-    /**
-     * @return
-     * @see org.psikeds.common.reqid.RequestIdGenerator#getNextReqId()
-     */
-    @Override
-    public String getNextReqId() {
-        final StringBuilder sb = new StringBuilder();
-        if (this.includeHostname && !StringUtils.isEmpty(this.hostName)) {
-            sb.append(this.hostName);
-            sb.append('-');
-        }
-        if (this.includeTimestamp) {
-            sb.append(System.currentTimeMillis());
-            sb.append('-');
-        }
-        sb.append(super.getNextReqId());
-        return sb.toString();
+  /**
+   * @return
+   * @see org.psikeds.common.reqid.RequestIdGenerator#getNextReqId()
+   */
+  @Override
+  public String getNextReqId() {
+    final StringBuilder sb = new StringBuilder();
+    if (this.includeHostname && !StringUtils.isEmpty(this.hostName)) {
+      sb.append(this.hostName);
+      sb.append('-');
     }
+    if (this.includeTimestamp) {
+      sb.append(System.currentTimeMillis());
+      sb.append('-');
+    }
+    sb.append(super.getNextReqId());
+    return sb.toString();
+  }
 }

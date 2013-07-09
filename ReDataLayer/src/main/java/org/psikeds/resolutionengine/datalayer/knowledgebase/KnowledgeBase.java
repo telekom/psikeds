@@ -20,9 +20,9 @@ import org.psikeds.resolutionengine.datalayer.vo.Chocolate;
 
 public interface KnowledgeBase {
 
-    List<Chocolate> getChocolates();
+  List<Chocolate> getChocolates();
 
-    Chocolate getChocolate(String refid);
+  Chocolate getChocolate(String refid);
 
-    void addChocolate(Chocolate choco);
+  void addChocolate(Chocolate choco);
 }

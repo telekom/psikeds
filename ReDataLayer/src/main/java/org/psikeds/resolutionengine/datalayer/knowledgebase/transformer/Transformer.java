@@ -20,32 +20,31 @@ package org.psikeds.resolutionengine.datalayer.knowledgebase.transformer;
  * therefore only transformation xml->vo is supported/implemented.
  * 
  * @author marco@juliano.de
- * 
  */
 public final class Transformer {
 
-    public static org.psikeds.resolutionengine.datalayer.vo.Chocolate xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Chocolate xml) {
-        org.psikeds.resolutionengine.datalayer.vo.Chocolate vo = null;
-        if (xml != null) {
-            vo = new org.psikeds.resolutionengine.datalayer.vo.Chocolate(xml.getChocokey(), xml.getDescription());
-        }
-        return vo;
+  public static org.psikeds.resolutionengine.datalayer.vo.Chocolate xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Chocolate xml) {
+    org.psikeds.resolutionengine.datalayer.vo.Chocolate vo = null;
+    if (xml != null) {
+      vo = new org.psikeds.resolutionengine.datalayer.vo.Chocolate(xml.getChocokey(), xml.getDescription());
     }
+    return vo;
+  }
 
-    public static org.psikeds.resolutionengine.datalayer.vo.Chocolatelist xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Chocolatelist xmllst) {
-        org.psikeds.resolutionengine.datalayer.vo.Chocolatelist volst = null;
-        if (xmllst != null) {
-            volst = new org.psikeds.resolutionengine.datalayer.vo.Chocolatelist();
-            if (xmllst.getChocolate() != null) {
-                for (final org.psikeds.knowledgebase.jaxb.Chocolate xc : xmllst.getChocolate()) {
-                    volst.add(Transformer.xml2ValueObject(xc));
-                }
-            }
+  public static org.psikeds.resolutionengine.datalayer.vo.Chocolatelist xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Chocolatelist xmllst) {
+    org.psikeds.resolutionengine.datalayer.vo.Chocolatelist volst = null;
+    if (xmllst != null) {
+      volst = new org.psikeds.resolutionengine.datalayer.vo.Chocolatelist();
+      if (xmllst.getChocolate() != null) {
+        for (final org.psikeds.knowledgebase.jaxb.Chocolate xc : xmllst.getChocolate()) {
+          volst.add(Transformer.xml2ValueObject(xc));
         }
-        return volst;
+      }
     }
+    return volst;
+  }
 
-    private Transformer() {
-        // prevent instantiation
-    }
+  private Transformer() {
+    // prevent instantiation
+  }
 }

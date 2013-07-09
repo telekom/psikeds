@@ -22,55 +22,54 @@ import javax.xml.bind.annotation.XmlRootElement;
  * However for XML the XmlRootElement annotation is required.
  * 
  * @author marco@juliano.de
- * 
  */
 @XmlRootElement(name = "Ingredient")
 public class Ingredient {
 
-    private String refid;
-    private String description;
+  private String refid;
+  private String description;
 
-    public Ingredient() {
-        this.refid = null;
-        this.description = null;
-    }
+  public Ingredient() {
+    this.refid = null;
+    this.description = null;
+  }
 
-    public Ingredient(final String refid, final String description) {
-        this.refid = refid;
-        this.description = description;
-    }
+  public Ingredient(final String refid, final String description) {
+    this.refid = refid;
+    this.description = description;
+  }
 
-    public String getRefid() {
-        return this.refid;
-    }
+  public String getRefid() {
+    return this.refid;
+  }
 
-    public void setRefid(final String refid) {
-        this.refid = refid;
-    }
+  public void setRefid(final String refid) {
+    this.refid = refid;
+  }
 
-    public String getDescription() {
-        return this.description;
-    }
+  public String getDescription() {
+    return this.description;
+  }
 
-    public void setDescription(final String description) {
-        this.description = description;
-    }
+  public void setDescription(final String description) {
+    this.description = description;
+  }
 
-    // -----------------------------------------------------
+  // -----------------------------------------------------
 
-    /**
-     * @return
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("      ");
-        sb.append(super.toString());
-        sb.append(" [ refid = ");
-        sb.append(String.valueOf(this.refid));
-        sb.append(" | description = ");
-        sb.append(String.valueOf(this.description));
-        sb.append(" ]");
-        return sb.toString();
-    }
+  /**
+   * @return
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("      ");
+    sb.append(super.toString());
+    sb.append(" [ refid = ");
+    sb.append(String.valueOf(this.refid));
+    sb.append(" | description = ");
+    sb.append(String.valueOf(this.description));
+    sb.append(" ]");
+    return sb.toString();
+  }
 }

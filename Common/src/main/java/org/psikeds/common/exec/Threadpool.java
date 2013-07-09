@@ -24,20 +24,19 @@ import java.util.concurrent.TimeUnit;
  * Note: Queue is not fair, i.e. order of requests is not guaranteed!
  * 
  * @author marco@juliano.de
- * 
  */
 public class Threadpool extends ThreadPoolExecutor implements Executor {
 
-    public static final int DEFAULT_MIN_POOL_SIZE = 20;
-    public static final int DEFAULT_MAX_POOL_SIZE = DEFAULT_MIN_POOL_SIZE;
-    public static final long DEFAULT_THREAD_TIMEOUT = 0L;
-    public static final int DEFAULT_QUEUE_CAPACITY = 50;
+  public static final int DEFAULT_MIN_POOL_SIZE = 20;
+  public static final int DEFAULT_MAX_POOL_SIZE = DEFAULT_MIN_POOL_SIZE;
+  public static final long DEFAULT_THREAD_TIMEOUT = 0L;
+  public static final int DEFAULT_QUEUE_CAPACITY = 50;
 
-    public Threadpool() {
-        this(DEFAULT_MIN_POOL_SIZE, DEFAULT_MAX_POOL_SIZE, DEFAULT_THREAD_TIMEOUT, DEFAULT_QUEUE_CAPACITY);
-    }
+  public Threadpool() {
+    this(DEFAULT_MIN_POOL_SIZE, DEFAULT_MAX_POOL_SIZE, DEFAULT_THREAD_TIMEOUT, DEFAULT_QUEUE_CAPACITY);
+  }
 
-    public Threadpool(final int minPoolSize, final int maxPoolSize, final long timeout, final int queueCapacity) {
-        super(minPoolSize, maxPoolSize, timeout, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(queueCapacity));
-    }
+  public Threadpool(final int minPoolSize, final int maxPoolSize, final long timeout, final int queueCapacity) {
+    super(minPoolSize, maxPoolSize, timeout, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(queueCapacity));
+  }
 }

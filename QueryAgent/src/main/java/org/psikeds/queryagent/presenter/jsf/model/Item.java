@@ -19,49 +19,47 @@ import java.util.List;
 /**
  * An Item/Object that shall be used within a View in order to be displayed in
  * an XHTML-Page.
- * 
  * Each Item must have a unique key (for selection) and a value that will be
  * displayed. An Item can optionally have siblings, i.e. child-objects that
  * shall also be displayed.
  * 
  * @author marco@juliano.de
- * 
  */
 public interface Item {
 
-    /**
-     * Unique Key of this Item
-     * 
-     * @return
-     */
-    String getKey();
+  /**
+   * Unique Key of this Item
+   * 
+   * @return
+   */
+  String getKey();
 
-    /**
-     * Value/Description/Text of this Item to be displayed in GUI
-     * 
-     * @return
-     */
-    String getValue();
+  /**
+   * Value/Description/Text of this Item to be displayed in GUI
+   * 
+   * @return
+   */
+  String getValue();
 
-    /**
-     * Does this Item have any Siblings, i.e. related child-objects?
-     * 
-     * @return
-     */
-    boolean isHavingSiblings();
+  /**
+   * Does this Item have any Siblings, i.e. related child-objects?
+   * 
+   * @return
+   */
+  boolean isHavingSiblings();
 
-    /**
-     * List of all Siblings, i.e. related child-objects
-     * 
-     * @return
-     */
-    List<? extends Item> getSiblings();
+  /**
+   * List of all Siblings, i.e. related child-objects
+   * 
+   * @return
+   */
+  List<? extends Item> getSiblings();
 
-    /**
-     * What is the Level of this Item within the full Item-Hierarchy?
-     * 0 = Root, 1 = First Level, 2 = Second Level, ...
-     * 
-     * @return
-     */
-    int getHierarchyLevel();
+  /**
+   * What is the Level of this Item within the full Item-Hierarchy?
+   * 0 = Root, 1 = First Level, 2 = Second Level, ...
+   * 
+   * @return
+   */
+  int getHierarchyLevel();
 }

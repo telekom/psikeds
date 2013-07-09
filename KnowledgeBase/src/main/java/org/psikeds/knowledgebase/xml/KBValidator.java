@@ -23,16 +23,14 @@ import org.xml.sax.SAXException;
  * Used by other Packages (e.g. Data Layer of Resolution Engine).
  * 
  * @author marco@juliano.de
- * 
  */
 public interface KBValidator {
 
-    /**
-     * Validate XML reader against specified XSD schmema file.<br>
-     * 
-     * @throws SAXException if XML is not valid against XSD
-     * @throws IOException if XML or XSD are not readable
-     * 
-     */
-    void validate() throws SAXException, IOException;
+  /**
+   * Validate XML reader against specified XSD schmema file.<br>
+   * 
+   * @throws SAXException if XML is not valid against XSD
+   * @throws IOException if XML or XSD are not readable
+   */
+  void validate() throws SAXException, IOException;
 }

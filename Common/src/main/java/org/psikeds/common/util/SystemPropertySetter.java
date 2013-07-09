@@ -25,25 +25,24 @@ import org.slf4j.LoggerFactory;
  * system properties. Helpful for e.g. configuring http(s) proxy settings.
  * 
  * @author marco@juliano.de
- * 
  */
 public class SystemPropertySetter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SystemPropertySetter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SystemPropertySetter.class);
 
-    public SystemPropertySetter(final Properties props) {
-        final Enumeration<?> names = props.propertyNames();
-        while (names.hasMoreElements()) {
-            final String name = (String) names.nextElement();
-            final String value = props.getProperty(name);
-            try {
-                System.setProperty(name, value);
-                LOGGER.info("Set system property {} to {}", name, value);
-            }
-            catch (final Exception ex) {
-                LOGGER.error("Failed to set system property {}  -->  {}", name, ex);
-                // log error but do not fail
-            }
-        }
+  public SystemPropertySetter(final Properties props) {
+    final Enumeration<?> names = props.propertyNames();
+    while (names.hasMoreElements()) {
+      final String name = (String) names.nextElement();
+      final String value = props.getProperty(name);
+      try {
+        System.setProperty(name, value);
+        LOGGER.info("Set system property {} to {}", name, value);
+      }
+      catch (final Exception ex) {
+        LOGGER.error("Failed to set system property {}  -->  {}", name, ex);
+        // log error but do not fail
+      }
     }
+  }
 }
