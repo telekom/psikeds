@@ -1,4 +1,4 @@
-psiKeds :- ps induced knowledge entity delivery system
+﻿psiKeds :- ps induced knowledge entity delivery system
 
 Copyright (c) 2013-2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
 
@@ -34,6 +34,7 @@ this is a short description of how to achieve that:
 7. Right click on the Root-Project "psikeds" and select "Run as" --> "Maven install"
       ==> A full build of all psiKeds-Components will be performed.
 
+Troubleshooting:
 If Eclipse should display compiler-erros, please verify that in the settings
 for project "KnowledgeBase" the Source-Folder "target/generated-sources/jaxb"
 is defined. This directory contains JAXB-Classes generated from the KB-XSD.
@@ -47,7 +48,8 @@ is strongly discouraged.
 While running this command also creates Eclipse-Project-Files, it does however
 not support the M2E-Plugin and its capability to automatically derive the
 Eclipse-Classpath from the Maven-POM. Therefore a static references (pointing to
-your local Maven-Repository) is added to your .classpath for each dependency.
+your local Maven-Repository) is added to your .classpath for each dependency
+existing at this moment.
 
 Later these Classpath-Entries have to be updated manually whenever a Maven-
 Dependency changes. Otherwise the Eclipse-Build will either break or (even
