@@ -24,61 +24,57 @@ import org.psikeds.resolutionengine.transformer.Transformer;
 
 /**
  * This Business Service is the actual implementation of
- * {@link org.psikeds.resolutionengine.interfaces.services.ChocolateService} It
- * wired via Spring to the REST Service and used as a delegate.
+ * {@link org.psikeds.resolutionengine.interfaces.services.ChocolateService}
+ * It is wired via Spring to the REST Service and used as a delegate.
  * 
  * @author marco@juliano.de
- * 
  */
 public class ChocolateBusinessService implements ChocolateService {
 
-    private KnowledgeBase kb;
+  private KnowledgeBase kb;
 
-    public ChocolateBusinessService() {
-        this(null);
-    }
+  public ChocolateBusinessService() {
+    this(null);
+  }
 
-    @Autowired
-    public ChocolateBusinessService(final KnowledgeBase kb) {
-        this.kb = kb;
-    }
+  @Autowired
+  public ChocolateBusinessService(final KnowledgeBase kb) {
+    this.kb = kb;
+  }
 
-    public KnowledgeBase getKnowledgeBase() {
-        return this.kb;
-    }
+  public KnowledgeBase getKnowledgeBase() {
+    return this.kb;
+  }
 
-    @Autowired
-    public void setKnowledgeBase(final KnowledgeBase kb) {
-        this.kb = kb;
-    }
+  @Autowired
+  public void setKnowledgeBase(final KnowledgeBase kb) {
+    this.kb = kb;
+  }
 
-    // -----------------------------------------------------
+  // -----------------------------------------------------
 
-    /**
-     * 
-     * @see org.psikeds.resolutionengine.interfaces.services.ChocolateService#getChocolates()
-     */
-    @Override
-    public Chocolatelist getChocolates() {
-        return Transformer.valueObject2Pojo(this.kb.getChocolates());
-    }
+  /**
+   * @see org.psikeds.resolutionengine.interfaces.services.ChocolateService#getChocolates()
+   */
+  @Override
+  public Chocolatelist getChocolates() {
+    return Transformer.valueObject2Pojo(this.kb.getChocolates());
+  }
 
-    /**
-     * 
-     * @see org.psikeds.resolutionengine.interfaces.services.ChocolateService#getChocolate(java.lang.String)
-     */
-    @Override
-    public Chocolate selectChocolate(final String refid) {
-        return Transformer.valueObject2Pojo(this.kb.getChocolate(refid));
-    }
+  /**
+   * @see org.psikeds.resolutionengine.interfaces.services.ChocolateService#getChocolate(java.lang.String)
+   */
+  @Override
+  public Chocolate selectChocolate(final String refid) {
+    return Transformer.valueObject2Pojo(this.kb.getChocolate(refid));
+  }
 
-    /**
-     * 
-     * @see org.psikeds.resolutionengine.interfaces.services.ChocolateService#addChocolate(org.psikeds.resolutionengine.interfaces.pojos.Chocolate)
-     */
-    @Override
-    public Chocolatelist addChocolate(final Chocolate c) {
-        this.kb.addChocolate(Transformer.pojo2ValueObject(c));
-        return getChocolates();
-    }
+  /**
+   * @see org.psikeds.resolutionengine.interfaces.services.ChocolateService#addChocolate(org.psikeds.resolutionengine.interfaces.pojos.Chocolate)
+   */
+  @Override
+  public Chocolatelist addChocolate(final Chocolate c) {
+    this.kb.addChocolate(Transformer.pojo2ValueObject(c));
+    return getChocolates();
+  }
 }

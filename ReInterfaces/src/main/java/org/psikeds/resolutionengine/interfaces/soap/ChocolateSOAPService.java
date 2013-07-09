@@ -37,69 +37,68 @@ import org.psikeds.resolutionengine.interfaces.services.ChocolateService;
  * {@link org.psikeds.resolutionengine.interfaces.services.ChocolateService}
  * 
  * @author marco@juliano.de
- * 
  */
 @WebService(name = "ChocolateService", targetNamespace = "org.psikeds.resolutionengine", serviceName = "ChocolateService")
 public class ChocolateSOAPService extends AbstractSOAPService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ChocolateSOAPService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ChocolateSOAPService.class);
 
-    @Override
-    protected Logger getLogger() {
-        return LOGGER;
+  @Override
+  protected Logger getLogger() {
+    return LOGGER;
+  }
+
+  private final ChocolateService delegate;
+
+  @Autowired
+  public ChocolateSOAPService(final ChocolateService delegate) {
+    super();
+    this.delegate = delegate;
+    this.context = null;
+  }
+
+  @WebMethod(operationName = "list")
+  @WebResult(name = "Chocolatelist")
+  public Chocolatelist getChocolates(final String reqid) {
+    try {
+      final Chocolatelist lst = (Chocolatelist) handleRequest(reqid, getExecutable(this.delegate, "getChocolates"));
+      if (lst == null || lst.size() <= 0) {
+        throw new IllegalStateException("No Chocolates available!");
+      }
+      return lst;
     }
-
-    private final ChocolateService delegate;
-
-    @Autowired
-    public ChocolateSOAPService(final ChocolateService delegate) {
-        super();
-        this.delegate = delegate;
-        this.context = null;
+    catch (final Exception ex) {
+      throw new Fault(ex);
     }
+  }
 
-    @WebMethod(operationName = "list")
-    @WebResult(name = "Chocolatelist")
-    public Chocolatelist getChocolates(final String reqid) {
-        try {
-            final Chocolatelist lst = (Chocolatelist) handleRequest(reqid, getExecutable(this.delegate, "getChocolates"));
-            if (lst == null || lst.size() <= 0) {
-                throw new IllegalStateException("No Chocolates available!");
-            }
-            return lst;
-        }
-        catch (final Exception ex) {
-            throw new Fault(ex);
-        }
+  @WebMethod(operationName = "select")
+  @WebResult(name = "Chocolate")
+  public Chocolate selectChocolate(@WebParam(name = "refid") final String refid, final String reqid) {
+    try {
+      final Chocolate choco = (Chocolate) handleRequest(reqid, getExecutable(this.delegate, "selectChocolate"), refid);
+      if (choco == null) {
+        throw new IllegalArgumentException("There is no Chocolate with refid = " + refid);
+      }
+      return choco;
     }
+    catch (final Exception ex) {
+      throw new Fault(ex);
+    }
+  }
 
-    @WebMethod(operationName = "select")
-    @WebResult(name = "Chocolate")
-    public Chocolate selectChocolate(@WebParam(name = "refid") final String refid, final String reqid) {
-        try {
-            final Chocolate choco = (Chocolate) handleRequest(reqid, getExecutable(this.delegate, "selectChocolate"), refid);
-            if (choco == null) {
-                throw new IllegalArgumentException("There is no Chocolate with refid = " + refid);
-            }
-            return choco;
-        }
-        catch (final Exception ex) {
-            throw new Fault(ex);
-        }
+  @WebMethod(operationName = "add")
+  @WebResult(name = "Chocolatelist")
+  public Chocolatelist addChocolate(@WebParam(name = "chocolate") final Chocolate choco, final String reqid) {
+    try {
+      final Chocolatelist lst = (Chocolatelist) handleRequest(reqid, getExecutable(this.delegate, "addChocolate"), choco);
+      if (lst == null || lst.size() <= 0) {
+        throw new IllegalStateException("Could not add new Chocolate");
+      }
+      return lst;
     }
-
-    @WebMethod(operationName = "add")
-    @WebResult(name = "Chocolatelist")
-    public Chocolatelist addChocolate(@WebParam(name = "chocolate") final Chocolate choco, final String reqid) {
-        try {
-            final Chocolatelist lst = (Chocolatelist) handleRequest(reqid, getExecutable(this.delegate, "addChocolate"), choco);
-            if (lst == null || lst.size() <= 0) {
-                throw new IllegalStateException("Could not add new Chocolate");
-            }
-            return lst;
-        }
-        catch (final Exception ex) {
-            throw new Fault(ex);
-        }
+    catch (final Exception ex) {
+      throw new Fault(ex);
     }
+  }
 }

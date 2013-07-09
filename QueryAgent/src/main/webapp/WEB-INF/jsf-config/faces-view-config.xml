@@ -13,36 +13,37 @@ it and/or modify it under the terms of the
 
 For details see file LICENSING in the top project directory
 -->
-<faces-config
-    xmlns="http://java.sun.com/xml/ns/javaee"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_1.xsd"
-    version="2.1">
+<faces-config version="2.1"
+  xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_1.xsd">
 
-    <!-- ===================================================================== -->
-    <!-- Define your Views here. At the moment we need one for a List of all
-         Items and one for the currently selected one.
-         Note: Views have a Request-Scope but use Beans stored within the Session. -->
-    <!-- ===================================================================== -->
+  <!-- ===================================================================== -->
+  <!--
+    Define your Views here. At the moment we need one for a List of all Items
+    and one for the currently selected one. Note: Views have a Request-Scope
+    but use Beans stored within the Session.
+  -->
+  <!-- ===================================================================== -->
 
-    <managed-bean>
-        <managed-bean-name>AllItemsView</managed-bean-name>
-        <managed-bean-class>org.psikeds.queryagent.presenter.jsf.view.GenericItemsView</managed-bean-class>
-        <managed-bean-scope>request</managed-bean-scope>
-        <managed-property>
-            <property-name>delegateBean</property-name>
-            <value>#{allItemsBean}</value>
-        </managed-property>
-    </managed-bean>
+  <managed-bean>
+    <managed-bean-name>AllItemsView</managed-bean-name>
+    <managed-bean-class>org.psikeds.queryagent.presenter.jsf.view.GenericItemsView</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+    <managed-property>
+      <property-name>delegateBean</property-name>
+      <value>#{allItemsBean}</value>
+    </managed-property>
+  </managed-bean>
 
-    <managed-bean>
-        <managed-bean-name>SelectedItemView</managed-bean-name>
-        <managed-bean-class>org.psikeds.queryagent.presenter.jsf.view.GenericItemsView</managed-bean-class>
-        <managed-bean-scope>request</managed-bean-scope>
-        <managed-property>
-            <property-name>delegateBean</property-name>
-            <value>#{selectedItemBean}</value>
-        </managed-property>
-    </managed-bean>
+  <managed-bean>
+    <managed-bean-name>SelectedItemView</managed-bean-name>
+    <managed-bean-class>org.psikeds.queryagent.presenter.jsf.view.GenericItemsView</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+    <managed-property>
+      <property-name>delegateBean</property-name>
+      <value>#{selectedItemBean}</value>
+    </managed-property>
+  </managed-bean>
 
 </faces-config>

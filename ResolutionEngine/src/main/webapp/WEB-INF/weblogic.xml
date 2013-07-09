@@ -15,7 +15,9 @@ For details see file LICENSING in the top project directory
 -->
 <!DOCTYPE weblogic-web-app []> <!-- Workaround for Eclipse Validator -->
 <weblogic-web-app>
-	<!-- Unfortunately you cannot specify the context root of a WAR-file in 
-		an application-server-agnostic way. So this is the solution for WEBLOGIC. -->
-	<context-root>/resolutionengine</context-root>
+  <!-- Unfortunately you cannot specify the context root of a WAR-file
+       in an application-server-agnostic way.
+       So this is the solution for BEA/Oracle WEBLOGIC.
+  -->
+  <context-root>/resolutionengine</context-root>
 </weblogic-web-app>

@@ -32,98 +32,97 @@ import org.psikeds.queryagent.presenter.jsf.util.Constants;
  * Implementation of AddItemController for creating a new Chocolate.
  * 
  * @author marco@juliano.de
- * 
  */
 public class AddChocolateController extends BaseChocolateController implements AddItemController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AddChocolateController.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AddChocolateController.class);
 
-    private String key;
-    private String value;
+  private String key;
+  private String value;
 
-    public AddChocolateController() {
-        this(null, null, null);
+  public AddChocolateController() {
+    this(null, null, null);
+  }
+
+  public AddChocolateController(final ChocolateService srvc, final Item all, final Item selected) {
+    super(srvc, all, selected);
+    setKey(null);
+    setValue(null);
+  }
+
+  /**
+   * @return
+   * @see org.psikeds.queryagent.presenter.jsf.controller.AddItemController#getKey()
+   */
+  @Override
+  public String getKey() {
+    return this.key;
+  }
+
+  /**
+   * @param k
+   * @see org.psikeds.queryagent.presenter.jsf.controller.AddItemController#setKey(java.lang.String)
+   */
+  @Override
+  public void setKey(final String k) {
+    this.key = k;
+  }
+
+  /**
+   * @return
+   * @see org.psikeds.queryagent.presenter.jsf.controller.AddItemController#getValue()
+   */
+  @Override
+  public String getValue() {
+    return this.value;
+  }
+
+  /**
+   * @param v
+   * @see org.psikeds.queryagent.presenter.jsf.controller.AddItemController#setValue(java.lang.String)
+   */
+  @Override
+  public void setValue(final String v) {
+    this.value = v;
+  }
+
+  /**
+   * @return
+   * @see org.psikeds.queryagent.presenter.jsf.controller.AddItemController#doAdd()
+   */
+  @Override
+  public String doAdd() {
+    String ret = Constants.RESULT_ERROR;
+    try {
+      LOGGER.trace("--> doAdd()");
+      if (StringUtils.isEmpty(this.key)) {
+        throw new IllegalArgumentException("Key (= RefId) is empty!");
+      }
+      if (StringUtils.isEmpty(this.value)) {
+        throw new IllegalArgumentException("Value (= Description) is empty!");
+      }
+      // create new chocolate and invoke business service
+      final Chocolate choco = new Chocolate(this.key, this.value);
+      LOGGER.debug("Adding new Chocolate: {}", choco);
+      final Chocolatelist chocolst = getService().addChocolate(choco);
+      // update cached list of chocolate
+      final ChocolatelistItem allItems = (ChocolatelistItem) getAllItemsBean();
+      allItems.setChocolatelist(chocolst);
+      LOGGER.trace("Updated allItems = {}", allItems);
+      // update currently selected item
+      final ChocolateItem selectedItem = (ChocolateItem) getSelectedItemBean();
+      selectedItem.setChocolate(choco);
+      LOGGER.trace("Updated selectedItem = {}", selectedItem);
+      // done
+      ret = Constants.RESULT_SUCCESS;
     }
-
-    public AddChocolateController(final ChocolateService srvc, final Item all, final Item selected) {
-        super(srvc, all, selected);
-        setKey(null);
-        setValue(null);
+    catch (final Exception ex) {
+      ret = Constants.RESULT_ERROR;
+      LOGGER.error("Could not add Chocolate [{}, {}] - {}", this.key, this.value, ex);
     }
-
-    /**
-     * @return
-     * @see org.psikeds.queryagent.presenter.jsf.controller.AddItemController#getKey()
-     */
-    @Override
-    public String getKey() {
-        return this.key;
+    finally {
+      LOGGER.trace("<-- doAdd(); ret = {}", ret);
     }
-
-    /**
-     * @param k
-     * @see org.psikeds.queryagent.presenter.jsf.controller.AddItemController#setKey(java.lang.String)
-     */
-    @Override
-    public void setKey(final String k) {
-        this.key = k;
-    }
-
-    /**
-     * @return
-     * @see org.psikeds.queryagent.presenter.jsf.controller.AddItemController#getValue()
-     */
-    @Override
-    public String getValue() {
-        return this.value;
-    }
-
-    /**
-     * @param v
-     * @see org.psikeds.queryagent.presenter.jsf.controller.AddItemController#setValue(java.lang.String)
-     */
-    @Override
-    public void setValue(final String v) {
-        this.value = v;
-    }
-
-    /**
-     * @return
-     * @see org.psikeds.queryagent.presenter.jsf.controller.AddItemController#doAdd()
-     */
-    @Override
-    public String doAdd() {
-        String ret = Constants.RESULT_ERROR;
-        try {
-            LOGGER.trace("--> doAdd()");
-            if (StringUtils.isEmpty(this.key)) {
-                throw new IllegalArgumentException("Key (= RefId) is empty!");
-            }
-            if (StringUtils.isEmpty(this.value)) {
-                throw new IllegalArgumentException("Value (= Description) is empty!");
-            }
-            // create new chocolate and invoke business service
-            final Chocolate choco = new Chocolate(this.key, this.value);
-            LOGGER.debug("Adding new Chocolate: {}", choco);
-            final Chocolatelist chocolst = getService().addChocolate(choco);
-            // update cached list of chocolate
-            final ChocolatelistItem allItems = (ChocolatelistItem) getAllItemsBean();
-            allItems.setChocolatelist(chocolst);
-            LOGGER.trace("Updated allItems = {}", allItems);
-            // update currently selected item
-            final ChocolateItem selectedItem = (ChocolateItem) getSelectedItemBean();
-            selectedItem.setChocolate(choco);
-            LOGGER.trace("Updated selectedItem = {}", selectedItem);
-            // done
-            ret = Constants.RESULT_SUCCESS;
-        }
-        catch (final Exception ex) {
-            ret = Constants.RESULT_ERROR;
-            LOGGER.error("Could not add Chocolate [{}, {}] - {}", this.key, this.value, ex);
-        }
-        finally {
-            LOGGER.trace("<-- doAdd(); ret = {}", ret);
-        }
-        return ret;
-    }
+    return ret;
+  }
 }

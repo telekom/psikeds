@@ -18,9 +18,8 @@ package org.psikeds.common.reqid;
  * Generator for unique Request-IDs.
  * 
  * @author marco@juliano.de
- * 
  */
 public interface RequestIdGenerator {
 
-    String getNextReqId();
+  String getNextReqId();
 }

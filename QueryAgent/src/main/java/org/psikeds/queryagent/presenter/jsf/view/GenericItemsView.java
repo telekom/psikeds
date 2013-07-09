@@ -26,84 +26,83 @@ import org.psikeds.queryagent.presenter.jsf.model.Item;
  * to an injected Bean.
  * 
  * @author marco@juliano.de
- * 
  */
 public class GenericItemsView implements View {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GenericItemsView.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GenericItemsView.class);
 
-    private Item delegateBean;
+  private Item delegateBean;
 
-    public GenericItemsView() {
-        this(null);
-    }
+  public GenericItemsView() {
+    this(null);
+  }
 
-    public GenericItemsView(final Item bean) {
-        setDelegateBean(bean);
-    }
+  public GenericItemsView(final Item bean) {
+    setDelegateBean(bean);
+  }
 
-    /**
-     * @return
-     * @see org.psikeds.queryagent.presenter.jsf.view.View#getDelegateBean()
-     */
-    @Override
-    public Item getDelegateBean() {
-        LOGGER.trace("Getting delegate {} from view {}", this.delegateBean, this);
-        return this.delegateBean;
-    }
+  /**
+   * @return
+   * @see org.psikeds.queryagent.presenter.jsf.view.View#getDelegateBean()
+   */
+  @Override
+  public Item getDelegateBean() {
+    LOGGER.trace("Getting delegate {} from view {}", this.delegateBean, this);
+    return this.delegateBean;
+  }
 
-    /**
-     * @param delegateBean
-     * @see org.psikeds.queryagent.presenter.jsf.view.View#setDelegateBean(org.psikeds.queryagent.presenter.jsf.model.Item)
-     */
-    @Override
-    public void setDelegateBean(final Item bean) {
-        this.delegateBean = bean;
-        LOGGER.trace("Setting delegate {} for view {}", bean, this);
-    }
+  /**
+   * @param delegateBean
+   * @see org.psikeds.queryagent.presenter.jsf.view.View#setDelegateBean(org.psikeds.queryagent.presenter.jsf.model.Item)
+   */
+  @Override
+  public void setDelegateBean(final Item bean) {
+    this.delegateBean = bean;
+    LOGGER.trace("Setting delegate {} for view {}", bean, this);
+  }
 
-    /**
-     * @return
-     * @see org.psikeds.queryagent.presenter.jsf.model.Item#getKey()
-     */
-    @Override
-    public String getKey() {
-        return getDelegateBean().getKey();
-    }
+  /**
+   * @return
+   * @see org.psikeds.queryagent.presenter.jsf.model.Item#getKey()
+   */
+  @Override
+  public String getKey() {
+    return getDelegateBean().getKey();
+  }
 
-    /**
-     * @return
-     * @see org.psikeds.queryagent.presenter.jsf.model.Item#getValue()
-     */
-    @Override
-    public String getValue() {
-        return getDelegateBean().getValue();
-    }
+  /**
+   * @return
+   * @see org.psikeds.queryagent.presenter.jsf.model.Item#getValue()
+   */
+  @Override
+  public String getValue() {
+    return getDelegateBean().getValue();
+  }
 
-    /**
-     * @return
-     * @see org.psikeds.queryagent.presenter.jsf.model.Item#isHavingSiblings()
-     */
-    @Override
-    public boolean isHavingSiblings() {
-        return getDelegateBean().isHavingSiblings();
-    }
+  /**
+   * @return
+   * @see org.psikeds.queryagent.presenter.jsf.model.Item#isHavingSiblings()
+   */
+  @Override
+  public boolean isHavingSiblings() {
+    return getDelegateBean().isHavingSiblings();
+  }
 
-    /**
-     * @return
-     * @see org.psikeds.queryagent.presenter.jsf.model.Item#getSiblings()
-     */
-    @Override
-    public List<? extends Item> getSiblings() {
-        return getDelegateBean().getSiblings();
-    }
+  /**
+   * @return
+   * @see org.psikeds.queryagent.presenter.jsf.model.Item#getSiblings()
+   */
+  @Override
+  public List<? extends Item> getSiblings() {
+    return getDelegateBean().getSiblings();
+  }
 
-    /**
-     * @return
-     * @see org.psikeds.queryagent.presenter.jsf.model.Item#getHierarchyLevel()
-     */
-    @Override
-    public int getHierarchyLevel() {
-        return getDelegateBean().getHierarchyLevel();
-    }
+  /**
+   * @return
+   * @see org.psikeds.queryagent.presenter.jsf.model.Item#getHierarchyLevel()
+   */
+  @Override
+  public int getHierarchyLevel() {
+    return getDelegateBean().getHierarchyLevel();
+  }
 }

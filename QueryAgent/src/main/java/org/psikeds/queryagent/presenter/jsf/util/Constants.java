@@ -19,20 +19,19 @@ package org.psikeds.queryagent.presenter.jsf.util;
  * within the application.
  * 
  * @author marco@juliano.de
- * 
  */
 public final class Constants {
 
-    public static final String RESULT_HOME = "home";
-    public static final String RESULT_BACK = "back";
-    public static final String RESULT_ADD = "add";
-    public static final String RESULT_DISPLAY = "display";
-    public static final String RESULT_LOAD = "load";
+  public static final String RESULT_HOME = "home";
+  public static final String RESULT_BACK = "back";
+  public static final String RESULT_ADD = "add";
+  public static final String RESULT_DISPLAY = "display";
+  public static final String RESULT_LOAD = "load";
 
-    public static final String RESULT_SUCCESS = "success";
-    public static final String RESULT_ERROR = "error";
+  public static final String RESULT_SUCCESS = "success";
+  public static final String RESULT_ERROR = "error";
 
-    private Constants() {
-        // prevent instantiation
-    }
+  private Constants() {
+    // prevent instantiation
+  }
 }

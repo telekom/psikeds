@@ -37,6 +37,18 @@ For details see file LICENSING in the top project directory
         </attributes>
     </classpathentry>
 
+    <!-- KnowledgeBase is using JAXB-Classes generated from XSD.
+         Uncomment the following section in order to add these
+         classes to the Eclipse-Classpath. -->
+    <!--
+	<classpathentry kind="src" output="target/classes" path="target/generated-sources/jaxb">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+    -->
+
     <!-- Tell Eclipse that this is a Maven-Project and the Classpath should be derived from the Dependcies defined within POM -->
     <classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
         <attributes>

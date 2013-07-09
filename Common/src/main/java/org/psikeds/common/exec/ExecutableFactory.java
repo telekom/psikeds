@@ -19,9 +19,8 @@ package org.psikeds.common.exec;
  * based on a given Delegate.
  * 
  * @author marco@juliano.de
- * 
  */
 public interface ExecutableFactory {
 
-    Executable getExecutable(Object delegate, String serviceName);
+  Executable getExecutable(Object delegate, String serviceName);
 }
