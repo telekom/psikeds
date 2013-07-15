@@ -162,17 +162,19 @@ For details see file LICENSING in the top project directory
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.3.2</version>
           <configuration>
-            <source>1.6</source>
-            <target>1.6</target>
+            <source>${expected.java.version}</source>
+            <target>${expected.java.version}</target>
             <fork>true</fork>
-            <meminitial>512m</meminitial>
-            <maxmem>2048m</maxmem>
+            <meminitial>${webapp.mem.initial}</meminitial>
+            <maxmem>${webapp.mem.max}</maxmem>
           </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-eclipse-plugin</artifactId>
+          <version>2.9</version>
           <configuration>
             <projectNameTemplate>[artifactId]-[version]</projectNameTemplate>
             <wtpmanifest>true</wtpmanifest>
@@ -226,8 +228,8 @@ For details see file LICENSING in the top project directory
               <port>${test.server.port}</port>
               <path>/jaxrs-service</path>
               <fork>true</fork>
-              <meminitial>512m</meminitial>
-              <maxmem>2048m</maxmem>
+              <meminitial>${webapp.mem.initial}</meminitial>
+              <maxmem>${webapp.mem.max}</maxmem>
               <useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
             </configuration>
           </execution>

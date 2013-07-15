@@ -1,59 +1,253 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-psiKeds :- ps induced knowledge entity delivery system
-
-Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
-
-This file is free software: you can redistribute
-it and/or modify it under the terms of the
-[ ] GNU Affero General Public License
-[ ] GNU General Public License
-[ ] GNU Lesser General Public License
-[X] Creatice Commons ShareAlike 3.0 License
-
-For details see file LICENSING in the top project directory
--->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns="http://org.psikeds.knowledgebase"
-  targetNamespace="http://org.psikeds.knowledgebase">
+    xmlns="http://org.psikeds.knowledgebase"
+    targetNamespace="http://org.psikeds.knowledgebase">
 
-  <!-- This XSD describes the syntax of a psiKeds Knowledge Base.
+    <!-- This XSD describes the syntax of a psiKeds Knowledge Base.
+    
+         Note:
+         1. All elements are defined on top-level and then referenced
+            by other elements (Salami Slice Design).
+         2. Element-Types are identical to Element-Names.
 
-       Note: XSD is written using the Salami Slice Design, i.e. it is 
-       using references to elements which are all specified globally.
-       This might not be best practices from an XSD point of view,
-       but it results in JAXB-Classes that are very nice for the
-       StAX-Parser. ;-)
-  -->
+         ==> Both might not be best practices from an XSD point of
+             view, but it results in JAXB-Classes that are very nice
+             for the StAX-Parser. ;-)
+     -->
 
-  <!-- ==============================================================
-           XML-Root-Element, entry point of our knowledge base
-       ============================================================== -->
+    <!-- ============================================================== -->
+    <!--      XML-Root-Element, entry point of our knowledge base       -->
+    <!-- ============================================================== -->
 
-  <xs:element name="chocolatelist">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="chocolate" minOccurs="0" maxOccurs="unbounded" />
-      </xs:sequence>
+    <xs:element name="knowledgebase" type="knowledgebase" />
+
+    <xs:complexType name="knowledgebase">
+        <xs:sequence>
+            <xs:element ref="meta" minOccurs="0" maxOccurs="1" />
+            <xs:element ref="data" />
+        </xs:sequence>
     </xs:complexType>
-  </xs:element>
 
-  <!-- ==============================================================
-           Sub-Elements, defined in global scope
-       ============================================================== -->
+    <!-- ============================================================== -->
+    <!--      Sub-Elements, defined in global scope                     -->
+    <!-- ============================================================== -->
 
-  <xs:element name="chocolate">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="chocokey" minOccurs="1" maxOccurs="1" />
-        <xs:element ref="description" minOccurs="1"
-          maxOccurs="1" />
-      </xs:sequence>
+    <xs:element name="meta" type="meta" />
+
+    <xs:complexType name="meta">
+        <xs:sequence>
+            <xs:element ref="created" minOccurs="0" maxOccurs="1" />
+            <xs:element ref="lastmodified" minOccurs="0" maxOccurs="1" />
+            <xs:element ref="creator" minOccurs="0" maxOccurs="unbounded" />
+            <xs:element ref="description" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
     </xs:complexType>
-  </xs:element>
 
-  <xs:element name="chocokey" type="xs:string" />
+    <!-- ============================================================== -->
 
-  <xs:element name="description" type="xs:string" />
+    <xs:element name="data" type="data" />
 
+    <xs:complexType name="data">
+        <xs:sequence>
+            <xs:element ref="features" minOccurs="0" maxOccurs="1" />       <!-- features/atributes of purposes and variants -->
+            <xs:element ref="purposes" />                                   <!-- ps nodes -->
+            <xs:element ref="variants" />                                   <!-- pv nodes -->
+            <xs:element ref="alternatives" minOccurs="0" maxOccurs="1" />   <!-- is-a releations, i.e. edges from pv to ps -->
+            <xs:element ref="constituents" minOccurs="0" maxOccurs="1" />   <!-- has-a releatons, i.e. edges from ps to pv -->
+            <xs:element ref="events" minOccurs="0" maxOccurs="1" />         <!-- event e = path pv->ps->pv->ps->... -->
+            <xs:element ref="rules" minOccurs="0" maxOccurs="1" />          <!-- if e1+e2+e3 => evt -->
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- ============================================================== -->
+
+    <xs:element name="features" type="features" />
+
+    <xs:complexType name="features">
+        <xs:sequence>
+            <xs:element ref="feature" minOccurs="1" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="feature" type="feature" />
+
+    <xs:complexType name="feature">
+        <xs:sequence>
+            <xs:element ref="label" />
+            <xs:element ref="description" minOccurs="0" maxOccurs="1" />
+            <!-- TODO -->
+        </xs:sequence>
+        <xs:attribute ref="id" use="required"/>
+    </xs:complexType>
+
+    <!-- ============================================================== -->
+
+    <xs:element name="purposes" type="purposes" />
+
+    <xs:complexType name="purposes">
+        <xs:sequence>
+            <xs:element ref="purpose" minOccurs="1" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="purpose" type="purpose" />
+
+    <xs:complexType name="purpose">
+        <xs:sequence>
+            <xs:element ref="label" />
+            <xs:element ref="description" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute ref="id" use="required"/>
+    </xs:complexType>
+
+    <!-- ============================================================== -->
+
+    <xs:element name="variants" type="variants" />
+
+    <xs:complexType name="variants">
+        <xs:sequence>
+            <xs:element ref="variant" minOccurs="1" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="variant" type="variant" />
+
+    <xs:complexType name="variant">
+        <xs:sequence>
+            <xs:element ref="label" />
+            <xs:element ref="description" minOccurs="0" maxOccurs="1" />
+            <!-- TODO -->
+        </xs:sequence>
+        <xs:attribute ref="id" use="required"/>
+    </xs:complexType>
+
+    <!-- ============================================================== -->
+
+    <xs:element name="alternatives" type="alternatives" />
+
+    <xs:complexType name="alternatives">
+        <xs:sequence>
+            <xs:element ref="fulfills" minOccurs="1" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="fulfills" type="fulfills" />
+
+    <xs:complexType name="fulfills">
+        <xs:sequence>
+            <xs:element ref="purpose" />    <!-- a pupose is fulfilled by one or several variant(s) -->
+            <xs:choice>
+              <xs:element ref="variant" />
+              <xs:element ref="variants" />
+            </xs:choice>
+            <xs:element ref="description" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- ============================================================== -->
+
+    <xs:element name="constituents" type="constituents" />
+
+    <xs:complexType name="constituents">
+        <xs:sequence>
+            <xs:element ref="constitutes" minOccurs="1" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="constitutes" type="constitutes" />
+
+    <xs:complexType name="constitutes">
+        <xs:sequence>
+            <xs:element ref="variant" />    <!-- a variant is constituted by one or several purposes(s) -->
+            <xs:choice>
+              <xs:element ref="purpose" />
+              <xs:element ref="purposes" />
+            </xs:choice>
+            <xs:element ref="description" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- ============================================================== -->
+
+    <xs:element name="events" type="events" />
+
+    <xs:complexType name="events">
+        <xs:sequence>
+            <xs:element ref="event" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="event" type="event" />
+
+    <xs:complexType name="event">
+        <xs:sequence>
+            <xs:element ref="path" />
+            <xs:element ref="purpose" />
+            <xs:element ref="description" minOccurs="0" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute ref="id" use="required"/>
+    </xs:complexType>
+
+    <xs:element name="path" type="path" />
+
+    <xs:complexType name="path">
+        <xs:sequence>
+            <xs:element ref="variant" />
+            <xs:element ref="purpose" />
+            <!-- TODO -->
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- ============================================================== -->
+
+    <xs:element name="rules" type="rules" />
+
+    <xs:complexType name="rules">
+        <xs:sequence>
+            <xs:element ref="rule" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="rule" type="rule" />
+
+    <xs:complexType name="rule">
+        <xs:sequence>
+            <xs:element ref="label" />
+            <xs:element ref="description" minOccurs="0" maxOccurs="1" />
+            <!-- TODO -->
+        </xs:sequence>
+        <xs:attribute ref="id" use="required"/>
+    </xs:complexType>
+
+    <!-- ============================================================== -->
+    <!--      Basic attributes, types and restrictions                  -->
+    <!-- ============================================================== -->
+
+    <xs:attribute name="id" type="id" />
+
+    <xs:simpleType name="id">
+        <xs:restriction base="xs:string">
+             <xs:minLength value="1" />
+             <xs:maxLength value="20" />
+             <xs:pattern value="([a-zA-Z0-9])+"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="created" type="xs:dateTime" />
+
+    <xs:element name="lastmodified" type="xs:dateTime" />
+
+    <xs:element name="creator" type="nonEmptyString" />
+
+    <xs:element name="label" type="nonEmptyString" />
+
+    <xs:element name="description" type="nonEmptyString" />
+
+    <xs:simpleType name="nonEmptyString">
+        <xs:restriction base="xs:string">
+             <xs:minLength value="1" />
+             <xs:maxLength value="255" />
+        </xs:restriction>
+    </xs:simpleType>
+	
 </xs:schema>
