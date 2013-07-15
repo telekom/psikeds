@@ -37,6 +37,11 @@ For details see file LICENSING in the top project directory
     <doxygen.destination.dir>${project.build.directory}/apidocs</doxygen.destination.dir>
     <!-- overall version of psikeds -->
     <psikeds.version>${project.version}</psikeds.version>
+    <!-- target and source java version -->
+    <expected.java.version>1.6</expected.java.version>
+    <!-- required memory for building and testing webapps -->
+    <webapp.mem.initial>512m</webapp.mem.initial>
+    <webapp.mem.max>2048m</webapp.mem.max>
     <!-- versions of required dependencies/libraries -->
     <springframework.version>3.2.1.RELEASE</springframework.version>
     <cxf.version>2.7.3</cxf.version>
@@ -79,8 +84,8 @@ For details see file LICENSING in the top project directory
   </pluginRepositories>
 
   <build>
-    <!-- Use doxygen to generate api docs for all modules -->
     <plugins>
+      <!-- Use doxygen to generate api docs for all modules -->
       <plugin>
         <groupId>net.sf.doodleproject</groupId>
         <artifactId>doxygen-maven-plugin</artifactId>
@@ -98,8 +103,8 @@ For details see file LICENSING in the top project directory
           <columnsInAlphabeticalIndex>3</columnsInAlphabeticalIndex>
           <htmlFooter>${doxygen.config.dir}/footer.html</htmlFooter>
           <htmlHeader>${doxygen.config.dir}/header.html</htmlHeader>
-          <!--File containing ADDITIONAL doxygen settings
-            MUST NOT be overlapping and/or conflicting!!! -->
+          <!--File containing ADDITIONAL doxygen settings MUST NOT be overlapping 
+            and/or conflicting!!! -->
           <configurationFile>${doxygen.config.dir}/doxygen.config</configurationFile>
         </configuration>
       </plugin>
