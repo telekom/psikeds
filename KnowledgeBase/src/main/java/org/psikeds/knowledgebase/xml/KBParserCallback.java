@@ -20,18 +20,16 @@ package org.psikeds.knowledgebase.xml;
  * for every XML-Element.
  * 
  * @author marco@juliano.de
- * 
  */
 public interface KBParserCallback {
 
-    /**
-     * Will be invoked by the XML-Parser for every XML-Element.<br>
-     * <b>Note:</b>Element is a complete JAXB-Object-Structure
-     * representing not only the current XML-Element but also
-     * the Content-Tree of all its Sub-Elements!<br>
-     * 
-     * @param element The unmarshalled XML-Element / JAXB-Object.
-     * 
-     */
-    void handleElement(final Object element);
+  /**
+   * Will be invoked by the XML-Parser for every XML-Element.<br>
+   * <b>Note:</b>Element is a complete JAXB-Object-Structure
+   * representing not only the current XML-Element but also
+   * the Content-Tree of all its Sub-Elements!<br>
+   * 
+   * @param element The unmarshalled XML-Element / JAXB-Object.
+   */
+  void handleElement(final Object element);
 }

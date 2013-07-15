@@ -13,104 +13,104 @@ it and/or modify it under the terms of the
 
 For details see file LICENSING in the top project directory
 -->
-<faces-config xmlns="http://java.sun.com/xml/ns/javaee"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_1.xsd"
-	version="2.1">
+<faces-config version="2.1"
+  xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_1.xsd">
 
-	<navigation-rule>
-		<from-view-id>/gui/home.xhtml</from-view-id>
-		<navigation-case>
-			<from-outcome>load</from-outcome>
-			<to-view-id>/gui/list.xhtml</to-view-id>
-			<redirect />
-		</navigation-case>
-		<navigation-case>
-			<from-outcome>display</from-outcome>
-			<to-view-id>/gui/list.xhtml</to-view-id>
-			<redirect />
-		</navigation-case>
-		<navigation-case>
-			<from-outcome>add</from-outcome>
-			<to-view-id>/gui/input.xhtml</to-view-id>
-			<redirect />
-		</navigation-case>
-	</navigation-rule>
+  <navigation-rule>
+    <from-view-id>/gui/home.xhtml</from-view-id>
+    <navigation-case>
+      <from-outcome>load</from-outcome>
+      <to-view-id>/gui/list.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>display</from-outcome>
+      <to-view-id>/gui/list.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>add</from-outcome>
+      <to-view-id>/gui/input.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+  </navigation-rule>
 
-	<navigation-rule>
-		<from-view-id>/gui/input.xhtml</from-view-id>
-		<navigation-case>
-			<from-outcome>success</from-outcome>
-			<to-view-id>/gui/list.xhtml</to-view-id>
-			<redirect />
-		</navigation-case>
-		<navigation-case>
-			<from-outcome>back</from-outcome>
-			<to-view-id>/gui/home.xhtml</to-view-id>
-			<redirect />
-		</navigation-case>
-		<navigation-case>
-			<!-- no from-outcome; everything else is an error -->
-			<to-view-id>/gui/error.xhtml</to-view-id>
-			<redirect />
-		</navigation-case>
-	</navigation-rule>
+  <navigation-rule>
+    <from-view-id>/gui/input.xhtml</from-view-id>
+    <navigation-case>
+      <from-outcome>success</from-outcome>
+      <to-view-id>/gui/list.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>back</from-outcome>
+      <to-view-id>/gui/home.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <!-- no from-outcome; everything else is an error -->
+      <to-view-id>/gui/error.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+  </navigation-rule>
 
-	<navigation-rule>
-		<from-view-id>/gui/list.xhtml</from-view-id>
-		<navigation-case>
-			<from-outcome>success</from-outcome>
-			<to-view-id>/gui/selected.xhtml</to-view-id>
-			<redirect />
-		</navigation-case>
-		<navigation-case>
-			<from-outcome>load</from-outcome>
-			<to-view-id>/gui/list.xhtml</to-view-id>
-		</navigation-case>
-		<navigation-case>
-			<from-outcome>back</from-outcome>
-			<to-view-id>/gui/home.xhtml</to-view-id>
-			<redirect />
-		</navigation-case>
-		<navigation-case>
-            <!-- no from-outcome; everything else is an error -->
-			<to-view-id>/gui/error.xhtml</to-view-id>
-			<redirect />
-		</navigation-case>
-	</navigation-rule>
+  <navigation-rule>
+    <from-view-id>/gui/list.xhtml</from-view-id>
+    <navigation-case>
+      <from-outcome>success</from-outcome>
+      <to-view-id>/gui/selected.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>load</from-outcome>
+      <to-view-id>/gui/list.xhtml</to-view-id>
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>back</from-outcome>
+      <to-view-id>/gui/home.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <!-- no from-outcome; everything else is an error -->
+      <to-view-id>/gui/error.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+  </navigation-rule>
 
-	<navigation-rule>
-		<from-view-id>/gui/selected.xhtml</from-view-id>
-		<navigation-case>
-			<from-outcome>back</from-outcome>
-			<to-view-id>/gui/list.xhtml</to-view-id>
-			<redirect />
-		</navigation-case>
-		<navigation-case>
-            <!-- no from-outcome; everything else is an error -->
-			<to-view-id>/gui/error.xhtml</to-view-id>
-			<redirect />
-		</navigation-case>
-	</navigation-rule>
+  <navigation-rule>
+    <from-view-id>/gui/selected.xhtml</from-view-id>
+    <navigation-case>
+      <from-outcome>back</from-outcome>
+      <to-view-id>/gui/list.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <!-- no from-outcome; everything else is an error -->
+      <to-view-id>/gui/error.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+  </navigation-rule>
 
-	<navigation-rule>
-        <!-- wildcard from-view-id; everywhere "home" leads to homepage -->	
-		<from-view-id>*</from-view-id>
-		<navigation-case>
-			<from-outcome>home</from-outcome>
-			<to-view-id>/gui/home.xhtml</to-view-id>
-			<redirect />
-		</navigation-case>
-	</navigation-rule>
+  <navigation-rule>
+    <!-- wildcard from-view-id; everywhere "home" leads to homepage -->
+    <from-view-id>*</from-view-id>
+    <navigation-case>
+      <from-outcome>home</from-outcome>
+      <to-view-id>/gui/home.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+  </navigation-rule>
 
-	<navigation-rule>
-        <!-- wildcard from-view-id; everywhere "error" leads to error page -->
-		<from-view-id>*</from-view-id>
-		<navigation-case>
-			<from-outcome>error</from-outcome>
-			<to-view-id>/gui/error.xhtml</to-view-id>
-			<redirect />
-		</navigation-case>
-	</navigation-rule>
+  <navigation-rule>
+    <!-- wildcard from-view-id; everywhere "error" leads to error page -->
+    <from-view-id>*</from-view-id>
+    <navigation-case>
+      <from-outcome>error</from-outcome>
+      <to-view-id>/gui/error.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+  </navigation-rule>
 
 </faces-config>

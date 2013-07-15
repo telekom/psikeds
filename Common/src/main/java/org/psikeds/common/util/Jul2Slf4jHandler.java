@@ -28,57 +28,55 @@ import org.slf4j.LoggerFactory;
  * all log records from JUL to SLF4J.
  * 
  * @author marco@juliano.de
- * 
  */
 public class Jul2Slf4jHandler extends Handler {
 
-    /**
-     * @param record LogRecord
-     * @see java.util.logging.Handler#publish(java.util.logging.LogRecord)
-     */
-    @Override
-    public void publish(final LogRecord record) {
-        try {
-            final Logger slf4jLogger = LoggerFactory.getLogger(record.getLoggerName());
-            final String message = record.getMessage();
-            final Throwable exception = record.getThrown();
-            final Level level = record.getLevel();
-            if (level == Level.SEVERE) {
-                slf4jLogger.error(message, exception);
-            }
-            else if (level == Level.WARNING) {
-                slf4jLogger.warn(message, exception);
-            }
-            else if (level == Level.INFO) {
-                slf4jLogger.info(message, exception);
-            }
-            else if (level == Level.CONFIG || level == Level.FINE) {
-                slf4jLogger.debug(message, exception);
-            }
-            else { // level == Level.FINER || level == Level.FINEST
-                slf4jLogger.trace(message, exception);
-            }
-        }
-        catch (final Exception ex) {
-            // nothing to do, just don't crash because of logging
-        }
+  /**
+   * @param record LogRecord
+   * @see java.util.logging.Handler#publish(java.util.logging.LogRecord)
+   */
+  @Override
+  public void publish(final LogRecord record) {
+    try {
+      final Logger slf4jLogger = LoggerFactory.getLogger(record.getLoggerName());
+      final String message = record.getMessage();
+      final Throwable exception = record.getThrown();
+      final Level level = record.getLevel();
+      if (level == Level.SEVERE) {
+        slf4jLogger.error(message, exception);
+      }
+      else if (level == Level.WARNING) {
+        slf4jLogger.warn(message, exception);
+      }
+      else if (level == Level.INFO) {
+        slf4jLogger.info(message, exception);
+      }
+      else if (level == Level.CONFIG || level == Level.FINE) {
+        slf4jLogger.debug(message, exception);
+      }
+      else { // level == Level.FINER || level == Level.FINEST
+        slf4jLogger.trace(message, exception);
+      }
     }
+    catch (final Exception ex) {
+      // nothing to do, just don't crash because of logging
+    }
+  }
 
-    /**
-     * 
-     * @see java.util.logging.Handler#flush()
-     */
-    @Override
-    public void flush() {
-        // nothing to do
-    }
+  /**
+   * @see java.util.logging.Handler#flush()
+   */
+  @Override
+  public void flush() {
+    // nothing to do
+  }
 
-    /**
-     * @throws SecurityException
-     * @see java.util.logging.Handler#close()
-     */
-    @Override
-    public void close() throws SecurityException {
-        // nothing to do
-    }
+  /**
+   * @throws SecurityException
+   * @see java.util.logging.Handler#close()
+   */
+  @Override
+  public void close() throws SecurityException {
+    // nothing to do
+  }
 }

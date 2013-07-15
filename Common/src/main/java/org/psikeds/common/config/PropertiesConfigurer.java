@@ -32,58 +32,57 @@ import org.springframework.core.io.UrlResource;
  * within the config directory.
  * 
  * @author marco@juliano.de
- * 
  */
 public class PropertiesConfigurer extends PropertyPlaceholderConfigurer {
 
-    public static final String PROPERTIES_FILE_ENCODING = "UTF-8";
-    public static final boolean IGNORE_MISSING_PROPERTIES_FILES = false;
+  public static final String PROPERTIES_FILE_ENCODING = "UTF-8";
+  public static final boolean IGNORE_MISSING_PROPERTIES_FILES = false;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesConfigurer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesConfigurer.class);
 
-    public PropertiesConfigurer() {
-        super();
-        setIgnoreResourceNotFound(IGNORE_MISSING_PROPERTIES_FILES);
-        setFileEncoding(PROPERTIES_FILE_ENCODING);
-    }
+  public PropertiesConfigurer() {
+    super();
+    setIgnoreResourceNotFound(IGNORE_MISSING_PROPERTIES_FILES);
+    setFileEncoding(PROPERTIES_FILE_ENCODING);
+  }
 
-    /**
-     * @see org.springframework.core.io.support.PropertiesLoaderSupport#setLocation
-     *      (org.springframework.core.io.Resource)
-     */
-    @Override
-    public void setLocation(final Resource location) {
-        this.setLocations(new Resource[] { location });
-    }
+  /**
+   * @see org.springframework.core.io.support.PropertiesLoaderSupport#setLocation
+   *      (org.springframework.core.io.Resource)
+   */
+  @Override
+  public void setLocation(final Resource location) {
+    this.setLocations(new Resource[] { location });
+  }
 
-    /**
-     * @see org.springframework.core.io.support.PropertiesLoaderSupport#setLocations
-     *      (org.springframework.core.io.Resource[])
-     */
-    @Override
-    public void setLocations(final Resource[] locations) {
-        for (int idx = 0; idx < locations.length; idx++) {
-            final Resource loc = locations[idx];
-            // We are only looking for files or URLs pointing to local files!
-            if (loc instanceof FileSystemResource || loc instanceof UrlResource) {
-                File res = null;
-                try {
-                    res = ConfigDirectoryHelper.resolveConfigFile(loc.getFile());
-                }
-                catch (final IOException ioex) {
-                    LOGGER.debug("Failed to resolve config file: {}", ioex);
-                    // Do not touch resources that we could not handle.
-                    // Whatever it is, the springframework hopefully knows
-                    // what to do.
-                    res = null;
-                }
-                if (res != null) {
-                    final FileSystemResource fsr = new FileSystemResource(res);
-                    locations[idx] = fsr;
-                    LOGGER.debug("Resolved config file to {}", fsr);
-                }
-            }
+  /**
+   * @see org.springframework.core.io.support.PropertiesLoaderSupport#setLocations
+   *      (org.springframework.core.io.Resource[])
+   */
+  @Override
+  public void setLocations(final Resource[] locations) {
+    for (int idx = 0; idx < locations.length; idx++) {
+      final Resource loc = locations[idx];
+      // We are only looking for files or URLs pointing to local files!
+      if (loc instanceof FileSystemResource || loc instanceof UrlResource) {
+        File res = null;
+        try {
+          res = ConfigDirectoryHelper.resolveConfigFile(loc.getFile());
         }
-        super.setLocations(locations);
+        catch (final IOException ioex) {
+          LOGGER.debug("Failed to resolve config file: {}", ioex);
+          // Do not touch resources that we could not handle.
+          // Whatever it is, the springframework hopefully knows
+          // what to do.
+          res = null;
+        }
+        if (res != null) {
+          final FileSystemResource fsr = new FileSystemResource(res);
+          locations[idx] = fsr;
+          LOGGER.debug("Resolved config file to {}", fsr);
+        }
+      }
     }
+    super.setLocations(locations);
+  }
 }

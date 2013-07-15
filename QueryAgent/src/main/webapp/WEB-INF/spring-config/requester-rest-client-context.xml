@@ -14,37 +14,38 @@ it and/or modify it under the terms of the
 For details see file LICENSING in the top project directory
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:util="http://www.springframework.org/schema/util"
-    xsi:schemaLocation="
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xsi:schemaLocation="
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-    <util:list id="allProviders">
-        <ref bean="jsonProvider" />  <!-- defined in providers-context.xml -->
-        <ref bean="xmlProvider" />
-    </util:list>
+  <util:list id="allProviders">
+    <ref bean="jsonProvider" />  <!-- defined in providers-context.xml -->
+    <ref bean="xmlProvider" />
+  </util:list>
 
-    <bean id="webClientFactory"
-        class="org.psikeds.queryagent.requester.client.impl.WebClientFactoryImpl">
-        <constructor-arg>
-            <ref bean="allProviders" />
-        </constructor-arg>
-    </bean>
+  <bean id="webClientFactory"
+    class="org.psikeds.queryagent.requester.client.impl.WebClientFactoryImpl">
+    <constructor-arg>
+      <ref bean="allProviders" />
+    </constructor-arg>
+  </bean>
 
-    <bean id="resolutionEngineClient" class="org.psikeds.queryagent.requester.client.impl.ResolutionEngineClientRestImpl">
-        <constructor-arg>
-            <list>
-                <ref bean="webClientFactory" />
-            </list>
-        </constructor-arg>
-        <property name="listServiceUrl" value="${resolutionengine.rest.list.url}" />
-        <property name="listServiceMethod" value="${resolutionengine.rest.list.method}" />
-        <property name="selectServiceUrl" value="${resolutionengine.rest.select.url}" />
-        <property name="selectServiceMethod" value="${resolutionengine.rest.select.method}" />
-        <property name="addServiceUrl" value="${resolutionengine.rest.add.url}" />
-        <property name="addServiceMethod" value="${resolutionengine.rest.add.method}" />
-    </bean>
+  <bean id="resolutionEngineClient"
+    class="org.psikeds.queryagent.requester.client.impl.ResolutionEngineClientRestImpl">
+    <constructor-arg>
+      <list>
+        <ref bean="webClientFactory" />
+      </list>
+    </constructor-arg>
+    <property name="listServiceUrl" value="${resolutionengine.rest.list.url}" />
+    <property name="listServiceMethod" value="${resolutionengine.rest.list.method}" />
+    <property name="selectServiceUrl" value="${resolutionengine.rest.select.url}" />
+    <property name="selectServiceMethod" value="${resolutionengine.rest.select.method}" />
+    <property name="addServiceUrl" value="${resolutionengine.rest.add.url}" />
+    <property name="addServiceMethod" value="${resolutionengine.rest.add.method}" />
+  </bean>
 </beans>

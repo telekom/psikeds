@@ -25,38 +25,38 @@ import org.junit.Test;
 
 public class ChocolatelistTest {
 
-    private static final String JSON_FILE = "C:/TEMP/chocolates.json";
+  private static final String JSON_FILE = "C:/TEMP/chocolates.json";
 
-    private Chocolatelist cl;
-    private ObjectMapper mapper;
+  private Chocolatelist cl;
+  private ObjectMapper mapper;
 
-    /**
-     * Initialize test environment
-     * 
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp() throws Exception {
-        this.mapper = new ObjectMapper();
-        this.cl = new Chocolatelist();
-        this.cl.add(new Chocolate("cid111", "Vollmilch"));
-        this.cl.add(new Chocolate("cid222", "Haselnuss"));
-        this.cl.add(new Chocolate("cid333", "Traubennuss"));
-        this.cl.add(new Chocolate("cid444", "Zartbitter"));
-    }
+  /**
+   * Initialize test environment
+   * 
+   * @throws java.lang.Exception
+   */
+  @Before
+  public void setUp() throws Exception {
+    this.mapper = new ObjectMapper();
+    this.cl = new Chocolatelist();
+    this.cl.add(new Chocolate("cid111", "Vollmilch"));
+    this.cl.add(new Chocolate("cid222", "Haselnuss"));
+    this.cl.add(new Chocolate("cid333", "Traubennuss"));
+    this.cl.add(new Chocolate("cid444", "Zartbitter"));
+  }
 
-    @Test
-    public void testPojosAndJson() throws Exception {
-        final File f = new File(JSON_FILE);
-        this.mapper.writeValue(f, this.cl);
-        assertTrue("Could not write Objects to File " + JSON_FILE,
-                f != null && f.exists());
-        final Chocolatelist l = this.mapper.readValue(f, Chocolatelist.class);
-        assertTrue("Could not read Chocolates from File " + JSON_FILE,
-                l != null && l.size() == 4);
-        final Chocolate c = l.getChocolates().get(2);
-        assertEquals("cid333", c.getRefid());
-        assertEquals("Traubennuss", c.getDescription());
-        f.deleteOnExit();
-    }
+  @Test
+  public void testPojosAndJson() throws Exception {
+    final File f = new File(JSON_FILE);
+    this.mapper.writeValue(f, this.cl);
+    assertTrue("Could not write Objects to File " + JSON_FILE,
+        f != null && f.exists());
+    final Chocolatelist l = this.mapper.readValue(f, Chocolatelist.class);
+    assertTrue("Could not read Chocolates from File " + JSON_FILE,
+        l != null && l.size() == 4);
+    final Chocolate c = l.getChocolates().get(2);
+    assertEquals("cid333", c.getRefid());
+    assertEquals("Traubennuss", c.getDescription());
+    f.deleteOnExit();
+  }
 }

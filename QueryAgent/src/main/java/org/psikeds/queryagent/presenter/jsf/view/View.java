@@ -21,11 +21,10 @@ import org.psikeds.queryagent.presenter.jsf.model.Item;
  * Delegate Bean, i.e. an Item usually cached within Session-Scope.
  * 
  * @author marco@juliano.de
- * 
  */
 public interface View extends Item {
 
-    Item getDelegateBean();
+  Item getDelegateBean();
 
-    void setDelegateBean(Item delegateBean);
+  void setDelegateBean(Item delegateBean);
 }

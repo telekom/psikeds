@@ -21,41 +21,40 @@ import org.psikeds.queryagent.presenter.jsf.model.Item;
  * Base for all Controllers.
  * 
  * @author marco@juliano.de
- * 
  */
 class BaseChocolateController {
 
-    private Item allItemsBean;
-    private Item selectedItemBean;
-    private ChocolateService service;
+  private Item allItemsBean;
+  private Item selectedItemBean;
+  private ChocolateService service;
 
-    BaseChocolateController(final ChocolateService srvc, final Item all, final Item selected) {
-        this.service = srvc;
-        this.allItemsBean = all;
-        this.selectedItemBean = selected;
-    }
+  BaseChocolateController(final ChocolateService srvc, final Item all, final Item selected) {
+    this.service = srvc;
+    this.allItemsBean = all;
+    this.selectedItemBean = selected;
+  }
 
-    public void setService(final ChocolateService srvc) {
-        this.service = srvc;
-    }
+  public void setService(final ChocolateService srvc) {
+    this.service = srvc;
+  }
 
-    public ChocolateService getService() {
-        return this.service;
-    }
+  public ChocolateService getService() {
+    return this.service;
+  }
 
-    public Item getAllItemsBean() {
-        return this.allItemsBean;
-    }
+  public Item getAllItemsBean() {
+    return this.allItemsBean;
+  }
 
-    public void setAllItemsBean(final Item allItemsBean) {
-        this.allItemsBean = allItemsBean;
-    }
+  public void setAllItemsBean(final Item allItemsBean) {
+    this.allItemsBean = allItemsBean;
+  }
 
-    public Item getSelectedItemBean() {
-        return this.selectedItemBean;
-    }
+  public Item getSelectedItemBean() {
+    return this.selectedItemBean;
+  }
 
-    public void setSelectedItemBean(final Item selectedItemBean) {
-        this.selectedItemBean = selectedItemBean;
-    }
+  public void setSelectedItemBean(final Item selectedItemBean) {
+    this.selectedItemBean = selectedItemBean;
+  }
 }

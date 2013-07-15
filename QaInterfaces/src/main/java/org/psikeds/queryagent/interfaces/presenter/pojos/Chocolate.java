@@ -26,90 +26,89 @@ import javax.xml.bind.annotation.XmlRootElement;
  * annotation is required.
  * 
  * @author marco@juliano.de
- * 
  */
 @XmlRootElement(name = "Chocolate")
 public class Chocolate {
 
-    private String refid;
-    private String description;
-    private List<Ingredient> ingredients;
+  private String refid;
+  private String description;
+  private List<Ingredient> ingredients;
 
-    public Chocolate() {
-        this(null, null);
+  public Chocolate() {
+    this(null, null);
+  }
+
+  public Chocolate(final String refid, final String description) {
+    this(refid, description, new ArrayList<Ingredient>());
+  }
+
+  public Chocolate(final String refid, final String description, final List<Ingredient> ingredients) {
+    this.refid = refid;
+    this.description = description;
+    this.ingredients = ingredients;
+  }
+
+  public String getRefid() {
+    return this.refid;
+  }
+
+  public void setRefid(final String refid) {
+    this.refid = refid;
+  }
+
+  public String getDescription() {
+    return this.description;
+  }
+
+  public void setDescription(final String description) {
+    this.description = description;
+  }
+
+  public List<Ingredient> getIngredients() {
+    return this.ingredients;
+  }
+
+  public void setIngredients(final List<Ingredient> ingredients) {
+    this.ingredients = ingredients;
+  }
+
+  // -----------------------------------------------------
+
+  public int size() {
+    return this.ingredients == null ? 0 : this.ingredients.size();
+  }
+
+  public void clear() {
+    this.ingredients.clear();
+  }
+
+  public boolean add(final Ingredient ingr) {
+    return this.ingredients.add(ingr);
+  }
+
+  public boolean addAll(final Collection<? extends Ingredient> col) {
+    return this.ingredients.addAll(col);
+  }
+
+  // -----------------------------------------------------
+
+  /**
+   * @return
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("   ");
+    sb.append(super.toString());
+    sb.append(" [ refid = ");
+    sb.append(String.valueOf(this.refid));
+    sb.append(" | description = ");
+    sb.append(String.valueOf(this.description));
+    sb.append(" ]");
+    for (int i = 0; i < size(); i++) {
+      sb.append('\n');
+      sb.append(String.valueOf(this.ingredients.get(i)));
     }
-
-    public Chocolate(final String refid, final String description) {
-        this(refid, description, new ArrayList<Ingredient>());
-    }
-
-    public Chocolate(final String refid, final String description, final List<Ingredient> ingredients) {
-        this.refid = refid;
-        this.description = description;
-        this.ingredients = ingredients;
-    }
-
-    public String getRefid() {
-        return this.refid;
-    }
-
-    public void setRefid(final String refid) {
-        this.refid = refid;
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
-
-    public void setDescription(final String description) {
-        this.description = description;
-    }
-
-    public List<Ingredient> getIngredients() {
-        return this.ingredients;
-    }
-
-    public void setIngredients(final List<Ingredient> ingredients) {
-        this.ingredients = ingredients;
-    }
-
-    // -----------------------------------------------------
-
-    public int size() {
-        return this.ingredients == null ? 0 : this.ingredients.size();
-    }
-
-    public void clear() {
-        this.ingredients.clear();
-    }
-
-    public boolean add(final Ingredient ingr) {
-        return this.ingredients.add(ingr);
-    }
-
-    public boolean addAll(final Collection<? extends Ingredient> col) {
-        return this.ingredients.addAll(col);
-    }
-
-    // -----------------------------------------------------
-
-    /**
-     * @return
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("   ");
-        sb.append(super.toString());
-        sb.append(" [ refid = ");
-        sb.append(String.valueOf(this.refid));
-        sb.append(" | description = ");
-        sb.append(String.valueOf(this.description));
-        sb.append(" ]");
-        for (int i = 0; i < size(); i++) {
-            sb.append('\n');
-            sb.append(String.valueOf(this.ingredients.get(i)));
-        }
-        return sb.toString();
-    }
+    return sb.toString();
+  }
 }
