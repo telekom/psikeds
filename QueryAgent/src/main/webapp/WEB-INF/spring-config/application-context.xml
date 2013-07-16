@@ -49,14 +49,15 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 
   <!--
   This is like the normal Spring-PropertyPlaceholderConfigurer, however 
-  you can just specify just a filename and it will be resolved within the
-  configuration directory.
+  you can specify filenames that will be resolved within the configuration
+  directory (Default: ${user.home}/psikeds/).
   -->
   <bean class="org.psikeds.common.config.PropertiesConfigurer">
     <property name="locations">
       <list>
-        <value>file:///queryagent.properties</value>
+        <value>file:queryagent.properties</value>
       </list>
     </property>
   </bean>
+
 </beans>

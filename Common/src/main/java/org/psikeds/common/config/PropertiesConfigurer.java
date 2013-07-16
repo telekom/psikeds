@@ -27,10 +27,10 @@ import org.springframework.core.io.UrlResource;
 
 /**
  * Extension of
- * org.springframework.beans.factory.config.PropertyPlaceholderConfigurer You
- * can specified relative filenames for properties files, that will be resolved
- * within the config directory.
- * 
+ * org.springframework.beans.factory.config.PropertyPlaceholderConfigurer
+ * You can specified relative filenames for properties files, that will be
+ * resolved within the config directory.
+ *
  * @author marco@juliano.de
  */
 public class PropertiesConfigurer extends PropertyPlaceholderConfigurer {
@@ -61,26 +61,28 @@ public class PropertiesConfigurer extends PropertyPlaceholderConfigurer {
    */
   @Override
   public void setLocations(final Resource[] locations) {
-    for (int idx = 0; idx < locations.length; idx++) {
+    final int len = locations == null ? 0 : locations.length;
+    for (int idx = 0; idx < len; idx++) {
       final Resource loc = locations[idx];
       // We are only looking for files or URLs pointing to local files!
       if (loc instanceof FileSystemResource || loc instanceof UrlResource) {
-        File res = null;
+        File resolved = null;
         try {
-          res = ConfigDirectoryHelper.resolveConfigFile(loc.getFile());
+          final File lf = loc.getFile();
+          resolved = lf == null ? null : ConfigDirectoryHelper.resolveConfigFile(lf);
         }
         catch (final IOException ioex) {
-          LOGGER.debug("Failed to resolve config file: {}", ioex);
-          // Do not touch resources that we could not handle.
-          // Whatever it is, the springframework hopefully knows
-          // what to do.
-          res = null;
+          LOGGER.debug("Failed to resolve config file.", ioex);
+          resolved = null;
         }
-        if (res != null) {
-          final FileSystemResource fsr = new FileSystemResource(res);
+        if (resolved != null) {
+          final FileSystemResource fsr = new FileSystemResource(resolved);
           locations[idx] = fsr;
           LOGGER.debug("Resolved config file to {}", fsr);
         }
+        // Else: Do not touch resources that we could not handle.
+        // Whatever it is, the Spring Framework hopefully knows
+        // what to do.
       }
     }
     super.setLocations(locations);

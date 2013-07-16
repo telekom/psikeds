@@ -25,7 +25,7 @@ import org.junit.Test;
 
 public class ChocolatelistTest {
 
-  private static final String JSON_FILE = "C:/TEMP/chocolates.json";
+  private static final String JSON_FILE = "./target/chocolates.json";
 
   private Chocolatelist cl;
   private ObjectMapper mapper;
