@@ -32,7 +32,7 @@ import org.psikeds.resolutionengine.datalayer.vo.Chocolate;
 public class KnowledgeBaseTest {
 
   private static final String RESOURCE_PATH = "../KnowledgeBase/src/main/resources/";
-  private static final String XML = RESOURCE_PATH + "example.xml";
+  private static final String XML = RESOURCE_PATH + "kb.xml";
   private static final String ENCODING = "UTF-8";
 
   private KnowledgeBaseFactory factory;

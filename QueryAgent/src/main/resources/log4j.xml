@@ -57,7 +57,7 @@
     </category>
 
     <category name="org.psikeds">
-        <priority value="DEBUG"/>
+        <priority value="INFO"/>
     </category>
 
     <category name="org.psikeds.common">

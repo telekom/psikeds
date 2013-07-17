@@ -48,7 +48,8 @@ final class ConfigDirectoryHelper {
   private static File cnfdir;
 
   /**
-   * Try to resolve the configuration directory
+   * Try to resolve the configuration directory.
+   *
    * Note: Yes, method level synchronization is not the most efficient,
    * but we only use it for reading the configuration during application
    * startup, so no need to worry about performance here.
@@ -64,42 +65,32 @@ final class ConfigDirectoryHelper {
         sb.append(File.separatorChar);
         sb.append(FALLBACK_SUB_DIR);
         dirname = sb.toString();
-        LOGGER.info("System property {} not set ... fallback to {}", dirname);
+        LOGGER.info("System property {} not set ... fallback to {}", CONFIG_DIR_SYSTEM_PROPERTY, dirname);
       }
       cnfdir = new File(dirname);
       if (!cnfdir.exists() || !cnfdir.isDirectory() || !cnfdir.canRead()) {
-        LOGGER.warn("Configuration directory {} does not exist or is not readable ... using only default values!", cnfdir.getAbsolutePath());
+        LOGGER.warn("Configuration directory {} does not exist or is not readable!", cnfdir.getAbsolutePath());
       }
     }
     return cnfdir;
   }
 
   /**
-   * Look for a configuration file, can be either absolute or relative within
-   * the configuration directory.
-   * 
+   * Look for a configuration file within the configuration directory.
+   *
    * @param cnfFile
    *          name of the configuration file
    * @return File object if the config file exists and is readable;
    *         null otherwise
    */
   static File resolveConfigFile(final File cnfFile) {
-    File absfile = null;
-    if (cnfFile != null) {
-      if (cnfFile.isAbsolute()) {
-        LOGGER.debug("Configuration file {} is already absolute path.", cnfFile.getName());
-        absfile = cnfFile;
-      }
-      else {
-        absfile = new File(resolveConfigDir(), cnfFile.getName());
-        LOGGER.debug("Configuration file resolved to {}", absfile.getAbsolutePath());
-      }
-      if (!absfile.exists() || !absfile.isFile() || !absfile.canRead()) {
-        LOGGER.warn("Configuration file {} does not exist or is not readable!", absfile.getAbsolutePath());
-        absfile = null;
-      }
+    File resolved = new File(resolveConfigDir(), cnfFile.getPath());
+    LOGGER.debug("Configuration file resolved to {}", resolved.getAbsolutePath());
+    if (!resolved.exists() || !resolved.isFile() || !resolved.canRead()) {
+      LOGGER.warn("Configuration file {} does not exist or is not readable!", resolved.getAbsolutePath());
+      resolved = null;
     }
-    return absfile;
+    return resolved;
   }
 
   private ConfigDirectoryHelper() {
