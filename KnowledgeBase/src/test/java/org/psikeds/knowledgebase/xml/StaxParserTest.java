@@ -41,7 +41,7 @@ public class StaxParserTest {
 
   private static final String RESOURCE_PATH = "./src/main/resources/";
   private static final String XSD = RESOURCE_PATH + "kb.xsd";
-  private static final String XML = RESOURCE_PATH + "example.xml";
+  private static final String XML = RESOURCE_PATH + "kb.xml";
 
   /**
    * Test method for

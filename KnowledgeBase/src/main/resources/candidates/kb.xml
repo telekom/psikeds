@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kb:knowledgebase xmlns="http://org.psikeds.knowledgebase"
+  xmlns:kb="http://org.psikeds.knowledgebase"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://org.psikeds.knowledgebase kb.xsd">
+
+  <kb:meta>
+    <kb:created>2013-06-13T15:00:00</kb:created>
+    <kb:lastmodified>2013-07-15T13:30:00</kb:lastmodified>
+    <kb:creator>marco@juliano.de</kb:creator>
+    <kb:description>A simple example knowledge base</kb:description>
+    <kb:description>Status: Work in Progress</kb:description>
+  </kb:meta>
+
+  <kb:data>
+    <kb:features>
+      <kb:feature id="f0001">
+        <kb:label>Example1</kb:label>
+      </kb:feature>
+      <kb:feature id="f0002">
+        <kb:label>Dummy2</kb:label>
+      </kb:feature>
+    </kb:features>
+
+    <kb:purposes>
+      <kb:purpose id="p1">
+        <kb:label>Sweets</kb:label>
+      </kb:purpose>
+      <kb:purpose id="p2">
+        <kb:label>Packaging</kb:label>
+      </kb:purpose>
+      <kb:purpose id="p3">
+        <kb:label>Drinking</kb:label>
+      </kb:purpose>
+    </kb:purposes>
+
+    <kb:variants>
+      <kb:variant id="v11">
+        <kb:label>Milk Chocolate</kb:label>
+      </kb:variant>
+      <kb:variant id="v12">
+        <kb:label>Diet Chocolate</kb:label>
+      </kb:variant>
+      <kb:variant id="v13">
+        <kb:label>Gummy Bears</kb:label>
+      </kb:variant>
+      <kb:variant id="v14">
+        <kb:label>Twix</kb:label>
+      </kb:variant>
+      <kb:variant id="v15">
+        <kb:label>Duplo</kb:label>
+      </kb:variant>
+      <kb:variant id="v16">
+        <kb:label>Licorice</kb:label>
+      </kb:variant>
+      <kb:variant id="v21">
+        <kb:label>No Packaging</kb:label>
+      </kb:variant>
+      <kb:variant id="v22">
+        <kb:label>Cardboard Box</kb:label>
+      </kb:variant>
+      <kb:variant id="v23">
+        <kb:label>Aluminum Foil</kb:label>
+      </kb:variant>
+      <kb:variant id="v24">
+        <kb:label>Bottle</kb:label>
+      </kb:variant>
+      <kb:variant id="v25">
+        <kb:label>Can</kb:label>
+      </kb:variant>
+      <kb:variant id="v31">
+        <kb:label>Coca Cola</kb:label>
+      </kb:variant>
+      <kb:variant id="v32">
+        <kb:label>Pepsi Cola</kb:label>
+      </kb:variant>
+      <kb:variant id="v33">
+        <kb:label>Budweiser</kb:label>
+      </kb:variant>
+      <kb:variant id="v34">
+        <kb:label>Mineral Water</kb:label>
+      </kb:variant>
+      <kb:variant id="v35">
+        <kb:label>Red Wine</kb:label>
+      </kb:variant>
+    </kb:variants>
+
+    <kb:alternatives>
+      <!-- purpose p1 is fulfilled by variant v11 or v12 or v13 or ... -->
+      <kb:fulfills purposeID="p1" variantID="v11 v12 v13 v14 v15 v16" />
+      <!-- purpose p2 is fulfilled by variant v21 or v22 or ... -->
+      <kb:fulfills purposeID="p2" variantID="v21 v22 v23 v24 v25" />
+      <!-- purpose p3 is fulfilled by variant v31 or v32 or ... -->
+      <kb:fulfills purposeID="p3" variantID="v31 v32 v33 v34 v35" />
+    </kb:alternatives>
+
+    <kb:constituents>
+      <!-- variant v11 is constituted by purpose p2 and purpose p3 -->
+      <kb:constitutes variantID="v3333" purposeID="p2 p3" />
+      <!-- variant v23 is constituted by purpose p1 -->
+      <kb:constitutes variantID="v23" purposeID="p1" />
+      <!-- variant v22 is constituted by purpose p3 and purpose p1 -->
+      <kb:constitutes variantID="v22" purposeID="p3 p1" />
+    </kb:constituents>
+
+  </kb:data>
+
+</kb:knowledgebase>

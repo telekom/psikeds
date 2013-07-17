@@ -14,32 +14,32 @@ it and/or modify it under the terms of the
 For details see file LICENSING in the top project directory
 -->
 <chocolatelist xmlns="http://org.psikeds.knowledgebase"
-	xmlns:kb="http://org.psikeds.knowledgebase"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://org.psikeds.knowledgebase kb.xsd">
+  xmlns:kb="http://org.psikeds.knowledgebase"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://org.psikeds.knowledgebase kb.xsd">
 
-	<chocolate>
-		<chocokey>c11</chocokey>
-		<description>Vollmilch</description>
-	</chocolate>
-	<chocolate>
-		<chocokey>c22</chocokey>
-		<description>Zartbitter</description>
-	</chocolate>
-	<chocolate>
-		<chocokey>c33</chocokey>
-		<description>Haselnuss</description>
-	</chocolate>
-	<chocolate>
-		<chocokey>c44</chocokey>
-		<description>Nougat</description>
-	</chocolate>
-	<chocolate>
-		<chocokey>c55</chocokey>
-		<description>Marzipan</description>
-	</chocolate>
-	<chocolate>
-		<chocokey>c66</chocokey>
-		<description>Rum</description>
-	</chocolate>
+  <chocolate>
+    <chocokey>c11</chocokey>
+    <description>Vollmilch</description>
+  </chocolate>
+  <chocolate>
+    <chocokey>c22</chocokey>
+    <description>Zartbitter</description>
+  </chocolate>
+  <chocolate>
+    <chocokey>c33</chocokey>
+    <description>Haselnuss</description>
+  </chocolate>
+  <chocolate>
+    <chocokey>c44</chocokey>
+    <description>Nougat</description>
+  </chocolate>
+  <chocolate>
+    <chocokey>c55</chocokey>
+    <description>Marzipan</description>
+  </chocolate>
+  <chocolate>
+    <chocokey>c66</chocokey>
+    <description>Rum</description>
+  </chocolate>
 </chocolatelist>
