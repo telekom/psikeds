@@ -96,7 +96,7 @@
 
     <kb:constituents>
       <!-- variant v11 is constituted by purpose p2 and purpose p3 -->
-      <kb:constitutes variantID="v3333" purposeID="p2 p3" />
+      <kb:constitutes variantID="v11" purposeID="p2 p3" />
       <!-- variant v23 is constituted by purpose p1 -->
       <kb:constitutes variantID="v23" purposeID="p1" />
       <!-- variant v22 is constituted by purpose p3 and purpose p1 -->
