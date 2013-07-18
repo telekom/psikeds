@@ -18,6 +18,6 @@ HOW TO BUILD:
 
 HOW TO GET FURTHER INFORMATION
 
- - [HowtoDevelopPiskedsWithEclipse.README](doc/HowtoDevelopPiskedsWithEclipse.README)
-
+ - [How to develop pisKeds with Eclipse](doc/HowtoDevelopPiskedsWithEclipse.README)
+ - [How to deploy psiKeds on a Tomcat in an Ubuntu-1204](doc/HowtoDeployPsikedsOnTomcatUbuntu1204.README)
 
