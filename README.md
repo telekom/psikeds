@@ -18,14 +18,6 @@ HOW TO BUILD:
 
 HOW TO GET FURTHER INFORMATION
 
-http://github.com/dtag-dbu/psikeds/tree/kreincke/doc/HowtoDevelopPiskedsWithEclipse.README
-http://github.com/dtag-dbu/psikeds/doc/HowtoDevelopPiskedsWithEclipse.README
+ - [HowtoDevelopPiskedsWithEclipse.README](doc/HowtoDevelopPiskedsWithEclipse.README)
 
-[HowtoDevelopPiskedsWithEclipse.README](http://./doc/HowtoDevelopPiskedsWithEclipse.README)
-
-http://./doc/HowtoDevelopPiskedsWithEclipse.README
-
-http://news.gmane.org/gmane.comp.version-control.git/,
-
-http://marc.info/?l=git and other archival sites.
 
