@@ -15,3 +15,7 @@ HOW TO BUILD:
 0. Install Java (JDK 1.6+) and Maven (3.x)
 1. Create a configuration directory (see README in subfolder "config")
 2. Run "mvn clean install" within this directory.
+
+HOWTO GET FURTHER INFORNATION:
+
+* <a href="./doc/HowtoDevelopPiskedsWithEclipse.README">HowtoDevelopPiskedsWithEclipse.README</a>
