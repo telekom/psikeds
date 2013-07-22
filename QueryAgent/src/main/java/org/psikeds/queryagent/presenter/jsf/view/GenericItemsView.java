@@ -29,6 +29,8 @@ import org.psikeds.queryagent.presenter.jsf.model.Item;
  */
 public class GenericItemsView implements View {
 
+  private static final long serialVersionUID = 1L;
+
   private static final Logger LOGGER = LoggerFactory.getLogger(GenericItemsView.class);
 
   private Item delegateBean;

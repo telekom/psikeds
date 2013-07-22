@@ -28,6 +28,8 @@ import org.psikeds.queryagent.presenter.jsf.model.Item;
  */
 public class ChocolateItem implements Item {
 
+  private static final long serialVersionUID = 1L;
+
   private final List<IngredientItem> ingredlist = new ArrayList<IngredientItem>();
 
   private Chocolate choco;
