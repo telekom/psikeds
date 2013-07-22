@@ -25,7 +25,6 @@ HOW TO BUILD
 2. Create a configuration directory (see [README](config/README.md) in subfolder *"config"*)
 3. Run *"mvn clean install"* within this directory.
 
-HOW TO GET FURTHER INFORMATION
-------------------------------
-- [How to develop pisKeds with Eclipse](doc/HowtoDevelopPiskedsWithEclipse.README)
-- [How to deploy psiKeds on a Tomcat in an Ubuntu-1204](doc/HowtoDeployPsikedsOnTomcatUbuntu1204.README)
+DOCUMENTATION AND FURTHER INFORMATION
+-------------------------------------
+see documents and guides in subfolder [doc](doc/)
