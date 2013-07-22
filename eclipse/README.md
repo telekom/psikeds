@@ -19,8 +19,10 @@ this is a short description of how to achieve that:
 
    *Menu --> File --> Import --> Existing Maven Projects*
 
-   If you do not have an option called "Existing Maven Projects", then you
-   need to install *"Maven Integration or Eclipse"* (*M2E-Plugin*) first:
+   Hint: If you do not have an option called "Existing Maven Projects",
+   then you need to install *"Maven Integration or Eclipse"* (M2E-Plugin)
+   first:
+
    *Menu --> Help --> Install new Software*
 
 5. Select Toplevel directory of psiKeds as RootDirectory for Import, e.g. *"~/github/psikeds/"*
