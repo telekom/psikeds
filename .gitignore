@@ -36,3 +36,8 @@ Thumbs.db
 *.bak
 *.old
 *.log
+
+# ignore local changes to log4j settings
+log4j.xml
+QueryAgent/src/main/resources/log4j.xml
+ResolutionEngine/src/main/resources/log4j.xml
