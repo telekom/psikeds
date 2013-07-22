@@ -15,3 +15,9 @@ HOW TO BUILD:
 0. Install Java (JDK 1.6+) and Maven (3.x)
 1. Create a configuration directory (see README in subfolder "config")
 2. Run "mvn clean install" within this directory.
+
+HOW TO GET FURTHER INFORMATION
+
+ - [How to develop pisKeds with Eclipse](doc/HowtoDevelopPiskedsWithEclipse.README)
+ - [How to deploy psiKeds on a Tomcat in an Ubuntu-1204](doc/HowtoDeployPsikedsOnTomcatUbuntu1204.README)
+
