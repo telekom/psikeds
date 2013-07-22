@@ -1,9 +1,12 @@
 psiKeds :- ps induced knowledge entity delivery system
+------------------------------------------------------
 
-Copyright (c) 2013-2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+*Copyright (c) 2013-2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG*
 
+DEPLOYING ON TOMCAT AND UBUNTU
+------------------------------
 
-For deploying the war-files of the psiKeds-resolulion-engine and the 
+For deploying the war-files of the psiKeds-resolulion-engine and the
 psiKeds-query-agent on the applications server Tomcat in an Ubuntu 12.04
 do the following steps:
 
@@ -12,7 +15,7 @@ do the following steps:
 - generate any psikeds-configuration-directory being readable by the user tomcat7
   (for example /home/reincke/psikeds)
 
-- edit the file /etc/default/tomcat7 and 
+- edit the file /etc/default/tomcat7 and
   - expand the JAVA_OPTS definition by a specification to the generated 
     psikeds-configuration directory following the pattern 
     -Dorg.psikeds.config.dir=$PATH_TO_PSIKEDS_CONFIG-DIR
@@ -37,9 +40,3 @@ do the following steps:
    
 - restart the tomcat instance by using the command
   bash> sudo /etc/init.d/tomcat7 start
-   
-   
-- 
-     
-
-
