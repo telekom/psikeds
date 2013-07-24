@@ -5,13 +5,11 @@
 
   <!--
   This XSD describes the syntax of a psiKeds Knowledge Base.
-  
+
   Note:
-  1. All elements are defined on top-level and then referenced by other
-     elements (Salami Slice Design).
-  2. Element-Types are identical to Element-Names.
-  
-  ==> Both might not be best practices from an XSD point of view, but it
+  All elements are defined on top-level and then referenced by other
+  elements (Salami Slice Design).
+  ==> This might not be best practices from an XSD point of view, but
       results in JAXB-Classes that are very nice for the StAX-Parser. ;-)
   -->
 
@@ -212,16 +210,16 @@
     </xs:unique>
   </xs:element>
 
-  <xs:element name="rule" type="rule" />
-
-  <xs:complexType name="rule">
-    <xs:sequence>
-      <xs:element ref="label" />
-      <xs:element ref="description" minOccurs="0" maxOccurs="1" />
-      <!-- TODO -->
-    </xs:sequence>
-    <xs:attribute name="id" type="xs:ID" use="required" />
-  </xs:complexType>
+  <xs:element name="rule">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="label" />
+        <xs:element ref="description" minOccurs="0" maxOccurs="1" />
+        <!-- TODO -->
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:ID" use="required" />
+    </xs:complexType>
+  </xs:element>
 
   <!-- ============================================================== -->
   <!-- Basic attributes, types and restrictions -->
