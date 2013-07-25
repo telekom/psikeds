@@ -1,0 +1,42 @@
+psiKeds :- ps induced knowledge entity delivery system
+------------------------------------------------------
+
+*Copyright (c) 2013-2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG*
+
+DEPLOYING ON TOMCAT AND UBUNTU
+------------------------------
+
+For deploying the war-files of the psiKeds-resolulion-engine and the
+psiKeds-query-agent on the applications server Tomcat in an Ubuntu 12.04
+do the following steps:
+
+- install the packages tomcat7-user, tomcat7, libapache2-mod-jk, tomcat7-admin
+
+- generate any psikeds-configuration-directory being readable by the user tomcat7
+  (for example /home/reincke/psikeds)
+
+- edit the file /etc/default/tomcat7 and
+  - expand the JAVA_OPTS definition by a specification to the generated 
+    psikeds-configuration directory following the pattern 
+    -Dorg.psikeds.config.dir=$PATH_TO_PSIKEDS_CONFIG-DIR
+  - replace the existing parameter-Xmx128m by the three parameters
+     -Xms512m -Xmx2048m -XX:MaxPermSize=128M
+  (example:
+  JAVA_OPTS="-Djava.awt.headless=true -Xms512m -Xmx2048m -XX:MaxPermSize=128M -XX:+UseConcMarkSweepGC -Dorg.psikeds.config.dir=/home/reincke/psikeds"
+  )
+  
+- shut down the running tomcat instance by using the command
+  bash> sudo /etc/init.d/tomcat7 stop
+
+- add your deployer account to the group tomcat7
+
+- in the psikeds git clone working directory call 
+  bash> mvn install 
+  
+- copy the war files QueryAgent/target/queryagent.war and
+  ResolutionEngine/target/resolutionengine.war to $CATALINA_BASE/webapps
+  which should be resolvable as /var/lib/tomcat7/webapps
+  (In case of problems delete all existing psikeds war-files adn directories)
+   
+- restart the tomcat instance by using the command
+  bash> sudo /etc/init.d/tomcat7 start
