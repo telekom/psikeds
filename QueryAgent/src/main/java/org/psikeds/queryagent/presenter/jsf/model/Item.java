@@ -14,18 +14,20 @@
  *******************************************************************************/
 package org.psikeds.queryagent.presenter.jsf.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * An Item/Object that shall be used within a View in order to be displayed in
  * an XHTML-Page.
+ *
  * Each Item must have a unique key (for selection) and a value that will be
  * displayed. An Item can optionally have siblings, i.e. child-objects that
  * shall also be displayed.
- * 
+ *
  * @author marco@juliano.de
  */
-public interface Item {
+public interface Item extends Serializable {
 
   /**
    * Unique Key of this Item

@@ -26,6 +26,8 @@ import org.psikeds.queryagent.presenter.jsf.model.Item;
  */
 public class IngredientItem implements Item {
 
+  private static final long serialVersionUID = 1L;
+
   private Ingredient ingred;
 
   public IngredientItem() {
@@ -75,13 +77,20 @@ public class IngredientItem implements Item {
    * @return
    * @see org.psikeds.queryagent.presenter.jsf.model.Item#getValue()
    */
+
+  /**
+   * 
+   * @return
+   * @see org.psikeds.queryagent.presenter.jsf.model.Item#getValue()
+   */
   @Override
   public String getValue() {
     return this.ingred == null ? "" : this.ingred.getDescription();
   }
 
   /**
-   * @return
+   * 
+   * @return 2
    * @see org.psikeds.queryagent.presenter.jsf.model.Item#getHierarchyLevel()
    */
   @Override

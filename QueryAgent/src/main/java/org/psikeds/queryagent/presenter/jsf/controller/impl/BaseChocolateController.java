@@ -22,13 +22,13 @@ import org.psikeds.queryagent.presenter.jsf.model.Item;
  * 
  * @author marco@juliano.de
  */
-class BaseChocolateController {
+public class BaseChocolateController {
 
-  private Item allItemsBean;
-  private Item selectedItemBean;
-  private ChocolateService service;
+  Item allItemsBean;
+  Item selectedItemBean;
+  ChocolateService service;
 
-  BaseChocolateController(final ChocolateService srvc, final Item all, final Item selected) {
+  public BaseChocolateController(final ChocolateService srvc, final Item all, final Item selected) {
     this.service = srvc;
     this.allItemsBean = all;
     this.selectedItemBean = selected;
