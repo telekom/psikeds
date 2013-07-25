@@ -21,4 +21,4 @@ directory.
 HINT
 ----
 For an easier and more convenient way to integrate psiKeds with Eclipse see:
-- [HowtoDevelopPiskedsWithEclipse](../doc/HowtoDevelopPiskedsWithEclipse.md)
+- [How to develop pisKeds with Eclipse](../doc/HowtoDevelopPiskedsWithEclipse.md)
