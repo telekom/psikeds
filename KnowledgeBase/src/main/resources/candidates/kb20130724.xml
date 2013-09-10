@@ -1,4 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+psiKeds :- ps induced knowledge entity delivery system
+
+Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+
+This file is free software: you can redistribute
+it and/or modify it under the terms of the
+[ ] GNU Affero General Public License
+[ ] GNU General Public License
+[ ] GNU Lesser General Public License
+[X] Creatice Commons ShareAlike 3.0 License
+
+For details see file LICENSING in the top project directory
+-->
 <kb:knowledgebase xmlns="http://org.psikeds.knowledgebase"
   xmlns:kb="http://org.psikeds.knowledgebase"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
