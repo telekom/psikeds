@@ -46,8 +46,8 @@ public class ContextLoaderListener extends ContextLoader implements ServletConte
   }
 
   /**
-   * Initialization of web application is starting. Install context-loader and
-   * -proxy.
+   * Initialization of web application is starting.
+   * Install context-loader and -proxy.
    */
   @Override
   public void contextInitialized(final ServletContextEvent event) {

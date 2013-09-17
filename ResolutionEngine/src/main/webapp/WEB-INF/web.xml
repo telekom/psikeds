@@ -25,6 +25,11 @@ For details see file LICENSING in the top project directory
   <!-- ============================================================== -->
   <!-- Spring Config -->
 
+  <!--
+  Please note that we use a custom Spring-Context-Loader that can override 
+  context files. It is therefore recommended to to specify several config
+  locations instead of one big file.
+  -->
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
@@ -36,13 +41,9 @@ For details see file LICENSING in the top project directory
       WEB-INF/config/cxf-interceptor-context.xml
       WEB-INF/config/rest-services-context.xml
       WEB-INF/config/soap-services-context.xml
-		</param-value>
+    </param-value>
   </context-param>
 
-  <!--
-  Please note that we use a custom Spring-Context-Loader that can override 
-  context files. It is therefore recommended to to specify several config
-  locations instead of one big file. -->
   <listener>
     <listener-class>org.psikeds.common.config.ContextLoaderListener</listener-class>
   </listener>
@@ -50,6 +51,11 @@ For details see file LICENSING in the top project directory
   <!-- Forward all Java-Util-Logging to Simple-Logging-Facade-4-Java -->
   <listener>
     <listener-class>org.psikeds.common.util.Jul2Slf4jListener</listener-class>
+  </listener>
+
+   <!-- Cleanup-Listener that will perform final cleanup when application is undeployed. -->
+  <listener>
+    <listener-class>org.psikeds.common.threadlocal.CleanupContextListener</listener-class>
   </listener>
 
   <!-- ============================================================== -->

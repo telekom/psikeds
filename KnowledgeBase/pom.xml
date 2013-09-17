@@ -71,6 +71,24 @@ For details see file LICENSING in the top project directory
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-core-asl</artifactId>
+      <version>${jackson.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-asl</artifactId>
+      <version>${jackson.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.psikeds</groupId>
+      <artifactId>Common</artifactId>
+      <version>${psikeds.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -78,16 +96,20 @@ For details see file LICENSING in the top project directory
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>${maven.compiler.plugin.version}</version>
         <configuration>
           <source>${expected.java.version}</source>
           <target>${expected.java.version}</target>
+          <compilerVersion>${expected.java.version}</compilerVersion>
+          <debug>${psikeds.debug}</debug>
         </configuration>
       </plugin>
+
+      <!-- generation of java objects from knowledgebase xsd -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jaxb2-maven-plugin</artifactId>
-        <version>1.5</version>
+        <version>${jaxb2.maven.plugin.version}</version>
         <executions>
           <execution>
             <id>xjc</id>
@@ -96,6 +118,8 @@ For details see file LICENSING in the top project directory
             </goals>
             <phase>generate-sources</phase>
             <configuration>
+              <bindingDirectory>${project.basedir}/src/main/bindings</bindingDirectory>
+              <bindingFiles>jaxb-kb-binding.xml</bindingFiles>
               <schemaDirectory>${project.basedir}/src/main/resources</schemaDirectory>
               <schemaFiles>kb.xsd</schemaFiles>
               <packageName>org.psikeds.knowledgebase.jaxb</packageName>
@@ -107,5 +131,7 @@ For details see file LICENSING in the top project directory
         </executions>
       </plugin>
     </plugins>
+
   </build>
+
 </project>

@@ -27,25 +27,15 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <ref bean="xmlProvider" />
   </util:list>
 
-  <bean id="webClientFactory"
-    class="org.psikeds.queryagent.requester.client.impl.WebClientFactoryImpl">
-    <constructor-arg>
-      <ref bean="allProviders" />
-    </constructor-arg>
+  <bean id="webClientFactory" class="org.psikeds.queryagent.requester.client.impl.WebClientFactoryImpl">
+   <constructor-arg index="0" ref="allProviders" />
   </bean>
 
-  <bean id="resolutionEngineClient"
-    class="org.psikeds.queryagent.requester.client.impl.ResolutionEngineClientRestImpl">
-    <constructor-arg>
-      <list>
-        <ref bean="webClientFactory" />
-      </list>
-    </constructor-arg>
-    <property name="listServiceUrl" value="${resolutionengine.rest.list.url}" />
-    <property name="listServiceMethod" value="${resolutionengine.rest.list.method}" />
-    <property name="selectServiceUrl" value="${resolutionengine.rest.select.url}" />
-    <property name="selectServiceMethod" value="${resolutionengine.rest.select.method}" />
-    <property name="addServiceUrl" value="${resolutionengine.rest.add.url}" />
-    <property name="addServiceMethod" value="${resolutionengine.rest.add.method}" />
+  <bean id="resolutionEngineClient" class="org.psikeds.queryagent.requester.client.impl.ResolutionEngineClientRestImpl">
+    <constructor-arg index="0" type="org.psikeds.queryagent.requester.client.WebClientFactory" ref="webClientFactory" />
+    <constructor-arg index="1" type="java.lang.String" value="${resolutionengine.rest.init.url}" />
+    <constructor-arg index="2" type="java.lang.String" value="${resolutionengine.rest.init.method}" />
+    <constructor-arg index="3" type="java.lang.String" value="${resolutionengine.rest.select.url}" />
+    <constructor-arg index="4" type="java.lang.String" value="${resolutionengine.rest.select.method}" />
   </bean>
 </beans>

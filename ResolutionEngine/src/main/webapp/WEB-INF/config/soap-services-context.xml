@@ -28,18 +28,13 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
 
   <!-- Definition of all SOAP services -->
 
-  <bean id="chocolateSOAPService"
-    class="org.psikeds.resolutionengine.interfaces.soap.ChocolateSOAPService">
-    <constructor-arg>
-      <list>
-        <ref bean="chocolateBusinessService" />  <!-- defined in business-services-context.xml -->
-      </list>
-    </constructor-arg>
+  <bean id="resolutionSOAPService" class="org.psikeds.resolutionengine.interfaces.soap.ResolutionSOAPService">
+    <constructor-arg index="0" type="org.psikeds.resolutionengine.interfaces.services.ResolutionService" ref="resolutionBusinessService" />  <!-- defined in business-services-context.xml -->
   </bean>
 
   <!-- Definition of SOAP endpoints -->
 
-  <jaxws:endpoint implementor="#chocolateSOAPService"
+  <jaxws:endpoint implementor="#resolutionSOAPService"
     address="${cxf.soap.address}">
     <jaxws:properties>
       <entry key="schema-validation-enabled" value="false" />
@@ -48,7 +43,13 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
       <cxf:logging />
     </jaxws:features>
     <jaxws:inInterceptors>
-      <ref bean="requestIdGenerationInterceptor" />
+      <ref bean="requestIdGenerationInterceptor" />  <!-- defined in cxf-interceptor-context.xml -->
     </jaxws:inInterceptors>
+    <jaxws:outInterceptors>
+      <ref bean="cleanupInterceptor" />  <!-- defined in cxf-interceptor-context.xml -->
+    </jaxws:outInterceptors>
+    <jaxws:outFaultInterceptors>
+      <ref bean="cleanupInterceptor" />
+    </jaxws:outFaultInterceptors>
   </jaxws:endpoint>
 </beans>

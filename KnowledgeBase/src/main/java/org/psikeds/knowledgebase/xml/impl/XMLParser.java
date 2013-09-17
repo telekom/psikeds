@@ -33,7 +33,6 @@ import javax.xml.stream.events.XMLEvent;
 
 import org.xml.sax.SAXException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 
@@ -52,17 +51,7 @@ public class XMLParser implements KBParser {
 
   private static final String DEFAULT_PACKAGE = "org.psikeds.knowledgebase.jaxb";
   private static final String DEFAULT_ENCODING = "UTF-8";
-
-  /**
-   * Skip nothing, parse all Elements including the XML-Root-Element.
-   */
-  private static final int DO_NOT_SKIP = 0;
-
-  /**
-   * Skip the first Element, i.e. the XML-Root-Element will
-   * not be parsed but all Elements below. (DEFAULT!)
-   */
-  private static final int SKIP_ROOT_ELEMENT = 1;
+  private static final int DEFAULT_SKIPPED_ELEMENTS = 0;
 
   /**
    * Accept every Event triggered by the start of a new XML-Element.
@@ -99,7 +88,7 @@ public class XMLParser implements KBParser {
     this.elementClass = null;
     this.callbackHandler = null;
     this.eventFilter = DEFAULT_EVENT_FILTER;
-    this.numOfSkippedElements = SKIP_ROOT_ELEMENT;
+    this.numOfSkippedElements = DEFAULT_SKIPPED_ELEMENTS;
   }
 
   /**
@@ -110,10 +99,8 @@ public class XMLParser implements KBParser {
    * @param encoding
    *          Encoding type, e.g. ISO-8859-1 or UTF-8
    * @param callbackHandler
-   *          Callback handler used to process every single found XML
-   *          element (@see
-   *          org.psikeds.knowledgebase.xml.KBParserCallback#handleElement
-   *          (java.lang.Object))
+   *          Callback handler used to process every single found XML-Element
+   *          (@see org.psikeds.knowledgebase.xml.KBParserCallback#handleElement(java.lang.Object))
    */
   public XMLParser(final String xmlFilename, final String encoding, final KBParserCallback callbackHandler) {
     this();
@@ -127,14 +114,9 @@ public class XMLParser implements KBParser {
    * 
    * @param xmlFilename
    *          Name of the XML-File
-   * @param callbackHandler
-   *          Callback handler used to process every single found XML
-   *          element (@see
-   *          org.psikeds.knowledgebase.xml.KBParserCallback#handleElement
-   *          (java.lang.Object))
    */
-  public XMLParser(final String xmlFilename, final KBParserCallback callbackHandler) {
-    this(xmlFilename, DEFAULT_ENCODING, callbackHandler);
+  public XMLParser(final String xmlFilename) {
+    this(xmlFilename, DEFAULT_ENCODING, null);
   }
 
   /**
@@ -145,10 +127,8 @@ public class XMLParser implements KBParser {
    * @param encoding
    *          Encoding type, e.g. ISO-8859-1 or UTF-8
    * @param callbackHandler
-   *          Callback handler used to process every single found XML
-   *          element (@see
-   *          org.psikeds.knowledgebase.xml.KBParserCallback#handleElement
-   *          (java.lang.Object))
+   *          Callback handler used to process every single found XML-Element
+   *          (@see org.psikeds.knowledgebase.xml.KBParserCallback#handleElement(java.lang.Object))
    */
   public XMLParser(final InputStream xmlStream, final String encoding, final KBParserCallback callbackHandler) {
     this();
@@ -162,14 +142,9 @@ public class XMLParser implements KBParser {
    * 
    * @param xmlStream
    *          Stream to the XML-Data
-   * @param callbackHandler
-   *          Callback handler used to process every single found XML
-   *          element (@see
-   *          org.psikeds.knowledgebase.xml.KBParserCallback#handleElement
-   *          (java.lang.Object))
    */
-  public XMLParser(final InputStream xmlStream, final KBParserCallback callbackHandler) {
-    this(xmlStream, DEFAULT_ENCODING, callbackHandler);
+  public XMLParser(final InputStream xmlStream) {
+    this(xmlStream, DEFAULT_ENCODING, null);
   }
 
   /**
@@ -180,10 +155,8 @@ public class XMLParser implements KBParser {
    * @param encoding
    *          Encoding type, e.g. ISO-8859-1 or UTF-8
    * @param callbackHandler
-   *          Callback handler used to process every single found XML
-   *          element (@see
-   *          org.psikeds.knowledgebase.xml.KBParserCallback#handleElement
-   *          (java.lang.Object))
+   *          Callback handler used to process every single found XML-Element
+   *          (@see org.psikeds.knowledgebase.xml.KBParserCallback#handleElement(java.lang.Object))
    */
   public XMLParser(final Resource xmlResource, final String encoding, final KBParserCallback callbackHandler) {
     this();
@@ -197,15 +170,9 @@ public class XMLParser implements KBParser {
    * 
    * @param xmlResource
    *          Spring-Resource for the XML-Data
-   * @param callbackHandler
-   *          Callback handler used to process every single found XML
-   *          element (@see
-   *          org.psikeds.knowledgebase.xml.KBParserCallback#handleElement
-   *          (java.lang.Object))
    */
-  @Autowired
-  public XMLParser(final Resource xmlResource, final KBParserCallback callbackHandler) {
-    this(xmlResource, DEFAULT_ENCODING, callbackHandler);
+  public XMLParser(final Resource xmlResource) {
+    this(xmlResource, DEFAULT_ENCODING, null);
   }
 
   // -------------------------------------------------------------
@@ -266,7 +233,6 @@ public class XMLParser implements KBParser {
    * @param xmlResource
    *          the xmlResource to set
    */
-  @Autowired
   public void setXmlResource(final Resource xmlResource) {
     this.xmlResource = xmlResource;
   }
@@ -314,7 +280,6 @@ public class XMLParser implements KBParser {
    *          the callbackHandler to set
    */
   @Override
-  @Autowired
   public void setCallbackHandler(final KBParserCallback callbackHandler) {
     this.callbackHandler = callbackHandler;
   }
@@ -402,13 +367,15 @@ public class XMLParser implements KBParser {
   }
 
   private long parseXmlElements(final Reader xml) throws XMLStreamException, JAXBException {
-    if (this.elementClass != null) {
-      return parseXmlElements(xml, this.elementClass, this.callbackHandler, this.eventFilter, this.numOfSkippedElements);
+    if (this.callbackHandler != null) {
+      if (this.elementClass != null) {
+        return parseXmlElements(xml, this.elementClass, this.callbackHandler, this.eventFilter, this.numOfSkippedElements);
+      }
+      if (!StringUtils.isEmpty(this.packageName)) {
+        return parseXmlElements(xml, this.packageName, this.callbackHandler, this.eventFilter, this.numOfSkippedElements);
+      }
     }
-    if (!StringUtils.isEmpty(this.packageName)) {
-      return parseXmlElements(xml, this.packageName, this.callbackHandler, this.eventFilter, this.numOfSkippedElements);
-    }
-    throw new IllegalArgumentException("Unsupported configuration settings!");
+    throw new IllegalArgumentException("Unsupported configuration settings! Must specify a Callback-Handler and either a Package-Name or an Element-Class.");
   }
 
   // -------------------------------------------------------------
@@ -438,7 +405,7 @@ public class XMLParser implements KBParser {
   public static long parseXmlElements(final Reader xml, final KBParserCallback handler)
       throws XMLStreamException, JAXBException {
 
-    return parseXmlElements(xml, DEFAULT_PACKAGE, handler, DEFAULT_EVENT_FILTER, SKIP_ROOT_ELEMENT);
+    return parseXmlElements(xml, DEFAULT_PACKAGE, handler, DEFAULT_EVENT_FILTER, DEFAULT_SKIPPED_ELEMENTS);
   }
 
   /**
@@ -512,7 +479,7 @@ public class XMLParser implements KBParser {
   public static long parseXmlElements(final Reader xml, final Class<?> elemClazz, final KBParserCallback handler)
       throws XMLStreamException, JAXBException {
 
-    return parseXmlElements(xml, elemClazz, handler, DEFAULT_EVENT_FILTER, DO_NOT_SKIP);
+    return parseXmlElements(xml, elemClazz, handler, DEFAULT_EVENT_FILTER, DEFAULT_SKIPPED_ELEMENTS);
   }
 
   /**

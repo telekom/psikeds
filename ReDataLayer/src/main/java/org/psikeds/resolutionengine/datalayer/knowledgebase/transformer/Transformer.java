@@ -15,36 +15,46 @@
 package org.psikeds.resolutionengine.datalayer.knowledgebase.transformer;
 
 /**
- * Helper for transforming a JAXB XML Object from the Knowledgebase into a Value
- * Object for the Datalayer. The knowledgebase is (currently) read-only,
- * therefore only transformation xml->vo is supported/implemented.
- * 
+ * Helper for transforming a JAXB XML Object from the Knowledgebase into a
+ * Value Object for the Datalayer.
+ * The Knowledgebase is read-only, therefore only transformations XML to VO
+ * are supported/implemented.
+ *
  * @author marco@juliano.de
  */
-public final class Transformer {
+public interface Transformer {
 
-  public static org.psikeds.resolutionengine.datalayer.vo.Chocolate xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Chocolate xml) {
-    org.psikeds.resolutionengine.datalayer.vo.Chocolate vo = null;
-    if (xml != null) {
-      vo = new org.psikeds.resolutionengine.datalayer.vo.Chocolate(xml.getChocokey(), xml.getDescription());
-    }
-    return vo;
-  }
+  org.psikeds.resolutionengine.datalayer.vo.Alternatives xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Alternatives xml);
 
-  public static org.psikeds.resolutionengine.datalayer.vo.Chocolatelist xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Chocolatelist xmllst) {
-    org.psikeds.resolutionengine.datalayer.vo.Chocolatelist volst = null;
-    if (xmllst != null) {
-      volst = new org.psikeds.resolutionengine.datalayer.vo.Chocolatelist();
-      if (xmllst.getChocolate() != null) {
-        for (final org.psikeds.knowledgebase.jaxb.Chocolate xc : xmllst.getChocolate()) {
-          volst.add(Transformer.xml2ValueObject(xc));
-        }
-      }
-    }
-    return volst;
-  }
+  org.psikeds.resolutionengine.datalayer.vo.Constituents xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Constituents xml);
 
-  private Transformer() {
-    // prevent instantiation
-  }
+  org.psikeds.resolutionengine.datalayer.vo.Constitutes xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Constitutes xml);
+
+  org.psikeds.resolutionengine.datalayer.vo.Data xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Data xml);
+
+  org.psikeds.resolutionengine.datalayer.vo.Event xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Event xml);
+
+  org.psikeds.resolutionengine.datalayer.vo.Events xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Events xml);
+
+  org.psikeds.resolutionengine.datalayer.vo.Feature xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Feature xml);
+
+  org.psikeds.resolutionengine.datalayer.vo.Features xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Features xml);
+
+  org.psikeds.resolutionengine.datalayer.vo.Fulfills xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Fulfills xml);
+
+  org.psikeds.resolutionengine.datalayer.vo.Knowledgebase xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Knowledgebase xml);
+
+  org.psikeds.resolutionengine.datalayer.vo.Meta xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Meta xml);
+
+  org.psikeds.resolutionengine.datalayer.vo.Purpose xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Purpose xml);
+
+  org.psikeds.resolutionengine.datalayer.vo.Purposes xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Purposes xml);
+
+  org.psikeds.resolutionengine.datalayer.vo.Rule xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Rule xml);
+
+  org.psikeds.resolutionengine.datalayer.vo.Rules xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Rules xml);
+
+  org.psikeds.resolutionengine.datalayer.vo.Variant xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Variant xml);
+
+  org.psikeds.resolutionengine.datalayer.vo.Variants xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Variants xml);
 }

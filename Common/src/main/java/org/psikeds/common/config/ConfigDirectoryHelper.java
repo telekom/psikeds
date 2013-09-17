@@ -19,7 +19,7 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.cxf.common.util.StringUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Helper for handling the configuration directory: You can specify a system

@@ -1,13 +1,13 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
  * [ ] GNU Affero General Public License
- * [x] GNU General Public License
- * [ ] GNU Lesser General Public License
+ * [ ] GNU General Public License
+ * [x] GNU Lesser General Public License
  * [ ] Creatice Commons ShareAlike License
  *
  * For details see file LICENSING in the top project directory
@@ -17,11 +17,9 @@ package org.psikeds.queryagent.presenter.jsf.controller.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.psikeds.queryagent.interfaces.presenter.pojos.Chocolatelist;
-import org.psikeds.queryagent.interfaces.presenter.services.ChocolateService;
+import org.psikeds.queryagent.interfaces.presenter.services.ResolutionService;
 import org.psikeds.queryagent.presenter.jsf.controller.NavigationController;
 import org.psikeds.queryagent.presenter.jsf.model.Item;
-import org.psikeds.queryagent.presenter.jsf.model.impl.ChocolatelistItem;
 import org.psikeds.queryagent.presenter.jsf.util.Constants;
 
 /**
@@ -37,7 +35,7 @@ public class ChocolateListController extends BaseChocolateController implements 
     this(null, null);
   }
 
-  public ChocolateListController(final ChocolateService cs, final Item all) {
+  public ChocolateListController(final ResolutionService cs, final Item all) {
     super(cs, all, null);
   }
 
@@ -90,12 +88,12 @@ public class ChocolateListController extends BaseChocolateController implements 
     String ret = Constants.RESULT_ERROR;
     try {
       LOGGER.trace("--> handleItemList({}, {})", loadItems, desiredResult);
-      final ChocolatelistItem allItems = (ChocolatelistItem) getAllItemsBean();
-      if (loadItems || !allItems.isHavingSiblings()) {
-        final Chocolatelist chocolst = getService().getChocolates();
-        allItems.setChocolatelist(chocolst);
-        LOGGER.debug("(Re)Loaded allItems = {}", allItems);
-      }
+      //      final ChocolatelistItem allItems = (ChocolatelistItem) getAllItemsBean();
+      //      if (loadItems || !allItems.isHavingSiblings()) {
+      //        final Chocolatelist chocolst = getService().getChocolates();
+      //        allItems.setChocolatelist(chocolst);
+      //        LOGGER.debug("(Re)Loaded allItems = {}", allItems);
+      //      }
       ret = desiredResult;
     }
     catch (final Exception ex) {

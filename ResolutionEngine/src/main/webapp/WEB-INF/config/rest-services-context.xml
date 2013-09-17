@@ -28,20 +28,15 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
   <!-- Definition of all REST services -->
 
-  <bean id="chocolateRESTService"
-    class="org.psikeds.resolutionengine.interfaces.rest.ChocolateRESTService">
-    <constructor-arg>
-      <list>
-        <ref bean="chocolateBusinessService" />  <!-- defined in business-services-context.xml -->
-      </list>
-    </constructor-arg>
+  <bean id="resolutionRESTService" class="org.psikeds.resolutionengine.interfaces.rest.ResolutionRESTService">
+    <constructor-arg index="0" type="org.psikeds.resolutionengine.interfaces.services.ResolutionService" ref="resolutionBusinessService" />  <!-- defined in business-services-context.xml -->
   </bean>
 
   <!-- Putting it all together: Configre the JAX-RS-Server -->
 
   <jaxrs:server id="psiKedsResolutionEngine" address="${cxf.rest.address}">
     <jaxrs:serviceBeans>
-      <ref bean="chocolateRESTService" />
+      <ref bean="resolutionRESTService" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jsonProvider" />  <!-- defined in providers-context.xml -->
@@ -55,7 +50,13 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
       <entry key="xml" value="application/xml" />
     </jaxrs:extensionMappings>
     <jaxrs:inInterceptors>
-      <ref bean="requestIdGenerationInterceptor" />
+      <ref bean="requestIdGenerationInterceptor" />  <!-- defined in cxf-interceptor-context.xml -->
     </jaxrs:inInterceptors>
+    <jaxrs:outInterceptors>
+      <ref bean="cleanupInterceptor" />  <!-- defined in cxf-interceptor-context.xml -->
+    </jaxrs:outInterceptors>
+    <jaxrs:outFaultInterceptors>
+      <ref bean="cleanupInterceptor" />
+    </jaxrs:outFaultInterceptors>
   </jaxrs:server>
 </beans>

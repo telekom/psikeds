@@ -30,7 +30,7 @@ import javax.xml.validation.Validator;
 
 import org.xml.sax.SAXException;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 
 import org.psikeds.knowledgebase.xml.KBValidator;
@@ -52,6 +52,8 @@ public class XSDValidator implements KBValidator {
   private String encoding;
   private InputStream xsdStream;
   private InputStream xmlStream;
+  private Resource xsdResource;
+  private Resource xmlResource;
 
   /**
    * Default constructor
@@ -62,6 +64,8 @@ public class XSDValidator implements KBValidator {
     this.encoding = DEFAULT_ENCODING;
     this.xsdStream = null;
     this.xmlStream = null;
+    this.xsdResource = null;
+    this.xmlResource = null;
   }
 
   /**
@@ -80,6 +84,8 @@ public class XSDValidator implements KBValidator {
     this.encoding = encoding;
     this.xsdStream = null;
     this.xmlStream = null;
+    this.xsdResource = null;
+    this.xmlResource = null;
   }
 
   /**
@@ -102,13 +108,32 @@ public class XSDValidator implements KBValidator {
    * @param xmlStream
    *          Stream to the XML data
    */
-  @Autowired
   public XSDValidator(final InputStream xsdStream, final InputStream xmlStream) {
     this.xsdFilename = null;
     this.xmlFilename = null;
     this.encoding = null;
     this.xsdStream = xsdStream;
     this.xmlStream = xmlStream;
+    this.xsdResource = null;
+    this.xmlResource = null;
+  }
+
+  /**
+   * Constructor using Spring-Resources for XSD and XML
+   * 
+   * @param xsdResource
+   *          Spring-Resource for the XSD schema
+   * @param xmlResource
+   *          Spring-Resource for the XML data
+   */
+  public XSDValidator(final Resource xsdResource, final Resource xmlResource) {
+    this.xsdFilename = null;
+    this.xmlFilename = null;
+    this.encoding = null;
+    this.xsdStream = null;
+    this.xmlStream = null;
+    this.xsdResource = xsdResource;
+    this.xmlResource = xmlResource;
   }
 
   /**
@@ -167,7 +192,6 @@ public class XSDValidator implements KBValidator {
    * @param xsdStream
    *          the xsdStream to set
    */
-  @Autowired
   public void setXsdStream(final InputStream xsdStream) {
     this.xsdStream = xsdStream;
   }
@@ -183,9 +207,38 @@ public class XSDValidator implements KBValidator {
    * @param xmlStream
    *          the xmlStream to set
    */
-  @Autowired
   public void setXmlStream(final InputStream xmlStream) {
     this.xmlStream = xmlStream;
+  }
+
+  /**
+   * @return the xsdResource
+   */
+  public Resource getXsdResource() {
+    return this.xsdResource;
+  }
+
+  /**
+   * @param xsdResource
+   *          the xsdResource to set
+   */
+  public void setXsdResource(final Resource xsdResource) {
+    this.xsdResource = xsdResource;
+  }
+
+  /**
+   * @return the xmlResource
+   */
+  public Resource getXmlResource() {
+    return this.xmlResource;
+  }
+
+  /**
+   * @param xmlResource
+   *          the xmlResource to set
+   */
+  public void setXmlResource(final Resource xmlResource) {
+    this.xmlResource = xmlResource;
   }
 
   // -------------------------------------------------------------
@@ -205,6 +258,10 @@ public class XSDValidator implements KBValidator {
       validate(this.xsdStream, this.xmlStream);
       // Note: We do not close the streams here.
       // It's the responsibility of the caller
+      return;
+    }
+    if (this.xsdResource != null && this.xmlResource != null) {
+      validate(this.xsdResource, this.xmlResource);
       return;
     }
     if (!StringUtils.isEmpty(this.xsdFilename) && !StringUtils.isEmpty(this.xmlFilename) && !StringUtils.isEmpty(this.encoding)) {
@@ -271,6 +328,53 @@ public class XSDValidator implements KBValidator {
    */
   public static void validate(final InputStream xsd, final InputStream xml) throws SAXException, IOException {
     validate(new StreamSource(xsd), new StreamSource(xml));
+  }
+
+  /**
+   * Validate XML against specified XSD schmema.
+   * 
+   * @param xsd
+   *          Spring-Resource for the XSD-schema that will be used to validate the
+   *          XML
+   * @param xml
+   *          Spring-Resource for the XML
+   * @throws SAXException
+   *           if XML is not valid against XSD
+   * @throws IOException
+   */
+  public static void validate(final Resource xsd, final Resource xml) throws SAXException, IOException {
+    InputStream xsdStream = null;
+    InputStream xmlStream = null;
+    try {
+      xsdStream = xsd.getInputStream();
+      xmlStream = xml.getInputStream();
+      validate(xsdStream, xmlStream);
+    }
+    finally {
+      // we opened the streams, we close them
+      if (xsdStream != null) {
+        try {
+          xsdStream.close();
+        }
+        catch (final Exception ex) {
+          // ignore
+        }
+        finally {
+          xsdStream = null;
+        }
+      }
+      if (xmlStream != null) {
+        try {
+          xmlStream.close();
+        }
+        catch (final Exception ex) {
+          // ignore
+        }
+        finally {
+          xmlStream = null;
+        }
+      }
+    }
   }
 
   /**

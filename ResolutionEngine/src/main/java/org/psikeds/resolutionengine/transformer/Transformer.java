@@ -14,63 +14,67 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.transformer;
 
-import java.util.List;
-
 /**
  * Helper for transforming Value Objects from the Datalayer into POJOs of the
  * Interface (and vice versa).
  * 
  * @author marco@juliano.de
  */
-public final class Transformer {
+public interface Transformer {
 
-  public static org.psikeds.resolutionengine.datalayer.vo.Chocolate pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Chocolate pojoChoco) {
-    org.psikeds.resolutionengine.datalayer.vo.Chocolate voChoco = null;
-    if (pojoChoco != null) {
-      voChoco = new org.psikeds.resolutionengine.datalayer.vo.Chocolate(pojoChoco.getRefid(), pojoChoco.getDescription());
-    }
-    return voChoco;
-  }
+  org.psikeds.resolutionengine.datalayer.vo.Alternatives pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Alternatives pojo);
 
-  public static org.psikeds.resolutionengine.interfaces.pojos.Chocolate valueObject2Pojo(final org.psikeds.resolutionengine.datalayer.vo.Chocolate voChoco) {
-    org.psikeds.resolutionengine.interfaces.pojos.Chocolate pojoChoco = null;
-    if (voChoco != null) {
-      pojoChoco = new org.psikeds.resolutionengine.interfaces.pojos.Chocolate(voChoco.getRefid(), voChoco.getDescription());
-    }
-    return pojoChoco;
-  }
+  org.psikeds.resolutionengine.interfaces.pojos.Alternatives valueObject2Pojo(final org.psikeds.resolutionengine.datalayer.vo.Alternatives vo);
 
-  public static org.psikeds.resolutionengine.datalayer.vo.Chocolatelist pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Chocolatelist pojoLst) {
-    return pojoLst == null ? null : pojo2ValueObject(pojoLst.getChocolates());
-  }
+  org.psikeds.resolutionengine.datalayer.vo.Constituents pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Constituents pojo);
 
-  public static org.psikeds.resolutionengine.datalayer.vo.Chocolatelist pojo2ValueObject(final List<org.psikeds.resolutionengine.interfaces.pojos.Chocolate> pojoLst) {
-    org.psikeds.resolutionengine.datalayer.vo.Chocolatelist voLst = null;
-    if (pojoLst != null) {
-      voLst = new org.psikeds.resolutionengine.datalayer.vo.Chocolatelist();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Chocolate pc : pojoLst) {
-        voLst.add(Transformer.pojo2ValueObject(pc));
-      }
-    }
-    return voLst;
-  }
+  org.psikeds.resolutionengine.interfaces.pojos.Constituents valueObject2Pojo(final org.psikeds.resolutionengine.datalayer.vo.Constituents vo);
 
-  public static org.psikeds.resolutionengine.interfaces.pojos.Chocolatelist valueObject2Pojo(final org.psikeds.resolutionengine.datalayer.vo.Chocolatelist volst) {
-    return volst == null ? null : valueObject2Pojo(volst.getChocolates());
-  }
+  org.psikeds.resolutionengine.datalayer.vo.Constitutes pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Constitutes pojo);
 
-  public static org.psikeds.resolutionengine.interfaces.pojos.Chocolatelist valueObject2Pojo(final List<org.psikeds.resolutionengine.datalayer.vo.Chocolate> volst) {
-    org.psikeds.resolutionengine.interfaces.pojos.Chocolatelist pojolst = null;
-    if (volst != null) {
-      pojolst = new org.psikeds.resolutionengine.interfaces.pojos.Chocolatelist();
-      for (final org.psikeds.resolutionengine.datalayer.vo.Chocolate vc : volst) {
-        pojolst.add(Transformer.valueObject2Pojo(vc));
-      }
-    }
-    return pojolst;
-  }
+  org.psikeds.resolutionengine.interfaces.pojos.Constitutes valueObject2Pojo(final org.psikeds.resolutionengine.datalayer.vo.Constitutes vo);
 
-  private Transformer() {
-    // prevent instantiation
-  }
+  org.psikeds.resolutionengine.datalayer.vo.Event pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Event pojo);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Event valueObject2Pojo(final org.psikeds.resolutionengine.datalayer.vo.Event vo);
+
+  org.psikeds.resolutionengine.datalayer.vo.Events pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Events pojo);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Events valueObject2Pojo(final org.psikeds.resolutionengine.datalayer.vo.Events vo);
+
+  org.psikeds.resolutionengine.datalayer.vo.Feature pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Feature pojo);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Feature valueObject2Pojo(final org.psikeds.resolutionengine.datalayer.vo.Feature vo);
+
+  org.psikeds.resolutionengine.datalayer.vo.Features pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Features pojo);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Features valueObject2Pojo(final org.psikeds.resolutionengine.datalayer.vo.Features vo);
+
+  org.psikeds.resolutionengine.datalayer.vo.Fulfills pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Fulfills pojo);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Fulfills valueObject2Pojo(final org.psikeds.resolutionengine.datalayer.vo.Fulfills vo);
+
+  org.psikeds.resolutionengine.datalayer.vo.Purpose pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Purpose pojo);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Purpose valueObject2Pojo(final org.psikeds.resolutionengine.datalayer.vo.Purpose vo);
+
+  org.psikeds.resolutionengine.datalayer.vo.Purposes pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Purposes pojo);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Purposes valueObject2Pojo(final org.psikeds.resolutionengine.datalayer.vo.Purposes vo);
+
+  org.psikeds.resolutionengine.datalayer.vo.Rule pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Rule pojo);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Rule valueObject2Pojo(final org.psikeds.resolutionengine.datalayer.vo.Rule vo);
+
+  org.psikeds.resolutionengine.datalayer.vo.Rules pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Rules pojo);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Rules valueObject2Pojo(final org.psikeds.resolutionengine.datalayer.vo.Rules vo);
+
+  org.psikeds.resolutionengine.datalayer.vo.Variant pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Variant pojo);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Variant valueObject2Pojo(final org.psikeds.resolutionengine.datalayer.vo.Variant vo);
+
+  org.psikeds.resolutionengine.datalayer.vo.Variants pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Variants pojo);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Variants valueObject2Pojo(final org.psikeds.resolutionengine.datalayer.vo.Variants vo);
 }

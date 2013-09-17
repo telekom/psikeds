@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -14,64 +14,103 @@
  *******************************************************************************/
 package org.psikeds.queryagent.transformer;
 
-import java.util.List;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Alternatives;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Constituents;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Constitutes;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Event;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Events;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Feature;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Features;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Fulfills;
+import org.psikeds.queryagent.interfaces.presenter.pojos.InitResponse;
+import org.psikeds.queryagent.interfaces.presenter.pojos.KnowledgeEntity;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Purpose;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Purposes;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Rule;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Rules;
+import org.psikeds.queryagent.interfaces.presenter.pojos.SelectRequest;
+import org.psikeds.queryagent.interfaces.presenter.pojos.SelectResponse;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Variant;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Variants;
 
 /**
- * Helper for transforming POJOs from the Interface of the Resolution-Engine
- * (RE)
- * into POJOs of the Interface of the Query-Agent (QA) ... and vice versa.
- * 
+ * Helper for transforming POJOs from the Interface of the
+ * Resolution-Engine (RE) into POJOs of the Interface of the
+ * Query-Agent (QA) ... and vice versa.
+ *
  * @author marco@juliano.de
  */
-public final class Transformer {
+public interface Transformer {
 
-  public static org.psikeds.queryagent.interfaces.presenter.pojos.Chocolate re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Chocolate reChoco) {
-    org.psikeds.queryagent.interfaces.presenter.pojos.Chocolate qaChoco = null;
-    if (reChoco != null) {
-      qaChoco = new org.psikeds.queryagent.interfaces.presenter.pojos.Chocolate(reChoco.getRefid(), reChoco.getDescription());
-    }
-    return qaChoco;
-  }
+  Alternatives re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Alternatives re);
 
-  public static org.psikeds.resolutionengine.interfaces.pojos.Chocolate qa2re(final org.psikeds.queryagent.interfaces.presenter.pojos.Chocolate qaChoco) {
-    org.psikeds.resolutionengine.interfaces.pojos.Chocolate reChoco = null;
-    if (qaChoco != null) {
-      reChoco = new org.psikeds.resolutionengine.interfaces.pojos.Chocolate(qaChoco.getRefid(), qaChoco.getDescription());
-    }
-    return reChoco;
-  }
+  org.psikeds.resolutionengine.interfaces.pojos.Alternatives qa2re(final Alternatives qa);
 
-  public static org.psikeds.queryagent.interfaces.presenter.pojos.Chocolatelist re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Chocolatelist reLst) {
-    return reLst == null ? null : re2qa(reLst.getChocolates());
-  }
+  Constituents re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Constituents re);
 
-  public static org.psikeds.queryagent.interfaces.presenter.pojos.Chocolatelist re2qa(final List<org.psikeds.resolutionengine.interfaces.pojos.Chocolate> reLst) {
-    org.psikeds.queryagent.interfaces.presenter.pojos.Chocolatelist qaLst = null;
-    if (reLst != null) {
-      qaLst = new org.psikeds.queryagent.interfaces.presenter.pojos.Chocolatelist();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Chocolate reChoco : reLst) {
-        qaLst.add(Transformer.re2qa(reChoco));
-      }
-    }
-    return qaLst;
-  }
+  org.psikeds.resolutionengine.interfaces.pojos.Constituents qa2re(final Constituents qa);
 
-  public static org.psikeds.resolutionengine.interfaces.pojos.Chocolatelist qa2re(final org.psikeds.queryagent.interfaces.presenter.pojos.Chocolatelist qaLst) {
-    return qaLst == null ? null : qa2re(qaLst.getChocolates());
-  }
+  Constitutes re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Constitutes re);
 
-  public static org.psikeds.resolutionengine.interfaces.pojos.Chocolatelist qa2re(final List<org.psikeds.queryagent.interfaces.presenter.pojos.Chocolate> qaLst) {
-    org.psikeds.resolutionengine.interfaces.pojos.Chocolatelist reLst = null;
-    if (qaLst != null) {
-      reLst = new org.psikeds.resolutionengine.interfaces.pojos.Chocolatelist();
-      for (final org.psikeds.queryagent.interfaces.presenter.pojos.Chocolate qaChoco : qaLst) {
-        reLst.add(Transformer.qa2re(qaChoco));
-      }
-    }
-    return reLst;
-  }
+  org.psikeds.resolutionengine.interfaces.pojos.Constitutes qa2re(final Constitutes qa);
 
-  private Transformer() {
-    // prevent instantiation
-  }
+  Event re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Event re);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Event qa2re(final Event qa);
+
+  Events re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Events re);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Events qa2re(final Events qa);
+
+  Feature re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Feature re);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Feature qa2re(final Feature qa);
+
+  Features re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Features re);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Features qa2re(final Features qa);
+
+  Fulfills re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Fulfills re);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Fulfills qa2re(final Fulfills qa);
+
+  Purpose re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Purpose re);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Purpose qa2re(final Purpose qa);
+
+  Purposes re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Purposes re);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Purposes qa2re(final Purposes qa);
+
+  Rule re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Rule re);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Rule qa2re(final Rule qa);
+
+  Rules re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Rules re);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Rules qa2re(final Rules qa);
+
+  Variant re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Variant re);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Variant qa2re(final Variant qa);
+
+  Variants re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Variants re);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Variants qa2re(final Variants qa);
+
+  KnowledgeEntity re2qa(final org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity re);
+
+  org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity qa2re(final KnowledgeEntity qa);
+
+  InitResponse re2qa(final org.psikeds.resolutionengine.interfaces.pojos.InitResponse re);
+
+  org.psikeds.resolutionengine.interfaces.pojos.InitResponse qa2re(final InitResponse qa);
+
+  SelectRequest re2qa(final org.psikeds.resolutionengine.interfaces.pojos.SelectRequest re);
+
+  org.psikeds.resolutionengine.interfaces.pojos.SelectRequest qa2re(final SelectRequest qa);
+
+  SelectResponse re2qa(final org.psikeds.resolutionengine.interfaces.pojos.SelectResponse re);
+
+  org.psikeds.resolutionengine.interfaces.pojos.SelectResponse qa2re(final SelectResponse qa);
 }

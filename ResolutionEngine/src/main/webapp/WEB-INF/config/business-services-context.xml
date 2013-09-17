@@ -22,12 +22,17 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-  <bean id="chocolateBusinessService"
-    class="org.psikeds.resolutionengine.services.ChocolateBusinessService">
-    <constructor-arg>
-      <list>
-        <ref bean="knowledgeBase" />  <!-- defined in knowledgebase-context.xml -->
-      </list>
-    </constructor-arg>
+  <bean id="PojoTransformer" class="org.psikeds.resolutionengine.transformer.impl.Vo2PojoTransformer" />
+
+  <bean id="SessionIdGenerator" class="org.psikeds.common.idgen.impl.SessionIdGenerator" />
+
+  <bean id="ResolutionCache" class="org.psikeds.resolutionengine.cache.ResolutionCache" />
+
+  <bean id="resolutionBusinessService" class="org.psikeds.resolutionengine.services.ResolutionBusinessService">
+    <constructor-arg index="0" type="org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase" ref="knowledgeBase" />  <!-- defined in knowledgebase-context.xml -->
+    <constructor-arg index="1" type="org.psikeds.resolutionengine.transformer.Transformer" ref="PojoTransformer" />
+    <constructor-arg index="2" type="org.psikeds.common.idgen.IdGenerator" ref="SessionIdGenerator" />
+    <constructor-arg index="3" type="org.psikeds.resolutionengine.cache.ResolutionCache" ref="ResolutionCache"/>
   </bean>
+
 </beans>

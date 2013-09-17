@@ -137,68 +137,54 @@ For details see file LICENSING in the top project directory
   </dependencies>
 
   <build>
+
     <finalName>resolutionengine</finalName>
 
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.tomcat.maven</groupId>
-          <artifactId>tomcat7-maven-plugin</artifactId>
-          <version>2.0</version>
-          <executions>
-            <execution>
-              <id>default-cli</id>
-              <goals>
-                <goal>run</goal>
-              </goals>
-              <configuration>
-                <port>13000</port>
-                <path>/jaxrs-service</path>
-                <useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>2.3.2</version>
-          <configuration>
-            <source>${expected.java.version}</source>
-            <target>${expected.java.version}</target>
-            <fork>true</fork>
-            <meminitial>${webapp.mem.initial}</meminitial>
-            <maxmem>${webapp.mem.max}</maxmem>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-eclipse-plugin</artifactId>
-          <version>2.9</version>
-          <configuration>
-            <projectNameTemplate>[artifactId]-[version]</projectNameTemplate>
-            <wtpmanifest>true</wtpmanifest>
-            <wtpapplicationxml>true</wtpapplicationxml>
-            <wtpversion>2.0</wtpversion>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-
     <plugins>
+      <!-- compiler plugin: control java version and memory settings -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven.compiler.plugin.version}</version>
+        <configuration>
+          <source>${expected.java.version}</source>
+          <target>${expected.java.version}</target>
+          <compilerVersion>${expected.java.version}</compilerVersion>
+          <debug>${psikeds.debug}</debug>
+          <fork>true</fork>
+          <meminitial>${webapp.mem.initial}</meminitial>
+          <maxmem>${webapp.mem.max}</maxmem>
+        </configuration>
+      </plugin>
+      <!-- eclipse plugin: control eclipse integration -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <version>${maven.eclipse.plugin.version}</version>
+        <configuration>
+          <projectNameTemplate>${eclipse.wtp.projectname.template}</projectNameTemplate>
+          <wtpmanifest>true</wtpmanifest>
+          <wtpapplicationxml>true</wtpapplicationxml>
+          <wtpversion>${eclipse.wtp.version}</wtpversion>
+          <wtpContextName>${project.build.finalName}</wtpContextName>
+        </configuration>
+      </plugin>
+      <!-- war plugin: control how WAR-file is created -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.1.1</version>
+        <version>${maven.war.plugin.version}</version>
         <configuration>
           <packagingExcludes>WEB-INF/web.xml</packagingExcludes>
           <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+          <warName>${project.build.finalName}</warName>
         </configuration>
       </plugin>
+      <!-- helper plugin: get an unused port for integration testing -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.5</version>
+        <version>${build.helper.maven.plugin.version}</version>
         <executions>
           <execution>
             <id>reserve-network-port</id>
@@ -207,16 +193,20 @@ For details see file LICENSING in the top project directory
             </goals>
             <phase>pre-integration-test</phase>
             <configuration>
+              <minPortNumber>10000</minPortNumber>
+              <maxPortNumber>19999</maxPortNumber>
               <portNames>
-                <portName>test.server.port</portName>
+                <portName>resolution.engine.server.port</portName>
               </portNames>
             </configuration>
           </execution>
         </executions>
       </plugin>
+      <!-- tomcat7 plugin: control how to start and stop tomcat for integration testing -->
       <plugin>
         <groupId>org.apache.tomcat.maven</groupId>
         <artifactId>tomcat7-maven-plugin</artifactId>
+        <version>${tomcat7.maven.plugin.version}</version>
         <executions>
           <execution>
             <id>start-tomcat</id>
@@ -225,12 +215,19 @@ For details see file LICENSING in the top project directory
             </goals>
             <phase>pre-integration-test</phase>
             <configuration>
-              <port>${test.server.port}</port>
-              <path>/jaxrs-service</path>
+              <port>${resolution.engine.server.port}</port>
+              <path>/${project.build.finalName}</path>
               <fork>true</fork>
               <meminitial>${webapp.mem.initial}</meminitial>
               <maxmem>${webapp.mem.max}</maxmem>
               <useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
+              <failOnError>true</failOnError>
+              <systemProperties>
+                <property>
+                  <name>org.psikeds.config.dir</name>
+                  <value>${basedir}/../config/</value>
+                </property>
+              </systemProperties>
             </configuration>
           </execution>
           <execution>
@@ -240,32 +237,40 @@ For details see file LICENSING in the top project directory
             </goals>
             <phase>post-integration-test</phase>
             <configuration>
-              <path>/jaxrs-service</path>
+              <path>/${project.build.finalName}</path>
             </configuration>
           </execution>
         </executions>
       </plugin>
+      <!-- failsafe plugin: control setup and execution of integration tests -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.8.1</version>
+        <version>${maven.failsafe.plugin.version}</version>
         <executions>
           <execution>
-            <id>integration-test</id>
             <goals>
               <goal>integration-test</goal>
-            </goals>
-            <configuration>
-              <systemPropertyVariables>
-                <service.url>http://localhost:${test.server.port}/jaxrs-service</service.url>
-              </systemPropertyVariables>
-            </configuration>
-          </execution>
-          <execution>
-            <id>verify</id>
-            <goals>
               <goal>verify</goal>
             </goals>
+            <configuration>
+              <trimStackTrace>false</trimStackTrace>
+              <workingDirectory>${basedir}</workingDirectory>
+              <systemProperties>
+                <property>
+                  <name>org.psikeds.config.dir</name>
+                  <value>${basedir}/../config/</value>
+                </property>
+                <property>
+                  <name>resolution.engine.base.url</name>
+                  <value>http://localhost:${resolution.engine.server.port}/${project.build.finalName}/services/rest</value>
+                </property>
+              </systemProperties>
+              <environmentVariables>
+                <org.psikeds.config.dir>${basedir}/../config/</org.psikeds.config.dir>
+                <resolution.engine.base.url>http://localhost:${resolution.engine.server.port}/${project.build.finalName}/services/rest</resolution.engine.base.url>
+              </environmentVariables>
+            </configuration>
           </execution>
         </executions>
       </plugin>
