@@ -22,28 +22,18 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-  <bean id="xmlParserCallbackHandler"
-    class="org.psikeds.resolutionengine.datalayer.knowledgebase.impl.ChocoCallbackHandler" />
+  <bean id="XmlTransformer" class="org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.impl.Xml2VoTransformer" />
 
-  <bean id="xmlParser" class="org.psikeds.knowledgebase.xml.impl.XMLParser">
-    <constructor-arg>
-      <list>
-        <ref bean="kbXmlSource" />  <!-- defined in knowledgebase-datasource-context.xml -->
-        <ref bean="xmlParserCallbackHandler" />
-      </list>
-    </constructor-arg>
+  <bean id="XMLParser" class="org.psikeds.knowledgebase.xml.impl.XMLParser">
+    <constructor-arg index="0" type="org.springframework.core.io.Resource" ref="kbXmlSource" />  <!-- defined in knowledgebase-datasource-context.xml -->
   </bean>
 
   <bean id="knowledgeBaseFactory"
-    class="org.psikeds.resolutionengine.datalayer.knowledgebase.impl.KnowledgeBaseFactoryImpl">
-    <constructor-arg>
-      <list>
-        <ref bean="xmlParser" />
-      </list>
-    </constructor-arg>
+    class="org.psikeds.resolutionengine.datalayer.knowledgebase.impl.XmlKnowledgeBaseFactory">
+    <constructor-arg index="0" type="org.psikeds.knowledgebase.xml.KBParser" ref="XMLParser" />
+    <constructor-arg index="1" type="org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer" ref="XmlTransformer" />
   </bean>
 
-  <bean id="knowledgeBase" factory-bean="knowledgeBaseFactory"
-    factory-method="create" />
+  <bean id="knowledgeBase" factory-bean="knowledgeBaseFactory" factory-method="create" />
 
 </beans>

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -25,8 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.cxf.common.util.StringUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.psikeds.queryagent.requester.client.ResolutionEngineClient;
 import org.psikeds.queryagent.requester.client.WebClientFactory;
@@ -64,7 +62,6 @@ public class WebClientFactoryImpl implements WebClientFactory {
    * @param providers
    * @param cacheClients
    */
-  @Autowired
   public WebClientFactoryImpl(final List<Object> providers) {
     this(DEFAULT_ACCEPT_HEADER, DEFAULT_CONTENT_TYPE, DEFAULT_USER_AGENT, providers, DEFAULT_CACHE_CLIENTS);
   }

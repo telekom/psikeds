@@ -27,21 +27,13 @@ For details see file LICENSING in the top project directory
   <description>The parent POM of all components of psiKeds (RelCu)</description>
 
   <properties>
-    <!-- general build settings -->
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <!-- environment settings for doxygen -->
-    <doxygen.executable>C:/Program Files/doxygen/bin/doxygen.exe</doxygen.executable>
-    <doxygen.config.dir>${basedir}/src/doxygen</doxygen.config.dir>
-    <doxygen.source.dir>${basedir}</doxygen.source.dir>
-    <doxygen.destination.dir>${project.build.directory}/apidocs</doxygen.destination.dir>
+
     <!-- overall version of psikeds -->
     <psikeds.version>${project.version}</psikeds.version>
-    <!-- target and source java version -->
-    <expected.java.version>1.6</expected.java.version>
-    <!-- required memory for building and testing webapps -->
-    <webapp.mem.initial>512m</webapp.mem.initial>
-    <webapp.mem.max>2048m</webapp.mem.max>
+
+    <!-- enable/disable various debug settings -->
+    <psikeds.debug>true</psikeds.debug>
+
     <!-- versions of required dependencies/libraries -->
     <springframework.version>3.2.1.RELEASE</springframework.version>
     <cxf.version>2.7.3</cxf.version>
@@ -55,17 +47,55 @@ For details see file LICENSING in the top project directory
     <commons.codec.version>1.7</commons.codec.version>
     <slf4j.version>1.7.5</slf4j.version>
     <junit.version>4.11</junit.version>
+
     <!-- versions of required maven plugins -->
-    <!-- TODO -->
+    <maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
+    <maven.eclipse.plugin.version>2.9</maven.eclipse.plugin.version>
+    <maven.war.plugin.version>2.1.1</maven.war.plugin.version>
+    <maven.failsafe.plugin.version>2.16</maven.failsafe.plugin.version>
+    <build.helper.maven.plugin.version>1.8</build.helper.maven.plugin.version>
+    <tomcat7.maven.plugin.version>2.1</tomcat7.maven.plugin.version>
+    <jaxb2.maven.plugin.version>1.5</jaxb2.maven.plugin.version>
+    <doxygen.maven.plugin.version>2.2</doxygen.maven.plugin.version>
+
+    <!-- settings for eclipse web-tools-platform -->
+    <eclipse.wtp.version>2.0</eclipse.wtp.version>
+    <!-- >eclipse.wtp.projectname.template>[groupId].[artifactId]-[version]</eclipse.wtp.projectname.template -->
+    <eclipse.wtp.projectname.template>[artifactId]-[version]</eclipse.wtp.projectname.template>
+
+    <!-- general build settings -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <!-- target and source java version -->
+    <expected.java.version>1.6</expected.java.version>
+
+    <!-- required memory for building and testing webapps -->
+    <webapp.mem.initial>512m</webapp.mem.initial>
+    <webapp.mem.max>2048m</webapp.mem.max>
+
+    <!-- environment settings for doxygen -->
+    <doxygen.executable>C:/Program Files/doxygen/bin/doxygen.exe</doxygen.executable>
+    <doxygen.config.dir>${basedir}/src/doxygen</doxygen.config.dir>
+    <doxygen.source.dir>${basedir}</doxygen.source.dir>
+    <doxygen.destination.dir>${project.build.directory}/apidocs</doxygen.destination.dir>
+
   </properties>
 
   <modules>
+    <!-- general helpers -->
     <module>Common</module>
+
+    <!-- knowledge base -->
     <module>KnowledgeBase</module>
     <module>KbEclipseEditor</module>
+
+    <!-- resolution engine -->
     <module>ReDataLayer</module>
     <module>ReInterfaces</module>
     <module>ResolutionEngine</module>
+
+    <!-- query agent -->
     <module>QaDataLayer</module>
     <module>QaInterfaces</module>
     <module>QueryAgent</module>
@@ -89,7 +119,7 @@ For details see file LICENSING in the top project directory
       <plugin>
         <groupId>net.sf.doodleproject</groupId>
         <artifactId>doxygen-maven-plugin</artifactId>
-        <version>2.2</version>
+        <version>${doxygen.maven.plugin.version}</version>
         <configuration>
           <executable>${doxygen.executable}</executable>
           <filePatterns>*.java *.idl *.inc</filePatterns>

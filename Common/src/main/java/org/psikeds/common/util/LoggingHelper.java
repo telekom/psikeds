@@ -22,12 +22,13 @@ import org.apache.commons.lang.StringUtils;
 
 /**
  * Helper for setting up the Mapped Diagnostic Context of the Logging System.
- * REQ = The current Request-Id, initialized by CXF-Interceptor
- * org.psikeds.common.interceptor.RequestIdGenerationInterceptor
+ *
+ * REQ = The current Request-Id, initialized by CXF-Interceptor org.psikeds.common.interceptor.RequestIdGenerationInterceptor
  * SRVC = Name of the Target SOAP- or REST-Service
  * CTX = additional context information
- * 
+ *
  * @author marco@juliano.de
+ *
  */
 public final class LoggingHelper {
 
@@ -38,6 +39,8 @@ public final class LoggingHelper {
   private static final String MDC_KEY_ADDITIONAL_CONTEXT = "CTX";
 
   // ------------------------------------------------------------
+
+  public static boolean enabled = true;
 
   public static void init() {
     init(null);
@@ -53,9 +56,11 @@ public final class LoggingHelper {
 
   public static void init(final String requestId, final String serviceName, final String additionalContext) {
     clear();
-    setRequestId(requestId);
-    setServiceName(serviceName);
-    setAdditionalContext(additionalContext);
+    if (enabled) {
+      setRequestId(requestId);
+      setServiceName(serviceName);
+      setAdditionalContext(additionalContext);
+    }
   }
 
   public static void clear() {
@@ -66,21 +71,21 @@ public final class LoggingHelper {
   // ------------------------------------------------------------
 
   public static void setRequestId(final String requestId) {
-    if (!StringUtils.isEmpty(requestId)) {
+    if (enabled && !StringUtils.isEmpty(requestId)) {
       LOGGER.trace("MDC-->{} = {}", MDC_KEY_REQUEST_ID, requestId);
       MDC.put(MDC_KEY_REQUEST_ID, requestId);
     }
   }
 
   public static void setServiceName(final String serviceName) {
-    if (!StringUtils.isEmpty(serviceName)) {
+    if (enabled && !StringUtils.isEmpty(serviceName)) {
       LOGGER.trace("MDC-->{} = {}", MDC_KEY_SERVICE_NAME, serviceName);
       MDC.put(MDC_KEY_SERVICE_NAME, serviceName);
     }
   }
 
   public static void setAdditionalContext(final String additionalContext) {
-    if (!StringUtils.isEmpty(additionalContext)) {
+    if (enabled && !StringUtils.isEmpty(additionalContext)) {
       LOGGER.trace("MDC-->{} = {}", MDC_KEY_ADDITIONAL_CONTEXT, additionalContext);
       MDC.put(MDC_KEY_ADDITIONAL_CONTEXT, additionalContext);
     }

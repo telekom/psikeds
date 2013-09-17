@@ -33,10 +33,10 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <constructor-arg index="0" value="kb.xml" />
   </bean>
 
-  <!-- Uncomment the following lines to load a custom Knowledge Base from XML-file -->
+  <!-- Uncomment the following lines to load a custom Knowledge Base from XML-file. -->
   <!--
   <bean id="kbXmlSource" class="org.springframework.core.io.FileSystemResource">
-    <constructor-arg index="0" value="~/psikeds/schokolade.xml" />
+    <constructor-arg index="0" value="~/psikeds/kb.xml" />
   </bean>
   -->
 </beans>

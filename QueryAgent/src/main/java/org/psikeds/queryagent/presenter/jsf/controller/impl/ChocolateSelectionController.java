@@ -1,13 +1,13 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
  * [ ] GNU Affero General Public License
- * [x] GNU General Public License
- * [ ] GNU Lesser General Public License
+ * [ ] GNU General Public License
+ * [x] GNU Lesser General Public License
  * [ ] Creatice Commons ShareAlike License
  *
  * For details see file LICENSING in the top project directory
@@ -21,12 +21,9 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.commons.lang.StringUtils;
 
-import org.psikeds.queryagent.interfaces.presenter.pojos.Chocolate;
-import org.psikeds.queryagent.interfaces.presenter.services.ChocolateService;
+import org.psikeds.queryagent.interfaces.presenter.services.ResolutionService;
 import org.psikeds.queryagent.presenter.jsf.controller.SelectionController;
 import org.psikeds.queryagent.presenter.jsf.model.Item;
-import org.psikeds.queryagent.presenter.jsf.model.impl.ChocolateItem;
-import org.psikeds.queryagent.presenter.jsf.model.impl.ChocolatelistItem;
 import org.psikeds.queryagent.presenter.jsf.util.Constants;
 
 /**
@@ -44,7 +41,7 @@ public class ChocolateSelectionController extends BaseChocolateController implem
     this(null, null, null);
   }
 
-  public ChocolateSelectionController(final ChocolateService cs, final Item all, final Item selected) {
+  public ChocolateSelectionController(final ResolutionService cs, final Item all, final Item selected) {
     super(cs, all, selected);
     initSelectedItem();
   }
@@ -55,8 +52,9 @@ public class ChocolateSelectionController extends BaseChocolateController implem
    */
   @Override
   public List<? extends Item> getListOfItems() {
-    final ChocolatelistItem allItems = (ChocolatelistItem) getAllItemsBean();
-    return allItems.getSiblings();
+    //    final ChocolatelistItem allItems = (ChocolatelistItem) getAllItemsBean();
+    //    return allItems.getSiblings();
+    return null;
   }
 
   /**
@@ -89,11 +87,11 @@ public class ChocolateSelectionController extends BaseChocolateController implem
       if (StringUtils.isEmpty(this.selectedKey)) {
         throw new IllegalArgumentException("Nothing selected. Selected-Key is empty!");
       }
-      LOGGER.debug("Selecting chocolate with RefId = {}", this.selectedKey);
-      final Chocolate choco = getService().selectChocolate(this.selectedKey);
-      final ChocolateItem selectedItem = (ChocolateItem) getSelectedItemBean();
-      selectedItem.setChocolate(choco);
-      LOGGER.trace("Updated selectedItem = {}", selectedItem);
+      //      LOGGER.debug("Selecting chocolate with RefId = {}", this.selectedKey);
+      //      final Chocolate choco = getService().selectChocolate(this.selectedKey);
+      //      final ChocolateItem selectedItem = (ChocolateItem) getSelectedItemBean();
+      //      selectedItem.setChocolate(choco);
+      //      LOGGER.trace("Updated selectedItem = {}", selectedItem);
       ret = Constants.RESULT_SUCCESS;
     }
     catch (final Exception ex) {
@@ -116,19 +114,20 @@ public class ChocolateSelectionController extends BaseChocolateController implem
   private void initSelectedItem() {
     try {
       LOGGER.trace("--> initSelectedItem()");
-      final ChocolateItem selectedItem = (ChocolateItem) getSelectedItemBean();
-      final Chocolate choco = selectedItem == null ? null : selectedItem.getChocolate();
-      String key = choco == null ? null : choco.getRefid();
-      LOGGER.trace("Got {} from {}", key, selectedItem);
-      if (StringUtils.isEmpty(key)) {
-        final ChocolatelistItem allBean = (ChocolatelistItem) getAllItemsBean();
-        final List<Item> lst = allBean == null ? null : allBean.getSiblings();
-        final int size = lst == null ? 0 : lst.size();
-        if (size > 0) {
-          key = lst.get(0).getKey();
-          LOGGER.trace("Got {} from {}", key, allBean);
-        }
-      }
+      //      final ChocolateItem selectedItem = (ChocolateItem) getSelectedItemBean();
+      //      final Chocolate choco = selectedItem == null ? null : selectedItem.getChocolate();
+      //      final String key = choco == null ? null : choco.getRefid();
+      //      LOGGER.trace("Got {} from {}", key, selectedItem);
+      final String key = null;
+      //      if (StringUtils.isEmpty(key)) {
+      //        final ChocolatelistItem allBean = (ChocolatelistItem) getAllItemsBean();
+      //        final List<Item> lst = allBean == null ? null : allBean.getSiblings();
+      //        final int size = lst == null ? 0 : lst.size();
+      //        if (size > 0) {
+      //          key = lst.get(0).getKey();
+      //          LOGGER.trace("Got {} from {}", key, allBean);
+      //        }
+      //      }
       this.selectedKey = key;
     }
     finally {

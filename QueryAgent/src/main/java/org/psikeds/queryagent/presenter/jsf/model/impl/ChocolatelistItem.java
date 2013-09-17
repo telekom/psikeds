@@ -1,13 +1,13 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
  * [ ] GNU Affero General Public License
- * [x] GNU General Public License
- * [ ] GNU Lesser General Public License
+ * [ ] GNU General Public License
+ * [x] GNU Lesser General Public License
  * [ ] Creatice Commons ShareAlike License
  *
  * For details see file LICENSING in the top project directory
@@ -17,8 +17,6 @@ package org.psikeds.queryagent.presenter.jsf.model.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.psikeds.queryagent.interfaces.presenter.pojos.Chocolate;
-import org.psikeds.queryagent.interfaces.presenter.pojos.Chocolatelist;
 import org.psikeds.queryagent.presenter.jsf.model.Item;
 
 /**
@@ -28,30 +26,32 @@ import org.psikeds.queryagent.presenter.jsf.model.Item;
  */
 public class ChocolatelistItem implements Item {
 
+  // TODO: FIX IT !!!
+
   private static final long serialVersionUID = 1L;
 
   private final List<Item> siblings = new ArrayList<Item>();
 
-  public ChocolatelistItem() {
-    this(null);
-  }
-
-  public ChocolatelistItem(final Chocolatelist chocolst) {
-    setChocolatelist(chocolst);
-  }
-
-  public void setChocolatelist(final Chocolatelist chocolst) {
-    clear();
-    if (chocolst != null) {
-      for (final Chocolate choco : chocolst.getChocolates()) {
-        final ChocolateItem citem = new ChocolateItem(choco);
-        this.siblings.add(citem);
-        for (final IngredientItem iitem : citem.getSiblings()) {
-          this.siblings.add(iitem);
-        }
-      }
-    }
-  }
+  //  public ChocolatelistItem() {
+  //    this(null);
+  //  }
+  //
+  //  public ChocolatelistItem(final Chocolatelist chocolst) {
+  //    setChocolatelist(chocolst);
+  //  }
+  //
+  //  public void setChocolatelist(final Chocolatelist chocolst) {
+  //    clear();
+  //    if (chocolst != null) {
+  //      for (final Chocolate choco : chocolst.getChocolates()) {
+  //        final ChocolateItem citem = new ChocolateItem(choco);
+  //        this.siblings.add(citem);
+  //        for (final IngredientItem iitem : citem.getSiblings()) {
+  //          this.siblings.add(iitem);
+  //        }
+  //      }
+  //    }
+  //  }
 
   public void clear() {
     this.siblings.clear();

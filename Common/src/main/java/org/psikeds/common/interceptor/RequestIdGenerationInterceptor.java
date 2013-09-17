@@ -32,9 +32,7 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.apache.cxf.phase.Phase;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.psikeds.common.reqid.RequestIdGenerator;
+import org.psikeds.common.idgen.IdGenerator;
 import org.psikeds.common.util.LoggingHelper;
 
 /**
@@ -50,7 +48,7 @@ public class RequestIdGenerationInterceptor<T extends Message> extends AbstractP
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RequestIdGenerationInterceptor.class);
 
-  private RequestIdGenerator generator;
+  private IdGenerator generator;
   private boolean readRequestIdFromHttpHeader;
   private String nameOfRequestIdttpHeader;
   private boolean writeRequestIdToHttpHeader;
@@ -62,12 +60,11 @@ public class RequestIdGenerationInterceptor<T extends Message> extends AbstractP
     this(null);
   }
 
-  @Autowired
-  public RequestIdGenerationInterceptor(final RequestIdGenerator generator) {
+  public RequestIdGenerationInterceptor(final IdGenerator generator) {
     this(Phase.PRE_INVOKE, generator);
   }
 
-  public RequestIdGenerationInterceptor(final String phase, final RequestIdGenerator generator) {
+  public RequestIdGenerationInterceptor(final String phase, final IdGenerator generator) {
     super(phase);
     this.generator = generator;
     this.readRequestIdFromHttpHeader = false;
@@ -81,7 +78,7 @@ public class RequestIdGenerationInterceptor<T extends Message> extends AbstractP
   /**
    * @param generator the generator to set
    */
-  public void setGenerator(final RequestIdGenerator generator) {
+  public void setRequestIdGenerator(final IdGenerator generator) {
     this.generator = generator;
   }
 
@@ -140,18 +137,18 @@ public class RequestIdGenerationInterceptor<T extends Message> extends AbstractP
       if (message != null) {
         String reqid = null;
 
-        // First: Try to get Request-Id from HTTP-Header (Not
-        // recommended, could be a security issue)
+        // First: Try to get Request-Id from HTTP-Header
+        // (Not recommended, could be a security issue)
         if (this.readRequestIdFromHttpHeader) {
           reqid = getRequestIdFromHTTPHeader(message);
         }
-        // Second: Try to get Request-Id from CXF-Message-ID (Not
-        // recommended, not unique)
+        // Second: Try to get Request-Id from CXF-Message-ID
+        // (Not recommended, not unique)
         if (this.readRequestIdFromCxfMsgId && StringUtils.isEmpty(reqid)) {
           reqid = getCxfMessageId(message);
         }
-        // Third: Generate a new Request-Id (Recommended, unique and
-        // secure!)
+        // Third: Generate a new Request-Id
+        // (Recommended, unique and secure!)
         if (StringUtils.isEmpty(reqid)) {
           reqid = generateNewRequestId();
         }
@@ -159,17 +156,18 @@ public class RequestIdGenerationInterceptor<T extends Message> extends AbstractP
         // Initialize MDC
         LoggingHelper.init(reqid);
 
-        // First: Write it into the CXF-Message (Recommended for
-        // Logging/Debugging)
+        // First: Write it into the CXF-Message
+        // (Recommended for Logging/Debugging)
         if (this.writeRequestIdToCxfMsgId) {
           setCxfMessageId(message, reqid);
         }
-        // Second: Write it into the HTTP-Headers (Ok, but not
-        // Recommended)
+        // Second: Write it into the HTTP-Headers
+        // (Ok, but not recommended)
         if (this.writeRequestIdToHttpHeader) {
           setRequestIdAsHTTPHeader(message, reqid);
         }
-        // Third: Append it to the Service Parameters (Recommended!)
+        // Third: Append it to the Service Parameters
+        // (Recommended!)
         if (this.addRequestIdToParameters) {
           addRequestIdToParams(message, reqid);
         }
@@ -192,7 +190,7 @@ public class RequestIdGenerationInterceptor<T extends Message> extends AbstractP
   }
 
   private String generateNewRequestId() {
-    final String reqid = this.generator == null ? null : this.generator.getNextReqId();
+    final String reqid = this.generator == null ? null : this.generator.getNextId();
     LOGGER.debug("Generated a new Request-Id: {}", reqid);
     return reqid;
   }

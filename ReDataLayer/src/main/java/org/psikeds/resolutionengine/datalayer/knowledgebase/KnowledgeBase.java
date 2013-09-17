@@ -14,15 +14,44 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.datalayer.knowledgebase;
 
-import java.util.List;
-
-import org.psikeds.resolutionengine.datalayer.vo.Chocolate;
+import org.psikeds.resolutionengine.datalayer.vo.Alternatives;
+import org.psikeds.resolutionengine.datalayer.vo.Constituents;
+import org.psikeds.resolutionengine.datalayer.vo.Event;
+import org.psikeds.resolutionengine.datalayer.vo.Events;
+import org.psikeds.resolutionengine.datalayer.vo.Feature;
+import org.psikeds.resolutionengine.datalayer.vo.Features;
+import org.psikeds.resolutionengine.datalayer.vo.Purpose;
+import org.psikeds.resolutionengine.datalayer.vo.Purposes;
+import org.psikeds.resolutionengine.datalayer.vo.Rule;
+import org.psikeds.resolutionengine.datalayer.vo.Rules;
+import org.psikeds.resolutionengine.datalayer.vo.Variant;
+import org.psikeds.resolutionengine.datalayer.vo.Variants;
 
 public interface KnowledgeBase {
 
-  List<Chocolate> getChocolates();
+  Features getFeatures();
 
-  Chocolate getChocolate(String refid);
+  Purposes getPurposes();
 
-  void addChocolate(Chocolate choco);
+  Variants getVariants();
+
+  Alternatives getAlternatives();
+
+  Constituents getConstituents();
+
+  Events getEvents();
+
+  Rules getRules();
+
+  // -------------------------------
+
+  Feature getFeature(String id);
+
+  Purpose getPurpose(String id);
+
+  Variant getVariant(String id);
+
+  Event getEvent(String id);
+
+  Rule getRule(String id);
 }

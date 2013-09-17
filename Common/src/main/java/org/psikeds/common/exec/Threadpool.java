@@ -15,28 +15,41 @@
 package org.psikeds.common.exec;
 
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Quite simple Threadpool with a fixed size and capacity.
- * Note: Queue is not fair, i.e. order of requests is not guaranteed!
- * 
+ * Simple Threadpool using a bounded Queue for incomming Tasks.
+ * By default all unreferenced Threads will die immediately
+ * in order to ensure proper Finalization / Shutdown.
+ *
+ * Please note that the Order of Execution is not guaranteed,
+ * i.e. Tasks could overtake each other.
+ *
  * @author marco@juliano.de
  */
-public class Threadpool extends ThreadPoolExecutor implements Executor {
+public class Threadpool extends ThreadPoolExecutor implements ExecutorService, Executor {
 
-  public static final int DEFAULT_MIN_POOL_SIZE = 20;
-  public static final int DEFAULT_MAX_POOL_SIZE = DEFAULT_MIN_POOL_SIZE;
-  public static final long DEFAULT_THREAD_TIMEOUT = 0L;
-  public static final int DEFAULT_QUEUE_CAPACITY = 50;
+  public static final int DEFAULT_CORE_POOL_SIZE = 0;
+  public static final int DEFAULT_MAX_POOL_SIZE = 20;
+  public static final long DEFAULT_KEEP_ALIVE_SECONDS = 0L;
+  public static final int DEFAULT_QUEUE_CAPACITY = 100;
 
   public Threadpool() {
-    this(DEFAULT_MIN_POOL_SIZE, DEFAULT_MAX_POOL_SIZE, DEFAULT_THREAD_TIMEOUT, DEFAULT_QUEUE_CAPACITY);
+    this(DEFAULT_CORE_POOL_SIZE, DEFAULT_MAX_POOL_SIZE, DEFAULT_KEEP_ALIVE_SECONDS, DEFAULT_QUEUE_CAPACITY);
   }
 
-  public Threadpool(final int minPoolSize, final int maxPoolSize, final long timeout, final int queueCapacity) {
-    super(minPoolSize, maxPoolSize, timeout, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(queueCapacity));
+  public Threadpool(final int corePoolSize, final int maximumPoolSize, final long keepAliveSeconds, final int queueCapacity) {
+    super(corePoolSize, maximumPoolSize, keepAliveSeconds, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(queueCapacity));
+  }
+
+  public Threadpool(final int corePoolSize, final int maximumPoolSize, final long keepAliveTime, final TimeUnit unit, final BlockingQueue<Runnable> workQueue) {
+    super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
+    if (keepAliveTime > 0) {
+      allowCoreThreadTimeOut(true);
+    }
   }
 }

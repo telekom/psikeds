@@ -1,13 +1,13 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
  * [ ] GNU Affero General Public License
- * [x] GNU General Public License
- * [ ] GNU Lesser General Public License
+ * [ ] GNU General Public License
+ * [x] GNU Lesser General Public License
  * [ ] Creatice Commons ShareAlike License
  *
  * For details see file LICENSING in the top project directory
@@ -19,13 +19,9 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.commons.lang.StringUtils;
 
-import org.psikeds.queryagent.interfaces.presenter.pojos.Chocolate;
-import org.psikeds.queryagent.interfaces.presenter.pojos.Chocolatelist;
-import org.psikeds.queryagent.interfaces.presenter.services.ChocolateService;
+import org.psikeds.queryagent.interfaces.presenter.services.ResolutionService;
 import org.psikeds.queryagent.presenter.jsf.controller.AddItemController;
 import org.psikeds.queryagent.presenter.jsf.model.Item;
-import org.psikeds.queryagent.presenter.jsf.model.impl.ChocolateItem;
-import org.psikeds.queryagent.presenter.jsf.model.impl.ChocolatelistItem;
 import org.psikeds.queryagent.presenter.jsf.util.Constants;
 
 /**
@@ -44,7 +40,7 @@ public class AddChocolateController extends BaseChocolateController implements A
     this(null, null, null);
   }
 
-  public AddChocolateController(final ChocolateService srvc, final Item all, final Item selected) {
+  public AddChocolateController(final ResolutionService srvc, final Item all, final Item selected) {
     super(srvc, all, selected);
     setKey(null);
     setValue(null);
@@ -101,19 +97,19 @@ public class AddChocolateController extends BaseChocolateController implements A
       if (StringUtils.isEmpty(this.value)) {
         throw new IllegalArgumentException("Value (= Description) is empty!");
       }
-      // create new chocolate and invoke business service
-      final Chocolate choco = new Chocolate(this.key, this.value);
-      LOGGER.debug("Adding new Chocolate: {}", choco);
-      final Chocolatelist chocolst = getService().addChocolate(choco);
-      // update cached list of chocolate
-      final ChocolatelistItem allItems = (ChocolatelistItem) getAllItemsBean();
-      allItems.setChocolatelist(chocolst);
-      LOGGER.trace("Updated allItems = {}", allItems);
-      // update currently selected item
-      final ChocolateItem selectedItem = (ChocolateItem) getSelectedItemBean();
-      selectedItem.setChocolate(choco);
-      LOGGER.trace("Updated selectedItem = {}", selectedItem);
-      // done
+      //      // create new chocolate and invoke business service
+      //      final Chocolate choco = new Chocolate(this.key, this.value);
+      //      LOGGER.debug("Adding new Chocolate: {}", choco);
+      //      final Chocolatelist chocolst = getService().addChocolate(choco);
+      //      // update cached list of chocolate
+      //      final ChocolatelistItem allItems = (ChocolatelistItem) getAllItemsBean();
+      //      allItems.setChocolatelist(chocolst);
+      //      LOGGER.trace("Updated allItems = {}", allItems);
+      //      // update currently selected item
+      //      final ChocolateItem selectedItem = (ChocolateItem) getSelectedItemBean();
+      //      selectedItem.setChocolate(choco);
+      //      LOGGER.trace("Updated selectedItem = {}", selectedItem);
+      //      // done
       ret = Constants.RESULT_SUCCESS;
     }
     catch (final Exception ex) {

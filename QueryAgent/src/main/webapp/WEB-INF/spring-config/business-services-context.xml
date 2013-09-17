@@ -22,16 +22,17 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-  <bean id="chocolateBusinessService" scope="singleton"
-    class="org.psikeds.queryagent.presenter.services.ChocolateBusinessService">
-    <constructor-arg>
-      <list>
-        <ref bean="resolutionEngineClient" />  <!-- defined in requester-client-context.xml -->
-      </list>
-    </constructor-arg>
+  <bean id="Re2QaTransformer" class="org.psikeds.queryagent.transformer.impl.Re2QaTransformer" />
+
+  <bean id="resolutionBusinessService" scope="singleton" class="org.psikeds.queryagent.presenter.services.ResolutionBusinessService">
+    <constructor-arg index="0" type="org.psikeds.queryagent.requester.client.ResolutionEngineClient" ref="resolutionEngineClient" />  <!-- defined in requester-client-context.xml -->
+    <constructor-arg index="1" type="org.psikeds.queryagent.transformer.Transformer" ref="Re2QaTransformer" />
   </bean>
 
-  <!-- bean id="chocolateBusinessService" scope="singleton"
-      class="org.psikeds.queryagent.presenter.services.ChocolateMockService" -->
+  <!-- If you want to test the Interface/GUI of the QA without actually invoking
+       the real RE, just enable the following Bean and disable the one above. -->
+  <!-- 
+  <bean id="resolutionBusinessService" scope="singleton" class="org.psikeds.queryagent.presenter.services.ResolutionMockService" />
+  -->
 
 </beans>

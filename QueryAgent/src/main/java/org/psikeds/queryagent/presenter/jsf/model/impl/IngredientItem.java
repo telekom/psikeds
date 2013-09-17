@@ -1,13 +1,13 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
  * [ ] GNU Affero General Public License
- * [x] GNU General Public License
- * [ ] GNU Lesser General Public License
+ * [ ] GNU General Public License
+ * [x] GNU Lesser General Public License
  * [ ] Creatice Commons ShareAlike License
  *
  * For details see file LICENSING in the top project directory
@@ -16,7 +16,6 @@ package org.psikeds.queryagent.presenter.jsf.model.impl;
 
 import java.util.List;
 
-import org.psikeds.queryagent.interfaces.presenter.pojos.Ingredient;
 import org.psikeds.queryagent.presenter.jsf.model.Item;
 
 /**
@@ -28,23 +27,23 @@ public class IngredientItem implements Item {
 
   private static final long serialVersionUID = 1L;
 
-  private Ingredient ingred;
-
-  public IngredientItem() {
-    this(null);
-  }
-
-  public IngredientItem(final Ingredient ingr) {
-    setIngredient(ingr);
-  }
-
-  public Ingredient getIngredient() {
-    return this.ingred;
-  }
-
-  public void setIngredient(final Ingredient ingr) {
-    this.ingred = ingr;
-  }
+  //  private Ingredient ingred;
+  //
+  //  public IngredientItem() {
+  //    this(null);
+  //  }
+  //
+  //  public IngredientItem(final Ingredient ingr) {
+  //    setIngredient(ingr);
+  //  }
+  //
+  //  public Ingredient getIngredient() {
+  //    return this.ingred;
+  //  }
+  //
+  //  public void setIngredient(final Ingredient ingr) {
+  //    this.ingred = ingr;
+  //  }
 
   /**
    * @return
@@ -70,7 +69,8 @@ public class IngredientItem implements Item {
    */
   @Override
   public String getKey() {
-    return this.ingred == null ? "" : this.ingred.getRefid();
+    //    return this.ingred == null ? "" : this.ingred.getRefid();
+    return null;
   }
 
   /**
@@ -85,7 +85,8 @@ public class IngredientItem implements Item {
    */
   @Override
   public String getValue() {
-    return this.ingred == null ? "" : this.ingred.getDescription();
+    //    return this.ingred == null ? "" : this.ingred.getDescription();
+    return null;
   }
 
   /**
@@ -101,8 +102,8 @@ public class IngredientItem implements Item {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder(super.toString());
-    sb.append('\n');
-    sb.append(String.valueOf(this.ingred));
+    //    sb.append('\n');
+    //    sb.append(String.valueOf(this.ingred));
     return sb.toString();
   }
 }

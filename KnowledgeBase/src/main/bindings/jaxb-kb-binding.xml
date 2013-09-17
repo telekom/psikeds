@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jxb:bindings[]> <!-- Workaround for Eclipse Validator -->
+<jxb:bindings version="2.0"
+  xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <jxb:bindings schemaLocation="../resources/kb.xsd" node="/xs:schema">
+
+    <jxb:globalBindings>
+      <jxb:serializable uid="1" />
+
+      <jxb:javaType name="java.util.Calendar" xmlType="xs:date"
+        parseMethod="javax.xml.bind.DatatypeConverter.parseDate"
+        printMethod="javax.xml.bind.DatatypeConverter.printDate" />
+
+      <jxb:javaType name="java.util.Calendar" xmlType="xs:dateTime"
+        parseMethod="javax.xml.bind.DatatypeConverter.parseDateTime"
+        printMethod="javax.xml.bind.DatatypeConverter.printDateTime" />
+
+      <jxb:javaType name="java.lang.String" xmlType="xs:ID"
+        parseMethod="javax.xml.bind.DatatypeConverter.parseString"
+        printMethod="javax.xml.bind.DatatypeConverter.printString" />
+
+      <jxb:javaType name="java.lang.String" xmlType="xs:IDREF"
+        parseMethod="javax.xml.bind.DatatypeConverter.parseString"
+        printMethod="javax.xml.bind.DatatypeConverter.printString" />
+    </jxb:globalBindings>
+
+  </jxb:bindings>
+
+</jxb:bindings>

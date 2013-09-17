@@ -7,7 +7,7 @@
   <!-- ============================== -->
 
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
-    <param name="Threshold" value="INFO" />
+    <param name="Threshold" value="DEBUG" />
     <param name="Target" value="System.out" />
     <layout class="org.apache.log4j.PatternLayout">
       <!-- Enable custom psiKeds context infos in log -->

@@ -22,6 +22,8 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
+  <!-- TODO: JSF-GUI is currently obsolete and not working!!! -->
+
   <bean id="allItemsBean" scope="session"
     class="org.psikeds.queryagent.presenter.jsf.model.impl.ChocolatelistItem" />
 
