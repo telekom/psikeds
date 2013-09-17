@@ -1,9 +1,0 @@
-psiKeds :- ps induced knowledge entity delivery system
-
-Copyright (c) 2013-2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
-
-This directory contains psikeds xml knowledge bases, the corresponding XSD and 
-the corresponding JAXB-classes and StAX-Parsers which have (automatically) been 
-generated on the base of the knowledge bases.
-
-The compilation results will be delivered as JAR file.
