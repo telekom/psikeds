@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -19,14 +19,17 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.psikeds.knowledgebase.jaxb.Range;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer;
 import org.psikeds.resolutionengine.datalayer.vo.Alternatives;
 import org.psikeds.resolutionengine.datalayer.vo.Constituents;
 import org.psikeds.resolutionengine.datalayer.vo.Constitutes;
+import org.psikeds.resolutionengine.datalayer.vo.ContextPath;
 import org.psikeds.resolutionengine.datalayer.vo.Data;
 import org.psikeds.resolutionengine.datalayer.vo.Event;
 import org.psikeds.resolutionengine.datalayer.vo.Events;
 import org.psikeds.resolutionengine.datalayer.vo.Feature;
+import org.psikeds.resolutionengine.datalayer.vo.FeatureValueType;
 import org.psikeds.resolutionengine.datalayer.vo.Features;
 import org.psikeds.resolutionengine.datalayer.vo.Fulfills;
 import org.psikeds.resolutionengine.datalayer.vo.Knowledgebase;
@@ -101,6 +104,21 @@ public class Xml2VoTransformer implements Transformer {
   /**
    * @param xml
    * @return vo
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer#xml2ValueObject(org.psikeds.knowledgebase.jaxb.ContextPath)
+   */
+  @Override
+  public ContextPath xml2ValueObject(final org.psikeds.knowledgebase.jaxb.ContextPath xml) {
+    ContextPath vo = null;
+    if (xml != null) {
+      final List<String> pathIDs = xml.getPathIDs();
+      vo = new ContextPath(pathIDs);
+    }
+    return vo;
+  }
+
+  /**
+   * @param xml
+   * @return vo
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer#xml2ValueObject(org.psikeds.knowledgebase.jaxb.Data)
    */
   @Override
@@ -127,7 +145,7 @@ public class Xml2VoTransformer implements Transformer {
    */
   @Override
   public Event xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Event xml) {
-    return xml == null ? null : new Event(xml.getLabel(), xml.getDescription(), xml.getId());
+    return xml == null ? null : new Event(xml.getLabel(), xml.getDescription(), xml.getId(), xml2ValueObject(xml.getContextPath()), xml.getVariantID());
   }
 
   /**
@@ -156,7 +174,18 @@ public class Xml2VoTransformer implements Transformer {
    */
   @Override
   public Feature xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Feature xml) {
-    return xml == null ? null : new Feature(xml.getLabel(), xml.getDescription(), xml.getId());
+    Feature vo = null;
+    if (xml != null) {
+      final FeatureValueType fvt = FeatureValueType.fromValue(xml.getFeatureValueType());
+      final Range range = xml.getRange();
+      if (range != null) {
+        vo = new Feature(xml.getLabel(), xml.getDescription(), xml.getId(), range.getMinValue(), range.getMaxValue(), fvt);
+      }
+      else {
+        vo = new Feature(xml.getLabel(), xml.getDescription(), xml.getId(), xml.getValue(), fvt);
+      }
+    }
+    return vo;
   }
 
   /**
@@ -185,7 +214,17 @@ public class Xml2VoTransformer implements Transformer {
    */
   @Override
   public Fulfills xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Fulfills xml) {
-    return xml == null ? null : new Fulfills(xml.getDescription(), xml.getPurposeID(), xml.getVariantID());
+    Fulfills vo = null;
+    if (xml != null) {
+      final Long qty = xml.getQuantity();
+      if (qty != null) {
+        vo = new Fulfills(xml.getDescription(), xml.getPurposeID(), xml.getVariantID(), qty.longValue());
+      }
+      else {
+        vo = new Fulfills(xml.getDescription(), xml.getPurposeID(), xml.getVariantID());
+      }
+    }
+    return vo;
   }
 
   /**
@@ -227,7 +266,17 @@ public class Xml2VoTransformer implements Transformer {
    */
   @Override
   public Purpose xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Purpose xml) {
-    return xml == null ? null : new Purpose(xml.getLabel(), xml.getDescription(), xml.getId());
+    Purpose vo = null;
+    if (xml != null) {
+      final Boolean root = xml.isRoot();
+      if (root != null) {
+        vo = new Purpose(xml.getLabel(), xml.getDescription(), xml.getId(), root.booleanValue());
+      }
+      else {
+        vo = new Purpose(xml.getLabel(), xml.getDescription(), xml.getId());
+      }
+    }
+    return vo;
   }
 
   /**
@@ -256,7 +305,7 @@ public class Xml2VoTransformer implements Transformer {
    */
   @Override
   public Rule xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Rule xml) {
-    return xml == null ? null : new Rule(xml.getLabel(), xml.getDescription(), xml.getId());
+    return xml == null ? null : new Rule(xml.getLabel(), xml.getDescription(), xml.getId(), xml.getTriggerEventID(), xml.getPremiseEventID(), xml.getConclusionEventID());
   }
 
   /**
@@ -285,7 +334,7 @@ public class Xml2VoTransformer implements Transformer {
    */
   @Override
   public Variant xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Variant xml) {
-    return xml == null ? null : new Variant(xml.getLabel(), xml.getDescription(), xml.getId());
+    return xml == null ? null : new Variant(xml.getLabel(), xml.getDescription(), xml.getId(), xml.getHasFeatures());
   }
 
   /**
