@@ -1,9 +1,0 @@
-psiKeds :- ps induced knowledge entity delivery system
-
-Copyright (c) 2013-2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
-
-The directory contains the internal data abjects of the psikedsResolutionEngine,
-especially those for the internal representation and evaluation of the 
-psikeds konwledge bases.
-
-The compilation results are delivered as jar file.
