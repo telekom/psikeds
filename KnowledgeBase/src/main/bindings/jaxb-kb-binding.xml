@@ -17,6 +17,10 @@
         parseMethod="javax.xml.bind.DatatypeConverter.parseDateTime"
         printMethod="javax.xml.bind.DatatypeConverter.printDateTime" />
 
+      <jxb:javaType name="java.lang.Long" xmlType="xs:integer"
+        parseMethod="javax.xml.bind.DatatypeConverter.parseLong"
+        printMethod="javax.xml.bind.DatatypeConverter.printLong" />
+
       <jxb:javaType name="java.lang.String" xmlType="xs:ID"
         parseMethod="javax.xml.bind.DatatypeConverter.parseString"
         printMethod="javax.xml.bind.DatatypeConverter.printString" />
