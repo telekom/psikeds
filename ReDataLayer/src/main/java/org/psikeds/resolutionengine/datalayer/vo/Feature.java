@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -17,7 +17,7 @@ package org.psikeds.resolutionengine.datalayer.vo;
 import java.io.Serializable;
 
 /**
- * This object represents a single feature/attribute of a purpose or variant.
+ * This object represents a single Feature / Attribute of a Variant.
  *
  * Note: ID must be globally unique!
  *
@@ -31,16 +31,68 @@ public class Feature extends ValueObject implements Serializable {
   private String label;
   private String description;
   private String id;
+  private String minValue;
+  private String maxValue;
+  private FeatureValueType valueType;
+  private boolean range;
 
+  /**
+   * Default constructor: use Setters for Initialization
+   *
+   */
   public Feature() {
-    this(null, null, null);
+    this(null, null, null, null, null, null, false);
   }
 
-  public Feature(final String label, final String description, final String id) {
+  /**
+   * Constructor for a Feature with a discrete Value
+   * 
+   * @param label
+   * @param description
+   * @param id
+   * @param value
+   * @param fvt
+   *
+   */
+  public Feature(final String label, final String description, final String id, final String value, final FeatureValueType fvt) {
+    this(label, description, id, value, null, fvt, false);
+  }
+
+  /**
+   * Constructor for a Feature with a Range from minValue to maxValue
+   *
+   * @param label
+   * @param description
+   * @param id
+   * @param minValue
+   * @param maxValue
+   * @param fvt
+   *
+   */
+  public Feature(final String label, final String description, final String id, final String minValue, final String maxValue, final FeatureValueType fvt) {
+    this(label, description, id, minValue, maxValue, fvt, true);
+  }
+
+  /**
+   * Internal constructor
+   *
+   * @param label
+   * @param description
+   * @param id
+   * @param minValue
+   * @param maxValue
+   * @param fvt
+   * @param range
+   */
+  private Feature(final String label, final String description, final String id, final String minValue, final String maxValue, final FeatureValueType fvt, final boolean range) {
     super();
     this.label = label;
     this.description = description;
     this.id = id;
+    this.minValue = minValue;
+    this.maxValue = maxValue;
+    this.valueType = fvt == null ? FeatureValueType.STRING : fvt;
+    this.range = range;
   }
 
   public String getLabel() {
@@ -65,5 +117,53 @@ public class Feature extends ValueObject implements Serializable {
 
   public void setId(final String value) {
     this.id = value;
+  }
+
+  public String getMinValue() {
+    if (!this.range) {
+      throw new IllegalArgumentException("Not a range of values!");
+    }
+    return this.minValue;
+  }
+
+  public String getValue() {
+    if (this.range) {
+      throw new IllegalArgumentException("Not a discrete value!");
+    }
+    return this.minValue;
+  }
+
+  public void setMinValue(final String minValue) {
+    this.minValue = minValue;
+    this.range = true;
+  }
+
+  public void setValue(final String value) {
+    this.minValue = value;
+    this.range = false;
+  }
+
+  public String getMaxValue() {
+    if (!this.range) {
+      throw new IllegalArgumentException("Not a range of values!");
+    }
+    return this.maxValue;
+  }
+
+  public void setMaxValue(final String maxValue) {
+    this.maxValue = maxValue;
+    this.range = true;
+  }
+
+  public FeatureValueType getValueType() {
+    return this.valueType;
+  }
+
+  public void setValueType(final FeatureValueType valueType) {
+    this.valueType = valueType;
+  }
+
+  public boolean isRange() {
+    return this.range;
   }
 }
