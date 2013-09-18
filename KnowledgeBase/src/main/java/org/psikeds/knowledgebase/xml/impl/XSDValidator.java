@@ -1,15 +1,15 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
- * 
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
- * 
+ *
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
  * [x] GNU Affero General Public License
  * [ ] GNU General Public License
  * [ ] GNU Lesser General Public License
  * [ ] Creatice Commons ShareAlike License
- * 
+ *
  * For details see file LICENSING in the top project directory
  *******************************************************************************/
 package org.psikeds.knowledgebase.xml.impl;
@@ -37,11 +37,14 @@ import org.psikeds.knowledgebase.xml.KBValidator;
 
 /**
  * Validate whether an XML is correct against a given XSD, i.e. check whether
- * the Knowledge Base meets the specification.<br>
- * Note: XML and XSD can be both files or both input streams, but not a
- * combination!<br>
- * 
+ * the Knowledge Base meets the Specification.<br>
+ *
+ * Note:
+ * XML and XSD can be both Files or both Inputstreams or both Spring-Resources
+ * but not a combination of different Types.<br>
+ *
  * @author marco@juliano.de
+ *
  */
 public class XSDValidator implements KBValidator {
 
