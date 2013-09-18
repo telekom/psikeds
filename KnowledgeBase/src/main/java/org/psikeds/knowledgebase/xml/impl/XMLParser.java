@@ -1,15 +1,15 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
- * 
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
- * 
+ *
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
  * [x] GNU Affero General Public License
  * [ ] GNU General Public License
  * [ ] GNU Lesser General Public License
  * [ ] Creatice Commons ShareAlike License
- * 
+ *
  * For details see file LICENSING in the top project directory
  *******************************************************************************/
 package org.psikeds.knowledgebase.xml.impl;
@@ -40,12 +40,15 @@ import org.psikeds.knowledgebase.xml.KBParser;
 import org.psikeds.knowledgebase.xml.KBParserCallback;
 
 /**
- * This is a streaming parser suitable for big XML-Files, i.e. the
- * <b>psiKeds Knowledge Base</b>. It uses JAXB in combination with
- * the Iterator-API of StAX.<br>
+ * This is a streaming parser suitable for big XML-Files, e.g. the
+ * psiKeds Knowledge Base. It uses JAXB in combination with the
+ * Iterator-API of StAX.<br>
+ *
+ * Note:
  * XML-Data can be supplied as either File, Inputstream or Spring-Resource.<br>
  * 
  * @author marco@juliano.de
+ *
  */
 public class XMLParser implements KBParser {
 
