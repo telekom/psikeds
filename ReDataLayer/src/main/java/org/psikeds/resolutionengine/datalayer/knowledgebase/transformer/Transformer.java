@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -16,9 +16,10 @@ package org.psikeds.resolutionengine.datalayer.knowledgebase.transformer;
 
 /**
  * Helper for transforming a JAXB XML Object from the Knowledgebase into a
- * Value Object for the Datalayer.
+ * Value Object for the Datalayer.<br>
+ *
  * The Knowledgebase is read-only, therefore only transformations XML to VO
- * are supported/implemented.
+ * are supported / implemented.<br>
  *
  * @author marco@juliano.de
  */
@@ -29,6 +30,8 @@ public interface Transformer {
   org.psikeds.resolutionengine.datalayer.vo.Constituents xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Constituents xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Constitutes xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Constitutes xml);
+
+  org.psikeds.resolutionengine.datalayer.vo.ContextPath xml2ValueObject(final org.psikeds.knowledgebase.jaxb.ContextPath xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Data xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Data xml);
 
