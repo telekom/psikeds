@@ -73,6 +73,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
 
   private Map<String, Object> knowledge;
   private Transformer trans;
+  private boolean valid;
 
   public XmlKnowledgeBase() {
     this(new Xml2VoTransformer());
@@ -85,6 +86,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   public XmlKnowledgeBase(final Transformer trans, final Map<String, Object> knowledge) {
     this.trans = trans;
     this.knowledge = knowledge;
+    this.valid = false; // this kb is not valid unless explicitly validated!
   }
 
   public Transformer getTransformer() {
@@ -103,12 +105,16 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
     this.knowledge = knowledge;
   }
 
+  public void setValid(final boolean valid) {
+    this.valid = valid;
+  }
+
   // -------------------------------------------------------------
   // Methods required for the Interface KnowledgeBase
   // -------------------------------------------------------------
 
   /**
-   * @return Features
+   * @return all Features
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFeatures()
    */
   @Override
@@ -117,7 +123,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   }
 
   /**
-   * @return Purposes
+   * @return all Purposes
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getPurposes()
    */
   @Override
@@ -126,7 +132,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   }
 
   /**
-   * @return Variants
+   * @return all Variants
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getVariants()
    */
   @Override
@@ -135,7 +141,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   }
 
   /**
-   * @return Alternatives
+   * @return all Alternatives
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getAlternatives()
    */
   @Override
@@ -144,7 +150,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   }
 
   /**
-   * @return Constituents
+   * @return all Constituents
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getConstituents()
    */
   @Override
@@ -153,7 +159,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   }
 
   /**
-   * @return Events
+   * @return all Events
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getEvents()
    */
   @Override
@@ -162,7 +168,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   }
 
   /**
-   * @return Rules
+   * @return all Rules
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getRules()
    */
   @Override
@@ -171,53 +177,116 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   }
 
   /**
-   * @param id
+   * @param featureId
    * @return Feature
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFeature(java.lang.String)
    */
   @Override
-  public Feature getFeature(final String id) {
-    return (Feature) load(KEY_PREFIX_FEATURE + id);
+  public Feature getFeature(final String featureId) {
+    return (Feature) load(KEY_PREFIX_FEATURE + featureId);
   }
 
   /**
-   * @param id
+   * @param purposeId
    * @return Purpose
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getPurpose(java.lang.String)
    */
   @Override
-  public Purpose getPurpose(final String id) {
-    return (Purpose) load(KEY_PREFIX_PURPOSE + id);
+  public Purpose getPurpose(final String purposeId) {
+    return (Purpose) load(KEY_PREFIX_PURPOSE + purposeId);
   }
 
   /**
-   * @param id
+   * @param variantId
    * @return Variant
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getVariant(java.lang.String)
    */
   @Override
-  public Variant getVariant(final String id) {
-    return (Variant) load(KEY_PREFIX_VARIANT + id);
+  public Variant getVariant(final String variantId) {
+    return (Variant) load(KEY_PREFIX_VARIANT + variantId);
   }
 
   /**
-   * @param id
+   * @param eventId
    * @return Event
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getEvent(java.lang.String)
    */
   @Override
-  public Event getEvent(final String id) {
-    return (Event) load(KEY_PREFIX_EVENT + id);
+  public Event getEvent(final String eventId) {
+    return (Event) load(KEY_PREFIX_EVENT + eventId);
   }
 
   /**
-   * @param id
+   * @param ruleId
    * @return Rule
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getRule(java.lang.String)
    */
   @Override
-  public Rule getRule(final String id) {
-    return (Rule) load(KEY_PREFIX_RULE + id);
+  public Rule getRule(final String ruleId) {
+    return (Rule) load(KEY_PREFIX_RULE + ruleId);
+  }
+
+  /**
+   * @return all Purposes flagged with "root" attribute
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getRootPurposes()
+   */
+  @Override
+  public Purposes getRootPurposes() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  /**
+   * @param purposeId
+   * @return
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFulfillingVariants(java.lang.String)
+   */
+  @Override
+  public Variants getFulfillingVariants(final String purposeId) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  /**
+   * @param purpose
+   * @return
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFulfillingVariants(org.psikeds.resolutionengine.datalayer.vo.Purpose)
+   */
+  @Override
+  public Variants getFulfillingVariants(final Purpose purpose) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  /**
+   * @param variantId
+   * @return
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFeatures(java.lang.String)
+   */
+  @Override
+  public Features getFeatures(final String variantId) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  /**
+   * @param variant
+   * @return
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFeatures(org.psikeds.resolutionengine.datalayer.vo.Variant)
+   */
+  @Override
+  public Features getFeatures(final Variant variant) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  /**
+   * @return boolean valid
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#isValid()
+   */
+  @Override
+  public boolean isValid() {
+    return this.valid;
   }
 
   // -------------------------------------------------------------
@@ -358,7 +427,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
       save(KEY_ALL_RULES, rules);
       final List<Rule> lst = rules.getRule();
       for (final Rule r : lst) {
-        save(KEY_PREFIX_RULE + r.getId(), r);
+        save(KEY_PREFIX_RULE + r.getRuleID(), r);
       }
     }
   }
@@ -380,7 +449,4 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
     LOGGER.trace("load: key = {}\nvalue = {}", key, value);
     return value;
   }
-
-  // -------------------------------------------------------------
-  // TODO: validate IDs and references
 }

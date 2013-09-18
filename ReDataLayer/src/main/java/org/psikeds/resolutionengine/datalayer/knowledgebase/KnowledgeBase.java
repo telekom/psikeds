@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -29,6 +29,10 @@ import org.psikeds.resolutionengine.datalayer.vo.Variants;
 
 public interface KnowledgeBase {
 
+  // -------------------------------
+  // global Access to all Objects
+  // -------------------------------
+
   Features getFeatures();
 
   Purposes getPurposes();
@@ -44,14 +48,32 @@ public interface KnowledgeBase {
   Rules getRules();
 
   // -------------------------------
+  // get Objects by ID
+  // -------------------------------
 
-  Feature getFeature(String id);
+  Feature getFeature(String featureId);
 
-  Purpose getPurpose(String id);
+  Purpose getPurpose(String purposeId);
 
-  Variant getVariant(String id);
+  Variant getVariant(String variantId);
 
-  Event getEvent(String id);
+  Event getEvent(String eventId);
 
-  Rule getRule(String id);
+  Rule getRule(String ruleId);
+
+  // -------------------------------
+  // specialized Methods
+  // -------------------------------
+
+  Purposes getRootPurposes();
+
+  Variants getFulfillingVariants(String purposeId);
+
+  Variants getFulfillingVariants(Purpose purpose);
+
+  Features getFeatures(String variantId);
+
+  Features getFeatures(Variant variant);
+
+  boolean isValid();
 }
