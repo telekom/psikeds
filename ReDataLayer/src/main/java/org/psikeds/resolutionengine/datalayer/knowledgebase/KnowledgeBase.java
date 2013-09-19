@@ -16,10 +16,12 @@ package org.psikeds.resolutionengine.datalayer.knowledgebase;
 
 import org.psikeds.resolutionengine.datalayer.vo.Alternatives;
 import org.psikeds.resolutionengine.datalayer.vo.Constituents;
+import org.psikeds.resolutionengine.datalayer.vo.Constitutes;
 import org.psikeds.resolutionengine.datalayer.vo.Event;
 import org.psikeds.resolutionengine.datalayer.vo.Events;
 import org.psikeds.resolutionengine.datalayer.vo.Feature;
 import org.psikeds.resolutionengine.datalayer.vo.Features;
+import org.psikeds.resolutionengine.datalayer.vo.Fulfills;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
 import org.psikeds.resolutionengine.datalayer.vo.Purposes;
 import org.psikeds.resolutionengine.datalayer.vo.Rule;
@@ -61,6 +63,14 @@ public interface KnowledgeBase {
 
   Rule getRule(String ruleId);
 
+  Fulfills getFulfills(String purposeId);
+
+  Constitutes getConstitutes(String variantId);
+
+  Events getAttachedEvents(String variantId);
+
+  Rules getAttachedRules(String variantId);
+
   // -------------------------------
   // specialized Methods
   // -------------------------------
@@ -71,9 +81,17 @@ public interface KnowledgeBase {
 
   Variants getFulfillingVariants(Purpose purpose);
 
+  Purposes getConstitutingPurposes(String variantId);
+
+  Purposes getConstitutingPurposes(Variant variant);
+
   Features getFeatures(String variantId);
 
   Features getFeatures(Variant variant);
+
+  // -------------------------------
+  // other helpers
+  // -------------------------------
 
   boolean isValid();
 }
