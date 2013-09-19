@@ -120,16 +120,10 @@ public class Feature extends ValueObject implements Serializable {
   }
 
   public String getMinValue() {
-    if (!this.range) {
-      throw new IllegalArgumentException("Not a range of values!");
-    }
     return this.minValue;
   }
 
   public String getValue() {
-    if (this.range) {
-      throw new IllegalArgumentException("Not a discrete value!");
-    }
     return this.minValue;
   }
 
@@ -144,9 +138,6 @@ public class Feature extends ValueObject implements Serializable {
   }
 
   public String getMaxValue() {
-    if (!this.range) {
-      throw new IllegalArgumentException("Not a range of values!");
-    }
     return this.maxValue;
   }
 
@@ -165,5 +156,12 @@ public class Feature extends ValueObject implements Serializable {
 
   public boolean isRange() {
     return this.range;
+  }
+
+  public void setRange(final boolean range) {
+    this.range = range;
+    if (!this.range) {
+      this.maxValue = null;
+    }
   }
 }
