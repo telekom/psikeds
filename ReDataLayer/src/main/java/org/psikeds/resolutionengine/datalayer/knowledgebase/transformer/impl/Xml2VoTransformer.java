@@ -305,7 +305,7 @@ public class Xml2VoTransformer implements Transformer {
    */
   @Override
   public Rule xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Rule xml) {
-    return xml == null ? null : new Rule(xml.getLabel(), xml.getDescription(), xml.getId(), xml.getTriggerEventID(), xml.getPremiseEventID(), xml.getConclusionEventID());
+    return xml == null ? null : new Rule(xml.getLabel(), xml.getDescription(), xml.getId(), xml.getVariantID(), xml.getTriggerEventID(), xml.getPremiseEventID(), xml.getConclusionEventID());
   }
 
   /**
