@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -29,11 +29,13 @@ import org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transfor
 import org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.impl.Xml2VoTransformer;
 import org.psikeds.resolutionengine.datalayer.vo.Alternatives;
 import org.psikeds.resolutionengine.datalayer.vo.Constituents;
+import org.psikeds.resolutionengine.datalayer.vo.Constitutes;
 import org.psikeds.resolutionengine.datalayer.vo.Data;
 import org.psikeds.resolutionengine.datalayer.vo.Event;
 import org.psikeds.resolutionengine.datalayer.vo.Events;
 import org.psikeds.resolutionengine.datalayer.vo.Feature;
 import org.psikeds.resolutionengine.datalayer.vo.Features;
+import org.psikeds.resolutionengine.datalayer.vo.Fulfills;
 import org.psikeds.resolutionengine.datalayer.vo.Knowledgebase;
 import org.psikeds.resolutionengine.datalayer.vo.Meta;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
@@ -44,8 +46,9 @@ import org.psikeds.resolutionengine.datalayer.vo.Variant;
 import org.psikeds.resolutionengine.datalayer.vo.Variants;
 
 /**
- * This implementation of a KnowledgeBase acts as a KBParserCallback
- * and receives Data from an XML-Source.
+ * This implementation of a KnowledgeBase acts as a KBParserCallback and
+ * receives Data from an XML-Source. Afterwards it encapsulates all Knowledge
+ * in a Map and provides Accessors to it.
  *
  * @author marco@juliano.de
  *
@@ -68,8 +71,15 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   private static final String KEY_PREFIX_FEATURE = "kb.feature.";
   private static final String KEY_PREFIX_PURPOSE = "kb.purpose.";
   private static final String KEY_PREFIX_VARIANT = "kb.variant.";
-  private static final String KEY_PREFIX_EVENT = "kb.all.event.";
-  private static final String KEY_PREFIX_RULE = "kb.all.rule.";
+  private static final String KEY_PREFIX_EVENT = "kb.event.";
+  private static final String KEY_PREFIX_RULE = "kb.rule.";
+  private static final String KEY_PREFIX_FULFILLS = "kb.fulfills.";
+  private static final String KEY_PREFIX_CONSTITUTES = "kb.constitutes.";
+
+  private static final String KEY_PREFIX_ATTACHED_EVENTS = "kb.attached.events.";
+  private static final String KEY_PREFIX_ATTACHED_RULES = "kb.attached.rules.";
+
+  private static final String KEY_ROOT_PURPOSES = "kb.root.purposes";
 
   private Map<String, Object> knowledge;
   private Transformer trans;
@@ -84,9 +94,13 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   }
 
   public XmlKnowledgeBase(final Transformer trans, final Map<String, Object> knowledge) {
+    this(trans, knowledge, false);
+  }
+
+  public XmlKnowledgeBase(final Transformer trans, final Map<String, Object> knowledge, final boolean valid) {
     this.trans = trans;
     this.knowledge = knowledge;
-    this.valid = false; // this kb is not valid unless explicitly validated!
+    this.valid = valid;
   }
 
   public Transformer getTransformer() {
@@ -176,6 +190,8 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
     return (Rules) load(KEY_ALL_RULES);
   }
 
+  // -------------------------------------------------------------
+
   /**
    * @param featureId
    * @return Feature
@@ -227,57 +243,151 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   }
 
   /**
+   * @param purposeId
+   * @return Fulfills
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFulfills(java.lang.String)
+   */
+  @Override
+  public Fulfills getFulfills(final String purposeId) {
+    return (Fulfills) load(KEY_PREFIX_FULFILLS + purposeId);
+  }
+
+  /**
+   * @param variantId
+   * @return Constitutes
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getConstitutes(java.lang.String)
+   */
+  @Override
+  public Constitutes getConstitutes(final String variantId) {
+    return (Constitutes) load(KEY_PREFIX_CONSTITUTES + variantId);
+  }
+
+  /**
+   * @param variantId
+   * @return Events attached to Variant 
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getAttachedEvents(java.lang.String)
+   */
+  @Override
+  public Events getAttachedEvents(final String variantId) {
+    return (Events) load(KEY_PREFIX_ATTACHED_EVENTS + variantId);
+  }
+
+  /**
+   * @param variantId
+   * @return Rules attached to Variant
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getAttachedRules(java.lang.String)
+   */
+  @Override
+  public Rules getAttachedRules(final String variantId) {
+    return (Rules) load(KEY_PREFIX_ATTACHED_RULES + variantId);
+  }
+
+  // -------------------------------------------------------------
+
+  /**
    * @return all Purposes flagged with "root" attribute
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getRootPurposes()
    */
   @Override
   public Purposes getRootPurposes() {
-    // TODO Auto-generated method stub
-    return null;
+    return (Purposes) load(KEY_ROOT_PURPOSES);
   }
 
   /**
    * @param purposeId
-   * @return
+   * @return all variants fulfilling this purpose
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFulfillingVariants(java.lang.String)
    */
   @Override
   public Variants getFulfillingVariants(final String purposeId) {
-    // TODO Auto-generated method stub
-    return null;
+    final Variants fulvar = new Variants();
+    if (!StringUtils.isEmpty(purposeId)) {
+      final Fulfills f = getFulfills(purposeId);
+      if (f != null) {
+        final List<String> varids = f.getVariantID();
+        for (final String variantId : varids) {
+          final Variant v = getVariant(variantId);
+          if (v != null) {
+            fulvar.addVariant(v);
+          }
+        }
+      }
+    }
+    return fulvar;
   }
 
   /**
    * @param purpose
-   * @return
+   * @return all variants fulfilling this purpose
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFulfillingVariants(org.psikeds.resolutionengine.datalayer.vo.Purpose)
    */
   @Override
   public Variants getFulfillingVariants(final Purpose purpose) {
-    // TODO Auto-generated method stub
-    return null;
+    return purpose == null ? new Variants() : getFulfillingVariants(purpose.getId());
   }
 
   /**
    * @param variantId
-   * @return
-   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFeatures(java.lang.String)
+   * @return all purposes that constitute this variant
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getConstitutingPurposes(java.lang.String)
    */
   @Override
-  public Features getFeatures(final String variantId) {
-    // TODO Auto-generated method stub
-    return null;
+  public Purposes getConstitutingPurposes(final String variantId) {
+    final Purposes conpurps = new Purposes();
+    if (!StringUtils.isEmpty(variantId)) {
+      final Constitutes consts = getConstitutes(variantId);
+      if (consts != null) {
+        final List<String> pids = consts.getPurposeID();
+        for (final String purposeId : pids) {
+          final Purpose p = getPurpose(purposeId);
+          if (p != null) {
+            conpurps.addPurpose(p);
+          }
+        }
+      }
+    }
+    return conpurps;
   }
 
   /**
    * @param variant
-   * @return
+   * @return all purposes that constitute this variant
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getConstitutingPurposes(org.psikeds.resolutionengine.datalayer.vo.Variant)
+   */
+  @Override
+  public Purposes getConstitutingPurposes(final Variant variant) {
+    return variant == null ? new Purposes() : getConstitutingPurposes(variant.getId());
+  }
+
+  /**
+   * @param variantId
+   * @return all features of this variant
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFeatures(java.lang.String)
+   */
+  @Override
+  public Features getFeatures(final String variantId) {
+    final Variant variant = getVariant(variantId);
+    return getFeatures(variant);
+  }
+
+  /**
+   * @param variant
+   * @return all features of this variant
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFeatures(org.psikeds.resolutionengine.datalayer.vo.Variant)
    */
   @Override
   public Features getFeatures(final Variant variant) {
-    // TODO Auto-generated method stub
-    return null;
+    final Features feats = new Features();
+    if (variant != null) {
+      final List<String> fids = variant.getFeatureIds();
+      for (final String featureId : fids) {
+        final Feature f = getFeature(featureId);
+        if (f != null) {
+          feats.addFeature(f);
+        }
+      }
+    }
+    return feats;
   }
 
   /**
@@ -383,10 +493,17 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   private void setPurposes(final Purposes purps) {
     if (purps != null) {
       save(KEY_ALL_PURPOSES, purps);
+      final Purposes root = new Purposes();
       final List<Purpose> lst = purps.getPurpose();
       for (final Purpose p : lst) {
-        save(KEY_PREFIX_PURPOSE + p.getId(), p);
+        if (p != null) {
+          save(KEY_PREFIX_PURPOSE + p.getId(), p);
+          if (p.isRoot()) {
+            root.addPurpose(p);
+          }
+        }
       }
+      save(KEY_ROOT_PURPOSES, root);
     }
   }
 
@@ -403,12 +520,20 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   private void setAlternatives(final Alternatives alts) {
     if (alts != null) {
       save(KEY_ALL_ALTERNATIVES, alts);
+      final List<Fulfills> lst = alts.getFulfills();
+      for (final Fulfills full : lst) {
+        setFulfills(full);
+      }
     }
   }
 
   private void setConstituents(final Constituents cons) {
     if (cons != null) {
       save(KEY_ALL_CONSTITUENTS, cons);
+      final List<Constitutes> lst = cons.getConstitutes();
+      for (final Constitutes c : lst) {
+        setConstitutes(c);
+      }
     }
   }
 
@@ -418,6 +543,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
       final List<Event> lst = evnts.getEvent();
       for (final Event e : lst) {
         save(KEY_PREFIX_EVENT + e.getId(), e);
+        attacheEvent(e);
       }
     }
   }
@@ -428,8 +554,45 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
       final List<Rule> lst = rules.getRule();
       for (final Rule r : lst) {
         save(KEY_PREFIX_RULE + r.getRuleID(), r);
+        attacheRule(r);
       }
     }
+  }
+
+  // -------------------------------------------------------------
+
+  private void setConstitutes(final Constitutes cons) {
+    if (cons != null) {
+      final String variantId = cons.getVariantID();
+      save(KEY_PREFIX_CONSTITUTES + variantId, cons);
+    }
+  }
+
+  private void setFulfills(final Fulfills full) {
+    if (full != null) {
+      final String purposeId = full.getPurposeID();
+      save(KEY_PREFIX_FULFILLS + purposeId, full);
+    }
+  }
+
+  private void attacheEvent(final Event e) {
+    final String variantId = e.getVariantId();
+    Events evts = getAttachedEvents(variantId);
+    if (evts == null) {
+      evts = new Events();
+    }
+    evts.addEvent(e);
+    save(KEY_PREFIX_ATTACHED_EVENTS + variantId, evts);
+  }
+
+  private void attacheRule(final Rule r) {
+    final String variantId = r.getVariantID();
+    Rules rules = getAttachedRules(variantId);
+    if (rules == null) {
+      rules = new Rules();
+    }
+    rules.addRule(r);
+    save(KEY_PREFIX_ATTACHED_RULES + variantId, rules);
   }
 
   // -------------------------------------------------------------
