@@ -27,9 +27,8 @@ import org.apache.cxf.interceptor.Fault;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.psikeds.common.services.AbstractSOAPService;
-import org.psikeds.resolutionengine.interfaces.pojos.InitResponse;
-import org.psikeds.resolutionengine.interfaces.pojos.SelectRequest;
-import org.psikeds.resolutionengine.interfaces.pojos.SelectResponse;
+import org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest;
+import org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse;
 import org.psikeds.resolutionengine.interfaces.services.ResolutionService;
 
 /**
@@ -59,12 +58,12 @@ public class ResolutionSOAPService extends AbstractSOAPService {
   }
 
   @WebMethod(operationName = "doInit")
-  @WebResult(name = "InitResponse", targetNamespace = "org.psikeds.resolutionengine.soap")
-  public InitResponse doInit(final String reqid) {
+  @WebResult(name = "ResolutionResponse", targetNamespace = "org.psikeds.resolutionengine.soap")
+  public ResolutionResponse doInit(final String reqid) {
     try {
-      final InitResponse resp = (InitResponse) handleRequest(reqid, getExecutable(this.delegate, "init"));
-      if (resp == null || resp.getKnowledgeEntity() == null || resp.getSessionID() == null) {
-        throw new IllegalStateException("Failed to initialize Session and to create Knowledge-Entity!");
+      final ResolutionResponse resp = (ResolutionResponse) handleRequest(reqid, getExecutable(this.delegate, "init"));
+      if (resp == null || resp.getKnowledge() == null || resp.getSessionID() == null) {
+        throw new IllegalStateException("Failed to create Session and to initialize Knowledge!");
       }
       return resp;
     }
@@ -75,10 +74,13 @@ public class ResolutionSOAPService extends AbstractSOAPService {
 
   @WebMethod(operationName = "doSelect")
   @WebResult(name = "SelectResponse", targetNamespace = "org.psikeds.resolutionengine.soap")
-  public SelectResponse doSelect(@WebParam(name = "SelectRequest") final SelectRequest req, final String reqid) {
+  public ResolutionResponse doSelect(@WebParam(name = "ResolutionRequest") final ResolutionRequest req, final String reqid) {
     try {
-      final SelectResponse resp = (SelectResponse) handleRequest(reqid, getExecutable(this.delegate, "select"), req);
-      if (resp == null || resp.getKnowledgeEntity() == null || resp.getSessionID() == null) {
+      if (req == null || req.getSessionID() == null && req.getKnowledge() == null) {
+        throw new IllegalArgumentException(String.valueOf(req));
+      }
+      final ResolutionResponse resp = (ResolutionResponse) handleRequest(reqid, getExecutable(this.delegate, "select"), req);
+      if (resp == null || resp.getKnowledge() == null || resp.getSessionID() == null) {
         throw new IllegalArgumentException(String.valueOf(req));
       }
       return resp;

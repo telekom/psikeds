@@ -15,13 +15,11 @@
 package org.psikeds.resolutionengine.interfaces.pojos;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * A Purpose is fulfilled by one or several Variant(s).
+ * A decission made, i.e. which Variant was selected for which Purpose?
  *
  * Note 1: PurposeID and VariantID(s) must reference existing Objects!
  *
@@ -31,61 +29,51 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author marco@juliano.de
  *
  */
-@XmlRootElement(name = "Fulfills")
-public class Fulfills extends POJO implements Serializable {
+@XmlRootElement(name = "Decission")
+public class Decission extends POJO implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private String description;
   private String purposeID;
-  private List<String> variantID;
+  private String variantID;
 
-  public Fulfills() {
-    this(null, null, (List<String>) null);
+  public Decission() {
+    this((Purpose) null, (Variant) null);
   }
 
-  public Fulfills(final String description, final String purposeID, final String variantID) {
+  public Decission(final String purposeID, final String variantID) {
     super();
-    setDescription(description);
-    setPurposeID(purposeID);
-    addVariantID(variantID);
-  }
-
-  public Fulfills(final String description, final String purposeID, final List<String> variantID) {
-    super();
-    setDescription(description);
     setPurposeID(purposeID);
     setVariantID(variantID);
   }
 
-  public String getDescription() {
-    return this.description;
-  }
-
-  public void setDescription(final String value) {
-    this.description = value;
+  public Decission(final Purpose purpose, final Variant variant) {
+    super();
+    setPurpose(purpose);
+    setVariant(variant);
   }
 
   public String getPurposeID() {
     return this.purposeID;
   }
 
-  public void setPurposeID(final String value) {
-    this.purposeID = value;
+  public void setPurposeID(final String purposeID) {
+    this.purposeID = purposeID;
   }
 
-  public List<String> getVariantID() {
-    if (this.variantID == null) {
-      this.variantID = new ArrayList<String>();
-    }
+  public void setPurpose(final Purpose purpose) {
+    this.purposeID = purpose == null ? null : purpose.getId();
+  }
+
+  public String getVariantID() {
     return this.variantID;
   }
 
-  public boolean addVariantID(final String value) {
-    return getVariantID().add(value);
+  public void setVariantID(final String variantID) {
+    this.variantID = variantID;
   }
 
-  public void setVariantID(final List<String> lst) {
-    this.variantID = lst;
+  public void setVariant(final Variant variant) {
+    this.variantID = variant == null ? null : variant.getId();
   }
 }
