@@ -15,15 +15,20 @@
 package org.psikeds.resolutionengine.interfaces.pojos;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Interface object representing a single Variant.
+ * Interface object representing a single Variant. Variants can optionally
+ * have certain Features, i.e. hold a List of IDs of the referenced Features.
  *
  * Note 1: ID must be globally unique.
  *
- * Note 2: Reading from and writing to JSON works out of the box.
+ * Note 2: FeatureIDs must reference existing Objects!
+ *
+ * Note 3: Reading from and writing to JSON works out of the box.
  *         However for XML the XmlRootElement annotation is required.
  *
  * @author marco@juliano.de
@@ -37,16 +42,22 @@ public class Variant extends POJO implements Serializable {
   private String label;
   private String description;
   private String id;
+  private List<Feature> features;
 
   public Variant() {
     this(null, null, null);
   }
 
   public Variant(final String label, final String description, final String id) {
+    this(label, description, id, null);
+  }
+
+  public Variant(final String label, final String description, final String id, final List<Feature> features) {
     super();
     this.label = label;
     this.description = description;
     this.id = id;
+    this.features = features;
   }
 
   public String getLabel() {
@@ -71,5 +82,20 @@ public class Variant extends POJO implements Serializable {
 
   public void setId(final String value) {
     this.id = value;
+  }
+
+  public List<Feature> getFeatures() {
+    if (this.features == null) {
+      this.features = new ArrayList<Feature>();
+    }
+    return this.features;
+  }
+
+  public void setFeatures(final List<Feature> features) {
+    this.features = features;
+  }
+
+  public void addFeature(final Feature feature) {
+    getFeatures().add(feature);
   }
 }

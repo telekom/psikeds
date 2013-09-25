@@ -21,10 +21,14 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Interface object representing a Knowledge-Entity, "one piece" of Knowledge.
- * A KE is a selected Variant for a certain Purpose. It can have siblings, i.e.
- * other KEs constituting this KE. There might also be Choices, i.e. Purposes
- * for which a constituting Variant must yet be selected.
+ * Interface object representing the current Knowledge, i.e. everything
+ * we know so far.
+ *
+ * Initially our Knowledge does not contain any Entities but only Choices,
+ * one for each Root-Purpose. For every Choice made, it is removed from the
+ * List of Choices and one or several corresponding Knowledge-Entities are
+ * created. In the End there is a Tree of Knowledge-Entities and no Choices
+ * left, then our Resolution-Process is finished.
  *
  * Note: Reading from and writing to JSON works out of the box.
  *       However for XML the XmlRootElement annotation is required.
@@ -32,62 +36,38 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author marco@juliano.de
  *
  */
-@XmlRootElement(name = "KnowledgeEntity")
-public class KnowledgeEntity extends POJO implements Serializable {
+@XmlRootElement(name = "Knowledge")
+public class Knowledge extends POJO implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private Purpose purpose;
-  private Variant variant;
-  private List<KnowledgeEntity> siblings;
+  private List<KnowledgeEntity> entities;
   private List<Choice> choices;
 
-  public KnowledgeEntity() {
+  public Knowledge() {
     this(null, null);
   }
 
-  public KnowledgeEntity(final Purpose purpose, final Variant variant) {
-    this(purpose, variant, null, null);
-  }
-
-  public KnowledgeEntity(final Purpose purpose, final Variant variant, final List<KnowledgeEntity> siblings, final List<Choice> choices) {
+  public Knowledge(final List<KnowledgeEntity> entities, final List<Choice> choices) {
     super();
-    this.purpose = purpose;
-    this.variant = variant;
-    this.siblings = siblings;
+    this.entities = entities;
     this.choices = choices;
   }
 
-  public Purpose getPurpose() {
-    return this.purpose;
-  }
-
-  public void setPurpose(final Purpose purpose) {
-    this.purpose = purpose;
-  }
-
-  public Variant getVariant() {
-    return this.variant;
-  }
-
-  public void setVariant(final Variant variant) {
-    this.variant = variant;
-  }
-
-  public List<KnowledgeEntity> getSiblings() {
-    if (this.siblings == null) {
-      this.siblings = new ArrayList<KnowledgeEntity>();
+  public List<KnowledgeEntity> getEntities() {
+    if (this.entities == null) {
+      this.entities = new ArrayList<KnowledgeEntity>();
     }
-    return this.siblings;
+    return this.entities;
   }
 
-  public void setSiblings(final List<KnowledgeEntity> siblings) {
-    this.siblings = siblings;
+  public void setEntities(final List<KnowledgeEntity> entities) {
+    this.entities = entities;
   }
 
-  public void addSibling(final KnowledgeEntity ke) {
+  public void addKnowledgeEntity(final KnowledgeEntity ke) {
     if (ke != null) {
-      getSiblings().add(ke);
+      getEntities().add(ke);
     }
   }
 

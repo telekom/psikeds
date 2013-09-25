@@ -19,7 +19,8 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Interface object representing a single Purpose.
+ * Interface object representing a single Purpose. Purposes marked with the
+ * root-flag are used for the initial context of a resolution.
  *
  * Note: ID must be globally unique.
  *
@@ -34,16 +35,22 @@ public class Purpose extends POJO implements Serializable {
   private String label;
   private String description;
   private String id;
+  private boolean root;
 
   public Purpose() {
     this(null, null, null);
   }
 
   public Purpose(final String label, final String description, final String id) {
+    this(label, description, id, false);
+  }
+
+  public Purpose(final String label, final String description, final String id, final boolean root) {
     super();
     this.label = label;
     this.description = description;
     this.id = id;
+    this.root = root;
   }
 
   public String getLabel() {
@@ -68,5 +75,13 @@ public class Purpose extends POJO implements Serializable {
 
   public void setId(final String value) {
     this.id = value;
+  }
+
+  public boolean isRoot() {
+    return this.root;
+  }
+
+  public void setRoot(final boolean root) {
+    this.root = root;
   }
 }
