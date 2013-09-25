@@ -15,7 +15,7 @@
 package org.psikeds.resolutionengine.datalayer.vo;
 
 /**
- * Enum of all supported Types of a Feature's Value.
+ * Enum of all Types of a Feature's Value supported by the DataLayer/KnowledgeBase.
  *
  * @author marco@juliano.de
  *

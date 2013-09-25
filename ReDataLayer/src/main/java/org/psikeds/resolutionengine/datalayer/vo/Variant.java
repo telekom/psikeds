@@ -92,4 +92,10 @@ public class Variant extends ValueObject implements Serializable {
   public void addFeatureId(final String featureId) {
     getFeatureIds().add(featureId);
   }
+
+  public void addFeature(final Feature feature) {
+    if (feature != null) {
+      getFeatureIds().add(feature.getId());
+    }
+  }
 }
