@@ -45,7 +45,11 @@ public class Knowledge extends POJO implements Serializable {
   private List<Choice> choices;
 
   public Knowledge() {
-    this(null, null);
+    this(null);
+  }
+
+  public Knowledge(final List<Choice> choices) {
+    this(null, choices);
   }
 
   public Knowledge(final List<KnowledgeEntity> entities, final List<Choice> choices) {
