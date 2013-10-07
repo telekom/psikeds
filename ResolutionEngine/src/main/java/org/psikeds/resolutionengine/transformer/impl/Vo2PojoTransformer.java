@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -14,25 +14,22 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.transformer.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.psikeds.resolutionengine.datalayer.vo.Alternatives;
-import org.psikeds.resolutionengine.datalayer.vo.Constituents;
-import org.psikeds.resolutionengine.datalayer.vo.Constitutes;
-import org.psikeds.resolutionengine.datalayer.vo.Event;
-import org.psikeds.resolutionengine.datalayer.vo.Events;
 import org.psikeds.resolutionengine.datalayer.vo.Feature;
+import org.psikeds.resolutionengine.datalayer.vo.FeatureValueType;
 import org.psikeds.resolutionengine.datalayer.vo.Features;
-import org.psikeds.resolutionengine.datalayer.vo.Fulfills;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
 import org.psikeds.resolutionengine.datalayer.vo.Purposes;
-import org.psikeds.resolutionengine.datalayer.vo.Rule;
-import org.psikeds.resolutionengine.datalayer.vo.Rules;
+import org.psikeds.resolutionengine.datalayer.vo.ValueObject;
 import org.psikeds.resolutionengine.datalayer.vo.Variant;
 import org.psikeds.resolutionengine.datalayer.vo.Variants;
+import org.psikeds.resolutionengine.interfaces.pojos.Choice;
+import org.psikeds.resolutionengine.interfaces.pojos.POJO;
 import org.psikeds.resolutionengine.transformer.Transformer;
 
 /**
@@ -45,237 +42,7 @@ public class Vo2PojoTransformer implements Transformer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Vo2PojoTransformer.class);
 
-  /**
-   * @param pojo
-   * @return vo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#pojo2ValueObject(org.psikeds.resolutionengine.interfaces.pojos.Alternatives)
-   */
-  @Override
-  public Alternatives pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Alternatives pojo) {
-    Alternatives vo = null;
-    if (pojo != null) {
-      vo = new Alternatives();
-      final List<org.psikeds.resolutionengine.interfaces.pojos.Fulfills> lst = pojo.getFulfills();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Fulfills f : lst) {
-        vo.addFulfills(pojo2ValueObject(f));
-      }
-      LOGGER.trace("pojo2ValueObject: pojo = {}\n--> vo = {}", pojo, vo);
-    }
-    return vo;
-  }
-
-  /**
-   * @param vo
-   * @return pojo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Alternatives)
-   */
-  @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Alternatives valueObject2Pojo(final Alternatives vo) {
-    org.psikeds.resolutionengine.interfaces.pojos.Alternatives pojo = null;
-    if (vo != null) {
-      pojo = new org.psikeds.resolutionengine.interfaces.pojos.Alternatives();
-      final List<Fulfills> lst = vo.getFulfills();
-      for (final Fulfills f : lst) {
-        pojo.addFulfills(valueObject2Pojo(f));
-      }
-      LOGGER.trace("valueObject2Pojo: vo = {}\n--> pojo = {}", vo, pojo);
-    }
-    return pojo;
-  }
-
-  /**
-   * @param pojo
-   * @return vo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#pojo2ValueObject(org.psikeds.resolutionengine.interfaces.pojos.Constituents)
-   */
-  @Override
-  public Constituents pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Constituents pojo) {
-    Constituents vo = null;
-    if (pojo != null) {
-      vo = new Constituents();
-      final List<org.psikeds.resolutionengine.interfaces.pojos.Constitutes> lst = pojo.getConstitutes();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Constitutes c : lst) {
-        vo.addConstitutes(pojo2ValueObject(c));
-      }
-      LOGGER.trace("pojo2ValueObject: pojo = {}\n--> vo = {}", pojo, vo);
-    }
-    return vo;
-  }
-
-  /**
-   * @param vo
-   * @return pojo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Constituents)
-   */
-  @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Constituents valueObject2Pojo(final Constituents vo) {
-    org.psikeds.resolutionengine.interfaces.pojos.Constituents pojo = null;
-    if (vo != null) {
-      pojo = new org.psikeds.resolutionengine.interfaces.pojos.Constituents();
-      final List<Constitutes> lst = vo.getConstitutes();
-      for (final Constitutes c : lst) {
-        pojo.addConstitutes(valueObject2Pojo(c));
-      }
-      LOGGER.trace("valueObject2Pojo: vo = {}\n--> pojo = {}", vo, pojo);
-    }
-    return pojo;
-  }
-
-  /**
-   * @param pojo
-   * @return vo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#pojo2ValueObject(org.psikeds.resolutionengine.interfaces.pojos.Constitutes)
-   */
-  @Override
-  public Constitutes pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Constitutes pojo) {
-    return pojo == null ? null : new Constitutes(pojo.getDescription(), pojo.getVariantID(), pojo.getPurposeID());
-  }
-
-  /**
-   * @param vo
-   * @return pojo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Constitutes)
-   */
-  @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Constitutes valueObject2Pojo(final Constitutes vo) {
-    return vo == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Constitutes(vo.getDescription(), vo.getVariantID(), vo.getPurposeID());
-  }
-
-  /**
-   * @param pojo
-   * @return vo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#pojo2ValueObject(org.psikeds.resolutionengine.interfaces.pojos.Event)
-   */
-  @Override
-  public Event pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Event pojo) {
-    return pojo == null ? null : new Event(pojo.getLabel(), pojo.getDescription(), pojo.getId());
-  }
-
-  /**
-   * @param vo
-   * @return pojo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Event)
-   */
-  @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Event valueObject2Pojo(final Event vo) {
-    return vo == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Event(vo.getLabel(), vo.getDescription(), vo.getId());
-  }
-
-  /**
-   * @param pojo
-   * @return vo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#pojo2ValueObject(org.psikeds.resolutionengine.interfaces.pojos.Events)
-   */
-  @Override
-  public Events pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Events pojo) {
-    Events vo = null;
-    if (pojo != null) {
-      vo = new Events();
-      final List<org.psikeds.resolutionengine.interfaces.pojos.Event> lst = pojo.getEvent();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Event e : lst) {
-        vo.addEvent(pojo2ValueObject(e));
-      }
-      LOGGER.trace("pojo2ValueObject: pojo = {}\n--> vo = {}", pojo, vo);
-    }
-    return vo;
-  }
-
-  /**
-   * @param vo
-   * @return pojo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Events)
-   */
-  @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Events valueObject2Pojo(final Events vo) {
-    org.psikeds.resolutionengine.interfaces.pojos.Events pojo = null;
-    if (vo != null) {
-      pojo = new org.psikeds.resolutionengine.interfaces.pojos.Events();
-      final List<Event> lst = vo.getEvent();
-      for (final Event e : lst) {
-        pojo.addEvent(valueObject2Pojo(e));
-      }
-      LOGGER.trace("valueObject2Pojo: vo = {}\n--> pojo = {}", vo, pojo);
-    }
-    return pojo;
-  }
-
-  /**
-   * @param pojo
-   * @return vo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#pojo2ValueObject(org.psikeds.resolutionengine.interfaces.pojos.Feature)
-   */
-  @Override
-  public Feature pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Feature pojo) {
-    return pojo == null ? null : new Feature(pojo.getLabel(), pojo.getDescription(), pojo.getId());
-  }
-
-  /**
-   * @param vo
-   * @return pojo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Feature)
-   */
-  @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Feature valueObject2Pojo(final Feature vo) {
-    return vo == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Feature(vo.getLabel(), vo.getDescription(), vo.getId());
-  }
-
-  /**
-   * @param pojo
-   * @return vo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#pojo2ValueObject(org.psikeds.resolutionengine.interfaces.pojos.Features)
-   */
-  @Override
-  public Features pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Features pojo) {
-    Features vo = null;
-    if (pojo != null) {
-      vo = new Features();
-      final List<org.psikeds.resolutionengine.interfaces.pojos.Feature> lst = pojo.getFeature();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Feature f : lst) {
-        vo.addFeature(pojo2ValueObject(f));
-      }
-      LOGGER.trace("pojo2ValueObject: pojo = {}\n--> vo = {}", pojo, vo);
-    }
-    return vo;
-  }
-
-  /**
-   * @param vo
-   * @return pojo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Features)
-   */
-  @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Features valueObject2Pojo(final Features vo) {
-    org.psikeds.resolutionengine.interfaces.pojos.Features pojo = null;
-    if (vo != null) {
-      pojo = new org.psikeds.resolutionengine.interfaces.pojos.Features();
-      final List<Feature> lst = vo.getFeature();
-      for (final Feature f : lst) {
-        pojo.addFeature(valueObject2Pojo(f));
-      }
-      LOGGER.trace("valueObject2Pojo: vo = {}\n--> pojo = {}", vo, pojo);
-    }
-    return pojo;
-  }
-
-  /**
-   * @param pojo
-   * @return vo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#pojo2ValueObject(org.psikeds.resolutionengine.interfaces.pojos.Fulfills)
-   */
-  @Override
-  public Fulfills pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Fulfills pojo) {
-    return pojo == null ? null : new Fulfills(pojo.getDescription(), pojo.getPurposeID(), pojo.getVariantID());
-  }
-
-  /**
-   * @param vo
-   * @return pojo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Fulfills)
-   */
-  @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Fulfills valueObject2Pojo(final Fulfills vo) {
-    return vo == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Fulfills(vo.getDescription(), vo.getPurposeID(), vo.getVariantID());
-  }
+  // ----------------------------------------------------------------
 
   /**
    * @param pojo
@@ -284,7 +51,7 @@ public class Vo2PojoTransformer implements Transformer {
    */
   @Override
   public Purpose pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Purpose pojo) {
-    return pojo == null ? null : new Purpose(pojo.getLabel(), pojo.getDescription(), pojo.getId());
+    return pojo == null ? null : new Purpose(pojo.getLabel(), pojo.getDescription(), pojo.getId(), pojo.isRoot());
   }
 
   /**
@@ -294,26 +61,7 @@ public class Vo2PojoTransformer implements Transformer {
    */
   @Override
   public org.psikeds.resolutionengine.interfaces.pojos.Purpose valueObject2Pojo(final Purpose vo) {
-    return vo == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Purpose(vo.getLabel(), vo.getDescription(), vo.getId());
-  }
-
-  /**
-   * @param pojo
-   * @return vo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#pojo2ValueObject(org.psikeds.resolutionengine.interfaces.pojos.Purposes)
-   */
-  @Override
-  public Purposes pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Purposes pojo) {
-    Purposes vo = null;
-    if (pojo != null) {
-      vo = new Purposes();
-      final List<org.psikeds.resolutionengine.interfaces.pojos.Purpose> lst = pojo.getPurpose();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Purpose p : lst) {
-        vo.addPurpose(pojo2ValueObject(p));
-      }
-      LOGGER.trace("pojo2ValueObject: pojo = {}\n--> vo = {}", pojo, vo);
-    }
-    return vo;
+    return vo == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Purpose(vo.getLabel(), vo.getDescription(), vo.getId(), vo.isRoot());
   }
 
   /**
@@ -322,76 +70,20 @@ public class Vo2PojoTransformer implements Transformer {
    * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Purposes)
    */
   @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Purposes valueObject2Pojo(final Purposes vo) {
-    org.psikeds.resolutionengine.interfaces.pojos.Purposes pojo = null;
+  public List<org.psikeds.resolutionengine.interfaces.pojos.Purpose> valueObject2Pojo(final Purposes vo) {
+    List<org.psikeds.resolutionengine.interfaces.pojos.Purpose> pojo = null;
     if (vo != null) {
-      pojo = new org.psikeds.resolutionengine.interfaces.pojos.Purposes();
+      pojo = new ArrayList<org.psikeds.resolutionengine.interfaces.pojos.Purpose>();
       final List<Purpose> lst = vo.getPurpose();
       for (final Purpose p : lst) {
-        pojo.addPurpose(valueObject2Pojo(p));
+        pojo.add(valueObject2Pojo(p));
       }
       LOGGER.trace("valueObject2Pojo: vo = {}\n--> pojo = {}", vo, pojo);
     }
     return pojo;
   }
 
-  /**
-   * @param pojo
-   * @return vo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#pojo2ValueObject(org.psikeds.resolutionengine.interfaces.pojos.Rule)
-   */
-  @Override
-  public Rule pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Rule pojo) {
-    return pojo == null ? null : new Rule(pojo.getLabel(), pojo.getDescription(), pojo.getId());
-  }
-
-  /**
-   * @param vo
-   * @return pojo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Rule)
-   */
-  @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Rule valueObject2Pojo(final Rule vo) {
-    return vo == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Rule(vo.getLabel(), vo.getDescription(), vo.getId());
-  }
-
-  /**
-   * @param pojo
-   * @return vo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#pojo2ValueObject(org.psikeds.resolutionengine.interfaces.pojos.Rules)
-   */
-  @Override
-  public Rules pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Rules pojo) {
-    Rules vo = null;
-    if (pojo != null) {
-      vo = new Rules();
-      final List<org.psikeds.resolutionengine.interfaces.pojos.Rule> lst = pojo.getRule();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Rule r : lst) {
-        vo.addRule(pojo2ValueObject(r));
-      }
-      LOGGER.trace("pojo2ValueObject: pojo = {}\n--> vo = {}", pojo, vo);
-    }
-    return vo;
-  }
-
-  /**
-   * @param vo
-   * @return pojo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Rules)
-   */
-  @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Rules valueObject2Pojo(final Rules vo) {
-    org.psikeds.resolutionengine.interfaces.pojos.Rules pojo = null;
-    if (vo != null) {
-      pojo = new org.psikeds.resolutionengine.interfaces.pojos.Rules();
-      final List<Rule> lst = vo.getRule();
-      for (final Rule r : lst) {
-        pojo.addRule(valueObject2Pojo(r));
-      }
-      LOGGER.trace("valueObject2Pojo: vo = {}\n--> pojo = {}", vo, pojo);
-    }
-    return pojo;
-  }
+  // ----------------------------------------------------------------
 
   /**
    * @param pojo
@@ -400,7 +92,22 @@ public class Vo2PojoTransformer implements Transformer {
    */
   @Override
   public Variant pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Variant pojo) {
-    return pojo == null ? null : new Variant(pojo.getLabel(), pojo.getDescription(), pojo.getId());
+    Variant vo = null;
+    if (pojo != null) {
+      List<String> featureIds = null;
+      final List<org.psikeds.resolutionengine.interfaces.pojos.Feature> lst = pojo.getFeatures();
+      if (lst != null) {
+        featureIds = new ArrayList<String>();
+        for (final org.psikeds.resolutionengine.interfaces.pojos.Feature f : lst) {
+          if (f != null) {
+            featureIds.add(f.getId());
+          }
+        }
+      }
+      vo = new Variant(pojo.getLabel(), pojo.getDescription(), pojo.getId(), featureIds);
+      LOGGER.trace("pojo2ValueObject: pojo = {}\n--> vo = {}", pojo, vo);
+    }
+    return vo;
   }
 
   /**
@@ -410,22 +117,57 @@ public class Vo2PojoTransformer implements Transformer {
    */
   @Override
   public org.psikeds.resolutionengine.interfaces.pojos.Variant valueObject2Pojo(final Variant vo) {
-    return vo == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Variant(vo.getLabel(), vo.getDescription(), vo.getId());
+    return valueObject2Pojo(vo, null);
   }
+
+  /**
+   * @param vo
+   * @param features
+   * @return pojo
+   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Variant, java.util.List)
+   */
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.Variant valueObject2Pojo(final Variant vo, final List<org.psikeds.resolutionengine.interfaces.pojos.Feature> features) {
+    return vo == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Variant(vo.getLabel(), vo.getDescription(), vo.getId(), features);
+  }
+
+  /**
+   * @param vo
+   * @return pojo
+   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Variants)
+   */
+  @Override
+  public List<org.psikeds.resolutionengine.interfaces.pojos.Variant> valueObject2Pojo(final Variants vo) {
+    List<org.psikeds.resolutionengine.interfaces.pojos.Variant> pojo = null;
+    if (vo != null) {
+      final List<Variant> lst = vo.getVariant();
+      if (lst != null) {
+        pojo = new ArrayList<org.psikeds.resolutionengine.interfaces.pojos.Variant>();
+        for (final Variant v : lst) {
+          pojo.add(valueObject2Pojo(v));
+        }
+      }
+      LOGGER.trace("valueObject2Pojo: vo = {}\n--> pojo = {}", vo, pojo);
+    }
+    return pojo;
+  }
+
+  // ----------------------------------------------------------------
 
   /**
    * @param pojo
    * @return vo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#pojo2ValueObject(org.psikeds.resolutionengine.interfaces.pojos.Variants)
+   * @see org.psikeds.resolutionengine.transformer.Transformer#pojo2ValueObject(org.psikeds.resolutionengine.interfaces.pojos.Feature)
    */
   @Override
-  public Variants pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Variants pojo) {
-    Variants vo = null;
+  public Feature pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.Feature pojo) {
+    Feature vo = null;
     if (pojo != null) {
-      vo = new Variants();
-      final List<org.psikeds.resolutionengine.interfaces.pojos.Variant> lst = pojo.getVariant();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Variant v : lst) {
-        vo.addVariant(pojo2ValueObject(v));
+      if (pojo.isRange()) {
+        vo = new Feature(pojo.getLabel(), pojo.getDescription(), pojo.getId(), pojo.getMinValue(), pojo.getMaxValue(), pojo2ValueObject(pojo.getValueType()));
+      }
+      else {
+        vo = new Feature(pojo.getLabel(), pojo.getDescription(), pojo.getId(), pojo.getValue(), pojo2ValueObject(pojo.getValueType()));
       }
       LOGGER.trace("pojo2ValueObject: pojo = {}\n--> vo = {}", pojo, vo);
     }
@@ -435,19 +177,180 @@ public class Vo2PojoTransformer implements Transformer {
   /**
    * @param vo
    * @return pojo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Variants)
+   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Feature)
    */
   @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Variants valueObject2Pojo(final Variants vo) {
-    org.psikeds.resolutionengine.interfaces.pojos.Variants pojo = null;
+  public org.psikeds.resolutionengine.interfaces.pojos.Feature valueObject2Pojo(final Feature vo) {
+    org.psikeds.resolutionengine.interfaces.pojos.Feature pojo = null;
     if (vo != null) {
-      pojo = new org.psikeds.resolutionengine.interfaces.pojos.Variants();
-      final List<Variant> lst = vo.getVariant();
-      for (final Variant v : lst) {
-        pojo.addVariant(valueObject2Pojo(v));
+      if (vo.isRange()) {
+        pojo = new org.psikeds.resolutionengine.interfaces.pojos.Feature(vo.getLabel(), vo.getDescription(), vo.getId(), vo.getMinValue(), vo.getMaxValue(), valueObject2Pojo(vo.getValueType()));
+      }
+      else {
+        pojo = new org.psikeds.resolutionengine.interfaces.pojos.Feature(vo.getLabel(), vo.getDescription(), vo.getId(), vo.getValue(), valueObject2Pojo(vo.getValueType()));
       }
       LOGGER.trace("valueObject2Pojo: vo = {}\n--> pojo = {}", vo, pojo);
     }
     return pojo;
+  }
+
+  /**
+   * @param vo
+   * @return pojo
+   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Features)
+   */
+  @Override
+  public List<org.psikeds.resolutionengine.interfaces.pojos.Feature> valueObject2Pojo(final Features vo) {
+    List<org.psikeds.resolutionengine.interfaces.pojos.Feature> pojo = null;
+    if (vo != null) {
+      pojo = new ArrayList<org.psikeds.resolutionengine.interfaces.pojos.Feature>();
+      final List<Feature> lst = vo.getFeature();
+      for (final Feature f : lst) {
+        pojo.add(valueObject2Pojo(f));
+      }
+      LOGGER.trace("valueObject2Pojo: vo = {}\n--> pojo = {}", vo, pojo);
+    }
+    return pojo;
+  }
+
+  // ----------------------------------------------------------------
+
+  /**
+   * @param pojo
+   * @return
+   * @see org.psikeds.resolutionengine.transformer.Transformer#pojo2ValueObject(org.psikeds.resolutionengine.interfaces.pojos.FeatureValueType)
+   */
+  @Override
+  public FeatureValueType pojo2ValueObject(final org.psikeds.resolutionengine.interfaces.pojos.FeatureValueType pojo) {
+    return pojo == null ? null : FeatureValueType.fromValue(pojo.toString());
+  }
+
+  /**
+   * @param vo
+   * @return
+   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.FeatureValueType)
+   */
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.FeatureValueType valueObject2Pojo(final FeatureValueType vo) {
+    return vo == null ? null : org.psikeds.resolutionengine.interfaces.pojos.FeatureValueType.fromValue(vo.toString());
+  }
+
+  // ----------------------------------------------------------------
+
+  /**
+   * @param p
+   * @param vars
+   * @return pojo
+   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Purpose, java.util.List)
+   */
+  @Override
+  public Choice valueObject2Pojo(final Purpose p, final List<Variant> vars) {
+    return valueObject2Pojo(null, p, vars);
+  }
+
+  /**
+   * @param p
+   * @param vars
+   * @return pojo
+   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Purpose, org.psikeds.resolutionengine.datalayer.vo.Variants)
+   */
+  @Override
+  public Choice valueObject2Pojo(final Purpose p, final Variants vars) {
+    return valueObject2Pojo(null, p, vars == null ? null : vars.getVariant());
+  }
+
+  /**
+   * @param parent
+   * @param p
+   * @param vars
+   * @return pojo
+   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Variant, org.psikeds.resolutionengine.datalayer.vo.Purpose, java.util.List)
+   */
+  @Override
+  public Choice valueObject2Pojo(final Variant parent, final Purpose p, final List<Variant> vars) {
+    final org.psikeds.resolutionengine.interfaces.pojos.Variant pojoParent = valueObject2Pojo(parent);
+    final org.psikeds.resolutionengine.interfaces.pojos.Purpose pojoPurpose = valueObject2Pojo(p);
+    final List<org.psikeds.resolutionengine.interfaces.pojos.Variant> pojoVariants = valueObject2Pojo(vars);
+    return new Choice(pojoParent, pojoPurpose, pojoVariants);
+  }
+
+  /**
+   * @param parent
+   * @param p
+   * @param vars
+   * @return pojo
+   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Variant, org.psikeds.resolutionengine.datalayer.vo.Purpose, org.psikeds.resolutionengine.datalayer.vo.Variants)
+   */
+  @Override
+  public Choice valueObject2Pojo(final Variant parent, final Purpose p, final Variants vars) {
+    return valueObject2Pojo(parent, p, vars == null ? null : vars.getVariant());
+  }
+
+  // ----------------------------------------------------------------
+
+  /**
+   * @param vo
+   * @return pojo
+   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(java.util.List)
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T extends POJO> List<T> valueObject2Pojo(final List<? extends ValueObject> volst) {
+    List<T> pojolst = null;
+    if (volst != null) {
+      pojolst = new ArrayList<T>();
+      for (final ValueObject vo : volst) {
+        if (vo instanceof Purpose) {
+          final org.psikeds.resolutionengine.interfaces.pojos.Purpose p = valueObject2Pojo((Purpose) vo);
+          pojolst.add((T) p);
+        }
+        else if (vo instanceof Variant) {
+          final org.psikeds.resolutionengine.interfaces.pojos.Variant v = valueObject2Pojo((Variant) vo);
+          pojolst.add((T) v);
+        }
+        else if (vo instanceof Feature) {
+          final org.psikeds.resolutionengine.interfaces.pojos.Feature f = valueObject2Pojo((Feature) vo);
+          pojolst.add((T) f);
+        }
+        else {
+          throw new IllegalArgumentException("Unsupported ValueObject: " + vo);
+        }
+      }
+      LOGGER.trace("valueObject2Pojo: volst = {}\n--> pojolst = {}", volst, pojolst);
+    }
+    return pojolst;
+  }
+
+  /**
+   * @param pojo
+   * @return vo
+   * @see org.psikeds.resolutionengine.transformer.Transformer#pojo2ValueObject(java.util.List)
+   */
+  @SuppressWarnings("unchecked")
+  @Override
+  public <T extends ValueObject> List<T> pojo2ValueObject(final List<? extends POJO> pojolst) {
+    List<T> volst = null;
+    if (pojolst != null) {
+      volst = new ArrayList<T>();
+      for (final POJO pojo : pojolst) {
+        if (pojo instanceof org.psikeds.resolutionengine.interfaces.pojos.Purpose) {
+          final Purpose p = pojo2ValueObject((org.psikeds.resolutionengine.interfaces.pojos.Purpose) pojo);
+          volst.add((T) p);
+        }
+        if (pojo instanceof org.psikeds.resolutionengine.interfaces.pojos.Variant) {
+          final Variant v = pojo2ValueObject((org.psikeds.resolutionengine.interfaces.pojos.Variant) pojo);
+          volst.add((T) v);
+        }
+        if (pojo instanceof org.psikeds.resolutionengine.interfaces.pojos.Feature) {
+          final Feature f = pojo2ValueObject((org.psikeds.resolutionengine.interfaces.pojos.Feature) pojo);
+          volst.add((T) f);
+        }
+        else {
+          throw new IllegalArgumentException("Unsupported POJO: " + pojo);
+        }
+      }
+      LOGGER.trace("pojo2ValueObject: pojolst = {}\n--> volst = {}", pojolst, volst);
+    }
+    return volst;
   }
 }

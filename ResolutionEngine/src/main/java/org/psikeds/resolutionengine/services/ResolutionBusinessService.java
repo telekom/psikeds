@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -14,25 +14,29 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.services;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
+
+import org.springframework.beans.factory.InitializingBean;
 
 import org.psikeds.common.idgen.IdGenerator;
 import org.psikeds.resolutionengine.cache.ResolutionCache;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
-import org.psikeds.resolutionengine.interfaces.pojos.Alternatives;
-import org.psikeds.resolutionengine.interfaces.pojos.Constituents;
-import org.psikeds.resolutionengine.interfaces.pojos.Events;
-import org.psikeds.resolutionengine.interfaces.pojos.Features;
-import org.psikeds.resolutionengine.interfaces.pojos.InitResponse;
-import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity;
-import org.psikeds.resolutionengine.interfaces.pojos.Purposes;
-import org.psikeds.resolutionengine.interfaces.pojos.Rules;
-import org.psikeds.resolutionengine.interfaces.pojos.SelectRequest;
-import org.psikeds.resolutionengine.interfaces.pojos.SelectResponse;
-import org.psikeds.resolutionengine.interfaces.pojos.Variants;
+import org.psikeds.resolutionengine.datalayer.vo.Purpose;
+import org.psikeds.resolutionengine.datalayer.vo.Purposes;
+import org.psikeds.resolutionengine.datalayer.vo.Variants;
+import org.psikeds.resolutionengine.interfaces.pojos.Choice;
+import org.psikeds.resolutionengine.interfaces.pojos.Decission;
+import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
+import org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest;
+import org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse;
 import org.psikeds.resolutionengine.interfaces.services.ResolutionService;
 import org.psikeds.resolutionengine.transformer.Transformer;
 
@@ -44,7 +48,7 @@ import org.psikeds.resolutionengine.transformer.Transformer;
  * 
  * @author marco@juliano.de
  */
-public class ResolutionBusinessService implements ResolutionService {
+public class ResolutionBusinessService implements InitializingBean, ResolutionService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ResolutionBusinessService.class);
 
@@ -96,20 +100,38 @@ public class ResolutionBusinessService implements ResolutionService {
     this.cache = cache;
   }
 
-  //-----------------------------------------------------
+  // ----------------------------------------------------------------
 
   /**
-   * @return InitResponse
+   * Check that ResolutionBusinessService was configured/wired correctly.
+   *
+   * @throws Exception
+   * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+   */
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    Validate.notNull(this.kb);
+    Validate.notNull(this.trans);
+    Validate.notNull(this.gen);
+    Validate.notNull(this.cache);
+  }
+
+  // ----------------------------------------------------------------
+
+  /**
+   * @return ResolutionResponse
    * @see org.psikeds.resolutionengine.interfaces.services.ResolutionService#init()
    */
   @Override
-  public InitResponse init() {
-    InitResponse resp = null;
+  public ResolutionResponse init() {
+    ResolutionResponse resp = null;
     try {
-      final String sessionID = createSessionId();
-      final KnowledgeEntity ke = getInitialKnowledgeEntity();
-      this.cache.saveSessionData(sessionID, ke);
-      resp = new InitResponse(sessionID, ke);
+      // TODO: tbd: what metadata? maybe country- or language-specific settings?
+      final Map<String, Object> metadata = null;
+      final String sessionID = createSessionId(metadata);
+      final Knowledge knowledge = getInitialKnowledge(metadata);
+      this.cache.saveSessionData(sessionID, knowledge);
+      resp = new ResolutionResponse(sessionID, metadata, knowledge);
       return resp;
     }
     finally {
@@ -118,36 +140,46 @@ public class ResolutionBusinessService implements ResolutionService {
   }
 
   /**
-   * @param req SelectRequest
-   * @return SelectResponse
-   * @see org.psikeds.resolutionengine.interfaces.services.ResolutionService#select(org.psikeds.resolutionengine.interfaces.pojos.SelectRequest)
+   * @param req ResolutionRequest
+   * @return ResolutionResponse
+   * @see org.psikeds.resolutionengine.interfaces.services.ResolutionService#select(org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest)
    */
   @Override
-  public SelectResponse select(final SelectRequest req) {
-    SelectResponse resp = null;
+  public ResolutionResponse select(final ResolutionRequest req) {
+    ResolutionResponse resp = null;
     try {
+      // get data from request
       String sessionID = req.getSessionID();
-      KnowledgeEntity origKE = req.getKnowledgeEntity();
-      final String choice = req.getChoice();
-      if (!StringUtils.isEmpty(sessionID) && origKE == null) {
-        origKE = (KnowledgeEntity) this.cache.getSessionData(sessionID);
-        LOGGER.debug("Using cached KnowledgeEntity for SessionID {}", sessionID);
+      Knowledge oldKnowledge = req.getKnowledge();
+      final Map<String, Object> metadata = req.getMetadata();
+      final Decission decission = req.getMadeDecission();
+
+      if (!StringUtils.isEmpty(sessionID) && oldKnowledge == null) {
+        // get cached knowledge for session-id
+        oldKnowledge = (Knowledge) this.cache.getSessionData(sessionID);
+        LOGGER.debug("Using cached Knowledge for SessionID {}", sessionID);
       }
-      else if (origKE != null && StringUtils.isEmpty(sessionID)) {
-        // create a new session id for this knowledge entity
-        sessionID = createSessionId();
-        LOGGER.debug("Created new SessionID {} for supplied KnowledgeEntity.", sessionID);
+      else if (oldKnowledge != null && StringUtils.isEmpty(sessionID)) {
+        // create new session-id for knowledge
+        sessionID = createSessionId(metadata);
+        LOGGER.debug("Created new SessionID {} for supplied Knowledge", sessionID);
       }
-      final KnowledgeEntity newKE = resolve(origKE, choice);
-      if (newKE.isFullyResolved()) {
+      else {
+        throw new IllegalArgumentException("Illegal Resolution-Request: Exactly one of Knowledge or Session-ID required.");
+      }
+
+      // resolve new knowledge based on decission and metadata
+      final Knowledge newKnowledge = resolve(oldKnowledge, decission, metadata);
+      resp = new ResolutionResponse(sessionID, metadata, newKnowledge);
+
+      if (resp.isResolved()) {
         // resolution finished ... cleanup
         this.cache.removeSessionData(sessionID);
       }
       else {
         // cache current state of resolution for next request
-        this.cache.saveSessionData(sessionID, newKE);
+        this.cache.saveSessionData(sessionID, newKnowledge);
       }
-      resp = new SelectResponse(sessionID, newKE);
       return resp;
     }
     finally {
@@ -155,43 +187,51 @@ public class ResolutionBusinessService implements ResolutionService {
     }
   }
 
-  //-----------------------------------------------------
+  // ----------------------------------------------------------------
 
-  private KnowledgeEntity getInitialKnowledgeEntity() {
-    final Features features = this.trans.valueObject2Pojo(this.kb.getFeatures());
-    final Purposes purposes = this.trans.valueObject2Pojo(this.kb.getPurposes());
-    final Variants variants = this.trans.valueObject2Pojo(this.kb.getVariants());
-    final Alternatives alternatives = this.trans.valueObject2Pojo(this.kb.getAlternatives());
-    final Constituents constituents = this.trans.valueObject2Pojo(this.kb.getConstituents());
-    final Events events = this.trans.valueObject2Pojo(this.kb.getEvents());
-    final Rules rules = this.trans.valueObject2Pojo(this.kb.getRules());
-    final boolean fullyResolved = false;
-    // TODO: create a reasonable initial knowledge entity instead of copying all data from the knowledge base!
-    final KnowledgeEntity newKE = new KnowledgeEntity(features, purposes, variants, alternatives, constituents, events, rules, fullyResolved);
-    LOGGER.trace("Generated initial KnowledgeEntity: {}", newKE);
-    return newKE;
+  private Knowledge getInitialKnowledge(final Map<String, Object> metadata) {
+    // TODO: tbd: what metadata? any metadata-specific purposes or variants?
+    final Purposes purps = this.kb.getRootPurposes();
+    final List<Choice> choices = new ArrayList<Choice>();
+    final List<Purpose> plst = purps.getPurpose();
+    for (final Purpose p : plst) {
+      final Variants vars = this.kb.getFulfillingVariants(p);
+      final Choice c = this.trans.valueObject2Pojo(p, vars);
+      choices.add(c);
+    }
+    final Knowledge knowledge = new Knowledge(choices);
+    LOGGER.trace("Generated initial Knowledge: {}", knowledge);
+    return knowledge;
   }
 
-  private KnowledgeEntity resolve(final KnowledgeEntity origKE, final String choice) {
-    KnowledgeEntity newKE = null;
-    if (StringUtils.isEmpty(choice)) {
-      // no choice, no change
-      newKE = origKE;
+  private Knowledge resolve(final Knowledge oldKnowledge, final Decission decission, final Map<String, Object> metadata) {
+    Knowledge newKnowledge = null;
+    if (decission == null) {
+      // no decission, no change
+      newKnowledge = oldKnowledge;
     }
+    else {
 
-    // TODO: perform some real resolution here!
+      // TODO: perform some real resolution here!
 
-    if (newKE == null) {
-      // something went wrong, restart
-      newKE = getInitialKnowledgeEntity();
+      if (newKnowledge == null) {
+        // something went wrong, restart
+        newKnowledge = getInitialKnowledge(metadata);
+      }
     }
-    LOGGER.trace("Resolved origKE = {}\nwith choice = {} to newKE = {}", origKE, choice, newKE);
-    return newKE;
+    LOGGER.trace("Resolved oldKnowledge = {}\nwith decission = {} to newKnowledge = {}", oldKnowledge, decission, newKnowledge);
+    return newKnowledge;
   }
 
-  private String createSessionId() {
-    final String sessionID = this.gen == null ? null : this.gen.getNextId();
-    LOGGER.trace("Generated a new SessionID: {}", sessionID);
-    return sessionID;
+  private String createSessionId(final Map<String, Object> metadata) {
+    String sessionID = null;
+    try {
+      // TODO: tbd: what metadata? any metadata-specific session settings?
+      sessionID = this.gen.getNextId();
+      return sessionID;
+    }
+    finally {
+      LOGGER.trace("Generated a new SessionID: {}", sessionID);
+    }
   }
 }
