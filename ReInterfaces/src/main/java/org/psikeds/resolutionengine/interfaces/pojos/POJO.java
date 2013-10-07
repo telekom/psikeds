@@ -24,9 +24,13 @@ import org.psikeds.common.util.ObjectDumper;
  * @author marco@juliano.de
  *
  */
-class POJO implements Serializable {
+public class POJO implements Serializable {
 
   private static final long serialVersionUID = 1L;
+
+  protected POJO() {
+    // prevent direct instantiation
+  }
 
   /**
    * @return

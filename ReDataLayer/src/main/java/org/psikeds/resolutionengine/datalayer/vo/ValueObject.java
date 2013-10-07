@@ -24,9 +24,13 @@ import org.psikeds.common.util.ObjectDumper;
  * @author marco@juliano.de
  *
  */
-class ValueObject implements Serializable {
+public class ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
+
+  protected ValueObject() {
+    // prevent direct instantiation
+  }
 
   /**
    * @return
