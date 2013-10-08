@@ -23,6 +23,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -453,18 +456,33 @@ public class KnowledgeBaseMock implements KnowledgeBase {
     return StringUtils.isEmpty(hostname) ? "www.psikeds.org" : hostname;
   }
 
+  private static String getLanguage() {
+    String lang;
+    try {
+      lang = Locale.getDefault().toString();
+    }
+    catch (final Exception ex) {
+      lang = null;
+    }
+    return StringUtils.isEmpty(lang) ? "en_EN" : lang;
+  }
+
   private static Meta createMeta() {
     final Calendar created = Calendar.getInstance();
     final Calendar lastmodified = created;
     final String now = SimpleDateFormat.getDateTimeInstance().format(created.getTime());
     final String user = getCurrentUser();
     final String host = getHostName();
+    final String lang = getLanguage();
     final List<String> creator = new ArrayList<String>();
     creator.add(user);
     final List<String> description = new ArrayList<String>();
     description.add("Mock Knowledgebase for Testing Purposes");
     description.add("Created by " + user + " on " + host + " at " + now);
-    return new Meta(created, lastmodified, creator, description);
+    final Map<String, Object> optionalInfo = new ConcurrentHashMap<String, Object>();
+    optionalInfo.put("language", lang);
+    optionalInfo.put("creator", user);
+    return new Meta(created, lastmodified, creator, description, optionalInfo);
   }
 
   // ----------------------------------------------------------------

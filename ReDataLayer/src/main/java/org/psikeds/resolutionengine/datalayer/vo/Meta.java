@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -18,6 +18,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Meta-Infos regarding the Knowledge-Base.
@@ -33,17 +35,19 @@ public class Meta extends ValueObject implements Serializable {
   private Calendar lastmodified;
   private List<String> creator;
   private List<String> description;
+  private Map<String, Object> optionalInfo;
 
   public Meta() {
-    this(null, null, null, null);
+    this(null, null, null, null, null);
   }
 
-  public Meta(final Calendar created, final Calendar lastmodified, final List<String> creator, final List<String> description) {
+  public Meta(final Calendar created, final Calendar lastmodified, final List<String> creator, final List<String> description, final Map<String, Object> optionalInfo) {
     super();
     setCreated(created);
     setLastmodified(lastmodified);
     setCreator(creator);
     setDescription(description);
+    setOptionalInfo(optionalInfo);
   }
 
   public Calendar getCreated() {
@@ -90,5 +94,20 @@ public class Meta extends ValueObject implements Serializable {
 
   public void setDescription(final List<String> lst) {
     this.description = lst;
+  }
+
+  public Map<String, Object> getOptionalInfo() {
+    if (this.optionalInfo == null) {
+      this.optionalInfo = new ConcurrentHashMap<String, Object>();
+    }
+    return this.optionalInfo;
+  }
+
+  public void setOptionalInfo(final Map<String, Object> optionalInfo) {
+    this.optionalInfo = optionalInfo;
+  }
+
+  public void addOptionalInfo(final String key, final Object value) {
+    getOptionalInfo().put(key, value);
   }
 }
