@@ -128,6 +128,15 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   // -------------------------------------------------------------
 
   /**
+   * @return Metadata of this Knowledgebase
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getMetadata()
+   */
+  @Override
+  public Meta getMetadata() {
+    return (Meta) load(KEY_META);
+  }
+
+  /**
    * @return all Features
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFeatures()
    */
@@ -414,7 +423,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
         setKnowledgebase(this.trans.xml2ValueObject((org.psikeds.knowledgebase.jaxb.Knowledgebase) element));
       }
       else if (element instanceof org.psikeds.knowledgebase.jaxb.Meta) {
-        setMeta(this.trans.xml2ValueObject((org.psikeds.knowledgebase.jaxb.Meta) element));
+        setMetadata(this.trans.xml2ValueObject((org.psikeds.knowledgebase.jaxb.Meta) element));
       }
       else if (element instanceof org.psikeds.knowledgebase.jaxb.Data) {
         setData(this.trans.xml2ValueObject((org.psikeds.knowledgebase.jaxb.Data) element));
@@ -456,12 +465,12 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
 
   private void setKnowledgebase(final Knowledgebase kb) {
     if (kb != null) {
-      setMeta(kb.getMeta());
+      setMetadata(kb.getMeta());
       setData(kb.getData());
     }
   }
 
-  private void setMeta(final Meta meta) {
+  private void setMetadata(final Meta meta) {
     if (meta != null) {
       save(KEY_META, meta);
     }
