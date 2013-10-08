@@ -373,14 +373,19 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public boolean isValid() {
-    return getData() != null && getMeta() != null;
+    return getData() != null && getMetadata() != null;
+  }
+
+  /**
+   * @return Meta
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getMetadata()
+   */
+  @Override
+  public Meta getMetadata() {
+    return getKnowledgebase().getMeta();
   }
 
   // ----------------------------------------------------------------
-
-  private Meta getMeta() {
-    return getKnowledgebase().getMeta();
-  }
 
   private Data getData() {
     return getKnowledgebase().getData();

@@ -22,6 +22,7 @@ import org.psikeds.resolutionengine.datalayer.vo.Events;
 import org.psikeds.resolutionengine.datalayer.vo.Feature;
 import org.psikeds.resolutionengine.datalayer.vo.Features;
 import org.psikeds.resolutionengine.datalayer.vo.Fulfills;
+import org.psikeds.resolutionengine.datalayer.vo.Meta;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
 import org.psikeds.resolutionengine.datalayer.vo.Purposes;
 import org.psikeds.resolutionengine.datalayer.vo.Rule;
@@ -94,4 +95,6 @@ public interface KnowledgeBase {
   // -------------------------------
 
   boolean isValid();
+
+  Meta getMetadata();
 }
