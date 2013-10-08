@@ -15,8 +15,6 @@
 package org.psikeds.resolutionengine.interfaces.pojos;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Base-Object representing the current Context of a Resolution.
@@ -32,7 +30,7 @@ public class BaseResolutionContext extends POJO implements Serializable {
   private static final long serialVersionUID = 1L;
 
   protected String sessionID;
-  protected Map<String, Object> metadata;
+  protected Metadata metadata;
   protected Knowledge knowledge;
 
   protected BaseResolutionContext() {
@@ -43,7 +41,7 @@ public class BaseResolutionContext extends POJO implements Serializable {
     this(sessionID, null, knowledge);
   }
 
-  protected BaseResolutionContext(final String sessionID, final Map<String, Object> metadata, final Knowledge knowledge) {
+  protected BaseResolutionContext(final String sessionID, final Metadata metadata, final Knowledge knowledge) {
     super();
     this.sessionID = sessionID;
     this.metadata = metadata;
@@ -58,14 +56,11 @@ public class BaseResolutionContext extends POJO implements Serializable {
     this.sessionID = sessionID;
   }
 
-  public Map<String, Object> getMetadata() {
-    if (this.metadata == null) {
-      this.metadata = new HashMap<String, Object>();
-    }
+  public Metadata getMetadata() {
     return this.metadata;
   }
 
-  public void setMetadata(final Map<String, Object> metadata) {
+  public void setMetadata(final Metadata metadata) {
     this.metadata = metadata;
   }
 

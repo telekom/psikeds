@@ -28,6 +28,11 @@ import org.psikeds.resolutionengine.interfaces.pojos.POJO;
  */
 public interface Transformer {
 
+  org.psikeds.resolutionengine.interfaces.pojos.Metadata valueObject2Pojo(
+      org.psikeds.resolutionengine.datalayer.vo.Meta vo);
+
+  // ----------------------------------------------------------------
+
   org.psikeds.resolutionengine.datalayer.vo.Purpose pojo2ValueObject(
       org.psikeds.resolutionengine.interfaces.pojos.Purpose pojo);
 

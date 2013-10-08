@@ -17,7 +17,6 @@ package org.psikeds.resolutionengine.interfaces.pojos;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -49,7 +48,7 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
     this(sessionID, null, knowledge);
   }
 
-  public ResolutionResponse(final String sessionID, final Map<String, Object> metadata, final Knowledge knowledge) {
+  public ResolutionResponse(final String sessionID, final Metadata metadata, final Knowledge knowledge) {
     super(sessionID, metadata, knowledge);
     this.choices = null;
     this.resolved = false;

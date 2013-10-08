@@ -14,8 +14,11 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.transformer.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +26,14 @@ import org.slf4j.LoggerFactory;
 import org.psikeds.resolutionengine.datalayer.vo.Feature;
 import org.psikeds.resolutionengine.datalayer.vo.FeatureValueType;
 import org.psikeds.resolutionengine.datalayer.vo.Features;
+import org.psikeds.resolutionengine.datalayer.vo.Meta;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
 import org.psikeds.resolutionengine.datalayer.vo.Purposes;
 import org.psikeds.resolutionengine.datalayer.vo.ValueObject;
 import org.psikeds.resolutionengine.datalayer.vo.Variant;
 import org.psikeds.resolutionengine.datalayer.vo.Variants;
 import org.psikeds.resolutionengine.interfaces.pojos.Choice;
+import org.psikeds.resolutionengine.interfaces.pojos.Metadata;
 import org.psikeds.resolutionengine.interfaces.pojos.POJO;
 import org.psikeds.resolutionengine.transformer.Transformer;
 
@@ -41,6 +46,34 @@ import org.psikeds.resolutionengine.transformer.Transformer;
 public class Vo2PojoTransformer implements Transformer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Vo2PojoTransformer.class);
+
+  // ----------------------------------------------------------------
+
+  /**
+   * @param vo
+   * @return pojo
+   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Meta)
+   */
+  @Override
+  public Metadata valueObject2Pojo(final Meta vo) {
+    Metadata pojo = null;
+    if (vo != null) {
+      pojo = new Metadata();
+      // TODO: tbd: what metadata? maybe country- or language-specific settings?
+      final Calendar ts = vo.getLastmodified() == null ? vo.getCreated() : vo.getLastmodified();
+      if (ts != null) {
+        pojo.saveInfo("TimeStamp", SimpleDateFormat.getDateTimeInstance().format(ts.getTime()));
+      }
+      final Map<String, Object> opt = vo.getOptionalInfo();
+      if (opt != null && opt.size() > 0) {
+        for (final String key : opt.keySet()) {
+          final Object value = opt.get(key);
+          pojo.saveInfo(key, value);
+        }
+      }
+    }
+    return pojo;
+  }
 
   // ----------------------------------------------------------------
 
