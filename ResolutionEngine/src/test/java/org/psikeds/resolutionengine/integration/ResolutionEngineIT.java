@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -12,10 +12,11 @@
  *
  * For details see file LICENSING in the top project directory
  *******************************************************************************/
-package org.psikeds.resolutionengine;
+package org.psikeds.resolutionengine.integration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -43,9 +44,12 @@ import org.apache.cxf.jaxrs.provider.JAXBElementProvider;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 
-import org.psikeds.resolutionengine.interfaces.pojos.InitResponse;
-import org.psikeds.resolutionengine.interfaces.pojos.SelectRequest;
-import org.psikeds.resolutionengine.interfaces.pojos.SelectResponse;
+import org.psikeds.resolutionengine.interfaces.pojos.Choice;
+import org.psikeds.resolutionengine.interfaces.pojos.Decission;
+import org.psikeds.resolutionengine.interfaces.pojos.Purpose;
+import org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest;
+import org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse;
+import org.psikeds.resolutionengine.interfaces.pojos.Variant;
 
 /**
  * Integration-Tests for Resolution-Engine running online against Application Server.
@@ -88,8 +92,11 @@ public class ResolutionEngineIT {
   @Test
   public void testAgainstApplicationServer() throws Exception {
     checkDeployedServices();
-    final String sessionID = checkInitService();
-    checkSelectService(sessionID);
+    final ResolutionResponse ires = checkInitService();
+    final String sessionID = ires.getSessionID();
+    final List<Choice> choices = ires.getPossibleChoices();
+    final Decission decission = makeDecission(choices);
+    checkSelectService(sessionID, decission);
     // TODO: additional tests
   }
 
@@ -110,36 +117,67 @@ public class ResolutionEngineIT {
     assertFalse("No WADL!", StringUtils.isEmpty(wadl));
   }
 
-  private String checkInitService() throws JsonParseException, IOException {
-    final String initServiceUrl = this.baseUrl + "/resolution/init";
-    LOGGER.info("Checking Init-Service: " + initServiceUrl);
-    final WebClient initClient = WebClient.create(initServiceUrl);
-    final Response initResp = initClient.accept(MediaType.APPLICATION_JSON).get();
-    checkHttpResponse(initResp);
-    final InitResponse ires = getContent(initResp, InitResponse.class);
-    assertTrue("No InitResponse!", ires != null);
-    LOGGER.debug(String.valueOf(ires));
-    final String sessionID = ires.getSessionID();
-    assertTrue("No SessionID!", sessionID != null);
-    assertTrue("No KnowledgeEntity!", ires.getKnowledgeEntity() != null);
-    return sessionID;
+  private ResolutionResponse checkInitService() throws JsonParseException, IOException {
+    ResolutionResponse ires = null;
+    try {
+      final String initServiceUrl = this.baseUrl + "/resolution/init";
+      LOGGER.info("Checking Init-Service: " + initServiceUrl);
+      final WebClient initClient = WebClient.create(initServiceUrl);
+
+      final Response initResp = initClient.accept(MediaType.APPLICATION_JSON).get();
+      checkHttpResponse(initResp);
+      ires = getContent(initResp, ResolutionResponse.class);
+
+      assertNotNull("No Init-ResolutionResponse!", ires);
+      assertNotNull("No SessionID in Init-ResolutionResponse!", ires.getSessionID());
+      assertNotNull("No Knowledge in Init-ResolutionResponse!", ires.getKnowledge());
+      assertFalse("Initial Knowledge is already fully resolved! Check Testdata!", ires.isResolved());
+      final List<Choice> choices = ires.getPossibleChoices();
+      assertTrue("No Choices in Init-ResolutionResponse! Check Testdata!", choices != null && choices.size() > 0);
+      return ires;
+    }
+    finally {
+      LOGGER.debug(String.valueOf(ires));
+    }
   }
 
-  private void checkSelectService(final String sessionID) throws JsonParseException, IOException {
-    final String selectServiceUrl = this.baseUrl + "/resolution/select";
-    LOGGER.info("Checking Select-Service: " + selectServiceUrl);
-    final WebClient selectClient = WebClient.create(selectServiceUrl, this.providers, true);
-    final SelectRequest sreq = new SelectRequest(sessionID, null, "P1");
-    LOGGER.debug(String.valueOf(sreq));
-    final Response selectResp = selectClient.type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).post(sreq);
-    checkHttpResponse(selectResp);
-    final SelectResponse sres = getContent(selectResp, SelectResponse.class);
-    assertTrue("No SelectResponse!", sres != null);
-    LOGGER.debug(String.valueOf(sres));
-    final String newSessionID = sres.getSessionID();
-    assertTrue("No SessionID!", newSessionID != null);
-    assertEquals("Old and new SessionID are note identical!", sessionID, newSessionID);
-    assertTrue("No KnowledgeEntity!", sres.getKnowledgeEntity() != null);
+  private Decission makeDecission(final List<Choice> choices) {
+    Decission decission = null;
+    try {
+      final Choice c = choices.get(0);
+      final Purpose p = c.getPurpose();
+      final Variant v = c.getVariants().get(0);
+      decission = new Decission(p, v);
+      return decission;
+    }
+    finally {
+      LOGGER.debug(String.valueOf(decission));
+    }
+  }
+
+  private ResolutionResponse checkSelectService(final String sessionID, final Decission decission) throws JsonParseException, IOException {
+    ResolutionResponse sres = null;
+    try {
+      final String selectServiceUrl = this.baseUrl + "/resolution/select";
+      LOGGER.info("Checking Select-Service: " + selectServiceUrl);
+      final WebClient selectClient = WebClient.create(selectServiceUrl, this.providers, true);
+
+      final ResolutionRequest sreq = new ResolutionRequest(sessionID, decission);
+      LOGGER.debug(String.valueOf(sreq));
+      final Response selectResp = selectClient.type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).post(sreq);
+      checkHttpResponse(selectResp);
+      sres = getContent(selectResp, ResolutionResponse.class);
+
+      assertNotNull("No Select-ResolutionResponse!", sres);
+      final String newSessionID = sres.getSessionID();
+      assertNotNull("No SessionID in Select-ResolutionResponse!", newSessionID);
+      assertEquals("Old and new SessionID are note identical!", sessionID, newSessionID);
+      assertNotNull("No Knowledge in Select-ResolutionResponse!", sres.getKnowledge());
+      return sres;
+    }
+    finally {
+      LOGGER.debug(String.valueOf(sres));
+    }
   }
 
   private void checkHttpResponse(final Response resp) {
