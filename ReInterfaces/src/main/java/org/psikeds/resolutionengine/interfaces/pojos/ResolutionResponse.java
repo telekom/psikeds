@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ResolutionResponse extends BaseResolutionContext implements Serializable {
 
   private static final long serialVersionUID = 1L;
-  private static final long DEFAULT_MAX_TREE_DEPTHS = 20L;
+  private static final long DEFAULT_MAX_TREE_DEPTHS = 15L;
 
   private List<Choice> choices;
   private boolean resolved;
@@ -54,6 +54,7 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
     this.choices = null;
     this.resolved = false;
     this.maxTreeDepth = DEFAULT_MAX_TREE_DEPTHS;
+    calculateChoices();
   }
 
   // -----------------------------------------------------------
@@ -110,8 +111,11 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
     if (this.knowledge != null) {
       addAllPossibleChoices(this.knowledge.getChoices());
       addChoices(this.knowledge.getEntities(), this.getMaxTreeDepth());
+      this.resolved = getPossibleChoices().isEmpty();
     }
-    this.resolved = getPossibleChoices().isEmpty();
+    else {
+      this.resolved = true;
+    }
     return this.resolved;
   }
 
