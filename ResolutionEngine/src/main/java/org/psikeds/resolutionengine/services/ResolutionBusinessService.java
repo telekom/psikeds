@@ -110,10 +110,10 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
    */
   @Override
   public void afterPropertiesSet() throws Exception {
-    Validate.notNull(this.kb);
-    Validate.notNull(this.trans);
-    Validate.notNull(this.gen);
-    Validate.notNull(this.cache);
+    Validate.notNull(this.kb, "No Knowledge-Base!");
+    Validate.notNull(this.trans, "No Transformer!");
+    Validate.notNull(this.gen, "No Session-ID-Generator!");
+    Validate.notNull(this.cache, "No Resolution-Cache!");
   }
 
   // ----------------------------------------------------------------
@@ -199,6 +199,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
       final Choice c = this.trans.valueObject2Pojo(p, vars);
       choices.add(c);
     }
+    // Initially there are no Entities, only Choice containing the Root-Purposes
     final Knowledge knowledge = new Knowledge(choices);
     LOGGER.trace("Generated initial Knowledge: {}", knowledge);
     return knowledge;
