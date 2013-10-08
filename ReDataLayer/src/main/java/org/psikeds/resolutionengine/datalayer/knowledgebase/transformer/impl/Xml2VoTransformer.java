@@ -253,7 +253,7 @@ public class Xml2VoTransformer implements Transformer {
   public Meta xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Meta xml) {
     Meta vo = null;
     if (xml != null) {
-      vo = new Meta(xml.getCreated(), xml.getLastmodified(), xml.getCreator(), xml.getDescription());
+      vo = new Meta(xml.getCreated(), xml.getLastmodified(), xml.getCreator(), xml.getDescription(), null);
       LOGGER.trace("xml2ValueObject: xml = {}\n--> vo = {}", xml, vo);
     }
     return vo;
