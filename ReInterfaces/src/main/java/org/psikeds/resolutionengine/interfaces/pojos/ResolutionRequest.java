@@ -15,7 +15,6 @@
 package org.psikeds.resolutionengine.interfaces.pojos;
 
 import java.io.Serializable;
-import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -53,7 +52,7 @@ public class ResolutionRequest extends BaseResolutionContext implements Serializ
     this(null, null, knowledge, decission);
   }
 
-  public ResolutionRequest(final String sessionID, final Map<String, Object> metadata, final Knowledge knowledge, final Decission decission) {
+  public ResolutionRequest(final String sessionID, final Metadata metadata, final Knowledge knowledge, final Decission decission) {
     super(sessionID, metadata, knowledge);
     this.decission = decission;
   }

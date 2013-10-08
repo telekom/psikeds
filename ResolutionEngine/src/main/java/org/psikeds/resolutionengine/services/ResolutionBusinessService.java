@@ -16,7 +16,6 @@ package org.psikeds.resolutionengine.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +34,7 @@ import org.psikeds.resolutionengine.datalayer.vo.Variants;
 import org.psikeds.resolutionengine.interfaces.pojos.Choice;
 import org.psikeds.resolutionengine.interfaces.pojos.Decission;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
+import org.psikeds.resolutionengine.interfaces.pojos.Metadata;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse;
 import org.psikeds.resolutionengine.interfaces.services.ResolutionService;
@@ -126,8 +126,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
   public ResolutionResponse init() {
     ResolutionResponse resp = null;
     try {
-      // TODO: tbd: what metadata? maybe country- or language-specific settings?
-      final Map<String, Object> metadata = null;
+      final Metadata metadata = getMetadata();
       final String sessionID = createSessionId(metadata);
       final Knowledge knowledge = getInitialKnowledge(metadata);
       this.cache.saveSessionData(sessionID, knowledge);
@@ -151,7 +150,8 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
       // get data from request
       String sessionID = req.getSessionID();
       Knowledge oldKnowledge = req.getKnowledge();
-      final Map<String, Object> metadata = req.getMetadata();
+      // XXX Is it really clever to accept Metadata from a Client's Request?
+      final Metadata metadata = req.getMetadata() != null ? req.getMetadata() : getMetadata();
       final Decission decission = req.getMadeDecission();
 
       if (!StringUtils.isEmpty(sessionID) && oldKnowledge == null) {
@@ -189,7 +189,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
 
   // ----------------------------------------------------------------
 
-  private Knowledge getInitialKnowledge(final Map<String, Object> metadata) {
+  private Knowledge getInitialKnowledge(final Metadata metadata) {
     // TODO: tbd: what metadata? any metadata-specific purposes or variants?
     final Purposes purps = this.kb.getRootPurposes();
     final List<Choice> choices = new ArrayList<Choice>();
@@ -205,7 +205,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     return knowledge;
   }
 
-  private Knowledge resolve(final Knowledge oldKnowledge, final Decission decission, final Map<String, Object> metadata) {
+  private Knowledge resolve(final Knowledge oldKnowledge, final Decission decission, final Metadata metadata) {
     Knowledge newKnowledge = null;
     if (decission == null) {
       // no decission, no change
@@ -224,7 +224,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     return newKnowledge;
   }
 
-  private String createSessionId(final Map<String, Object> metadata) {
+  private String createSessionId(final Metadata metadata) {
     String sessionID = null;
     try {
       // TODO: tbd: what metadata? any metadata-specific session settings?
@@ -234,5 +234,9 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     finally {
       LOGGER.trace("Generated a new SessionID: {}", sessionID);
     }
+  }
+
+  private Metadata getMetadata() {
+    return this.trans.valueObject2Pojo(this.kb.getMetadata());
   }
 }
