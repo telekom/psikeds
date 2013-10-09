@@ -59,10 +59,13 @@ public class Vo2PojoTransformer implements Transformer {
     Metadata pojo = null;
     if (vo != null) {
       pojo = new Metadata();
-      // TODO: tbd: what metadata? maybe country- or language-specific settings?
+      // TODO: tbd: Any country- or language-specific Settings here?
       final Calendar ts = vo.getLastmodified() == null ? vo.getCreated() : vo.getLastmodified();
       if (ts != null) {
-        pojo.saveInfo("TimeStamp", SimpleDateFormat.getDateTimeInstance().format(ts.getTime()));
+        pojo.saveInfo(
+            Metadata.KB_TIMESTAMP,
+            SimpleDateFormat.getDateTimeInstance().format(ts.getTime())
+            );
       }
       final Map<String, Object> opt = vo.getOptionalInfo();
       if (opt != null && opt.size() > 0) {
