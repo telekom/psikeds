@@ -95,4 +95,34 @@ public class Choice extends POJO implements Serializable {
       getVariants().add(variant);
     }
   }
+
+  public void setVariant(final Variant variant) {
+    getVariants().clear();
+    addVariant(variant);
+  }
+
+  /**
+   * Check whether a made Decission matches to this Choice, i.e.
+   * whether the Client selected one of the Variants for the Purpose.
+   * 
+   * @param decission
+   * @return variant if matching, null else
+   */
+  public Variant matches(final Decission decission) {
+    try {
+      final String pid = this.purpose.getId();
+      if (pid.equals(decission.getPurposeID())) {
+        for (final Variant v : getVariants()) {
+          final String vid = v.getId();
+          if (vid.equals(decission.getVariantID())) {
+            return v;
+          }
+        }
+      }
+    }
+    catch (final Exception ex) {
+      // most probably one of the Objects was NULL
+    }
+    return null;
+  }
 }

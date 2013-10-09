@@ -43,6 +43,7 @@ public class Knowledge extends POJO implements Serializable {
 
   private List<KnowledgeEntity> entities;
   private List<Choice> choices;
+  private boolean stable;
 
   public Knowledge() {
     this(null);
@@ -56,6 +57,9 @@ public class Knowledge extends POJO implements Serializable {
     super();
     this.entities = entities;
     this.choices = choices;
+    // By default any Knowledge is stable, but will be changed/flagged during
+    // the Process of logical Resolution as needed.
+    this.stable = true;
   }
 
   public List<KnowledgeEntity> getEntities() {
@@ -90,5 +94,13 @@ public class Knowledge extends POJO implements Serializable {
     if (chc != null) {
       getChoices().add(chc);
     }
+  }
+
+  public boolean isStable() {
+    return this.stable;
+  }
+
+  public void setStable(final boolean stable) {
+    this.stable = stable;
   }
 }
