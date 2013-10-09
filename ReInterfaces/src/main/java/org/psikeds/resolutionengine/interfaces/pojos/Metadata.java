@@ -26,6 +26,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Metadata extends POJO implements Serializable {
 
+  public static final String SESSION_ID = "SESSION_ID";
+  public static final String KB_TIMESTAMP = "KB_TIMESTAMP";
+
   private static final long serialVersionUID = 1L;
 
   private Map<String, Object> infomap;
