@@ -19,6 +19,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.After;
@@ -31,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 
-import org.psikeds.common.idgen.IdGenerator;
 import org.psikeds.common.idgen.impl.SessionIdGenerator;
 import org.psikeds.resolutionengine.cache.ResolutionCache;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
@@ -43,6 +43,9 @@ import org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse;
 import org.psikeds.resolutionengine.interfaces.pojos.Variant;
 import org.psikeds.resolutionengine.interfaces.services.ResolutionService;
+import org.psikeds.resolutionengine.resolver.Resolver;
+import org.psikeds.resolutionengine.resolver.impl.AutoCompletion;
+import org.psikeds.resolutionengine.resolver.impl.DecissionEvaluator;
 import org.psikeds.resolutionengine.transformer.Transformer;
 import org.psikeds.resolutionengine.transformer.impl.Vo2PojoTransformer;
 
@@ -60,6 +63,9 @@ public class ResolutionBusinessServiceTest {
   private static final String LOG4J = "./src/main/resources/log4j.xml";
   private static final Logger LOGGER = LoggerFactory.getLogger(ResolutionBusinessServiceTest.class);
 
+  private KnowledgeBase kb;
+  private Transformer trans;
+  private List<Resolver> resolvers;
   private ResolutionCache cache;
   private ResolutionService srvc;
 
@@ -71,16 +77,25 @@ public class ResolutionBusinessServiceTest {
 
   @Before
   public void setUp() throws Exception {
-    final KnowledgeBase kb = new KnowledgeBaseMock();
-    final Transformer trans = new Vo2PojoTransformer();
-    final IdGenerator gen = new SessionIdGenerator("PSIMOCK");
+    this.kb = new KnowledgeBaseMock();
+    this.trans = new Vo2PojoTransformer();
+    this.resolvers = new ArrayList<Resolver>();
+    this.resolvers.add(new DecissionEvaluator());
+    this.resolvers.add(new AutoCompletion(this.kb, this.trans));
     this.cache = new ResolutionCache();
-    this.srvc = new ResolutionBusinessService(kb, trans, gen, this.cache);
+    this.srvc = new ResolutionBusinessService(
+        this.kb,
+        this.resolvers,
+        this.cache,
+        this.trans,
+        new SessionIdGenerator("MOCK")
+        );
   }
 
   @After
-  public void tearDown() {
+  public void tearDown() throws Exception {
     this.cache.clear();
+    this.resolvers.clear();
   }
 
   /**
