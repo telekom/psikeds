@@ -46,8 +46,25 @@ public class KnowledgeEntity extends POJO implements Serializable {
     this(null, null);
   }
 
+  /**
+   * Leaf-KnowledgeEntity, only Purpose and Variant, no Siblings or Choices.
+   *
+   * @param purpose
+   * @param variant
+   */
   public KnowledgeEntity(final Purpose purpose, final Variant variant) {
     this(purpose, variant, null, null);
+  }
+
+  /**
+   * New KnowledgeEntity, not resolved, only Choices no Siblings yet
+   *
+   * @param purpose
+   * @param variant
+   * @param choices
+   */
+  public KnowledgeEntity(final Purpose purpose, final Variant variant, final List<Choice> choices) {
+    this(purpose, variant, null, choices);
   }
 
   public KnowledgeEntity(final Purpose purpose, final Variant variant, final List<KnowledgeEntity> siblings, final List<Choice> choices) {
