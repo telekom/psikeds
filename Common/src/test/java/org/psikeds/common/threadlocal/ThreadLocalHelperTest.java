@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -13,6 +13,8 @@
  * For details see file LICENSING in the top project directory
  *******************************************************************************/
 package org.psikeds.common.threadlocal;
+
+import static org.junit.Assert.fail;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -26,7 +28,7 @@ import org.apache.log4j.xml.DOMConfigurator;
  * Unit-Test for ThreadLocalHelper
  * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class ThreadLocalHelperTest {
 
@@ -34,27 +36,30 @@ public class ThreadLocalHelperTest {
   private static final Logger LOGGER = LoggerFactory.getLogger(ThreadLocalHelperTest.class);
 
   @BeforeClass
-  public static void setUpBeforeClass() throws Exception {
+  public static void setUpBeforeClass() {
     BasicConfigurator.configure();
     DOMConfigurator.configure(LOG4J);
   }
 
   /**
-   * Test method for {@link org.psikeds.common.threadlocal.ThreadLocalHelper#cleanThreadLocalMaps()}.
+   * Test method for {@link org.psikeds.common.threadlocal.ThreadLocalHelper#cleanThreadLocalMaps()}
+   * .
    */
   @Test
-  public void testCleanThreadLocalMaps() throws Exception {
-    ThreadLocalHelper.enabled = false;
-    ThreadLocalHelper.cleanThreadLocalMaps();
+  public void testCleanThreadLocalMaps() {
+    try {
+      ThreadLocalHelper.enabled = false;
+      ThreadLocalHelper.cleanThreadLocalMaps();
+    }
+    catch (final Exception ex) {
+      final String message = "Cannot check Thread-Local-Maps: " + ex.getMessage();
+      LOGGER.error(message, ex);
+      fail(message);
+    }
   }
 
   public static void main(final String[] args) {
-    try {
-      setUpBeforeClass();
-      new ThreadLocalHelperTest().testCleanThreadLocalMaps();
-    }
-    catch (final Exception ex) {
-      LOGGER.error(ex.getMessage(), ex);
-    }
+    setUpBeforeClass();
+    new ThreadLocalHelperTest().testCleanThreadLocalMaps();
   }
 }

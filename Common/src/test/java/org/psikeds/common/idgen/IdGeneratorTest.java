@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -18,13 +18,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.xml.DOMConfigurator;
 
 import org.psikeds.common.idgen.impl.RandomStringGenerator;
 import org.psikeds.common.idgen.impl.RequestIdGenerator;
@@ -34,19 +38,30 @@ import org.psikeds.common.idgen.impl.SessionIdGenerator;
  * Unit-Tests for IdGenerators
  * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class IdGeneratorTest {
+
+  private static final String LOG4J = "../ResolutionEngine/src/main/resources/log4j.xml";
+  private static final Logger LOGGER = LoggerFactory.getLogger(IdGeneratorTest.class);
+  private static final int NUM_ITERATIONS = 200;
+
+  @BeforeClass
+  public static void setUpBeforeClass() {
+    BasicConfigurator.configure();
+    DOMConfigurator.configure(LOG4J);
+  }
 
   @Test
   public void testRandomStringGenerator() {
     try {
       final RandomStringGenerator gen = new RandomStringGenerator();
-      checkRandomness(gen, 200);
+      checkRandomness(gen, NUM_ITERATIONS);
     }
-    catch (final NoSuchAlgorithmException nsae) {
-      // nsae.printStackTrace();
-      fail(nsae.getMessage());
+    catch (final Exception ex) {
+      final String message = "Test of RandomStringGenerator failed: " + ex.getMessage();
+      LOGGER.error(message, ex);
+      fail(message);
     }
   }
 
@@ -54,11 +69,12 @@ public class IdGeneratorTest {
   public void testRequestIdGenerator() {
     try {
       final RequestIdGenerator gen = new RequestIdGenerator();
-      checkRandomness(gen, 200);
+      checkRandomness(gen, NUM_ITERATIONS);
     }
-    catch (final NoSuchAlgorithmException nsae) {
-      // nsae.printStackTrace();
-      fail(nsae.getMessage());
+    catch (final Exception ex) {
+      final String message = "Test of RequestIdGenerator failed: " + ex.getMessage();
+      LOGGER.error(message, ex);
+      fail(message);
     }
   }
 
@@ -66,11 +82,12 @@ public class IdGeneratorTest {
   public void testSessionIdGenerator() {
     try {
       final SessionIdGenerator gen = new SessionIdGenerator();
-      checkRandomness(gen, 200);
+      checkRandomness(gen, NUM_ITERATIONS);
     }
-    catch (final NoSuchAlgorithmException nsae) {
-      // nsae.printStackTrace();
-      fail(nsae.getMessage());
+    catch (final Exception ex) {
+      final String message = "Test of SessionIdGenerator failed: " + ex.getMessage();
+      LOGGER.error(message, ex);
+      fail(message);
     }
   }
 
@@ -84,12 +101,12 @@ public class IdGeneratorTest {
    */
   private void checkRandomness(final IdGenerator gen, final int numOfIterations) {
     try {
-      // System.out.println("===> Beginning test of " + String.valueOf(gen));
+      LOGGER.info("Starting test of " + String.valueOf(gen) + " ...");
       final List<String> prevlst = new ArrayList<String>();
-      for (int i = 0; i < numOfIterations; i++) {
+      for (int i = 1; i <= numOfIterations; i++) {
         final String cur = gen.getNextId();
         assertFalse("Empty ReqId after " + i + " iterations.", StringUtils.isEmpty(cur));
-        // System.out.println("" + i + ".: " + cur);
+        LOGGER.trace("" + i + ".: " + cur);
         assertFalse("Duplicate ReqIds " + cur + " after " + i + " iterations.", prevlst.contains(cur));
         prevlst.add(cur);
       }
@@ -97,7 +114,7 @@ public class IdGeneratorTest {
       assertEquals("Number of generated IDs should be " + numOfIterations + " but is " + num, numOfIterations, num);
     }
     finally {
-      // System.out.println("<=== Finished test of " + String.valueOf(gen));
+      LOGGER.info(" ... test of " + String.valueOf(gen) + " finished.");
     }
   }
 }

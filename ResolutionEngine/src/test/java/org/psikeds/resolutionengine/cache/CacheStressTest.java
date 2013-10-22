@@ -17,6 +17,9 @@ package org.psikeds.resolutionengine.cache;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+
+import java.security.NoSuchAlgorithmException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -33,9 +36,9 @@ import org.psikeds.common.idgen.impl.SessionIdGenerator;
 
 /**
  * Testcase checking Caching and LRU-Expiry
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class CacheStressTest {
 
@@ -53,7 +56,7 @@ public class CacheStressTest {
   }
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() throws NoSuchAlgorithmException {
     this.sidgen = new SessionIdGenerator();
     final LimitedHashMap<String, Object> map = new LimitedHashMap<String, Object>();
     this.maxCacheEntries = map.getMaxMapSize();
@@ -68,35 +71,61 @@ public class CacheStressTest {
 
   @Test
   public void testCacheAndLRU() throws Exception {
-    final String firstId = this.sidgen.getNextId();
-    Object firstdata = firstId;
-    LOGGER.info("Saving first data: " + firstId);
-    this.cache.saveSessionData(firstId, firstdata);
-    final String secondId = this.sidgen.getNextId();
-    Object seconddata = secondId;
-    LOGGER.info("Saving second data: " + firstId);
-    this.cache.saveSessionData(secondId, seconddata);
-    final int count = this.maxCacheEntries - 1;
-    LOGGER.info("Creating " + count + " additional Cache-Entries.");
-    for (int idx = 0; idx < count; idx++) {
-      final String sid = this.sidgen.getNextId();
-      final Object saved = sid;
-      this.cache.saveSessionData(sid, saved);
-      final Object loaded = this.cache.getSessionData(sid);
-      assertEquals(saved, loaded);
-      if (idx % 10 == 0) {
-        firstdata = this.cache.getSessionData(firstId);
-        assertNotNull("Cannot find first Session Data in Cache.", firstdata);
+    boolean ok = true;
+    LOGGER.info("Starting test of ResolutionCache ...");
+    try {
+      final String firstId = this.sidgen.getNextId();
+      Object firstdata = firstId;
+      LOGGER.trace("Saving first data: " + firstId);
+      this.cache.saveSessionData(firstId, firstdata);
+
+      final String secondId = this.sidgen.getNextId();
+      Object seconddata = secondId;
+      LOGGER.trace("Saving second data: " + firstId);
+      this.cache.saveSessionData(secondId, seconddata);
+
+      final int count = this.maxCacheEntries - 1;
+      LOGGER.info(" ... creating " + count + " additional Cache-Entries ...");
+      for (int idx = 0; idx < count; idx++) {
+        final String sid = this.sidgen.getNextId();
+        final Object saved = sid;
+        this.cache.saveSessionData(sid, saved);
+        final Object loaded = this.cache.getSessionData(sid);
+        assertEquals(saved, loaded);
+        if ((idx % 10) == 0) {
+          LOGGER.trace("... checking that first Session Data still exists ...");
+          firstdata = this.cache.getSessionData(firstId);
+          assertNotNull("Cannot find first Session Data in Cache.", firstdata);
+        }
+      }
+
+      LOGGER.info("... checking Expiry of Cache-Entries ...");
+      firstdata = this.cache.getSessionData(firstId);
+      LOGGER.trace("First Session Data = " + firstdata);
+      assertNotNull("Cannot find first Session Data in Cache.", firstdata);
+
+      seconddata = this.cache.getSessionData(secondId);
+      LOGGER.trace("Second Session Data = " + seconddata);
+      assertNull("Second Session Data did not expire after " + count + " additional Cache-Entries.", seconddata);
+
+      final int cachesize = this.cache.size();
+      LOGGER.trace("Cache size is: " + cachesize);
+      assertEquals("Cache size is " + cachesize + ", not expected " + this.maxCacheEntries, cachesize, this.maxCacheEntries);
+
+      ok = true;
+    }
+    catch (final Throwable t) {
+      ok = false;
+      final String message = "Cache Error: " + t.getMessage();
+      if (t instanceof AssertionError) {
+        throw (AssertionError) t;
+      }
+      else {
+        fail(message);
       }
     }
-    firstdata = this.cache.getSessionData(firstId);
-    LOGGER.info("First Session Data = " + firstdata);
-    assertNotNull("Cannot find first Session Data in Cache.", firstdata);
-    seconddata = this.cache.getSessionData(secondId);
-    LOGGER.info("Second Session Data = " + seconddata);
-    assertNull("Second Session Data did not expire after " + count + " additional Cache-Entries.", seconddata);
-    final int cachesize = this.cache.size();
-    LOGGER.info("Cache size is: " + cachesize);
-    assertEquals("Cache size is " + cachesize + ", not expected " + this.maxCacheEntries, cachesize, this.maxCacheEntries);
+    finally {
+      LOGGER.info(" ... test of ResolutionCache finished " + (ok ? "without problems." : "with Errors!"));
+    }
   }
 }

@@ -44,9 +44,9 @@ import org.psikeds.resolutionengine.interfaces.services.ResolutionService;
 
 /**
  * Tests for {@link org.psikeds.resolutionengine.interfaces.services.ResolutionService}.
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class ResolutionServiceTest {
 
@@ -80,43 +80,47 @@ public class ResolutionServiceTest {
    */
   @Test
   public void testResolutionService() throws Exception {
+    LOGGER.info("Testing ResolutionService ...");
     assertNotNull("ResolutionService is null!", this.srvc);
 
+    LOGGER.info("... getting initial Knowledge ...");
     final ResolutionResponse ires = this.srvc.init();
-    LOGGER.debug("Received:\n{}", ires);
-    assertNotNull("No initial Resolution-Response!", ires);
+    LOGGER.trace("Received:\n{}", ires);
 
+    assertNotNull("No initial Resolution-Response!", ires);
     final String sessionID1 = ires.getSessionID();
-    assertTrue("No initial SessionID!", sessionID1 != null && sessionID1.length() > 0);
+    assertTrue("No initial SessionID!", (sessionID1 != null) && (sessionID1.length() > 0));
     final Knowledge ike = ires.getKnowledge();
     assertNotNull("No initial Knowledge!", ike);
 
+    LOGGER.info("... making a Decission and asking for Resolution ...");
     final Decission decission = readObjectFromJsonFile(DECISSION, Decission.class);
     final ResolutionRequest sreq = new ResolutionRequest(sessionID1, decission);
-    LOGGER.debug("Sending:\n{}", sreq);
-
+    LOGGER.trace("Sending:\n{}", sreq);
     final ResolutionResponse sres = this.srvc.select(sreq);
-    LOGGER.debug("Received:\n{}", sres);
-    assertNotNull("No Resolution-Response!", sres);
+    LOGGER.trace("Received:\n{}", sres);
 
+    assertNotNull("No Resolution-Response!", sres);
     final String sessionID2 = sres.getSessionID();
-    assertTrue("No SessionID in Resolution-Response!", sessionID2 != null && sessionID2.length() > 0);
+    assertTrue("No SessionID in Resolution-Response!", (sessionID2 != null) && (sessionID2.length() > 0));
     final Knowledge ske = sres.getKnowledge();
     assertNotNull("No Knowledge in Resolution-Response!", ske);
     assertEquals("SessionIDs are not matching!", sessionID1, sessionID2);
+
+    LOGGER.info("... done. Resolution worked as expected.");
   }
 
   private static <T> T readObjectFromJsonFile(final File f, final Class<T> type) throws JsonProcessingException, IOException {
     T obj = null;
-    if (type != null && f != null && f.isFile() && f.exists() && f.canRead()) {
+    if ((type != null) && (f != null) && f.isFile() && f.exists() && f.canRead()) {
       obj = MAPPER.readValue(f, type);
-      LOGGER.debug("Read Object from File {}\n{}", f, obj);
+      LOGGER.trace("Read Object from File {}\n{}", f, obj);
     }
     return obj;
   }
 
   private static void writeObjectToJsonFile(final File f, final Object obj) throws JsonProcessingException, IOException {
-    if (f != null && obj != null) {
+    if ((f != null) && (obj != null)) {
       LOGGER.info("Writing Object to File {}\n{}", f, obj);
       MAPPER.writeValue(f, obj);
       assertTrue("Could not write Object(s) to File " + f.getPath(), f.exists());
@@ -182,7 +186,7 @@ public class ResolutionServiceTest {
   public static void main(final String[] args) {
     try {
       setUpBeforeClass();
-      final boolean force = args.length > 0 && "force".equalsIgnoreCase(args[0]);
+      final boolean force = (args.length > 0) && "force".equalsIgnoreCase(args[0]);
       generateTestData(force);
     }
     catch (final Exception ex) {
