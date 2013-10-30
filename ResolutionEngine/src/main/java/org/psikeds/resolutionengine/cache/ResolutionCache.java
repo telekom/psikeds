@@ -15,7 +15,6 @@
 package org.psikeds.resolutionengine.cache;
 
 import java.io.Serializable;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,110 +22,136 @@ import org.slf4j.LoggerFactory;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * Cache holding all information regarding the current Resolution/Session
- *
- * Note: The actual Cache is a Map<String, Object> holding all data.
- *
- *       By default a LimitedHashMap is used, but you can plug in other
- *       implementation or settings you like.
- *
+ * The ResolutionCache is holding all information regarding the current
+ * Resolutions / Sessions.
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
-public class ResolutionCache {
+public class ResolutionCache extends LimitedHashMap<String, CacheEntry> {
 
+  private static final long serialVersionUID = 1L;
   private static final Logger LOGGER = LoggerFactory.getLogger(ResolutionCache.class);
 
-  private Map<String, Object> cache;
+  public static final int DEFAULT_MAX_SESSIONS_PER_SERVER = LimitedHashMap.DEFAULT_MAX_MAP_SIZE;
+  public static final int DEFAULT_MAX_OBJECTS_PER_SESSION = CacheEntry.DEFAULT_MAX_OBJECTS_PER_SESSION;
+
+  private int maxObjectsPerSession;
 
   public ResolutionCache() {
-    this(new LimitedHashMap<String, Object>());
+    this(DEFAULT_MAX_SESSIONS_PER_SERVER, DEFAULT_MAX_OBJECTS_PER_SESSION);
   }
 
-  public ResolutionCache(final Map<String, Object> map) {
-    this.cache = map;
+  public ResolutionCache(final int maxSessionsPerServer, final int maxObjectsPerSession) {
+    super(maxSessionsPerServer);
+    this.maxObjectsPerSession = maxObjectsPerSession;
   }
 
-  public void saveSessionData(final String sessionID, final Object data) {
-    saveSessionData(sessionID, null, data);
+  // ----------------------------------------------------------------
+
+  public int getMaxObjectsPerSession() {
+    return this.maxObjectsPerSession;
   }
 
-  public void saveSessionData(final String sessionID, final String key, final Object data) {
-    if (this.cache != null) {
-      final String cachekey = constructCacheKey(sessionID, key);
-      if (!StringUtils.isEmpty(cachekey)) {
-        LOGGER.trace("IN: {} = {}", cachekey, data);
-        if (!(data instanceof Serializable)) {
-          LOGGER.warn("Not a serializable Object: {}", cachekey);
+  public void setMaxObjectsPerSession(final int maxObjectsPerSession) {
+    this.maxObjectsPerSession = maxObjectsPerSession;
+  }
+
+  public int getMaxSessionsPerServer() {
+    return getMaxSize();
+  }
+
+  public void setMaxSessionsPerServer(final int maxSessionsPerServer) {
+    setMaxSize(maxSessionsPerServer);
+  }
+
+  // ----------------------------------------------------------------
+
+  public CacheEntry getSession(final String sessionID, final boolean create) {
+    CacheEntry sessionData = null;
+    try {
+      if (!StringUtils.isEmpty(sessionID)) {
+        sessionData = get(sessionID);
+        if ((sessionData == null) && create) {
+          sessionData = new CacheEntry(this.maxObjectsPerSession);
+          saveSession(sessionID, sessionData);
         }
-        this.cache.put(cachekey, data);
+      }
+      return sessionData;
+    }
+    finally {
+      LOGGER.trace("getSession: {} = {}", sessionID, sessionData);
+    }
+  }
+
+  public void saveSession(final String sessionID, final CacheEntry sessionData) {
+    try {
+      if ((sessionData != null) && !StringUtils.isEmpty(sessionID)) {
+        sessionData.setMaxObjectsPerSession(this.maxObjectsPerSession);
+        put(sessionID, sessionData);
       }
     }
+    finally {
+      LOGGER.trace("saveSession: {} = {}", sessionID, sessionData);
+    }
   }
 
-  public Object getSessionData(final String sessionID) {
-    return getSessionData(sessionID, null);
+  public CacheEntry removeSession(final String sessionID) {
+    CacheEntry sessionData = null;
+    try {
+      if (!StringUtils.isEmpty(sessionID)) {
+        sessionData = remove(sessionID);
+      }
+      return sessionData;
+    }
+    finally {
+      LOGGER.trace("removeSession: {} = {}", sessionID, sessionData);
+    }
   }
 
-  public Object getSessionData(final String sessionID, final String key) {
-    Object data = null;
-    if (this.cache != null) {
-      final String cachekey = constructCacheKey(sessionID, key);
-      if (!StringUtils.isEmpty(cachekey)) {
-        data = this.cache.get(cachekey);
-        LOGGER.trace("OUT: {} = {}", cachekey, data);
+  // ----------------------------------------------------------------
+
+  public Serializable getObject(final String sessionID, final String key) {
+    Serializable obj = null;
+    try {
+      final CacheEntry sessionData = getSession(sessionID, false);
+      if ((sessionData != null) && !StringUtils.isEmpty(key)) {
+        obj = sessionData.get(key);
+      }
+      return obj;
+    }
+    finally {
+      LOGGER.trace("getObject: {} , {} = {}", sessionID, key, obj);
+    }
+  }
+
+  public void saveObject(final String sessionID, final String key, final Serializable obj) {
+    try {
+      if ((obj != null) && !StringUtils.isEmpty(key)) {
+        final CacheEntry sessionData = getSession(sessionID, true);
+        if (sessionData != null) {
+          sessionData.put(key, obj);
+          saveSession(sessionID, sessionData);
+        }
       }
     }
-    return data;
+    finally {
+      LOGGER.trace("saveObject: {} , {}, {}", sessionID, key, obj);
+    }
   }
 
-  public Object removeSessionData(final String sessionID) {
-    return removeSessionData(sessionID, null);
-  }
-
-  public Object removeSessionData(final String sessionID, final String key) {
-    Object data = null;
-    if (this.cache != null) {
-      final String cachekey = constructCacheKey(sessionID, key);
-      if (!StringUtils.isEmpty(cachekey)) {
-        data = this.cache.remove(cachekey);
-        LOGGER.trace("DEL: {} = {}", cachekey, data);
+  public Serializable removeObject(final String sessionID, final String key) {
+    Serializable obj = null;
+    try {
+      final CacheEntry sessionData = getSession(sessionID, false);
+      if ((sessionData != null) && !StringUtils.isEmpty(key)) {
+        obj = sessionData.remove(key);
+        saveSession(sessionID, sessionData);
       }
+      return obj;
     }
-    return data;
-  }
-
-  public void clear() {
-    if (this.cache != null) {
-      this.cache.clear();
-      LOGGER.trace("Cache cleared.");
+    finally {
+      LOGGER.trace("removeObject: {} , {} = {}", sessionID, key, obj);
     }
-  }
-
-  public boolean isEmpty() {
-    return this.cache == null || this.cache.isEmpty();
-  }
-
-  public int size() {
-    return this.cache == null ? 0 : this.cache.size();
-  }
-
-  @Override
-  protected void finalize() throws Throwable {
-    this.clear();
-    this.cache = null;
-  }
-
-  private String constructCacheKey(final String primekey, final String subkey) {
-    if (StringUtils.isEmpty(subkey)) {
-      return primekey;
-    }
-    if (StringUtils.isEmpty(primekey)) {
-      return subkey;
-    }
-    final StringBuilder sb = new StringBuilder(primekey);
-    sb.append('.');
-    sb.append(subkey);
-    return sb.toString();
   }
 }

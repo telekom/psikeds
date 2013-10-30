@@ -19,6 +19,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 
 import org.junit.After;
@@ -35,7 +36,7 @@ import org.psikeds.common.idgen.IdGenerator;
 import org.psikeds.common.idgen.impl.SessionIdGenerator;
 
 /**
- * Testcase checking Caching and LRU-Expiry
+ * Testcase checking Caching and LRU-Expiry of Sessions and Objects.
  * 
  * @author marco@juliano.de
  * 
@@ -47,7 +48,6 @@ public class CacheStressTest {
 
   private IdGenerator sidgen;
   private ResolutionCache cache;
-  private int maxCacheEntries;
 
   @BeforeClass
   public static void setUpBeforeClass() {
@@ -58,10 +58,7 @@ public class CacheStressTest {
   @Before
   public void setUp() throws NoSuchAlgorithmException {
     this.sidgen = new SessionIdGenerator();
-    final LimitedHashMap<String, Object> map = new LimitedHashMap<String, Object>();
-    this.maxCacheEntries = map.getMaxMapSize();
-    this.cache = new ResolutionCache(map);
-    LOGGER.info("Created Cache with maximum Size of " + this.maxCacheEntries);
+    this.cache = new ResolutionCache();
   }
 
   @After
@@ -70,53 +67,78 @@ public class CacheStressTest {
   }
 
   @Test
-  public void testCacheAndLRU() throws Exception {
+  public void testCacheAndLRU() {
     boolean ok = true;
+    final long start = System.currentTimeMillis();
+    long end = start;
+    long duration = 0;
+
     LOGGER.info("Starting test of ResolutionCache ...");
     try {
+      final int numSessions = this.cache.getMaxSessionsPerServer();
+      LOGGER.info("... max. Sessions per Server = " + numSessions + " ...");
+      final int numObjects = this.cache.getMaxObjectsPerSession();
+      LOGGER.info("... max. Objects per Session = " + numObjects + " ...");
+
       final String firstId = this.sidgen.getNextId();
-      Object firstdata = firstId;
+      final String firstKey = firstId;
+      final Serializable firstdata = firstId;
       LOGGER.trace("Saving first data: " + firstId);
-      this.cache.saveSessionData(firstId, firstdata);
+      this.cache.saveObject(firstId, firstKey, firstdata);
 
       final String secondId = this.sidgen.getNextId();
-      Object seconddata = secondId;
+      final String secondKey = secondId;
+      final Serializable seconddata = secondId;
       LOGGER.trace("Saving second data: " + firstId);
-      this.cache.saveSessionData(secondId, seconddata);
+      this.cache.saveObject(secondId, secondKey, seconddata);
 
-      final int count = this.maxCacheEntries - 1;
-      LOGGER.info(" ... creating " + count + " additional Cache-Entries ...");
-      for (int idx = 0; idx < count; idx++) {
+      final int sessCount = numSessions - 1;
+      LOGGER.info(" ... creating " + sessCount + " additional Cache-Entries ...");
+      for (int sessIDX = 0; sessIDX < sessCount; sessIDX++) {
         final String sid = this.sidgen.getNextId();
-        final Object saved = sid;
-        this.cache.saveSessionData(sid, saved);
-        final Object loaded = this.cache.getSessionData(sid);
-        assertEquals(saved, loaded);
-        if ((idx % 10) == 0) {
+        final String key = sid;
+        final Serializable saved = sid;
+        this.cache.saveObject(sid, key, saved);
+        final Serializable loaded = this.cache.getObject(sid, key);
+        assertNotNull("Cannot load cached Object from Cache.", loaded);
+        assertEquals("Original Object and Object loaded from Cache are not equal.", saved, loaded);
+        if ((sessIDX % 10) == 0) {
           LOGGER.trace("... checking that first Session Data still exists ...");
-          firstdata = this.cache.getSessionData(firstId);
-          assertNotNull("Cannot find first Session Data in Cache.", firstdata);
+          final CacheEntry firstEntry = this.cache.getSession(firstId, false);
+          assertNotNull("Cannot find first Cache-Entry.", firstEntry);
+
+          final int objCount = numObjects + 1;
+          LOGGER.trace(" ... creating " + objCount + " additional Objects for first Cache-Entry ...");
+          for (int objIDX = 0; objIDX < objCount; objIDX++) {
+            final Serializable reloadedFirstData = this.cache.getObject(firstId, firstKey);
+            assertNotNull("Cannot find Data of first Session in Cache.", firstdata);
+            assertEquals("Original first Data and first Data reloaded from Cache are not equal.", firstdata, reloadedFirstData);
+            final String newKey = this.sidgen.getNextId();
+            final Serializable newObj = newKey;
+            this.cache.saveObject(firstId, newKey, newObj);
+          }
         }
       }
 
       LOGGER.info("... checking Expiry of Cache-Entries ...");
-      firstdata = this.cache.getSessionData(firstId);
-      LOGGER.trace("First Session Data = " + firstdata);
-      assertNotNull("Cannot find first Session Data in Cache.", firstdata);
+      final Serializable reloadedFirstData = this.cache.getObject(firstId, firstKey);
+      LOGGER.trace("First Session Data = " + reloadedFirstData);
+      assertNotNull("Cannot find first Session Data in Cache.", reloadedFirstData);
 
-      seconddata = this.cache.getSessionData(secondId);
-      LOGGER.trace("Second Session Data = " + seconddata);
-      assertNull("Second Session Data did not expire after " + count + " additional Cache-Entries.", seconddata);
+      final Serializable reloadedSecondData = this.cache.getObject(secondId, secondKey);
+      LOGGER.trace("Second Session Data = " + reloadedSecondData);
+      assertNull("Second Session Data did not expire after " + sessCount + " additional Cache-Entries.", reloadedSecondData);
 
       final int cachesize = this.cache.size();
       LOGGER.trace("Cache size is: " + cachesize);
-      assertEquals("Cache size is " + cachesize + ", not expected " + this.maxCacheEntries, cachesize, this.maxCacheEntries);
+      assertEquals("Cache size is " + cachesize + ", not expected " + numSessions, cachesize, numSessions);
 
       ok = true;
     }
     catch (final Throwable t) {
       ok = false;
       final String message = "Cache Error: " + t.getMessage();
+      LOGGER.error(message, t);
       if (t instanceof AssertionError) {
         throw (AssertionError) t;
       }
@@ -125,7 +147,9 @@ public class CacheStressTest {
       }
     }
     finally {
-      LOGGER.info(" ... test of ResolutionCache finished " + (ok ? "without problems." : "with Errors!"));
+      end = System.currentTimeMillis();
+      duration = end - start;
+      LOGGER.info(" ... test of ResolutionCache finished after " + duration + " milliseconds " + (ok ? "without problems." : "with Errors!"));
     }
   }
 }
