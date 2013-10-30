@@ -7,7 +7,7 @@
   <!-- ============================== -->
 
   <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
-    <param name="Threshold" value="DEBUG" />
+    <param name="Threshold" value="INFO" />
     <param name="Target" value="System.out" />
     <layout class="org.apache.log4j.PatternLayout">
       <!-- Enable custom psiKeds context infos in log -->
@@ -30,7 +30,7 @@
       <param name="ConversionPattern"
         value="%d %-5r %-5p [%c] [%X{REQ}] [%X{SRVC}] [%X{CTX}] %m%n" />
     </layout>
-  </appender>
+  </appender>#
   -->
 
   <!-- ================ -->
@@ -58,10 +58,22 @@
   </category>
 
   <category name="org.psikeds.common">
+    <priority value="DEBUG" />
+  </category>
+
+  <category name="org.psikeds.common.config">
     <priority value="TRACE" />
   </category>
 
   <category name="org.psikeds.resolutionengine">
+    <priority value="DEBUG" />
+  </category>
+
+  <category name="org.psikeds.resolutionengine.resolver">
+    <priority value="TRACE" />
+  </category>
+
+  <category name="org.psikeds.resolutionengine.services">
     <priority value="TRACE" />
   </category>
 
