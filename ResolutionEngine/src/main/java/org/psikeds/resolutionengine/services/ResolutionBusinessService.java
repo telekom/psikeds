@@ -45,7 +45,7 @@ import org.psikeds.resolutionengine.transformer.Transformer;
 /**
  * This Business Service is the actual implementation of
  * {@link org.psikeds.resolutionengine.interfaces.services.ResolutionService}
- *
+ * 
  * It is wired via Spring to the REST-Service and used as a delegate.
  * 
  * @author marco@juliano.de
@@ -53,6 +53,10 @@ import org.psikeds.resolutionengine.transformer.Transformer;
 public class ResolutionBusinessService implements InitializingBean, ResolutionService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ResolutionBusinessService.class);
+
+  private static final String SESS_KEY_KNOWLEDGE = "Knowledge";
+  private static final String SESS_KEY_EVENTS = "Events";
+  private static final String SESS_KEY_RULES = "Rules";
 
   private KnowledgeBase kb;
   private List<Resolver> resolverChain;
@@ -123,7 +127,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
 
   /**
    * Check that ResolutionBusinessService was configured/wired correctly.
-   *
+   * 
    * @throws Exception
    * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
    */
@@ -150,8 +154,8 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
       final Metadata metadata = getMetadata();
       final String sessionID = createSessionId(metadata);
       final Knowledge knowledge = getInitialKnowledge(metadata);
-      // save intial knowledge in cache for next request
-      this.cache.saveSessionData(sessionID, knowledge);
+      // save intial knowledge and metadata in cache for next request
+      this.cache.saveObject(sessionID, SESS_KEY_KNOWLEDGE, knowledge);
       resp = new ResolutionResponse(sessionID, metadata, knowledge);
       return resp;
     }
@@ -161,7 +165,8 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
   }
 
   /**
-   * @param req ResolutionRequest
+   * @param req
+   *          ResolutionRequest
    * @return ResolutionResponse
    * @see org.psikeds.resolutionengine.interfaces.services.ResolutionService#select(org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest)
    */
@@ -176,12 +181,12 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
       final Metadata metadata = req.getMetadata() != null ? req.getMetadata() : getMetadata();
       final Decission decission = req.getMadeDecission();
 
-      if (!StringUtils.isEmpty(sessionID) && oldKnowledge == null) {
+      if (!StringUtils.isEmpty(sessionID) && (oldKnowledge == null)) {
         // get cached knowledge for session-id
-        oldKnowledge = (Knowledge) this.cache.getSessionData(sessionID);
+        oldKnowledge = (Knowledge) this.cache.getObject(sessionID, SESS_KEY_KNOWLEDGE);
         LOGGER.debug("Using cached Knowledge for SessionID {}", sessionID);
       }
-      else if (oldKnowledge != null && StringUtils.isEmpty(sessionID)) {
+      else if ((oldKnowledge != null) && StringUtils.isEmpty(sessionID)) {
         // create new session-id for supplied knowledge
         sessionID = createSessionId(metadata);
         LOGGER.debug("Created new SessionID {} for supplied Knowledge", sessionID);
@@ -195,12 +200,12 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
       resp = new ResolutionResponse(sessionID, metadata, newKnowledge);
 
       if (resp.isResolved()) {
-        // resolution finished ... cleanup
-        this.cache.removeSessionData(sessionID);
+        // resolution finished ... cleanup session
+        this.cache.removeSession(sessionID);
       }
       else {
         // cache current state of resolution for next request
-        this.cache.saveSessionData(sessionID, newKnowledge);
+        this.cache.saveObject(sessionID, SESS_KEY_KNOWLEDGE, newKnowledge);
       }
       return resp;
     }

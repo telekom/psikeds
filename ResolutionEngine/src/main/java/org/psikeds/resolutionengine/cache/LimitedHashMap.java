@@ -20,12 +20,13 @@ import java.util.Map;
 /**
  * Extension of the LinkedHashMap with limited size. If the size of the Map
  * exceeds the defined limit the least recently used entries will be removed.
- * A maximum map size < 0 is interpreted as unlimited map.
- *
+ * 
+ * A maximum map size <= 0 is interpreted as unlimited map.
+ * 
  * For further information also see {@link java.util.LinkedHashMap}
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class LimitedHashMap<K, V> extends LinkedHashMap<K, V> {
 
@@ -36,31 +37,43 @@ public class LimitedHashMap<K, V> extends LinkedHashMap<K, V> {
   public static final int DEFAULT_MAX_MAP_SIZE = DEFAULT_INITIAL_CAPACITY << 5;
   public static final boolean LRU_ACCESS_ORDER = true;
 
-  private int maxMapSize;
+  private int maxSize;
 
-  public LimitedHashMap() {
+  protected LimitedHashMap() {
     this(DEFAULT_MAX_MAP_SIZE);
   }
 
-  public LimitedHashMap(final int maxMapSize) {
-    this(maxMapSize, DEFAULT_INITIAL_CAPACITY, DEFAULT_LOAD_FACTOR, LRU_ACCESS_ORDER);
+  protected LimitedHashMap(final int maxSize) {
+    this(maxSize, DEFAULT_INITIAL_CAPACITY, DEFAULT_LOAD_FACTOR, LRU_ACCESS_ORDER);
   }
 
-  public LimitedHashMap(final int maxMapSize, final int initialCapacity, final float loadFactor, final boolean accessOrder) {
-    super(initialCapacity, loadFactor, accessOrder);
-    this.maxMapSize = maxMapSize;
+  protected LimitedHashMap(final int maxSize, final int initialCapacity, final float loadFactor, final boolean accessOrder) {
+    super(((maxSize > 0) && (maxSize < initialCapacity) ? maxSize : initialCapacity), loadFactor, accessOrder);
+    this.maxSize = maxSize;
   }
 
-  public int getMaxMapSize() {
-    return this.maxMapSize;
+  public int getMaxSize() {
+    return this.maxSize;
   }
 
-  public void setMaxMapSize(final int maxMapSize) {
-    this.maxMapSize = maxMapSize;
+  public void setMaxSize(final int maxSize) {
+    this.maxSize = maxSize;
   }
 
+  /**
+   * Remove the eldest Entry whenever we exceed the maximum size.
+   */
   @Override
   protected boolean removeEldestEntry(final Map.Entry<K, V> eldest) {
-    return this.maxMapSize > 0 && this.maxMapSize < size();
+    return (this.maxSize > 0) && (this.maxSize < size());
+  }
+
+  /**
+   * Clear all references to Objects when Map is finalized.
+   */
+  @Override
+  protected void finalize() throws Throwable {
+    super.finalize();
+    this.clear();
   }
 }
