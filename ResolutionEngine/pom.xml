@@ -223,10 +223,7 @@ For details see file LICENSING in the top project directory
               <useSeparateTomcatClassLoader>true</useSeparateTomcatClassLoader>
               <failOnError>true</failOnError>
               <systemProperties>
-                <property>
-                  <name>org.psikeds.config.dir</name>
-                  <value>${basedir}/../config/</value>
-                </property>
+                <org.psikeds.config.dir>${basedir}/../config/</org.psikeds.config.dir>
               </systemProperties>
             </configuration>
           </execution>
@@ -257,14 +254,8 @@ For details see file LICENSING in the top project directory
               <trimStackTrace>false</trimStackTrace>
               <workingDirectory>${basedir}</workingDirectory>
               <systemProperties>
-                <property>
-                  <name>org.psikeds.config.dir</name>
-                  <value>${basedir}/../config/</value>
-                </property>
-                <property>
-                  <name>resolution.engine.base.url</name>
-                  <value>http://localhost:${resolution.engine.server.port}/${project.build.finalName}/services/rest</value>
-                </property>
+                <org.psikeds.config.dir>${basedir}/../config/</org.psikeds.config.dir>
+                <resolution.engine.base.url>http://localhost:${resolution.engine.server.port}/${project.build.finalName}/services/rest</resolution.engine.base.url>
               </systemProperties>
               <environmentVariables>
                 <org.psikeds.config.dir>${basedir}/../config/</org.psikeds.config.dir>
