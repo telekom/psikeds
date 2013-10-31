@@ -21,8 +21,9 @@ see file [000-CODEX](000-CODEX) in the top project directory
 
 HOW TO BUILD
 ------------
-1. Install [JDK 1.6+](http://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Maven 3.x](http://maven.apache.org/download.cgi)
-2. Run *"mvn clean install"* within this directory.
+1. Install [JDK 1.6+](http://www.oracle.com/technetwork/java/javase/downloads/index.html), [Maven 3.x](http://maven.apache.org/download.cgi) and [Git](http://git-scm.com/downloads)
+2. Download this Project from GitHub, e.g.: [git clone https://github.com/dtag-dbu/psikeds.git](https://github.com/dtag-dbu/psikeds.git)
+3. Run *"mvn clean install"* within this directory.
 
 CONFIGURATION
 -------------
