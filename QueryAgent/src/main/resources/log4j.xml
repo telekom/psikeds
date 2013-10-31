@@ -50,7 +50,7 @@
   </category>
 
   <category name="org.codehaus">
-    <priority value="INFO" />
+    <priority value="WARN" />
   </category>
 
   <category name="com.sun">
@@ -70,10 +70,14 @@
   </category>
 
   <category name="org.psikeds.common">
-    <priority value="TRACE" />
+    <priority value="DEBUG" />
   </category>
 
   <category name="org.psikeds.queryagent">
+    <priority value="DEBUG" />
+  </category>
+
+  <category name="org.psikeds.queryagent.presenter">
     <priority value="TRACE" />
   </category>
 
