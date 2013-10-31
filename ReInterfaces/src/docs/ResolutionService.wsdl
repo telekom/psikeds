@@ -1,0 +1,246 @@
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="org.psikeds.resolutionengine.soap" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" name="ResolutionService" targetNamespace="org.psikeds.resolutionengine.soap">
+  <wsdl:types>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="org.psikeds.resolutionengine.soap" elementFormDefault="unqualified" targetNamespace="org.psikeds.resolutionengine.soap" version="1.0">
+<xs:element name="Choice" type="tns:choice"/>
+<xs:element name="Decission" type="tns:decission"/>
+<xs:element name="Feature" type="tns:feature"/>
+<xs:element name="FeatureValueType" type="tns:featureValueType"/>
+<xs:element name="Knowledge" type="tns:knowledge"/>
+<xs:element name="KnowledgeEntity" type="tns:knowledgeEntity"/>
+<xs:element name="Purpose" type="tns:purpose"/>
+<xs:element name="ResolutionRequest" type="tns:resolutionRequest"/>
+<xs:element name="ResolutionResponse" type="tns:resolutionResponse"/>
+<xs:element name="Variant" type="tns:variant"/>
+<xs:element name="doInit" type="tns:doInit"/>
+<xs:element name="doInitResponse" type="tns:doInitResponse"/>
+<xs:element name="doSelect" type="tns:doSelect"/>
+<xs:element name="doSelectResponse" type="tns:doSelectResponse"/>
+<xs:complexType name="doInit">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="arg0" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="doInitResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" ref="tns:ResolutionResponse"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="resolutionResponse">
+    <xs:complexContent>
+      <xs:extension base="tns:baseResolutionContext">
+        <xs:sequence>
+          <xs:element name="maxTreeDepth" type="xs:long"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="possibleChoices" nillable="true" type="tns:choice"/>
+          <xs:element name="resolved" type="xs:boolean"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+<xs:complexType name="baseResolutionContext">
+    <xs:complexContent>
+      <xs:extension base="tns:pojo">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="knowledge" type="tns:knowledge"/>
+          <xs:element minOccurs="0" name="metadata" type="tns:metadata"/>
+          <xs:element minOccurs="0" name="sessionID" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+<xs:complexType name="pojo">
+    <xs:sequence/>
+  </xs:complexType>
+<xs:complexType name="choice">
+    <xs:complexContent>
+      <xs:extension base="tns:pojo">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="parentVariant" type="tns:variant"/>
+          <xs:element minOccurs="0" name="purpose" type="tns:purpose"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="variants" nillable="true" type="tns:variant"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+<xs:complexType name="variant">
+    <xs:complexContent>
+      <xs:extension base="tns:pojo">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="description" type="xs:string"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="features" nillable="true" type="tns:feature"/>
+          <xs:element minOccurs="0" name="id" type="xs:string"/>
+          <xs:element minOccurs="0" name="label" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+<xs:complexType name="feature">
+    <xs:complexContent>
+      <xs:extension base="tns:pojo">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="description" type="xs:string"/>
+          <xs:element minOccurs="0" name="id" type="xs:string"/>
+          <xs:element minOccurs="0" name="label" type="xs:string"/>
+          <xs:element minOccurs="0" name="maxValue" type="xs:string"/>
+          <xs:element minOccurs="0" name="minValue" type="xs:string"/>
+          <xs:element name="range" type="xs:boolean"/>
+          <xs:element minOccurs="0" name="value" type="xs:string"/>
+          <xs:element minOccurs="0" name="valueType" type="tns:featureValueType"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+<xs:complexType name="purpose">
+    <xs:complexContent>
+      <xs:extension base="tns:pojo">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="description" type="xs:string"/>
+          <xs:element minOccurs="0" name="id" type="xs:string"/>
+          <xs:element minOccurs="0" name="label" type="xs:string"/>
+          <xs:element name="root" type="xs:boolean"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+<xs:complexType name="knowledge">
+    <xs:complexContent>
+      <xs:extension base="tns:pojo">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="choices" nillable="true" type="tns:choice"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="entities" nillable="true" type="tns:knowledgeEntity"/>
+          <xs:element name="stable" type="xs:boolean"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+<xs:complexType name="knowledgeEntity">
+    <xs:complexContent>
+      <xs:extension base="tns:pojo">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="choices" nillable="true" type="tns:choice"/>
+          <xs:element minOccurs="0" name="purpose" type="tns:purpose"/>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="siblings" nillable="true" type="tns:knowledgeEntity"/>
+          <xs:element minOccurs="0" name="variant" type="tns:variant"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+<xs:complexType name="metadata">
+    <xs:complexContent>
+      <xs:extension base="tns:pojo">
+        <xs:sequence>
+          <xs:element name="infomap">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element maxOccurs="unbounded" minOccurs="0" name="entry">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element minOccurs="0" name="key" type="xs:string"/>
+                      <xs:element minOccurs="0" name="value" type="xs:anyType"/>
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+<xs:complexType name="doSelect">
+    <xs:sequence>
+      <xs:element minOccurs="0" ref="tns:ResolutionRequest"/>
+      <xs:element minOccurs="0" name="arg1" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="resolutionRequest">
+    <xs:complexContent>
+      <xs:extension base="tns:baseResolutionContext">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="madeDecission" type="tns:decission"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+<xs:complexType name="decission">
+    <xs:complexContent>
+      <xs:extension base="tns:pojo">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="purposeID" type="xs:string"/>
+          <xs:element minOccurs="0" name="variantID" type="xs:string"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+<xs:complexType name="doSelectResponse">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" name="SelectResponse" type="tns:resolutionResponse"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:simpleType name="featureValueType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="INTEGER"/>
+      <xs:enumeration value="FLOAT"/>
+      <xs:enumeration value="BOOLEAN"/>
+      <xs:enumeration value="DATE"/>
+      <xs:enumeration value="STRING"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="doSelectResponse">
+    <wsdl:part element="tns:doSelectResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="doSelect">
+    <wsdl:part element="tns:doSelect" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="doInit">
+    <wsdl:part element="tns:doInit" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="doInitResponse">
+    <wsdl:part element="tns:doInitResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="ResolutionService">
+    <wsdl:operation name="doInit">
+      <wsdl:input message="tns:doInit" name="doInit">
+    </wsdl:input>
+      <wsdl:output message="tns:doInitResponse" name="doInitResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="doSelect">
+      <wsdl:input message="tns:doSelect" name="doSelect">
+    </wsdl:input>
+      <wsdl:output message="tns:doSelectResponse" name="doSelectResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ResolutionServiceSoapBinding" type="tns:ResolutionService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="doInit">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="doInit">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="doInitResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="doSelect">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="doSelect">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="doSelectResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ResolutionService">
+    <wsdl:port binding="tns:ResolutionServiceSoapBinding" name="ResolutionServicePort">
+      <soap:address location="http://localhost:8080/resolutionengine/services/soap/"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
