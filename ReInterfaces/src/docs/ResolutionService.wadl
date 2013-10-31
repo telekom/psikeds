@@ -1,0 +1,150 @@
+<application xmlns="http://wadl.dev.java.net/2009/02" xmlns:xs="http://www.w3.org/2001/XMLSchema"><grammars><xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="unqualified">
+    <xs:element name="Choice" type="choice"/>
+    <xs:element name="Decission" type="decission"/>
+    <xs:element name="Feature" type="feature"/>
+    <xs:element name="FeatureValueType" type="featureValueType"/>
+    <xs:element name="Knowledge" type="knowledge"/>
+    <xs:element name="KnowledgeEntity" type="knowledgeEntity"/>
+    <xs:element name="Purpose" type="purpose"/>
+    <xs:element name="ResolutionRequest" type="resolutionRequest"/>
+    <xs:element name="Variant" type="variant"/>
+    <xs:complexType name="resolutionRequest">
+        <xs:complexContent>
+            <xs:extension base="baseResolutionContext">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="madeDecission" type="decission"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="baseResolutionContext">
+        <xs:complexContent>
+            <xs:extension base="pojo">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="knowledge" type="knowledge"/>
+                    <xs:element minOccurs="0" name="metadata" type="metadata"/>
+                    <xs:element minOccurs="0" name="sessionID" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="pojo">
+        <xs:sequence/>
+    </xs:complexType>
+    <xs:complexType name="decission">
+        <xs:complexContent>
+            <xs:extension base="pojo">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="purposeID" type="xs:string"/>
+                    <xs:element minOccurs="0" name="variantID" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="knowledge">
+        <xs:complexContent>
+            <xs:extension base="pojo">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="choices" nillable="true" type="choice"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="entities" nillable="true" type="knowledgeEntity"/>
+                    <xs:element name="stable" type="xs:boolean"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="choice">
+        <xs:complexContent>
+            <xs:extension base="pojo">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="parentVariant" type="variant"/>
+                    <xs:element minOccurs="0" name="purpose" type="purpose"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="variants" nillable="true" type="variant"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="variant">
+        <xs:complexContent>
+            <xs:extension base="pojo">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="description" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="features" nillable="true" type="feature"/>
+                    <xs:element minOccurs="0" name="id" type="xs:string"/>
+                    <xs:element minOccurs="0" name="label" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="feature">
+        <xs:complexContent>
+            <xs:extension base="pojo">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="description" type="xs:string"/>
+                    <xs:element minOccurs="0" name="id" type="xs:string"/>
+                    <xs:element minOccurs="0" name="label" type="xs:string"/>
+                    <xs:element minOccurs="0" name="maxValue" type="xs:string"/>
+                    <xs:element minOccurs="0" name="minValue" type="xs:string"/>
+                    <xs:element name="range" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="value" type="xs:string"/>
+                    <xs:element minOccurs="0" name="valueType" type="featureValueType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="purpose">
+        <xs:complexContent>
+            <xs:extension base="pojo">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="description" type="xs:string"/>
+                    <xs:element minOccurs="0" name="id" type="xs:string"/>
+                    <xs:element minOccurs="0" name="label" type="xs:string"/>
+                    <xs:element name="root" type="xs:boolean"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="knowledgeEntity">
+        <xs:complexContent>
+            <xs:extension base="pojo">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="choices" nillable="true" type="choice"/>
+                    <xs:element minOccurs="0" name="purpose" type="purpose"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="siblings" nillable="true" type="knowledgeEntity"/>
+                    <xs:element minOccurs="0" name="variant" type="variant"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="metadata">
+        <xs:complexContent>
+            <xs:extension base="pojo">
+                <xs:sequence>
+                    <xs:element name="infomap">
+                        <xs:complexType>
+                            <xs:sequence>
+                                <xs:element maxOccurs="unbounded" minOccurs="0" name="entry">
+                                    <xs:complexType>
+                                        <xs:sequence>
+                                            <xs:element minOccurs="0" name="key" type="xs:string"/>
+                                            <xs:element minOccurs="0" name="value" type="xs:anyType"/>
+                                        </xs:sequence>
+                                    </xs:complexType>
+                                </xs:element>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:simpleType name="featureValueType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="INTEGER"/>
+            <xs:enumeration value="FLOAT"/>
+            <xs:enumeration value="BOOLEAN"/>
+            <xs:enumeration value="DATE"/>
+            <xs:enumeration value="STRING"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>
+</grammars><resources base="http://localhost:8080/resolutionengine/services/rest/"><resource path="/resolution"><resource path="/init"><method name="GET"><request><representation mediaType="application/octet-stream"><param name="request" style="plain" type="xs:string"/></representation></request><response><representation mediaType="application/json"/><representation mediaType="application/xml"/></response></method></resource><resource path="/select"><method name="POST"><request><representation mediaType="application/json"/><representation mediaType="application/xml"/><representation mediaType="application/json"><param name="request" style="plain" type="xs:string"/></representation><representation mediaType="application/xml"><param name="request" style="plain" type="xs:string"/></representation></request><response><representation mediaType="application/json"/><representation mediaType="application/xml"/></response></method></resource></resource></resources></application>
