@@ -5,7 +5,7 @@ psiKeds :- ps induced knowledge entity delivery system
 
 CONFIG
 ------
-The components of psiKeds (Resolution Engine, Query Agent) require some
+The components of psiKeds (i.e. Resolution Engine and Query Agent) require some
 basic configuration that must be provided within an external configuration
 directory.
 
@@ -27,5 +27,10 @@ All spring configuration files can be found here:
 - [QueryAgent/src/main/webapp/WEB-INF/spring-config](../QueryAgent/src/main/webapp/WEB-INF/spring-config/)
 
 This directory is a simple example of a psiKeds-configuration-directory.
+It is used for building and testing the psiKeds Project and also contains
+a [spring configuration file](knowledgebase-datasource-context.xml) showing
+how to replace the default [Knowledge-Base](../KnowledgeBase/src/main/resources/kb.xml)
+with a custom one.
+
 For getting started you can simply copy the contents of this directory to
 the directory *"${user.home}/psikeds/"*
