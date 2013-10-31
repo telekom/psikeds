@@ -59,6 +59,11 @@ the directory *${user.home}/psikeds/*
 - [QueryAgent/src/main/webapp/WEB-INF/spring-config](../QueryAgent/src/main/webapp/WEB-INF/spring-config/)
 
 This directory is a simple example of a psiKeds-configuration-directory.
+It is used for building and testing the psiKeds Project and also contains
+a [spring configuration file](knowledgebase-datasource-context.xml) showing
+how to replace the default [Knowledge-Base](../KnowledgeBase/src/main/resources/kb.xml)
+with a custom one.
+
 For getting started you can simply copy the contents of this directory to
 the directory *"${user.home}/psikeds/"*
 >>>>>>> ADD: formatting and linking
