@@ -49,7 +49,7 @@ final class ConfigDirectoryHelper {
 
   /**
    * Try to resolve the configuration directory.
-   *
+   * 
    * Note: Yes, method level synchronization is not the most efficient,
    * but we only use it for reading the configuration during application
    * startup, so no need to worry about performance here.
@@ -77,20 +77,32 @@ final class ConfigDirectoryHelper {
 
   /**
    * Look for a configuration file within the configuration directory.
-   *
-   * @param cnfFile
+   * 
+   * @param path
    *          name of the configuration file
    * @return File object if the config file exists and is readable;
    *         null otherwise
    */
-  static File resolveConfigFile(final File cnfFile) {
-    File resolved = new File(resolveConfigDir(), cnfFile.getPath());
+  static File resolveConfigFile(final String path) {
+    File resolved = new File(resolveConfigDir(), path);
     LOGGER.debug("Configuration file resolved to {}", resolved.getAbsolutePath());
     if (!resolved.exists() || !resolved.isFile() || !resolved.canRead()) {
       LOGGER.warn("Configuration file {} does not exist or is not readable!", resolved.getAbsolutePath());
       resolved = null;
     }
     return resolved;
+  }
+
+  /**
+   * Look for a configuration file within the configuration directory.
+   * 
+   * @param file
+   *          File object representing the configuration file
+   * @return File object if the config file exists and is readable;
+   *         null otherwise
+   */
+  static File resolveConfigFile(final File file) {
+    return resolveConfigFile(file.getPath());
   }
 
   private ConfigDirectoryHelper() {

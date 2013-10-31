@@ -23,20 +23,21 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
   <!--
-  Define your Datasource for the Knowledgebase here. This can be any
-  kind of Bean as long as it is an org.springframework.core.io.Resource
-  and the delivered data is XML valid against the kb.xsd
-   -->
+  Define your Datasource for the Knowledgebase here. This can be any 
+  kind of Bean as long as it is a org.springframework.core.io.Resource and 
+  the delivered data is XML valid against the kb.xsd
+  -->
 
-  <!-- By default use the builtin/packaged knowledge base -->
-  <bean id="kbXmlSource" class="org.springframework.core.io.ClassPathResource">
-    <constructor-arg index="0" value="kb.xml" />
-  </bean>
-
-  <!-- Uncomment the following lines to load a custom Knowledge Base from XML-file. -->
+  <!-- This Definition will use the packaged KB from within the JAR-File -->
   <!--
-  <bean id="kbXmlSource" class="org.springframework.core.io.FileSystemResource">
-    <constructor-arg index="0" value="~/psikeds/kb.xml" />
+  <bean id="kbXmlSource" class="org.springframework.core.io.ClassPathResource">
+    <constructor-arg index="0" type="java.lang.String" value="kb.xml" />
   </bean>
   -->
+
+  <!-- This Definition will look for a KB within the psiKeds-Configuration-Directory -->
+  <bean id="kbXmlSource" class="org.psikeds.common.config.FileSystemResource"> 
+    <constructor-arg index="0" type="java.lang.String" value="kb.xml" />
+  </bean>
+
 </beans>

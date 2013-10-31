@@ -28,12 +28,16 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
   the delivered data is XML valid against the kb.xsd
   -->
 
+  <!-- This Definition will use the packaged KB from within the JAR-File -->
   <bean id="kbXmlSource" class="org.springframework.core.io.ClassPathResource">
-    <constructor-arg index="0" value="example.xml" />
+    <constructor-arg index="0" type="java.lang.String" value="kb.xml" />
   </bean>
 
-  <!-- bean id="kbXmlSource" class="org.springframework.core.io.FileSystemResource"> 
-    <constructor-arg index="0" value="~/psikeds/schokolade.xml" />
-  </bean -->
+  <!-- This Definition will look for a KB within the psiKeds-Configuration-Directory -->
+  <!--
+  <bean id="kbXmlSource" class="org.psikeds.common.config.FileSystemResource"> 
+    <constructor-arg index="0" type="java.lang.String" value="kb.xml" />
+  </bean>
+  -->
 
 </beans>
