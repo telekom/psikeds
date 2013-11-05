@@ -150,6 +150,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
   public ResolutionResponse init() {
     ResolutionResponse resp = null;
     try {
+      checkValidity();
       // create intial data for new resolution session
       final Metadata metadata = getMetadata();
       final String sessionID = createSessionId(metadata);
@@ -174,6 +175,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
   public ResolutionResponse select(final ResolutionRequest req) {
     ResolutionResponse resp = null;
     try {
+      checkValidity();
       // get data from request
       String sessionID = req.getSessionID();
       Knowledge oldKnowledge = req.getKnowledge();
@@ -276,5 +278,12 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
 
   private Metadata getMetadata() {
     return this.trans.valueObject2Pojo(this.kb.getMetadata());
+  }
+
+  private void checkValidity() {
+    if (!this.kb.isValid()) {
+      LOGGER.warn("KnowledgeBase is not valid. Results may be incorrect!");
+      // QQQ throw exception???
+    }
   }
 }
