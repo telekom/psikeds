@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -37,17 +37,17 @@ import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.Validator;
 /**
  * This implementation of a KnowledgeBaseFactory is reading the Knowledge-Data
  * from an XML-Source.
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class XmlKnowledgeBaseFactory implements KnowledgeBaseFactory {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(XmlKnowledgeBaseFactory.class);
 
   private boolean validate;
-  private List<Validator> validatorChain;
-  private KBValidator validator;
+  private List<Validator> validatorChain; // list of semantic validators
+  private KBValidator validator; // syntactic validator (xml against xsd)
   private KBParser parser;
   private Transformer trans;
   private final XmlKnowledgeBase kb;
@@ -57,11 +57,15 @@ public class XmlKnowledgeBaseFactory implements KnowledgeBaseFactory {
   }
 
   public XmlKnowledgeBaseFactory(final KBParser parser) {
-    this(parser, new Xml2VoTransformer());
+    this(parser, null);
   }
 
   public XmlKnowledgeBaseFactory(final KBParser parser, final Transformer trans) {
     this(parser, trans, false, null, null);
+  }
+
+  public XmlKnowledgeBaseFactory(final KBParser parser, final Transformer trans, final List<Validator> validatorChain) {
+    this(parser, trans, true, null, validatorChain);
   }
 
   public XmlKnowledgeBaseFactory(final KBParser parser, final Transformer trans, final boolean validate, final KBValidator validator, final List<Validator> validatorChain) {
@@ -69,8 +73,8 @@ public class XmlKnowledgeBaseFactory implements KnowledgeBaseFactory {
     this.validatorChain = validatorChain;
     this.validator = validator;
     this.parser = parser;
-    this.trans = trans;
-    this.kb = new XmlKnowledgeBase(trans);
+    this.trans = (trans != null ? trans : new Xml2VoTransformer());
+    this.kb = new XmlKnowledgeBase(this.trans);
   }
 
   // ----------------------------------------------------------------
@@ -141,7 +145,7 @@ public class XmlKnowledgeBaseFactory implements KnowledgeBaseFactory {
       this.kb.setValid(false);
 
       // Step 1: Validate syntactical structure of XML against XSD (if specified)
-      if (this.validate && this.validator != null) {
+      if (this.validate && (this.validator != null)) {
         LOGGER.debug("Validating XML against XSD.");
         this.validator.validate();
       }

@@ -22,16 +22,27 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-  <bean id="XmlTransformer" class="org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.impl.Xml2VoTransformer" />
-
   <bean id="XMLParser" class="org.psikeds.knowledgebase.xml.impl.XMLParser">
     <constructor-arg index="0" type="org.springframework.core.io.Resource" ref="kbXmlSource" />  <!-- defined in knowledgebase-datasource-context.xml -->
   </bean>
+
+  <bean id="XmlTransformer" class="org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.impl.Xml2VoTransformer" />
+
+  <bean id="FeatureValidator" class="org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.FeatureValidator" />
+  <bean id="FulfillsValidator" class="org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.FulfillsValidator" />
+  <bean id="ConstitutesValidator" class="org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.ConstitutesValidator" />
+
+  <util:list id="ValidatorChain">
+    <ref bean="FeatureValidator" />
+    <ref bean="FulfillsValidator" />
+    <ref bean="ConstitutesValidator" />
+  </util:list>
 
   <bean id="knowledgeBaseFactory"
     class="org.psikeds.resolutionengine.datalayer.knowledgebase.impl.XmlKnowledgeBaseFactory">
     <constructor-arg index="0" type="org.psikeds.knowledgebase.xml.KBParser" ref="XMLParser" />
     <constructor-arg index="1" type="org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer" ref="XmlTransformer" />
+    <constructor-arg index="2" type="java.util.List" ref="ValidatorChain" />
   </bean>
 
   <bean id="knowledgeBase" factory-bean="knowledgeBaseFactory" factory-method="create" />

@@ -17,8 +17,10 @@ package org.psikeds.resolutionengine.datalayer.knowledgebase;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.BeforeClass;
@@ -31,6 +33,10 @@ import org.apache.log4j.xml.DOMConfigurator;
 
 import org.psikeds.knowledgebase.xml.impl.XMLParser;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.impl.XmlKnowledgeBaseFactory;
+import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.Validator;
+import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.ConstitutesValidator;
+import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.FeatureValidator;
+import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.FulfillsValidator;
 import org.psikeds.resolutionengine.datalayer.vo.Alternatives;
 import org.psikeds.resolutionengine.datalayer.vo.Constituents;
 import org.psikeds.resolutionengine.datalayer.vo.Constitutes;
@@ -68,9 +74,14 @@ public class KnowledgeBaseTest {
     try {
       LOGGER.info(" ... parsing XML " + XML + " ...");
       final XMLParser parser = new XMLParser(XML);
-      final KnowledgeBaseFactory factory = new XmlKnowledgeBaseFactory(parser);
+      final List<Validator> validators = new ArrayList<Validator>();
+      validators.add(new FeatureValidator());
+      validators.add(new FulfillsValidator());
+      validators.add(new ConstitutesValidator());
+      final KnowledgeBaseFactory factory = new XmlKnowledgeBaseFactory(parser, null, validators);
       final KnowledgeBase kb = factory.create();
       assertNotNull("Failed to load KB from File " + XML, kb);
+      assertTrue("KB is not valid!", kb.isValid());
 
       LOGGER.info("... checking Features ...");
       Features feats = kb.getFeatures();
