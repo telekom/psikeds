@@ -31,11 +31,13 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
   <bean id="FeatureValidator" class="org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.FeatureValidator" />
   <bean id="FulfillsValidator" class="org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.FulfillsValidator" />
   <bean id="ConstitutesValidator" class="org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.ConstitutesValidator" />
+  <bean id="RulesValidator" class="org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.RulesValidator" />
 
   <util:list id="ValidatorChain">
     <ref bean="FeatureValidator" />
     <ref bean="FulfillsValidator" />
     <ref bean="ConstitutesValidator" />
+    <ref bean="RulesValidator" />
   </util:list>
 
   <bean id="knowledgeBaseFactory"

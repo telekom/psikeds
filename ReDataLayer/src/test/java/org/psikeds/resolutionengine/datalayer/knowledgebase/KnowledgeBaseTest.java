@@ -37,6 +37,7 @@ import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.Validator;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.ConstitutesValidator;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.FeatureValidator;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.FulfillsValidator;
+import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.RulesValidator;
 import org.psikeds.resolutionengine.datalayer.vo.Alternatives;
 import org.psikeds.resolutionengine.datalayer.vo.Constituents;
 import org.psikeds.resolutionengine.datalayer.vo.Constitutes;
@@ -78,6 +79,7 @@ public class KnowledgeBaseTest {
       validators.add(new FeatureValidator());
       validators.add(new FulfillsValidator());
       validators.add(new ConstitutesValidator());
+      validators.add(new RulesValidator());
       final KnowledgeBaseFactory factory = new XmlKnowledgeBaseFactory(parser, null, validators);
       final KnowledgeBase kb = factory.create();
       assertNotNull("Failed to load KB from File " + XML, kb);
