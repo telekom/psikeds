@@ -64,12 +64,15 @@ public class FeatureValidator implements Validator {
         }
       }
       if (!valid) {
-        LOGGER.warn("... finished validating KnowledgeBase regarding Features ... NOT VALID!");
         throw new ValidationException("KnowledgeBase is not valid! See logfiles for details.");
       }
       else {
         LOGGER.debug("... finished validating KnowledgeBase regarding Features ... OK.");
       }
+    }
+    catch (final ValidationException vaex) {
+      LOGGER.warn("... finished validating KnowledgeBase regarding Features ... NOT VALID!", vaex);
+      throw vaex;
     }
     catch (final Exception ex) {
       LOGGER.error("... failed to validate KnowledgeBase regarding Features: " + ex.getMessage(), ex);

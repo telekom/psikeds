@@ -85,12 +85,15 @@ public class ConstitutesValidator implements Validator {
         }
       }
       if (!valid) {
-        LOGGER.warn("... finished validating KnowledgeBase regarding Constituents / Constitutes ... NOT VALID!");
         throw new ValidationException("KnowledgeBase is not valid! See logfiles for details.");
       }
       else {
         LOGGER.debug("... finished validating KnowledgeBase regarding Constituents / Constitutes ... OK.");
       }
+    }
+    catch (final ValidationException vaex) {
+      LOGGER.warn("... finished validating KnowledgeBase regarding Constituents / Constitutes ... NOT VALID!", vaex);
+      throw vaex;
     }
     catch (final Exception ex) {
       LOGGER.error("... failed to validate KnowledgeBase regarding Constituents / Constitutes: " + ex.getMessage(), ex);
