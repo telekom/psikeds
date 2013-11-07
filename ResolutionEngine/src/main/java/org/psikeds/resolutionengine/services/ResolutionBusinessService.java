@@ -255,7 +255,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
 
       // Invoke every Resolver in Chain
       for (final Resolver res : getResolvers()) {
-        knowledge = res.resolve(knowledge, decission, metadata);
+        knowledge = res.resolve(knowledge, decission, events, rules, metadata);
       }
 
       // Cache Rules and Events for later reuse
@@ -283,18 +283,18 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
   private RelevantEvents getRelevantEvents(final Knowledge knowledge, final String sessionID) {
     RelevantEvents events = (RelevantEvents) this.cache.getObject(sessionID, SESS_KEY_EVENTS);
     if (events == null) {
-      events = new RelevantEvents();
+      events = new RelevantEvents(knowledge);
     }
-    // TODO
+    LOGGER.trace("RelevantEvents = {}", events);
     return events;
   }
 
   private RelevantRules getRelevantRules(final Knowledge knowledge, final String sessionID) {
     RelevantRules rules = (RelevantRules) this.cache.getObject(sessionID, SESS_KEY_RULES);
     if (rules == null) {
-      rules = new RelevantRules();
+      rules = new RelevantRules(knowledge);
     }
-    // TODO
+    LOGGER.trace("RelevantRules = {}", rules);
     return rules;
   }
 

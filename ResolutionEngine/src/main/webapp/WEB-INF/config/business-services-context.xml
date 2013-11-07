@@ -35,9 +35,12 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <constructor-arg index="1" type="org.psikeds.resolutionengine.transformer.Transformer" ref="PojoTransformer" />
   </bean>
 
+  <bean id="RulesEvaluator" class="org.psikeds.resolutionengine.resolver.impl.RulesEvaluator" />
+
   <util:list id="ResolverChain">
-    <ref bean="DecissionEvaluator"/>
-    <ref bean="AutoCompletionResolver"/>
+    <ref bean="DecissionEvaluator" />
+    <ref bean="AutoCompletionResolver" />
+    <ref bean="RulesEvaluator" />
   </util:list>
 
   <bean id="resolutionBusinessService" class="org.psikeds.resolutionengine.services.ResolutionBusinessService">

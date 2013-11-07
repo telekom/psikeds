@@ -46,17 +46,18 @@ import org.psikeds.resolutionengine.interfaces.services.ResolutionService;
 import org.psikeds.resolutionengine.resolver.Resolver;
 import org.psikeds.resolutionengine.resolver.impl.AutoCompletion;
 import org.psikeds.resolutionengine.resolver.impl.DecissionEvaluator;
+import org.psikeds.resolutionengine.resolver.impl.RulesEvaluator;
 import org.psikeds.resolutionengine.transformer.Transformer;
 import org.psikeds.resolutionengine.transformer.impl.Vo2PojoTransformer;
 
 /**
  * Unit-Tests for {@link org.psikeds.resolutionengine.services.ResolutionBusinessService}.
- *
+ * 
  * Note: Anything called *Test.java is a Unit-Test executed offline by Surefire.
- *       Everythinf called *IT.java is an Integration-Test executed online by Failsafe.
- *
+ * Everythinf called *IT.java is an Integration-Test executed online by Failsafe.
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class ResolutionBusinessServiceTest {
 
@@ -82,6 +83,7 @@ public class ResolutionBusinessServiceTest {
     this.resolvers = new ArrayList<Resolver>();
     this.resolvers.add(new DecissionEvaluator());
     this.resolvers.add(new AutoCompletion(this.kb, this.trans));
+    this.resolvers.add(new RulesEvaluator());
     this.cache = new ResolutionCache();
     this.srvc = new ResolutionBusinessService(
         this.kb,
@@ -150,7 +152,7 @@ public class ResolutionBusinessServiceTest {
     final Knowledge k2 = sres.getKnowledge();
     assertNotNull("No new Knowledge in Select-ResolutionResponse!", k2);
 
-    assertFalse("Knowledge is fully resolved but still contains Choices!", sres.isResolved() && sres.getPossibleChoices() != null && sres.getPossibleChoices().size() > 0);
-    assertFalse("Knowledge is not resolved yet but does not contain any Choices!", !sres.isResolved() && (sres.getPossibleChoices() == null || sres.getPossibleChoices().isEmpty()));
+    assertFalse("Knowledge is fully resolved but still contains Choices!", sres.isResolved() && (sres.getPossibleChoices() != null) && (sres.getPossibleChoices().size() > 0));
+    assertFalse("Knowledge is not resolved yet but does not contain any Choices!", !sres.isResolved() && ((sres.getPossibleChoices() == null) || sres.getPossibleChoices().isEmpty()));
   }
 }
