@@ -21,12 +21,12 @@ import java.util.List;
 /**
  * A Context-Path is an ordered List of Object-IDs describing a Path along
  * the Graph of our Knowledge Base, i.e. Variant->Purpose->Variant->...)
- *
+ * 
  * Note: The Object-IDs within the List of a Context-Path must reference
- *       existing Variants and Purposes in a reasonalbe Order!
- *
+ * existing Variants and Purposes in a reasonalbe Order!
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class ContextPath extends ValueObject implements Serializable {
 
@@ -56,5 +56,16 @@ public class ContextPath extends ValueObject implements Serializable {
 
   public void addPathID(final String id) {
     getPathIDs().add(id);
+  }
+
+  public String pathAsString() {
+    final StringBuilder sb = new StringBuilder();
+    for (final String id : getPathIDs()) {
+      if (sb.length() > 0) {
+        sb.append('/');
+      }
+      sb.append(id);
+    }
+    return sb.toString();
   }
 }
