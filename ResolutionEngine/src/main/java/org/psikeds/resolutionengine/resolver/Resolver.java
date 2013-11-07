@@ -21,7 +21,7 @@ import org.psikeds.resolutionengine.interfaces.pojos.Metadata;
 /**
  * The chain of all Resolvers is our actual Resolution-Engine, i.e. this
  * is where the logical Resolution is performed.
- *
+ * 
  * @author marco@juliano.de
  */
 public interface Resolver {
@@ -33,13 +33,26 @@ public interface Resolver {
    * Note: Any Resolver-Implementation must expect that it is also invoked
    * without Client-Interaction and that therefore the Decission can be null
    * (e.g. for Initial Knowledge or for Recursive-Auto-Completion)
-   *
-   * @param knowledge            current old Knowledge
-   * @param decission            made Decission (can be null)
-   * @param metadata             optional Metadata (can be null)
-   * @return Knowledge           resulting new Knowledge
-   * @throws ResolutionException if any error occurs
+   * 
+   * @param knowledge
+   *          current/old Knowledge
+   * @param decission
+   *          made Decission (can be null)
+   * @param events
+   *          all Events currently relevant
+   * @param rules
+   *          all Rules currently relevant
+   * @param metadata
+   *          optional Metadata (can be null)
+   * @return Knowledge resulting new Knowledge
+   * @throws ResolutionException
+   *           if any error occurs
    */
-  Knowledge resolve(Knowledge knowledge, Decission decission, Metadata metadata) throws ResolutionException;
+  Knowledge resolve(
+      Knowledge knowledge,
+      Decission decission,
+      RelevantEvents events,
+      RelevantRules rules,
+      Metadata metadata) throws ResolutionException;
 
 }

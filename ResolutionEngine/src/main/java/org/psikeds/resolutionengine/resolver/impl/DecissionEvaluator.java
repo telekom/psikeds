@@ -27,6 +27,8 @@ import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
 import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity;
 import org.psikeds.resolutionengine.interfaces.pojos.Metadata;
 import org.psikeds.resolutionengine.interfaces.pojos.Variant;
+import org.psikeds.resolutionengine.resolver.RelevantEvents;
+import org.psikeds.resolutionengine.resolver.RelevantRules;
 import org.psikeds.resolutionengine.resolver.ResolutionException;
 import org.psikeds.resolutionengine.resolver.Resolver;
 
@@ -47,14 +49,18 @@ public class DecissionEvaluator implements Resolver {
    *          current old Knowledge
    * @param decission
    *          Decission (can be null)
+   * @param events
+   *          RelevantEvents (ignored!)
+   * @param rules
+   *          RelevantRules (ignored!)
    * @param metadata
-   *          Metadata (ignored)
+   *          Metadata (optional, can be null)
    * @return Knowledge resulting new Knowledge
    * @throws ResolutionException
    *           if any error occurs
    */
   @Override
-  public Knowledge resolve(final Knowledge knowledge, final Decission decission, final Metadata metadata) throws ResolutionException {
+  public Knowledge resolve(final Knowledge knowledge, final Decission decission, final RelevantEvents events, final RelevantRules rules, final Metadata metadata) throws ResolutionException {
     boolean ok = false;
     boolean found = false;
     try {
@@ -134,9 +140,11 @@ public class DecissionEvaluator implements Resolver {
   }
 
   private void decissionMessage(final Metadata metadata, final Decission decission, final Choice c) {
-    final String key = String.format("Decission%d", System.currentTimeMillis());
     final String msg = String.format("Found Choice matching Decission.\nDecission = %s\nChoice = %s", decission, c);
     LOGGER.debug(msg);
-    metadata.saveInfo(key, msg);
+    if (metadata != null) {
+      final String key = String.format("Decission%d", System.currentTimeMillis());
+      metadata.saveInfo(key, msg);
+    }
   }
 }
