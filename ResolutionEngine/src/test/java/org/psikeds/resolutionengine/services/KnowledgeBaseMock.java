@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -58,9 +58,9 @@ import org.psikeds.resolutionengine.datalayer.vo.Variants;
 
 /**
  * Mock-Implementation of KnowledgeBase for testing purposes.
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class KnowledgeBaseMock implements KnowledgeBase {
 
@@ -155,7 +155,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   @Override
   public Feature getFeature(final String featureId) {
     for (final Feature f : getFeatures().getFeature()) {
-      if (f != null && featureId.equals(f.getId())) {
+      if ((f != null) && featureId.equals(f.getId())) {
         return f;
       }
     }
@@ -170,7 +170,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   @Override
   public Purpose getPurpose(final String purposeId) {
     for (final Purpose p : getPurposes().getPurpose()) {
-      if (p != null && purposeId.equals(p.getId())) {
+      if ((p != null) && purposeId.equals(p.getId())) {
         return p;
       }
     }
@@ -185,7 +185,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   @Override
   public Variant getVariant(final String variantId) {
     for (final Variant v : getVariants().getVariant()) {
-      if (v != null && variantId.equals(v.getId())) {
+      if ((v != null) && variantId.equals(v.getId())) {
         return v;
       }
     }
@@ -200,7 +200,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   @Override
   public Event getEvent(final String eventId) {
     for (final Event e : getEvents().getEvent()) {
-      if (e != null && eventId.equals(e.getId())) {
+      if ((e != null) && eventId.equals(e.getId())) {
         return e;
       }
     }
@@ -215,7 +215,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   @Override
   public Rule getRule(final String ruleId) {
     for (final Rule r : getRules().getRule()) {
-      if (r != null && ruleId.equals(r.getRuleID())) {
+      if ((r != null) && ruleId.equals(r.getId())) {
         return r;
       }
     }
@@ -230,7 +230,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   @Override
   public Fulfills getFulfills(final String purposeId) {
     for (final Fulfills f : getAlternatives().getFulfills()) {
-      if (f != null && purposeId.equals(f.getPurposeID())) {
+      if ((f != null) && purposeId.equals(f.getPurposeID())) {
         return f;
       }
     }
@@ -245,7 +245,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   @Override
   public Constitutes getConstitutes(final String variantId) {
     for (final Constitutes c : getConstituents().getConstitutes()) {
-      if (c != null && variantId.equals(c.getVariantID())) {
+      if ((c != null) && variantId.equals(c.getVariantID())) {
         return c;
       }
     }
@@ -280,7 +280,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   public Purposes getRootPurposes() {
     final Purposes purps = new Purposes();
     for (final Purpose p : getPurposes().getPurpose()) {
-      if (p != null && p.isRoot()) {
+      if ((p != null) && p.isRoot()) {
         purps.addPurpose(p);
       }
     }
@@ -376,7 +376,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public boolean isValid() {
-    return getData() != null && getMetadata() != null;
+    return (getData() != null) && (getMetadata() != null);
   }
 
   /**
@@ -416,7 +416,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
 
   private static <T> T readObjectFromJsonFile(final File f, final Class<T> type) throws JsonProcessingException, IOException {
     T obj = null;
-    if (type != null && f != null && f.isFile() && f.exists() && f.canRead()) {
+    if ((type != null) && (f != null) && f.isFile() && f.exists() && f.canRead()) {
       obj = MAPPER.readValue(f, type);
       LOGGER.debug("Read Object from File {}\n{}", f, obj);
     }
@@ -424,7 +424,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   }
 
   private static void writeObjectToJsonFile(final File f, final Object obj) throws JsonProcessingException, IOException {
-    if (f != null && obj != null) {
+    if ((f != null) && (obj != null)) {
       LOGGER.info("Writing Object to File {}\n{}", f, obj);
       MAPPER.writeValue(f, obj);
       assertTrue("Could not write Object(s) to File " + f.getPath(), f.exists());
@@ -470,7 +470,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   private static Meta createMeta() {
     final Calendar created = Calendar.getInstance();
     final Calendar lastmodified = created;
-    final String now = SimpleDateFormat.getDateTimeInstance().format(created.getTime());
+    final String now = DateFormat.getDateTimeInstance().format(created.getTime());
     final String user = getCurrentUser();
     final String host = getHostName();
     final String lang = getLanguage();
@@ -614,7 +614,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   public static void main(final String[] args) {
     try {
       setUpLogging();
-      final boolean force = args.length > 0 && "force".equalsIgnoreCase(args[0]);
+      final boolean force = (args.length > 0) && "force".equalsIgnoreCase(args[0]);
       generateTestData(force);
     }
     catch (final Exception ex) {

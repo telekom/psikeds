@@ -174,7 +174,7 @@ public class RulesValidator implements Validator {
       final Rules rules = kb.getRules();
       final List<Rule> lst = rules.getRule();
       for (final Rule r : lst) {
-        final String rid = r.getRuleID();
+        final String rid = r.getId();
         final String vid = r.getVariantID();
         if (StringUtils.isEmpty(rid) || StringUtils.isEmpty(vid)) {
           valid = false;

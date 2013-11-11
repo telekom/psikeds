@@ -156,7 +156,7 @@ public class RelevantRules extends ConcurrentHashMap<String, List<Rule>> impleme
   }
 
   private void addRuleById(final Rule r) {
-    final String ruleId = (r == null ? null : r.getRuleID());
+    final String ruleId = (r == null ? null : r.getId());
     if (!StringUtils.isEmpty(ruleId)) {
       List<Rule> lst = get(String.format(KEY_FORMAT_RULE, ruleId));
       // there might be several rules per event or variant
