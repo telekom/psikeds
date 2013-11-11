@@ -23,18 +23,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Interface object representing the current Knowledge, i.e. everything
  * we know so far.
- *
+ * 
  * Initially our Knowledge does not contain any Entities but only Choices,
  * one for each Root-Purpose. For every Choice made, it is removed from the
  * List of Choices and one or several corresponding Knowledge-Entities are
  * created. In the End there is a Tree of Knowledge-Entities and no Choices
  * left, then our Resolution-Process is finished.
- *
+ * 
  * Note: Reading from and writing to JSON works out of the box.
- *       However for XML the XmlRootElement annotation is required.
- *
+ * However for XML the XmlRootElement annotation is required.
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 @XmlRootElement(name = "Knowledge")
 public class Knowledge extends POJO implements Serializable {

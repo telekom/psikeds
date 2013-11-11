@@ -23,17 +23,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * A Choice is a certain Purpose of a (Parent-)Variant for which one of several
  * Variants can be choosen.
- *
+ * 
  * Note 1: PurposeIDs and VariantIDs must reference existing Objects!
- *
+ * 
  * Note 2: If the Purpose is a Root-Purpose, there is no Parent-Variant,
- *         i.e. Parent-Variant is null.
- *
+ * i.e. Parent-Variant is null.
+ * 
  * Note 3: Reading from and writing to JSON works out of the box.
- *         However for XML the XmlRootElement annotation is required.
- *
+ * However for XML the XmlRootElement annotation is required.
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 @XmlRootElement(name = "Choice")
 public class Choice extends POJO implements Serializable {
@@ -57,7 +57,7 @@ public class Choice extends POJO implements Serializable {
   }
 
   public Choice(final Variant parentVariant, final Purpose purpose, final List<Variant> variants) {
-    super();
+    super(parentVariant, purpose);
     this.parentVariant = parentVariant;
     this.purpose = purpose;
     this.variants = variants;

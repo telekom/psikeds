@@ -21,11 +21,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Interface object representing a single Purpose. Purposes marked with the
  * root-flag are used for the initial context of a resolution.
- *
+ * 
  * Note: ID must be globally unique.
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 @XmlRootElement(name = "Purpose")
 public class Purpose extends POJO implements Serializable {
@@ -34,7 +34,6 @@ public class Purpose extends POJO implements Serializable {
 
   private String label;
   private String description;
-  private String id;
   private boolean root;
 
   public Purpose() {
@@ -46,10 +45,9 @@ public class Purpose extends POJO implements Serializable {
   }
 
   public Purpose(final String label, final String description, final String id, final boolean root) {
-    super();
+    super(id);
     this.label = label;
     this.description = description;
-    this.id = id;
     this.root = root;
   }
 
@@ -67,14 +65,6 @@ public class Purpose extends POJO implements Serializable {
 
   public void setDescription(final String value) {
     this.description = value;
-  }
-
-  public String getId() {
-    return this.id;
-  }
-
-  public void setId(final String value) {
-    this.id = value;
   }
 
   public boolean isRoot() {

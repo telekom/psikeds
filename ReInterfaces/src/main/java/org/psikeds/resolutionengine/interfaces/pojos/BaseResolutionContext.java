@@ -21,15 +21,14 @@ import java.io.Serializable;
  * This is the essential data structure exchanged by Client and Server,
  * i.e. the Client will send a derived ResolutionRequest-Object and the
  * Server will answer with a derived ResolutionResponse-Object.
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class BaseResolutionContext extends POJO implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  protected String sessionID;
   protected Metadata metadata;
   protected Knowledge knowledge;
 
@@ -42,18 +41,18 @@ public class BaseResolutionContext extends POJO implements Serializable {
   }
 
   protected BaseResolutionContext(final String sessionID, final Metadata metadata, final Knowledge knowledge) {
-    super();
-    this.sessionID = sessionID;
+    super(sessionID);
     this.metadata = metadata;
     this.knowledge = knowledge;
   }
 
+  // just for convenience
   public String getSessionID() {
-    return this.sessionID;
+    return this.getId();
   }
 
   public void setSessionID(final String sessionID) {
-    this.sessionID = sessionID;
+    this.setId(sessionID);
   }
 
   public Metadata getMetadata() {
