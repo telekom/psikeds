@@ -70,16 +70,6 @@ public class Rule extends ValueObject implements Serializable {
     this.description = desc;
   }
 
-  @Deprecated
-  public String getRuleID() {
-    return this.getId();
-  }
-
-  @Deprecated
-  public void setRuleID(final String ruleID) {
-    this.setId(ruleID);
-  }
-
   public String getVariantID() {
     return this.variantID;
   }
