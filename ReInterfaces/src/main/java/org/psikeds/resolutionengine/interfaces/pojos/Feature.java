@@ -79,7 +79,7 @@ public class Feature extends POJO implements Serializable {
   }
 
   /**
-   * Internal constructor
+   * Internal constructor (used by Transformer)
    * 
    * @param label
    * @param description
@@ -89,7 +89,7 @@ public class Feature extends POJO implements Serializable {
    * @param fvt
    * @param range
    */
-  private Feature(final String label, final String description, final String id, final String minValue, final String maxValue, final FeatureValueType fvt, final boolean range) {
+  public Feature(final String label, final String description, final String id, final String minValue, final String maxValue, final FeatureValueType fvt, final boolean range) {
     super(id);
     this.label = label;
     this.description = description;
