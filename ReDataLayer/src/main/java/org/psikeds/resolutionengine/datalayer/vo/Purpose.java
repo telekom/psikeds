@@ -19,11 +19,11 @@ import java.io.Serializable;
 /**
  * A single Purpose. Purposes marked with the root-flag are used for the
  * initial context of a resolution.
- *
+ * 
  * Note: ID must be globally unique.
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class Purpose extends ValueObject implements Serializable {
 
@@ -31,7 +31,6 @@ public class Purpose extends ValueObject implements Serializable {
 
   private String label;
   private String description;
-  private String id;
   private boolean root;
 
   public Purpose() {
@@ -43,10 +42,9 @@ public class Purpose extends ValueObject implements Serializable {
   }
 
   public Purpose(final String label, final String description, final String id, final boolean root) {
-    super();
+    super(id);
     this.label = label;
     this.description = description;
-    this.id = id;
     this.root = root;
   }
 
@@ -64,14 +62,6 @@ public class Purpose extends ValueObject implements Serializable {
 
   public void setDescription(final String value) {
     this.description = value;
-  }
-
-  public String getId() {
-    return this.id;
-  }
-
-  public void setId(final String value) {
-    this.id = value;
   }
 
   public boolean isRoot() {

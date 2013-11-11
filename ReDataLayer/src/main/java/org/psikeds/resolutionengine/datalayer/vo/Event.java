@@ -19,16 +19,16 @@ import java.io.Serializable;
 /**
  * An Event is defined by its Context Path (Variant->Purpose->Variant->...)
  * and the ID of the Variant it is attached to.
- *
+ * 
  * Note 1: ID must be globally unique.
- *
+ * 
  * Note 2: VariantId must reference an existing Object!
- *
+ * 
  * Note 3: Context Path of an Event must point to an Entity that is located
- *         within the Subtree under the Variant this Event is attached to.
- *
+ * within the Subtree under the Variant this Event is attached to.
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class Event extends ValueObject implements Serializable {
 
@@ -36,7 +36,6 @@ public class Event extends ValueObject implements Serializable {
 
   private String label;
   private String description;
-  private String id;
   private ContextPath ctx;
   private String variantId;
 
@@ -45,10 +44,9 @@ public class Event extends ValueObject implements Serializable {
   }
 
   public Event(final String label, final String description, final String id, final ContextPath ctx, final String variantId) {
-    super();
+    super(id);
     this.label = label;
     this.description = description;
-    this.id = id;
     this.ctx = ctx;
     this.variantId = variantId;
   }
@@ -67,14 +65,6 @@ public class Event extends ValueObject implements Serializable {
 
   public void setDescription(final String value) {
     this.description = value;
-  }
-
-  public String getId() {
-    return this.id;
-  }
-
-  public void setId(final String value) {
-    this.id = value;
   }
 
   public ContextPath getContextPath() {
