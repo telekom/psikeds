@@ -27,9 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.psikeds.common.services.AbstractRESTService;
-import org.psikeds.queryagent.interfaces.presenter.pojos.InitResponse;
-import org.psikeds.queryagent.interfaces.presenter.pojos.SelectRequest;
-import org.psikeds.queryagent.interfaces.presenter.pojos.SelectResponse;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionRequest;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionResponse;
 import org.psikeds.queryagent.interfaces.presenter.services.ResolutionService;
 
 /**
@@ -63,11 +62,11 @@ public class ResolutionRESTService extends AbstractRESTService {
   @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
   public Response init(final String reqid) {
     try {
-      final InitResponse resp = (InitResponse) handleRequest(reqid, getExecutable(this.delegate, "init"));
-      if (resp != null && resp.getKnowledgeEntity() != null && resp.getSessionID() != null) {
+      final ResolutionResponse resp = (ResolutionResponse) handleRequest(reqid, getExecutable(this.delegate, "init"));
+      if ((resp != null) && (resp.getKnowledge() != null) && (resp.getSessionID() != null)) {
         return buildResponse(Status.OK, resp);
       }
-      return buildResponse(Status.SERVICE_UNAVAILABLE, "Failed to initialize Session and to create Knowledge-Entity!");
+      return buildResponse(Status.SERVICE_UNAVAILABLE, "Failed to create Session and to initialize Resolution!");
     }
     catch (final Exception ex) {
       return buildResponse(ex);
@@ -78,10 +77,13 @@ public class ResolutionRESTService extends AbstractRESTService {
   @Path("/select")
   @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
   @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-  public Response select(final SelectRequest req, final String reqid) {
+  public Response select(final ResolutionRequest req, final String reqid) {
     try {
-      final SelectResponse resp = (SelectResponse) handleRequest(reqid, getExecutable(this.delegate, "select"), req);
-      if (resp != null && resp.getKnowledgeEntity() != null && resp.getSessionID() != null) {
+      if ((req == null) || ((req.getSessionID() == null) && (req.getKnowledge() == null))) {
+        return buildResponse(Status.BAD_REQUEST, String.valueOf(req));
+      }
+      final ResolutionResponse resp = (ResolutionResponse) handleRequest(reqid, getExecutable(this.delegate, "select"), req);
+      if ((resp != null) && (resp.getKnowledge() != null) && (resp.getSessionID() != null)) {
         return buildResponse(Status.OK, resp);
       }
       return buildResponse(Status.BAD_REQUEST, String.valueOf(req));

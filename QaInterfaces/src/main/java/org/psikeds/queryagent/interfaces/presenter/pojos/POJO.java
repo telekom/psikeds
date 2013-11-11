@@ -16,20 +16,48 @@ package org.psikeds.queryagent.interfaces.presenter.pojos;
 
 import java.io.Serializable;
 
+import org.springframework.util.StringUtils;
+
 import org.psikeds.common.util.ObjectDumper;
 
 /**
  * Base of all POJOs in this Package.
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
-class POJO implements Serializable {
+public class POJO implements Serializable, Comparable<Object> {
 
   private static final long serialVersionUID = 1L;
+  private static final char COMPOSE_ID_SEPARATOR = '/';
+
+  // unique id of this pojo
+  protected String id;
+
+  protected POJO() {
+    this.id = null;
+  }
+
+  protected POJO(final POJO... pojos) {
+    this.id = composeId(pojos);
+  }
+
+  protected POJO(final String... ids) {
+    this.id = composeId(ids);
+  }
+
+  public String getId() {
+    return (StringUtils.isEmpty(this.id) ? String.valueOf(hashCode()) : this.id);
+  }
+
+  public void setId(final String value) {
+    this.id = value;
+  }
+
+  // ------------------------------------------------------
 
   /**
-   * @return
+   * @return String Representation of this Object
    * @see java.lang.Object#toString()
    */
   @Override
@@ -37,6 +65,63 @@ class POJO implements Serializable {
     final StringBuilder sb = new StringBuilder(super.toString());
     sb.append('\n');
     sb.append(new ObjectDumper().dump(this));
+    return sb.toString();
+  }
+
+  /**
+   * @return the value 0 if argument Object is a POJO of same Class and its ID is equal to the ID of
+   *         this Object;
+   *         a value greater than 0 if the specified Object is null, not a POJO of the same Class or
+   *         its ID is lexicographically less than the ID of this Object;
+   *         a value less 0 else
+   * @see java.lang.Object#equals(Object obj)
+   * @see java.lang.String#equals(String str)
+   */
+  @Override
+  public int compareTo(final Object obj) {
+    // check that obj is not null and a pojo of the same class
+    if (!(obj instanceof POJO) || !obj.getClass().equals(this.getClass())) {
+      return 1;
+    }
+    final POJO pojo = (POJO) obj;
+    // compare IDs
+    return this.getId().compareTo(pojo.getId());
+  }
+
+  /**
+   * @return true if obj not null, pojo and equal; false else
+   * @see java.lang.Object#equals(Object obj)
+   */
+  @Override
+  public boolean equals(final Object obj) {
+    return (this.compareTo(obj) == 0);
+  }
+
+  // ------------------------------------------------------
+
+  private static String composeId(final POJO... pojos) {
+    final StringBuilder sb = new StringBuilder();
+    for (final POJO p : pojos) {
+      if (p != null) {
+        if (sb.length() > 0) {
+          sb.append(COMPOSE_ID_SEPARATOR);
+        }
+        sb.append(p.getId());
+      }
+    }
+    return sb.toString();
+  }
+
+  private static String composeId(final String... ids) {
+    final StringBuilder sb = new StringBuilder();
+    for (final String str : ids) {
+      if (!StringUtils.isEmpty(str)) {
+        if (sb.length() > 0) {
+          sb.append(COMPOSE_ID_SEPARATOR);
+        }
+        sb.append(str);
+      }
+    }
     return sb.toString();
   }
 }

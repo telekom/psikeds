@@ -14,42 +14,42 @@
  *******************************************************************************/
 package org.psikeds.queryagent.interfaces.presenter.services;
 
-import org.psikeds.queryagent.interfaces.presenter.pojos.InitResponse;
-import org.psikeds.queryagent.interfaces.presenter.pojos.SelectRequest;
-import org.psikeds.queryagent.interfaces.presenter.pojos.SelectResponse;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionRequest;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionResponse;
 
 /**
  * Interface of the ResolutionService.
- *
+ * 
  * Must be implemented by any Business Service Implementation that shall be
  * plugged as an Delegate into the corresponding REST- or SOAP-Service.
- *
- * Note that the actual REST- and SOAP-Service can have additional Parameters
- * like a Request-Id that will be automatically added by the CXF-Interceptor.
+ * 
+ * Note that the actual REST- and SOAP-Service has some additional Parameters
+ * like a Request-Id that will be automatically added by an CXF-Interceptor.
  * Therefore the REST- or SOAP-Implementations can but don't have to implement
  * this Interface.
- *
+ * 
  * However any Client invoking the Service should use this Interface to create
  * its Service-Call.
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public interface ResolutionService {
 
   /**
-   * Get init Resolution-Session, get a SessionID and initial KnowledgeEntity.
+   * Create a new Resolution-Session, i.e. get a new Context, a SessionID and
+   * an initial Knowledge.
    * 
-   * @return InitResponse
+   * @return ResolutionResponse
    */
-  InitResponse init();
+  ResolutionResponse init();
 
   /**
-   * Select either a Variant or a Purpose. Return new KnowledgeEntity
-   * based on that decission
-   *
+   * Make a decission, i.e. select a Variant for a Purpose, and request a
+   * Resolution. Returns new Knowledge resulting from that Decission.
+   * 
    * @param req
-   * @return SelectResponse
+   * @return ResolutionResponse
    */
-  SelectResponse select(SelectRequest req);
+  ResolutionResponse select(ResolutionRequest req);
 }
