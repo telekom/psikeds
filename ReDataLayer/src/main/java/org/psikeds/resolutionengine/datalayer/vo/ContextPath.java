@@ -31,6 +31,7 @@ import java.util.List;
 public class ContextPath extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
+  private static final char PATH_SEPARATOR = '/';
 
   private List<String> pathIDs;
 
@@ -39,7 +40,7 @@ public class ContextPath extends ValueObject implements Serializable {
   }
 
   public ContextPath(final List<String> pathIDs) {
-    super();
+    super(pathAsString(pathIDs));
     this.pathIDs = pathIDs;
   }
 
@@ -58,11 +59,21 @@ public class ContextPath extends ValueObject implements Serializable {
     getPathIDs().add(id);
   }
 
+  // ------------------------------------------------------
+
   public String pathAsString() {
+    return pathAsString(this);
+  }
+
+  public static String pathAsString(final ContextPath cp) {
+    return pathAsString(cp.getPathIDs());
+  }
+
+  public static String pathAsString(final List<String> pathIDs) {
     final StringBuilder sb = new StringBuilder();
-    for (final String id : getPathIDs()) {
+    for (final String id : pathIDs) {
       if (sb.length() > 0) {
-        sb.append('/');
+        sb.append(PATH_SEPARATOR);
       }
       sb.append(id);
     }

@@ -20,14 +20,14 @@ import java.io.Serializable;
  * A Rule is always attached to a Variant and defined as an Event triggering
  * the Rule (triggerEventID), an Event required as a Premise (premiseEventID)
  * and an Event that is fired as a conclusion (conclusionEventID).
- *
+ * 
  * Note 1: Rule-ID must be globally unique.
- *
+ * 
  * Note 2: Variant-Id, Trigger-Event-ID, Premise-Event-ID and Conclusion-Event-ID
- *         must point to existing Objects!
- *
+ * must point to existing Objects!
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class Rule extends ValueObject implements Serializable {
 
@@ -35,7 +35,6 @@ public class Rule extends ValueObject implements Serializable {
 
   private String label;
   private String description;
-  private String ruleID;
   private String variantID;
   private String triggerEventID;
   private String premiseEventID;
@@ -46,10 +45,9 @@ public class Rule extends ValueObject implements Serializable {
   }
 
   public Rule(final String label, final String description, final String ruleID, final String variantID, final String triggerEventID, final String premiseEventID, final String conclusionEventID) {
-    super();
+    super(ruleID);
     this.label = label;
     this.description = description;
-    this.ruleID = ruleID;
     this.variantID = variantID;
     this.triggerEventID = triggerEventID;
     this.premiseEventID = premiseEventID;
@@ -72,12 +70,14 @@ public class Rule extends ValueObject implements Serializable {
     this.description = desc;
   }
 
+  @Deprecated
   public String getRuleID() {
-    return this.ruleID;
+    return this.getId();
   }
 
+  @Deprecated
   public void setRuleID(final String ruleID) {
-    this.ruleID = ruleID;
+    this.setId(ruleID);
   }
 
   public String getVariantID() {

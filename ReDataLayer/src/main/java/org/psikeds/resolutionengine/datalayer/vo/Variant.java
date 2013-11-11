@@ -21,13 +21,13 @@ import java.util.List;
 /**
  * A single Variant. Variants can optionally have certain Features,
  * i.e. hold a List of IDs of the referenced Features.
- *
+ * 
  * Note 1: ID must be globally unique.
- *
+ * 
  * Note 2: FeatureIDs must reference existing Objects!
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class Variant extends ValueObject implements Serializable {
 
@@ -35,7 +35,6 @@ public class Variant extends ValueObject implements Serializable {
 
   private String label;
   private String description;
-  private String id;
   private List<String> featureIds;
 
   public Variant() {
@@ -47,10 +46,9 @@ public class Variant extends ValueObject implements Serializable {
   }
 
   public Variant(final String label, final String description, final String id, final List<String> featureIds) {
-    super();
+    super(id);
     this.label = label;
     this.description = description;
-    this.id = id;
     this.featureIds = featureIds;
   }
 
@@ -68,14 +66,6 @@ public class Variant extends ValueObject implements Serializable {
 
   public void setDescription(final String value) {
     this.description = value;
-  }
-
-  public String getId() {
-    return this.id;
-  }
-
-  public void setId(final String value) {
-    this.id = value;
   }
 
   public List<String> getFeatureIds() {
