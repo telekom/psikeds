@@ -14,6 +14,8 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.interfaces;
 
+import org.apache.commons.lang.StringUtils;
+
 import org.psikeds.common.idgen.IdGenerator;
 import org.psikeds.common.idgen.impl.SessionIdGenerator;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
@@ -23,27 +25,53 @@ import org.psikeds.resolutionengine.interfaces.services.ResolutionService;
 
 /**
  * Mock-Implementation of ResolutionService for testing purposes.
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class ResolutionServiceMock implements ResolutionService {
 
-  private final Knowledge initKnow;
-  private final Knowledge selectKnow;
+  private Knowledge initKnowledge;
+  private Knowledge selectKnowledge;
   private IdGenerator gen;
 
-  public ResolutionServiceMock(final Knowledge know) {
-    this(know, know);
+  public ResolutionServiceMock(final Knowledge knowledge) {
+    this(knowledge, knowledge);
   }
 
-  public ResolutionServiceMock(final Knowledge initKnow, final Knowledge selectKnow) {
-    this(initKnow, selectKnow, null);
+  public ResolutionServiceMock(final Knowledge initKnowledge, final Knowledge selectKnowledge) {
+    this(initKnowledge, selectKnowledge, null);
   }
 
-  public ResolutionServiceMock(final Knowledge initKnow, final Knowledge selectKnow, final IdGenerator gen) {
-    this.initKnow = initKnow;
-    this.selectKnow = selectKnow;
+  public ResolutionServiceMock(final Knowledge initKnowledge, final Knowledge selectKnowledge, final IdGenerator gen) {
+    setInitKnowledge(initKnowledge);
+    setSelectKnowledge(selectKnowledge);
+    setIdGenerator(gen);
+  }
+
+  // ------------------------------------------------------
+
+  public Knowledge getInitKnowledge() {
+    return this.initKnowledge;
+  }
+
+  public void setInitKnowledge(final Knowledge initKnowledge) {
+    this.initKnowledge = initKnowledge;
+  }
+
+  public Knowledge getSelectKnowledge() {
+    return this.selectKnowledge;
+  }
+
+  public void setSelectKnowledge(final Knowledge selectKnowledge) {
+    this.selectKnowledge = selectKnowledge;
+  }
+
+  public IdGenerator getIdGenerator() {
+    return this.gen;
+  }
+
+  public void setIdGenerator(final IdGenerator gen) {
     try {
       this.gen = gen == null ? new SessionIdGenerator("TEST") : gen;
     }
@@ -52,15 +80,15 @@ public class ResolutionServiceMock implements ResolutionService {
     }
   }
 
+  // ------------------------------------------------------
+
   /**
    * @return ResolutionResponse
    * @see org.psikeds.resolutionengine.interfaces.services.ResolutionService#init()
    */
   @Override
   public ResolutionResponse init() {
-    final ResolutionResponse resp = createResolutionResponse(null, this.initKnow);
-    resp.calculateChoices();
-    return resp;
+    return new ResolutionResponse(createSessionID(), getInitKnowledge());
   }
 
   /**
@@ -70,26 +98,18 @@ public class ResolutionServiceMock implements ResolutionService {
    */
   @Override
   public ResolutionResponse select(final ResolutionRequest req) {
-    final String sessionId = req == null ? null : req.getSessionID();
-    final Knowledge know = req != null && req.getKnowledge() != null ? req.getKnowledge() : this.selectKnow;
-    final ResolutionResponse resp = createResolutionResponse(sessionId, know);
-    resp.calculateChoices();
-    return resp;
+    String sessionId = (req == null ? null : req.getSessionID());
+    if (StringUtils.isEmpty(sessionId)) {
+      sessionId = createSessionID();
+    }
+    Knowledge know = (req == null ? null : req.getKnowledge());
+    if (know == null) {
+      know = getSelectKnowledge();
+    }
+    return new ResolutionResponse(sessionId, know);
   }
 
-  private ResolutionResponse createResolutionResponse(final String sessionId, final Knowledge know) {
-    final ResolutionResponse resp = new ResolutionResponse();
-    if (sessionId != null) {
-      resp.setSessionID(sessionId);
-    }
-    else {
-      resp.setSessionID(createSessionID());
-    }
-    if (know != null) {
-      resp.setKnowledge(know);
-    }
-    return resp;
-  }
+  // ------------------------------------------------------
 
   private String createSessionID() {
     return this.gen == null ? null : this.gen.getNextId();
