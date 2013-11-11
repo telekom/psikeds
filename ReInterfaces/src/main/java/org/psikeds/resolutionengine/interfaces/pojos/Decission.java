@@ -20,14 +20,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * A decission made, i.e. which Variant was selected for which Purpose?
- *
+ * 
  * Note 1: PurposeID and VariantID(s) must reference existing Objects!
- *
+ * 
  * Note 2: Reading from and writing to JSON works out of the box.
- *         However for XML the XmlRootElement annotation is required.
- *
+ * However for XML the XmlRootElement annotation is required.
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 @XmlRootElement(name = "Decission")
 public class Decission extends POJO implements Serializable {
@@ -42,13 +42,13 @@ public class Decission extends POJO implements Serializable {
   }
 
   public Decission(final String purposeID, final String variantID) {
-    super();
+    super(purposeID, variantID);
     setPurposeID(purposeID);
     setVariantID(variantID);
   }
 
   public Decission(final Purpose purpose, final Variant variant) {
-    super();
+    super(purpose, variant);
     setPurpose(purpose);
     setVariant(variant);
   }

@@ -20,9 +20,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Metadata-Infos regarding the current Resolution and Knowledge-Base.
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class Metadata extends POJO implements Serializable {
 

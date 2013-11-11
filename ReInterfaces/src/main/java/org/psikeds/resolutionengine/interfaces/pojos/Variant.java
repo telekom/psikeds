@@ -23,16 +23,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Interface object representing a single Variant. Variants can optionally
  * have certain Features, i.e. hold a List of IDs of the referenced Features.
- *
+ * 
  * Note 1: ID must be globally unique.
- *
+ * 
  * Note 2: FeatureIDs must reference existing Objects!
- *
+ * 
  * Note 3: Reading from and writing to JSON works out of the box.
- *         However for XML the XmlRootElement annotation is required.
- *
+ * However for XML the XmlRootElement annotation is required.
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 @XmlRootElement(name = "Variant")
 public class Variant extends POJO implements Serializable {
@@ -41,7 +41,6 @@ public class Variant extends POJO implements Serializable {
 
   private String label;
   private String description;
-  private String id;
   private List<Feature> features;
 
   public Variant() {
@@ -53,10 +52,9 @@ public class Variant extends POJO implements Serializable {
   }
 
   public Variant(final String label, final String description, final String id, final List<Feature> features) {
-    super();
+    super(id);
     this.label = label;
     this.description = description;
-    this.id = id;
     this.features = features;
   }
 
@@ -74,14 +72,6 @@ public class Variant extends POJO implements Serializable {
 
   public void setDescription(final String value) {
     this.description = value;
-  }
-
-  public String getId() {
-    return this.id;
-  }
-
-  public void setId(final String value) {
-    this.id = value;
   }
 
   public List<Feature> getFeatures() {

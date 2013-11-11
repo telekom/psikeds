@@ -20,14 +20,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Interface object representing a single Feature / Attribute of a Variant.
- *
+ * 
  * Note 1: ID must be globally unique!
- *
+ * 
  * Note 2: Reading from and writing to JSON works out of the box.
- *         However for XML the XmlRootElement annotation is required.
- *
+ * However for XML the XmlRootElement annotation is required.
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 @XmlRootElement(name = "Feature")
 public class Feature extends POJO implements Serializable {
@@ -36,7 +36,6 @@ public class Feature extends POJO implements Serializable {
 
   private String label;
   private String description;
-  private String id;
   private String minValue;
   private String maxValue;
   private FeatureValueType valueType;
@@ -44,7 +43,7 @@ public class Feature extends POJO implements Serializable {
 
   /**
    * Default constructor: use Setters for Initialization
-   *
+   * 
    */
   public Feature() {
     this(null, null, null, null, null, null, false);
@@ -58,7 +57,7 @@ public class Feature extends POJO implements Serializable {
    * @param id
    * @param value
    * @param fvt
-   *
+   * 
    */
   public Feature(final String label, final String description, final String id, final String value, final FeatureValueType fvt) {
     this(label, description, id, value, null, fvt, false);
@@ -66,14 +65,14 @@ public class Feature extends POJO implements Serializable {
 
   /**
    * Constructor for a Feature with a Range from minValue to maxValue
-   *
+   * 
    * @param label
    * @param description
    * @param id
    * @param minValue
    * @param maxValue
    * @param fvt
-   *
+   * 
    */
   public Feature(final String label, final String description, final String id, final String minValue, final String maxValue, final FeatureValueType fvt) {
     this(label, description, id, minValue, maxValue, fvt, true);
@@ -81,7 +80,7 @@ public class Feature extends POJO implements Serializable {
 
   /**
    * Internal constructor
-   *
+   * 
    * @param label
    * @param description
    * @param id
@@ -91,10 +90,9 @@ public class Feature extends POJO implements Serializable {
    * @param range
    */
   private Feature(final String label, final String description, final String id, final String minValue, final String maxValue, final FeatureValueType fvt, final boolean range) {
-    super();
+    super(id);
     this.label = label;
     this.description = description;
-    this.id = id;
     this.minValue = minValue;
     this.maxValue = maxValue;
     this.valueType = fvt == null ? FeatureValueType.STRING : fvt;
@@ -115,14 +113,6 @@ public class Feature extends POJO implements Serializable {
 
   public void setDescription(final String value) {
     this.description = value;
-  }
-
-  public String getId() {
-    return this.id;
-  }
-
-  public void setId(final String value) {
-    this.id = value;
   }
 
   public String getMinValue() {
