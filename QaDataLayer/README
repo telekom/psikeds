@@ -1,8 +1,0 @@
-psiKeds :- ps induced knowledge entity delivery system
-
-Copyright (c) 2013-2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
-
-This directory contains internal data objects for the psikedsQueryAgent:
-
-
-The compilation result is delivered as JAR file.
