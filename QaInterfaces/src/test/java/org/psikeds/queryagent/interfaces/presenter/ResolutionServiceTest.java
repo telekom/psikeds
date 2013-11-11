@@ -15,6 +15,7 @@
 package org.psikeds.queryagent.interfaces.presenter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -31,28 +32,21 @@ import org.slf4j.LoggerFactory;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 
-import org.psikeds.queryagent.interfaces.presenter.pojos.Alternatives;
-import org.psikeds.queryagent.interfaces.presenter.pojos.Constituents;
-import org.psikeds.queryagent.interfaces.presenter.pojos.Constitutes;
-import org.psikeds.queryagent.interfaces.presenter.pojos.Events;
-import org.psikeds.queryagent.interfaces.presenter.pojos.Features;
-import org.psikeds.queryagent.interfaces.presenter.pojos.Fulfills;
-import org.psikeds.queryagent.interfaces.presenter.pojos.InitResponse;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Choice;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Decission;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Knowledge;
 import org.psikeds.queryagent.interfaces.presenter.pojos.KnowledgeEntity;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Purpose;
-import org.psikeds.queryagent.interfaces.presenter.pojos.Purposes;
-import org.psikeds.queryagent.interfaces.presenter.pojos.Rules;
-import org.psikeds.queryagent.interfaces.presenter.pojos.SelectRequest;
-import org.psikeds.queryagent.interfaces.presenter.pojos.SelectResponse;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionRequest;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionResponse;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Variant;
-import org.psikeds.queryagent.interfaces.presenter.pojos.Variants;
 import org.psikeds.queryagent.interfaces.presenter.services.ResolutionService;
 
 /**
  * Tests for {@link org.psikeds.queryagent.interfaces.presenter.services.ResolutionService}.
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class ResolutionServiceTest {
 
@@ -60,10 +54,9 @@ public class ResolutionServiceTest {
   private static final Logger LOGGER = LoggerFactory.getLogger(ResolutionServiceTest.class);
 
   private static final String TEST_DATA_DIR = "./src/test/resources/";
-  private static final File KNOWLEDGE = new File(TEST_DATA_DIR, "KnowledgeEntity.json");
-  private static final File INIT_RESPONSE = new File(TEST_DATA_DIR, "InitResponse.json");
-  private static final File SELECT_RESPONSE = new File(TEST_DATA_DIR, "SelectResponse.json");
-  private static final File CHOICE = new File(TEST_DATA_DIR, "Choice.json");
+  private static final File INIT_KNOWLEDGE = new File(TEST_DATA_DIR, "InitKnowledge.json");
+  private static final File SELECT_KNOWLEDGE = new File(TEST_DATA_DIR, "SelectKnowledge.json");
+  private static final File DECISSION = new File(TEST_DATA_DIR, "Decission.json");
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -77,10 +70,9 @@ public class ResolutionServiceTest {
 
   @Before
   public void setUp() throws Exception {
-    final InitResponse initResp = readObjectFromJsonFile(INIT_RESPONSE, InitResponse.class);
-    final SelectResponse selResp = readObjectFromJsonFile(SELECT_RESPONSE, SelectResponse.class);
-    final KnowledgeEntity ke = readObjectFromJsonFile(KNOWLEDGE, KnowledgeEntity.class);
-    this.srvc = new ResolutionServiceMock(initResp, selResp, ke);
+    final Knowledge initKnow = readObjectFromJsonFile(INIT_KNOWLEDGE, Knowledge.class);
+    final Knowledge selectKnow = readObjectFromJsonFile(SELECT_KNOWLEDGE, Knowledge.class);
+    this.srvc = new ResolutionServiceMock(initKnow, selectKnow);
   }
 
   /**
@@ -88,45 +80,47 @@ public class ResolutionServiceTest {
    */
   @Test
   public void testResolutionService() throws Exception {
-    assertTrue("ResolutionService is null!", this.srvc != null);
+    LOGGER.info("Testing ResolutionService ...");
+    assertNotNull("ResolutionService is null!", this.srvc);
 
-    final InitResponse ires = this.srvc.init();
-    LOGGER.debug("Received:\n{}", ires);
-    assertTrue("No InitResponse!", ires != null);
+    LOGGER.info("... getting initial Knowledge ...");
+    final ResolutionResponse ires = this.srvc.init();
+    LOGGER.trace("Received:\n{}", ires);
 
+    assertNotNull("No initial Resolution-Response!", ires);
     final String sessionID1 = ires.getSessionID();
-    assertTrue("No initial SessionID!", sessionID1 != null);
-    final KnowledgeEntity ke1 = ires.getKnowledgeEntity();
-    assertTrue("No initial KnowledgeEntity!", ke1 != null);
+    assertTrue("No initial SessionID!", (sessionID1 != null) && (sessionID1.length() > 0));
+    final Knowledge ike = ires.getKnowledge();
+    assertNotNull("No initial Knowledge!", ike);
 
-    final String choice = readObjectFromJsonFile(CHOICE, String.class);
-    final SelectRequest sreq = new SelectRequest(sessionID1, ke1, choice);
-    LOGGER.debug("Sending:\n{}", sreq);
+    LOGGER.info("... making a Decission and asking for Resolution ...");
+    final Decission decission = readObjectFromJsonFile(DECISSION, Decission.class);
+    final ResolutionRequest sreq = new ResolutionRequest(sessionID1, decission);
+    LOGGER.trace("Sending:\n{}", sreq);
+    final ResolutionResponse sres = this.srvc.select(sreq);
+    LOGGER.trace("Received:\n{}", sres);
 
-    final SelectResponse sres = this.srvc.select(sreq);
-    LOGGER.debug("Received:\n{}", sres);
-    assertTrue("No SelectResponse!", sres != null);
-
+    assertNotNull("No Resolution-Response!", sres);
     final String sessionID2 = sres.getSessionID();
-    assertTrue("No SessionID in SelectResponse!", sessionID2 != null);
-    final KnowledgeEntity ke2 = sres.getKnowledgeEntity();
-    assertTrue("No KnowledgeEntity in SelectResponse!", ke2 != null);
+    assertTrue("No SessionID in Resolution-Response!", (sessionID2 != null) && (sessionID2.length() > 0));
+    final Knowledge ske = sres.getKnowledge();
+    assertNotNull("No Knowledge in Resolution-Response!", ske);
     assertEquals("SessionIDs are not matching!", sessionID1, sessionID2);
 
-    // TODO: additional tests
+    LOGGER.info("... done. Resolution worked as expected.");
   }
 
   private static <T> T readObjectFromJsonFile(final File f, final Class<T> type) throws JsonProcessingException, IOException {
     T obj = null;
-    if (type != null && f != null && f.isFile() && f.exists() && f.canRead()) {
+    if ((type != null) && (f != null) && f.isFile() && f.exists() && f.canRead()) {
       obj = MAPPER.readValue(f, type);
-      LOGGER.debug("Read Object from File {}\n{}", f, obj);
+      LOGGER.trace("Read Object from File {}\n{}", f, obj);
     }
     return obj;
   }
 
   private static void writeObjectToJsonFile(final File f, final Object obj) throws JsonProcessingException, IOException {
-    if (f != null && obj != null) {
+    if ((f != null) && (obj != null)) {
       LOGGER.info("Writing Object to File {}\n{}", f, obj);
       MAPPER.writeValue(f, obj);
       assertTrue("Could not write Object(s) to File " + f.getPath(), f.exists());
@@ -136,47 +130,54 @@ public class ResolutionServiceTest {
   private static void generateTestData(final boolean force) throws JsonProcessingException, IOException {
     LOGGER.info("Start generating Test-Data ... ");
 
-    final Features features = null;
-    final Purposes purposes = new Purposes();
-    purposes.addPurpose(new Purpose("P1", "", "P1"));
-    purposes.addPurpose(new Purpose("P2", "", "P2"));
-    purposes.addPurpose(new Purpose("P3", "", "P3"));
-    final Variants variants = new Variants();
-    variants.addVariant(new Variant("V1", "", "V1"));
-    variants.addVariant(new Variant("V2", "", "V2"));
-    variants.addVariant(new Variant("V3", "", "V3"));
-    final Alternatives alternatives = new Alternatives();
-    alternatives.addFulfills(new Fulfills("", "P1", "V1"));
-    alternatives.addFulfills(new Fulfills("", "P2", "V2"));
-    alternatives.addFulfills(new Fulfills("", "P3", "V3"));
-    final Constituents constituents = new Constituents();
-    constituents.addConstitutes(new Constitutes("", "V1", "P1"));
-    constituents.addConstitutes(new Constitutes("", "V2", "P2"));
-    constituents.addConstitutes(new Constitutes("", "V3", "P3"));
-    final Events events = null;
-    final Rules rules = null;
-    final boolean fullyResolved = false;
-    final KnowledgeEntity ke = new KnowledgeEntity(features, purposes, variants, alternatives, constituents, events, rules, fullyResolved);
-    if (force || !KNOWLEDGE.exists()) {
-      writeObjectToJsonFile(KNOWLEDGE, ke);
+    final Knowledge initKnow = new Knowledge();
+
+    final Purpose p1 = new Purpose("P1", null, "P1", true);
+    final Purpose p2 = new Purpose("P2", null, "P2", true);
+    final Purpose p3 = new Purpose("P3", null, "P3", true);
+
+    final Variant v11 = new Variant("V11", null, "V11");
+    final Variant v21 = new Variant("V21", null, "V21");
+    final Variant v22 = new Variant("V22", null, "V22");
+    final Variant v23 = new Variant("V23", null, "V23");
+    final Variant v31 = new Variant("V31", null, "V31");
+    final Variant v32 = new Variant("V32", null, "V32");
+    final Variant v33 = new Variant("V33", null, "V33");
+
+    final KnowledgeEntity ke1 = new KnowledgeEntity(p1, v11);
+    initKnow.addKnowledgeEntity(ke1);
+
+    final Choice c2 = new Choice(p2);
+    c2.addVariant(v21);
+    c2.addVariant(v22);
+    c2.addVariant(v23);
+    initKnow.addChoice(c2);
+
+    final Choice c3 = new Choice(p3);
+    c2.addVariant(v31);
+    c2.addVariant(v32);
+    c2.addVariant(v33);
+    initKnow.addChoice(c3);
+
+    if (force || !INIT_KNOWLEDGE.exists()) {
+      writeObjectToJsonFile(INIT_KNOWLEDGE, initKnow);
     }
 
-    // Generate a new sessionID with each request
-    final String sessionID = null;
-
-    final InitResponse ires = new InitResponse(sessionID, ke);
-    if (force || !INIT_RESPONSE.exists()) {
-      writeObjectToJsonFile(INIT_RESPONSE, ires);
+    final Decission decission = new Decission(p2, v22);
+    if (force || !DECISSION.exists()) {
+      writeObjectToJsonFile(DECISSION, decission);
     }
 
-    final SelectResponse sres = new SelectResponse(sessionID, ke);
-    if (force || !SELECT_RESPONSE.exists()) {
-      writeObjectToJsonFile(SELECT_RESPONSE, sres);
-    }
+    final Knowledge selectKnow = new Knowledge();
 
-    final String choice = "P2";
-    if (force || !CHOICE.exists()) {
-      writeObjectToJsonFile(CHOICE, choice);
+    selectKnow.addKnowledgeEntity(ke1);
+    final KnowledgeEntity ke2 = new KnowledgeEntity(p2, v22);
+    selectKnow.addKnowledgeEntity(ke2);
+
+    selectKnow.addChoice(c3);
+
+    if (force || !SELECT_KNOWLEDGE.exists()) {
+      writeObjectToJsonFile(SELECT_KNOWLEDGE, selectKnow);
     }
 
     LOGGER.info("... finished generating Test-Data. ");
@@ -185,7 +186,7 @@ public class ResolutionServiceTest {
   public static void main(final String[] args) {
     try {
       setUpBeforeClass();
-      final boolean force = args.length > 0 && "force".equalsIgnoreCase(args[0]);
+      final boolean force = (args.length > 0) && "force".equalsIgnoreCase(args[0]);
       generateTestData(force);
     }
     catch (final Exception ex) {

@@ -27,16 +27,15 @@ import org.apache.cxf.interceptor.Fault;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.psikeds.common.services.AbstractSOAPService;
-import org.psikeds.queryagent.interfaces.presenter.pojos.InitResponse;
-import org.psikeds.queryagent.interfaces.presenter.pojos.SelectRequest;
-import org.psikeds.queryagent.interfaces.presenter.pojos.SelectResponse;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionRequest;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionResponse;
 import org.psikeds.queryagent.interfaces.presenter.services.ResolutionService;
 
 /**
  * SOAP Service "implementing" the ResolutionService. It does not really
  * implement this Interface but invokes a delegate implementation the Interface
  * {@link org.psikeds.queryagent.interfaces.presenter.services.ResolutionService}
- *
+ * 
  * @author marco@juliano.de
  */
 @WebService(name = "ResolutionService", targetNamespace = "org.psikeds.queryagent.soap", serviceName = "ResolutionService")
@@ -59,12 +58,12 @@ public class ResolutionSOAPService extends AbstractSOAPService {
   }
 
   @WebMethod(operationName = "doInit")
-  @WebResult(name = "InitResponse", targetNamespace = "org.psikeds.queryagent.soap")
-  public InitResponse doInit(final String reqid) {
+  @WebResult(name = "ResolutionResponse", targetNamespace = "org.psikeds.queryagent.soap")
+  public ResolutionResponse doInit(final String reqid) {
     try {
-      final InitResponse resp = (InitResponse) handleRequest(reqid, getExecutable(this.delegate, "init"));
-      if (resp == null || resp.getKnowledgeEntity() == null || resp.getSessionID() == null) {
-        throw new IllegalStateException("Failed to initialize Session and to create Knowledge-Entity!");
+      final ResolutionResponse resp = (ResolutionResponse) handleRequest(reqid, getExecutable(this.delegate, "init"));
+      if ((resp == null) || (resp.getKnowledge() == null) || (resp.getSessionID() == null)) {
+        throw new IllegalStateException("Failed to create Session and to initialize Resolution!");
       }
       return resp;
     }
@@ -75,10 +74,13 @@ public class ResolutionSOAPService extends AbstractSOAPService {
 
   @WebMethod(operationName = "doSelect")
   @WebResult(name = "SelectResponse", targetNamespace = "org.psikeds.queryagent.soap")
-  public SelectResponse doSelect(@WebParam(name = "SelectRequest") final SelectRequest req, final String reqid) {
+  public ResolutionResponse doSelect(@WebParam(name = "ResolutionRequest") final ResolutionRequest req, final String reqid) {
     try {
-      final SelectResponse resp = (SelectResponse) handleRequest(reqid, getExecutable(this.delegate, "select"), req);
-      if (resp == null || resp.getKnowledgeEntity() == null || resp.getSessionID() == null) {
+      if ((req == null) || ((req.getSessionID() == null) && (req.getKnowledge() == null))) {
+        throw new IllegalArgumentException(String.valueOf(req));
+      }
+      final ResolutionResponse resp = (ResolutionResponse) handleRequest(reqid, getExecutable(this.delegate, "select"), req);
+      if ((resp == null) || (resp.getKnowledge() == null) || (resp.getSessionID() == null)) {
         throw new IllegalArgumentException(String.valueOf(req));
       }
       return resp;

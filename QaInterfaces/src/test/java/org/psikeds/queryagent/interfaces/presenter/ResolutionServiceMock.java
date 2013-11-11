@@ -14,105 +14,102 @@
  *******************************************************************************/
 package org.psikeds.queryagent.interfaces.presenter;
 
+import org.apache.commons.lang.StringUtils;
+
 import org.psikeds.common.idgen.IdGenerator;
 import org.psikeds.common.idgen.impl.SessionIdGenerator;
-import org.psikeds.queryagent.interfaces.presenter.pojos.InitResponse;
-import org.psikeds.queryagent.interfaces.presenter.pojos.KnowledgeEntity;
-import org.psikeds.queryagent.interfaces.presenter.pojos.SelectRequest;
-import org.psikeds.queryagent.interfaces.presenter.pojos.SelectResponse;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Knowledge;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionRequest;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionResponse;
 import org.psikeds.queryagent.interfaces.presenter.services.ResolutionService;
 
 /**
  * Mock-Implementation of ResolutionService for testing purposes.
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class ResolutionServiceMock implements ResolutionService {
 
-  private InitResponse initResp;
-  private SelectResponse selResp;
-  private final KnowledgeEntity ke;
+  private Knowledge initKnowledge;
+  private Knowledge selectKnowledge;
   private IdGenerator gen;
 
-  public ResolutionServiceMock(final KnowledgeEntity ke) {
-    this(null, null, ke, null);
+  public ResolutionServiceMock(final Knowledge knowledge) {
+    this(knowledge, knowledge);
   }
 
-  public ResolutionServiceMock(final InitResponse initResp, final SelectResponse selResp) {
-    this(initResp, selResp, null, null);
+  public ResolutionServiceMock(final Knowledge initKnowledge, final Knowledge selectKnowledge) {
+    this(initKnowledge, selectKnowledge, null);
   }
 
-  public ResolutionServiceMock(final InitResponse initResp, final SelectResponse selResp, final KnowledgeEntity ke) {
-    this(initResp, selResp, ke, null);
+  public ResolutionServiceMock(final Knowledge initKnowledge, final Knowledge selectKnowledge, final IdGenerator gen) {
+    setInitKnowledge(initKnowledge);
+    setSelectKnowledge(selectKnowledge);
+    setIdGenerator(gen);
   }
 
-  public ResolutionServiceMock(final InitResponse initResp, final SelectResponse selResp, final KnowledgeEntity ke, final IdGenerator gen) {
-    this.initResp = initResp;
-    this.selResp = selResp;
-    this.ke = ke;
+  // ------------------------------------------------------
+
+  public Knowledge getInitKnowledge() {
+    return this.initKnowledge;
+  }
+
+  public void setInitKnowledge(final Knowledge initKnowledge) {
+    this.initKnowledge = initKnowledge;
+  }
+
+  public Knowledge getSelectKnowledge() {
+    return this.selectKnowledge;
+  }
+
+  public void setSelectKnowledge(final Knowledge selectKnowledge) {
+    this.selectKnowledge = selectKnowledge;
+  }
+
+  public IdGenerator getIdGenerator() {
+    return this.gen;
+  }
+
+  public void setIdGenerator(final IdGenerator gen) {
     try {
-      this.gen = gen == null ? new SessionIdGenerator("TEST") : gen;
+      this.gen = gen == null ? new SessionIdGenerator("QA") : gen;
     }
     catch (final Exception ex) {
       this.gen = null;
     }
   }
 
+  // ------------------------------------------------------
+
   /**
-   * @return InitResponse
+   * @return ResolutionResponse
    * @see org.psikeds.resolutionengine.interfaces.services.ResolutionService#init()
    */
   @Override
-  public InitResponse init() {
-    if (this.initResp == null) {
-      this.initResp = createInitResponse();
-    }
-    if (this.initResp.getSessionID() == null) {
-      this.initResp.setSessionID(createSessionID());
-    }
-    if (this.initResp.getKnowledgeEntity() == null) {
-      this.initResp.setKnowledgeEntity(this.ke);
-    }
-    return this.initResp;
+  public ResolutionResponse init() {
+    return new ResolutionResponse(createSessionID(), getInitKnowledge());
   }
 
   /**
    * @param req
-   * @return SelectResponse
-   * @see org.psikeds.resolutionengine.interfaces.services.ResolutionService#select(org.psikeds.resolutionengine.interfaces.pojos.SelectRequest)
+   * @return ResolutionResponse
+   * @see org.psikeds.resolutionengine.interfaces.services.ResolutionService#select(org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest)
    */
   @Override
-  public SelectResponse select(final SelectRequest req) {
-    if (this.selResp == null) {
-      this.selResp = createSelectResponse();
+  public ResolutionResponse select(final ResolutionRequest req) {
+    String sessionId = (req == null ? null : req.getSessionID());
+    if (StringUtils.isEmpty(sessionId)) {
+      sessionId = createSessionID();
     }
-    if (this.selResp.getSessionID() == null) {
-      this.selResp.setSessionID(req.getSessionID());
+    Knowledge know = (req == null ? null : req.getKnowledge());
+    if (know == null) {
+      know = getSelectKnowledge();
     }
-    if (this.selResp.getSessionID() == null) {
-      this.selResp.setSessionID(createSessionID());
-    }
-    if (this.selResp.getKnowledgeEntity() == null) {
-      this.selResp.setKnowledgeEntity(this.ke);
-    }
-    if (this.selResp.getKnowledgeEntity() == null) {
-      this.selResp.setKnowledgeEntity(req.getKnowledgeEntity());
-    }
-    return this.selResp;
+    return new ResolutionResponse(sessionId, know);
   }
 
-  private SelectResponse createSelectResponse() {
-    final SelectResponse resp = new SelectResponse();
-    resp.setKnowledgeEntity(this.ke);
-    return resp;
-  }
-
-  private InitResponse createInitResponse() {
-    final InitResponse resp = new InitResponse();
-    resp.setKnowledgeEntity(this.ke);
-    return resp;
-  }
+  // ------------------------------------------------------
 
   private String createSessionID() {
     return this.gen == null ? null : this.gen.getNextId();

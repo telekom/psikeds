@@ -15,48 +15,46 @@
 package org.psikeds.queryagent.interfaces.presenter.pojos;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Interface object representing a List of all Variants.
- *
- * Note: Reading from and writing to JSON works out of the box.
- *       However for XML the XmlRootElement annotation is required.
- *
+ * Metadata-Infos regarding the current Resolution and Knowledge-Base.
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
-@XmlRootElement(name = "Variants")
-public class Variants extends POJO implements Serializable {
+public class Metadata extends POJO implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private List<Variant> variant;
+  private Map<String, Object> infomap;
 
-  public Variants() {
+  public Metadata() {
     this(null);
   }
 
-  public Variants(final List<Variant> variant) {
+  public Metadata(final Map<String, Object> infomap) {
     super();
-    setVariant(variant);
+    this.infomap = infomap;
   }
 
-  public List<Variant> getVariant() {
-    if (this.variant == null) {
-      this.variant = new ArrayList<Variant>();
+  public Map<String, Object> getInfomap() {
+    if (this.infomap == null) {
+      this.infomap = new ConcurrentHashMap<String, Object>();
     }
-    return this.variant;
+    return this.infomap;
   }
 
-  public boolean addVariant(final Variant value) {
-    return getVariant().add(value);
+  public void setInfomap(final Map<String, Object> infomap) {
+    this.infomap = infomap;
   }
 
-  public void setVariant(final List<Variant> lst) {
-    this.variant = lst;
+  public Object loadInfo(final String key) {
+    return getInfomap().get(key);
+  }
+
+  public void saveInfo(final String key, final Object value) {
+    getInfomap().put(key, value);
   }
 }
