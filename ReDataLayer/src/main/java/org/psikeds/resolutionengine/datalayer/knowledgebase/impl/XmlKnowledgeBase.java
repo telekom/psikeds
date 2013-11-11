@@ -49,9 +49,9 @@ import org.psikeds.resolutionengine.datalayer.vo.Variants;
  * This implementation of a KnowledgeBase acts as a KBParserCallback and
  * receives Data from an XML-Source. Afterwards it encapsulates all Knowledge
  * in a Map and provides Accessors to it.
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
 
@@ -273,7 +273,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
 
   /**
    * @param variantId
-   * @return Events attached to Variant 
+   * @return Events attached to Variant
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getAttachedEvents(java.lang.String)
    */
   @Override
@@ -562,7 +562,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
       save(KEY_ALL_RULES, rules);
       final List<Rule> lst = rules.getRule();
       for (final Rule r : lst) {
-        save(KEY_PREFIX_RULE + r.getRuleID(), r);
+        save(KEY_PREFIX_RULE + r.getId(), r);
         attacheRule(r);
       }
     }
@@ -607,7 +607,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   // -------------------------------------------------------------
 
   private void save(final String key, final Object value) {
-    if (value != null && !StringUtils.isEmpty(key)) {
+    if ((value != null) && !StringUtils.isEmpty(key)) {
       LOGGER.trace("save: key = {}\nvalue = {}", key, value);
       this.knowledge.put(key, value);
     }

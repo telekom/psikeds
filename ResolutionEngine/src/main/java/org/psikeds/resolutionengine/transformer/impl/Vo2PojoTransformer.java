@@ -14,7 +14,7 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.transformer.impl;
 
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -40,7 +40,7 @@ import org.psikeds.resolutionengine.transformer.Transformer;
 /**
  * Helper for transforming Value Objects from the Datalayer into POJOs of the
  * Interface (and vice versa).
- *
+ * 
  * @author marco@juliano.de
  */
 public class Vo2PojoTransformer implements Transformer {
@@ -64,11 +64,11 @@ public class Vo2PojoTransformer implements Transformer {
       if (ts != null) {
         pojo.saveInfo(
             Metadata.KB_TIMESTAMP,
-            SimpleDateFormat.getDateTimeInstance().format(ts.getTime())
+            DateFormat.getDateTimeInstance().format(ts.getTime())
             );
       }
       final Map<String, Object> opt = vo.getOptionalInfo();
-      if (opt != null && opt.size() > 0) {
+      if ((opt != null) && (opt.size() > 0)) {
         for (final String key : opt.keySet()) {
           final Object value = opt.get(key);
           pojo.saveInfo(key, value);
@@ -160,7 +160,8 @@ public class Vo2PojoTransformer implements Transformer {
    * @param vo
    * @param features
    * @return pojo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Variant, java.util.List)
+   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Variant,
+   *      java.util.List)
    */
   @Override
   public org.psikeds.resolutionengine.interfaces.pojos.Variant valueObject2Pojo(final Variant vo, final List<org.psikeds.resolutionengine.interfaces.pojos.Feature> features) {
@@ -253,7 +254,7 @@ public class Vo2PojoTransformer implements Transformer {
 
   /**
    * @param pojo
-   * @return
+   * @return vo
    * @see org.psikeds.resolutionengine.transformer.Transformer#pojo2ValueObject(org.psikeds.resolutionengine.interfaces.pojos.FeatureValueType)
    */
   @Override
@@ -263,7 +264,7 @@ public class Vo2PojoTransformer implements Transformer {
 
   /**
    * @param vo
-   * @return
+   * @return pojo
    * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.FeatureValueType)
    */
   @Override
@@ -277,7 +278,8 @@ public class Vo2PojoTransformer implements Transformer {
    * @param p
    * @param vars
    * @return pojo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Purpose, java.util.List)
+   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Purpose,
+   *      java.util.List)
    */
   @Override
   public Choice valueObject2Pojo(final Purpose p, final List<Variant> vars) {
@@ -288,7 +290,8 @@ public class Vo2PojoTransformer implements Transformer {
    * @param p
    * @param vars
    * @return pojo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Purpose, org.psikeds.resolutionengine.datalayer.vo.Variants)
+   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Purpose,
+   *      org.psikeds.resolutionengine.datalayer.vo.Variants)
    */
   @Override
   public Choice valueObject2Pojo(final Purpose p, final Variants vars) {
@@ -300,7 +303,8 @@ public class Vo2PojoTransformer implements Transformer {
    * @param p
    * @param vars
    * @return pojo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Variant, org.psikeds.resolutionengine.datalayer.vo.Purpose, java.util.List)
+   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Variant,
+   *      org.psikeds.resolutionengine.datalayer.vo.Purpose, java.util.List)
    */
   @Override
   public Choice valueObject2Pojo(final Variant parent, final Purpose p, final List<Variant> vars) {
@@ -315,7 +319,9 @@ public class Vo2PojoTransformer implements Transformer {
    * @param p
    * @param vars
    * @return pojo
-   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Variant, org.psikeds.resolutionengine.datalayer.vo.Purpose, org.psikeds.resolutionengine.datalayer.vo.Variants)
+   * @see org.psikeds.resolutionengine.transformer.Transformer#valueObject2Pojo(org.psikeds.resolutionengine.datalayer.vo.Variant,
+   *      org.psikeds.resolutionengine.datalayer.vo.Purpose,
+   *      org.psikeds.resolutionengine.datalayer.vo.Variants)
    */
   @Override
   public Choice valueObject2Pojo(final Variant parent, final Purpose p, final Variants vars) {

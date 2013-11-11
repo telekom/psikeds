@@ -1,15 +1,15 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
- * 
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
- * 
+ *
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
  * [x] GNU Affero General Public License
  * [ ] GNU General Public License
  * [ ] GNU Lesser General Public License
  * [ ] Creatice Commons ShareAlike License
- * 
+ *
  * For details see file LICENSING in the top project directory
  *******************************************************************************/
 package org.psikeds.common.idgen.impl;
@@ -57,24 +57,26 @@ public class RandomStringGenerator implements IdGenerator {
   }
 
   /**
-   * @param numberOfBytes the numberOfBytes to set
+   * @param numberOfBytes
+   *          the numberOfBytes to set
    */
   public void setNumberOfBytes(final int numberOfBytes) {
     this.numberOfBytes = numberOfBytes;
   }
 
   /**
-   * @param randomAlgorithm the randomAlgorithm to set
+   * @param randomAlgorithm
+   *          the randomAlgorithm to set
    */
   public void setRandomAlgorithm(final String randomAlgorithm) throws NoSuchAlgorithmException {
-    if (this.secran == null || !randomAlgorithm.equals(this.randomAlgorithm)) {
+    if ((this.secran == null) || !randomAlgorithm.equals(this.randomAlgorithm)) {
       this.secran = SecureRandom.getInstance(randomAlgorithm);
       this.randomAlgorithm = randomAlgorithm;
     }
   }
 
   /**
-   * @return
+   * @return String next random id
    * @see org.psikeds.common.idgen.IdGenerator#getNextId()
    */
   @Override
