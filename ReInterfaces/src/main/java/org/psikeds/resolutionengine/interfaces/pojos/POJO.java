@@ -47,7 +47,7 @@ public class POJO implements Serializable, Comparable<Object> {
   }
 
   public String getId() {
-    return (StringUtils.isEmpty(this.id) ? String.valueOf(hashCode()) : this.id);
+    return this.id;
   }
 
   public void setId(final String value) {
@@ -84,6 +84,13 @@ public class POJO implements Serializable, Comparable<Object> {
       return 1;
     }
     final POJO pojo = (POJO) obj;
+    // pojos without IDs can never be compared
+    if (StringUtils.isEmpty(pojo.getId())) {
+      return 1;
+    }
+    if (StringUtils.isEmpty(this.getId())) {
+      return -1;
+    }
     // compare IDs
     return this.getId().compareTo(pojo.getId());
   }
@@ -102,11 +109,12 @@ public class POJO implements Serializable, Comparable<Object> {
   private static String composeId(final POJO... pojos) {
     final StringBuilder sb = new StringBuilder();
     for (final POJO p : pojos) {
-      if (p != null) {
+      final String pid = (p == null ? null : p.getId());
+      if (!StringUtils.isEmpty(pid)) {
         if (sb.length() > 0) {
           sb.append(COMPOSE_ID_SEPARATOR);
         }
-        sb.append(p.getId());
+        sb.append(pid);
       }
     }
     return sb.toString();
@@ -114,12 +122,12 @@ public class POJO implements Serializable, Comparable<Object> {
 
   private static String composeId(final String... ids) {
     final StringBuilder sb = new StringBuilder();
-    for (final String str : ids) {
-      if (!StringUtils.isEmpty(str)) {
+    for (final String pid : ids) {
+      if (!StringUtils.isEmpty(pid)) {
         if (sb.length() > 0) {
           sb.append(COMPOSE_ID_SEPARATOR);
         }
-        sb.append(str);
+        sb.append(pid);
       }
     }
     return sb.toString();
