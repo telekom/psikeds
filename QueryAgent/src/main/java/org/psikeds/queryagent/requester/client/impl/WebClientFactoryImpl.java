@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import org.slf4j.Logger;
@@ -41,8 +42,6 @@ public class WebClientFactoryImpl implements WebClientFactory {
   public static final boolean DEFAULT_CACHE_CLIENTS = true;
   public static final String DEFAULT_ACCEPT_HEADER = MediaType.APPLICATION_JSON;
   public static final String DEFAULT_CONTENT_TYPE = MediaType.APPLICATION_JSON;
-
-  public static final String USER_AGENT_HEADER_NAME = "user-agent";
   public static final String DEFAULT_USER_AGENT = ResolutionEngineClient.class.getName();
 
   private final Map<String, WebClient> clients = new ConcurrentHashMap<String, WebClient>();
@@ -56,86 +55,101 @@ public class WebClientFactoryImpl implements WebClientFactory {
     this(null);
   }
 
-  /**
-   * @param acceptHeader
-   * @param contentTypeHeader
-   * @param providers
-   * @param cacheClients
-   */
   public WebClientFactoryImpl(final List<Object> providers) {
-    this(DEFAULT_ACCEPT_HEADER, DEFAULT_CONTENT_TYPE, DEFAULT_USER_AGENT, providers, DEFAULT_CACHE_CLIENTS);
+    this(DEFAULT_ACCEPT_HEADER, DEFAULT_CONTENT_TYPE, providers);
   }
 
-  /**
-   * @param acceptHeader
-   * @param contentTypeHeader
-   */
   public WebClientFactoryImpl(final String acceptHeader, final String contentTypeHeader) {
-    this(acceptHeader, contentTypeHeader, DEFAULT_USER_AGENT, null, DEFAULT_CACHE_CLIENTS);
+    this(acceptHeader, contentTypeHeader, null);
   }
 
-  /**
-   * @param acceptHeader
-   * @param contentTypeHeader
-   * @param userAgent
-   * @param providers
-   * @param cacheClients
-   */
-  public WebClientFactoryImpl(final String acceptHeader, final String contentTypeHeader, final String userAgent, final List<Object> providers, final boolean cacheClients) {
+  public WebClientFactoryImpl(final String acceptHeader, final String contentTypeHeader, final List<Object> providers) {
+    this(acceptHeader, contentTypeHeader, null, DEFAULT_USER_AGENT, DEFAULT_CACHE_CLIENTS);
+  }
+
+  public WebClientFactoryImpl(final String acceptHeader, final String contentTypeHeader, final List<Object> providers, final String userAgent, final boolean cacheClients) {
     this.acceptHeader = acceptHeader;
     this.contentTypeHeader = contentTypeHeader;
-    this.userAgent = userAgent;
     this.providers = providers;
+    this.userAgent = userAgent;
     this.cacheClients = cacheClients;
   }
 
-  /**
-   * @param providers the providers to set
-   */
-  public void setProviders(final List<Object> providers) {
-    this.providers = providers;
+  // ------------------------------------------------------
+
+  public String getAcceptHeader() {
+    return this.acceptHeader;
   }
 
-  /**
-   * @param acceptHeader the acceptHeader to set
-   */
   public void setAcceptHeader(final String acceptHeader) {
     this.acceptHeader = acceptHeader;
   }
 
-  /**
-   * @param contentTypeHeader the contentTypeHeader to set
-   */
+  public String getContentTypeHeader() {
+    return this.contentTypeHeader;
+  }
+
   public void setContentTypeHeader(final String contentTypeHeader) {
     this.contentTypeHeader = contentTypeHeader;
   }
 
-  /**
-   * @param cacheClients the cacheClients to set
-   */
+  public String getUserAgent() {
+    return this.userAgent;
+  }
+
+  public void setUserAgent(final String userAgent) {
+    this.userAgent = userAgent;
+  }
+
+  public List<Object> getProviders() {
+    return this.providers;
+  }
+
+  public void setProviders(final List<Object> providers) {
+    this.providers = providers;
+  }
+
+  public boolean isCacheClients() {
+    return this.cacheClients;
+  }
+
   public void setCacheClients(final boolean cacheClients) {
     this.cacheClients = cacheClients;
   }
 
   /**
-   * @param userAgent the userAgent to set
-   */
-  public void setUserAgent(final String userAgent) {
-    this.userAgent = userAgent;
-  }
-
-  /**
+   * Create a new CXF-WebClient for the Target-URL using the Factory-Default-Settings
+   * 
    * @param url
-   * @return
-   * @see org.psikeds.queryagent.requester.client.WebClientFactory#getClient(java.lang.String)
+   *          Target-URL
+   * @return WebClient
    */
   @Override
   public WebClient getClient(final String url) {
-    WebClient wc = this.clients.get(url);
+    return getClient(url, null, null, null);
+  }
+
+  /**
+   * Create a new CXF-WebClient for the Target-URL
+   * 
+   * @param url
+   *          Target-URL
+   * @param accept
+   *          HTTP-Accept-Header
+   * @param content
+   *          HTTP-Content-Type-Header
+   * @param agent
+   *          USer-Agent-String
+   * @return WebClient
+   */
+  @Override
+  public WebClient getClient(final String url, String accept, String content, String agent) {
+    WebClient wc = this.cacheClients ? this.clients.get(url) : null;
     if (wc != null) {
-      LOGGER.debug("Reusing cached WebClient: {}", String.valueOf(wc));
+      LOGGER.debug("Reusing cached WebClient: {}", wc);
       return wc;
     }
+
     final int size = this.providers == null ? 0 : this.providers.size();
     if (size > 0) {
       LOGGER.trace("Creating new WebClient for {} using {} providers.", url, size);
@@ -147,20 +161,37 @@ public class WebClientFactoryImpl implements WebClientFactory {
       // if cache client, we also must be thread safe!
       wc = WebClient.create(url, this.cacheClients);
     }
-    if (!StringUtils.isEmpty(this.acceptHeader)) {
-      wc.accept(this.acceptHeader);
+
+    // set accept header if specified
+    if (StringUtils.isEmpty(accept)) {
+      accept = this.acceptHeader;
     }
-    if (!StringUtils.isEmpty(this.contentTypeHeader)) {
-      wc.type(this.contentTypeHeader);
+    if (!StringUtils.isEmpty(accept)) {
+      LOGGER.trace("{} = {}", HttpHeaders.ACCEPT, accept);
+      wc.accept(accept);
     }
-    if (!StringUtils.isEmpty(this.userAgent)) {
-      wc.replaceHeader(USER_AGENT_HEADER_NAME, this.userAgent);
+    // set content type if specified
+    if (StringUtils.isEmpty(content)) {
+      content = this.contentTypeHeader;
     }
+    if (!StringUtils.isEmpty(content)) {
+      LOGGER.trace("{} = {}", HttpHeaders.CONTENT_TYPE, content);
+      wc.type(content);
+    }
+    // set user agent string if specified
+    if (StringUtils.isEmpty(agent)) {
+      agent = this.userAgent;
+    }
+    if (!StringUtils.isEmpty(agent)) {
+      LOGGER.trace("{} = {}", HttpHeaders.USER_AGENT, agent);
+      wc.replaceHeader(HttpHeaders.USER_AGENT, agent);
+    }
+
     if (this.cacheClients) {
       LOGGER.trace("Caching WebClient for later reuse.");
       this.clients.put(url, wc);
     }
-    LOGGER.debug("Created new WebClient: {}", String.valueOf(wc));
+    LOGGER.debug("Created new WebClient: {}", wc);
     return wc;
   }
 }

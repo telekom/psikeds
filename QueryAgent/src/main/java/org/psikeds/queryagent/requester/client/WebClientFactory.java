@@ -23,5 +23,27 @@ import org.apache.cxf.jaxrs.client.WebClient;
  */
 public interface WebClientFactory {
 
-  WebClient getClient(final String url);
+  /**
+   * Create a new CXF-WebClient for the Target-URL using the Factory-Default-Settings
+   * 
+   * @param url
+   *          Target-URL
+   * @return WebClient
+   */
+  WebClient getClient(String url);
+
+  /**
+   * Create a new CXF-WebClient for the Target-URL
+   * 
+   * @param url
+   *          Target-URL
+   * @param accept
+   *          HTTP-Accept-Header
+   * @param content
+   *          HTTP-Content-Type-Header
+   * @param agent
+   *          USer-Agent-String
+   * @return WebClient
+   */
+  WebClient getClient(String url, String accept, String content, String agent);
 }

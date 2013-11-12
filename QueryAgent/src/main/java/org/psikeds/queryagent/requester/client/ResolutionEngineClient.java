@@ -14,19 +14,18 @@
  *******************************************************************************/
 package org.psikeds.queryagent.requester.client;
 
-import org.psikeds.resolutionengine.interfaces.pojos.InitResponse;
-import org.psikeds.resolutionengine.interfaces.pojos.SelectRequest;
-import org.psikeds.resolutionengine.interfaces.pojos.SelectResponse;
+import org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest;
+import org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse;
 
 /**
  * A client invoking the Services of the Resolution-Engine. The actual
  * implementation can choose how to do this (REST, SOAP, Mocking, ...)
- *
+ * 
  * @author marco@juliano.de
  */
 public interface ResolutionEngineClient {
 
-  InitResponse invokeInitService();
+  ResolutionResponse invokeInitService();
 
-  SelectResponse invokeSelectService(SelectRequest req);
+  ResolutionResponse invokeSelectService(ResolutionRequest req);
 }
