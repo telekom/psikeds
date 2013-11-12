@@ -14,594 +14,274 @@
  *******************************************************************************/
 package org.psikeds.queryagent.transformer.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.psikeds.queryagent.interfaces.presenter.pojos.Alternatives;
-import org.psikeds.queryagent.interfaces.presenter.pojos.Constituents;
-import org.psikeds.queryagent.interfaces.presenter.pojos.Constitutes;
-import org.psikeds.queryagent.interfaces.presenter.pojos.Event;
-import org.psikeds.queryagent.interfaces.presenter.pojos.Events;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Choice;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Decission;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Feature;
-import org.psikeds.queryagent.interfaces.presenter.pojos.Features;
-import org.psikeds.queryagent.interfaces.presenter.pojos.Fulfills;
-import org.psikeds.queryagent.interfaces.presenter.pojos.InitResponse;
+import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureValueType;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Knowledge;
 import org.psikeds.queryagent.interfaces.presenter.pojos.KnowledgeEntity;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Metadata;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Purpose;
-import org.psikeds.queryagent.interfaces.presenter.pojos.Purposes;
-import org.psikeds.queryagent.interfaces.presenter.pojos.Rule;
-import org.psikeds.queryagent.interfaces.presenter.pojos.Rules;
-import org.psikeds.queryagent.interfaces.presenter.pojos.SelectRequest;
-import org.psikeds.queryagent.interfaces.presenter.pojos.SelectResponse;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionRequest;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionResponse;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Variant;
-import org.psikeds.queryagent.interfaces.presenter.pojos.Variants;
 import org.psikeds.queryagent.transformer.Transformer;
 
 /**
  * Helper for transforming POJOs from the Interface of the
  * Resolution-Engine (RE) into POJOs of the Interface of the
  * Query-Agent (QA) ... and vice versa.
- *
+ * 
  * @author marco@juliano.de
  */
 public class Re2QaTransformer implements Transformer {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(Re2QaTransformer.class);
-
-  /**
-   * @param re
-   * @return qa
-   * @see org.psikeds.queryagent.transformer.Transformer#re2qa(org.psikeds.resolutionengine.interfaces.pojos.Alternatives)
-   */
   @Override
-  public Alternatives re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Alternatives re) {
-    Alternatives qa = null;
+  public Choice re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Choice re) {
+    Choice qa = null;
     if (re != null) {
-      qa = new Alternatives();
-      final List<org.psikeds.resolutionengine.interfaces.pojos.Fulfills> lst = re.getFulfills();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Fulfills f : lst) {
-        qa.addFulfills(re2qa(f));
+      final Variant parentVariant = re2qa(re.getParentVariant());
+      final Purpose purpose = re2qa(re.getPurpose());
+      final List<Variant> variants = new ArrayList<Variant>();
+      for (final org.psikeds.resolutionengine.interfaces.pojos.Variant v : re.getVariants()) {
+        variants.add(re2qa(v));
       }
-      LOGGER.trace("re2qa: re = {}\n--> qa = {}", re, qa);
+      qa = new Choice(parentVariant, purpose, variants);
     }
     return qa;
   }
 
-  /**
-   * @param qa
-   * @return re
-   * @see org.psikeds.queryagent.transformer.Transformer#qa2re(org.psikeds.queryagent.interfaces.presenter.pojos.Alternatives)
-   */
   @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Alternatives qa2re(final Alternatives qa) {
-    org.psikeds.resolutionengine.interfaces.pojos.Alternatives re = null;
+  public org.psikeds.resolutionengine.interfaces.pojos.Choice qa2re(final Choice qa) {
+    org.psikeds.resolutionengine.interfaces.pojos.Choice re = null;
     if (qa != null) {
-      re = new org.psikeds.resolutionengine.interfaces.pojos.Alternatives();
-      final List<Fulfills> lst = qa.getFulfills();
-      for (final Fulfills f : lst) {
-        re.addFulfills(qa2re(f));
+      final org.psikeds.resolutionengine.interfaces.pojos.Variant parentVariant = qa2re(qa.getParentVariant());
+      final org.psikeds.resolutionengine.interfaces.pojos.Purpose purpose = qa2re(qa.getPurpose());
+      final List<org.psikeds.resolutionengine.interfaces.pojos.Variant> variants = new ArrayList<org.psikeds.resolutionengine.interfaces.pojos.Variant>();
+      for (final Variant v : qa.getVariants()) {
+        variants.add(qa2re(v));
       }
-      LOGGER.trace("qa2re: qa = {}\n--> re = {}", qa, re);
+      re = new org.psikeds.resolutionengine.interfaces.pojos.Choice(parentVariant, purpose, variants);
     }
     return re;
   }
 
-  /**
-   * @param re
-   * @return qa
-   * @see org.psikeds.queryagent.transformer.Transformer#re2qa(org.psikeds.resolutionengine.interfaces.pojos.Constituents)
-   */
   @Override
-  public Constituents re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Constituents re) {
-    Constituents qa = null;
+  public Decission re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Decission re) {
+    Decission qa = null;
     if (re != null) {
-      qa = new Constituents();
-      final List<org.psikeds.resolutionengine.interfaces.pojos.Constitutes> lst = re.getConstitutes();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Constitutes c : lst) {
-        qa.addConstitutes(re2qa(c));
-      }
-      LOGGER.trace("re2qa: re = {}\n--> qa = {}", re, qa);
+      qa = new Decission(re.getPurposeID(), re.getVariantID());
     }
     return qa;
   }
 
-  /**
-   * @param qa
-   * @return re
-   * @see org.psikeds.queryagent.transformer.Transformer#qa2re(org.psikeds.queryagent.interfaces.presenter.pojos.Constituents)
-   */
   @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Constituents qa2re(final Constituents qa) {
-    org.psikeds.resolutionengine.interfaces.pojos.Constituents re = null;
+  public org.psikeds.resolutionengine.interfaces.pojos.Decission qa2re(final Decission qa) {
+    org.psikeds.resolutionengine.interfaces.pojos.Decission re = null;
     if (qa != null) {
-      re = new org.psikeds.resolutionengine.interfaces.pojos.Constituents();
-      final List<Constitutes> lst = qa.getConstitutes();
-      for (final Constitutes c : lst) {
-        re.addConstitutes(qa2re(c));
-      }
-      LOGGER.trace("qa2re: qa = {}\n--> re = {}", qa, re);
+      re = new org.psikeds.resolutionengine.interfaces.pojos.Decission(qa.getPurposeID(), qa.getVariantID());
     }
     return re;
   }
 
-  /**
-   * @param re
-   * @return qa
-   * @see org.psikeds.queryagent.transformer.Transformer#re2qa(org.psikeds.resolutionengine.interfaces.pojos.Constitutes)
-   */
-  @Override
-  public Constitutes re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Constitutes re) {
-    return re == null ? null : new Constitutes(re.getDescription(), re.getVariantID(), re.getPurposeID());
-  }
-
-  /**
-   * @param qa
-   * @return re
-   * @see org.psikeds.queryagent.transformer.Transformer#qa2re(org.psikeds.queryagent.interfaces.presenter.pojos.Constitutes)
-   */
-  @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Constitutes qa2re(final Constitutes qa) {
-    return qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Constitutes(qa.getDescription(), qa.getVariantID(), qa.getPurposeID());
-  }
-
-  /**
-   * @param re
-   * @return qa
-   * @see org.psikeds.queryagent.transformer.Transformer#re2qa(org.psikeds.resolutionengine.interfaces.pojos.Event)
-   */
-  @Override
-  public Event re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Event re) {
-    return re == null ? null : new Event(re.getLabel(), re.getDescription(), re.getId());
-  }
-
-  /**
-   * @param qa
-   * @return re
-   * @see org.psikeds.queryagent.transformer.Transformer#qa2re(org.psikeds.queryagent.interfaces.presenter.pojos.Event)
-   */
-  @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Event qa2re(final Event qa) {
-    return qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Event(qa.getLabel(), qa.getDescription(), qa.getId());
-  }
-
-  /**
-   * @param re
-   * @return qa
-   * @see org.psikeds.queryagent.transformer.Transformer#re2qa(org.psikeds.resolutionengine.interfaces.pojos.Events)
-   */
-  @Override
-  public Events re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Events re) {
-    Events qa = null;
-    if (re != null) {
-      qa = new Events();
-      final List<org.psikeds.resolutionengine.interfaces.pojos.Event> lst = re.getEvent();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Event e : lst) {
-        qa.addEvent(re2qa(e));
-      }
-      LOGGER.trace("re2qa: re = {}\n--> qa = {}", re, qa);
-    }
-    return qa;
-  }
-
-  /**
-   * @param qa
-   * @return re
-   * @see org.psikeds.queryagent.transformer.Transformer#qa2re(org.psikeds.queryagent.interfaces.presenter.pojos.Events)
-   */
-  @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Events qa2re(final Events qa) {
-    org.psikeds.resolutionengine.interfaces.pojos.Events re = null;
-    if (qa != null) {
-      re = new org.psikeds.resolutionengine.interfaces.pojos.Events();
-      final List<Event> lst = qa.getEvent();
-      for (final Event e : lst) {
-        re.addEvent(qa2re(e));
-      }
-      LOGGER.trace("qa2re: qa = {}\n--> re = {}", qa, re);
-    }
-    return re;
-  }
-
-  /**
-   * @param re
-   * @return qa
-   * @see org.psikeds.queryagent.transformer.Transformer#re2qa(org.psikeds.resolutionengine.interfaces.pojos.Feature)
-   */
   @Override
   public Feature re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Feature re) {
-    return re == null ? null : new Feature(re.getLabel(), re.getDescription(), re.getId());
+    Feature qa = null;
+    if (re != null) {
+      qa = new Feature(re.getLabel(), re.getDescription(), re.getId(), re.getMinValue(), re.getMaxValue(), re2qa(re.getValueType()));
+    }
+    return qa;
   }
 
-  /**
-   * @param qa
-   * @return re
-   * @see org.psikeds.queryagent.transformer.Transformer#qa2re(org.psikeds.queryagent.interfaces.presenter.pojos.Feature)
-   */
   @Override
   public org.psikeds.resolutionengine.interfaces.pojos.Feature qa2re(final Feature qa) {
-    return qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Feature(qa.getLabel(), qa.getDescription(), qa.getId());
-  }
-
-  /**
-   * @param re
-   * @return qa
-   * @see org.psikeds.queryagent.transformer.Transformer#re2qa(org.psikeds.resolutionengine.interfaces.pojos.Features)
-   */
-  @Override
-  public Features re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Features re) {
-    Features qa = null;
-    if (re != null) {
-      qa = new Features();
-      final List<org.psikeds.resolutionengine.interfaces.pojos.Feature> lst = re.getFeature();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Feature f : lst) {
-        qa.addFeature(re2qa(f));
-      }
-      LOGGER.trace("re2qa: re = {}\n--> qa = {}", re, qa);
-    }
-    return qa;
-  }
-
-  /**
-   * @param qa
-   * @return re
-   * @see org.psikeds.queryagent.transformer.Transformer#qa2re(org.psikeds.queryagent.interfaces.presenter.pojos.Features)
-   */
-  @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Features qa2re(final Features qa) {
-    org.psikeds.resolutionengine.interfaces.pojos.Features re = null;
+    org.psikeds.resolutionengine.interfaces.pojos.Feature re = null;
     if (qa != null) {
-      re = new org.psikeds.resolutionengine.interfaces.pojos.Features();
-      final List<Feature> lst = qa.getFeature();
-      for (final Feature f : lst) {
-        re.addFeature(qa2re(f));
-      }
-      LOGGER.trace("qa2re: qa = {}\n--> re = {}", qa, re);
+      re = new org.psikeds.resolutionengine.interfaces.pojos.Feature(qa.getLabel(), qa.getDescription(), qa.getId(), qa.getMinValue(), qa.getMaxValue(), qa2re(qa.getValueType()));
     }
     return re;
   }
 
-  /**
-   * @param re
-   * @return qa
-   * @see org.psikeds.queryagent.transformer.Transformer#re2qa(org.psikeds.resolutionengine.interfaces.pojos.Fulfills)
-   */
   @Override
-  public Fulfills re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Fulfills re) {
-    return re == null ? null : new Fulfills(re.getDescription(), re.getPurposeID(), re.getVariantID());
+  public FeatureValueType re2qa(final org.psikeds.resolutionengine.interfaces.pojos.FeatureValueType re) {
+    return (re == null ? null : FeatureValueType.fromValue(re.value()));
   }
 
-  /**
-   * @param qa
-   * @return re
-   * @see org.psikeds.queryagent.transformer.Transformer#qa2re(org.psikeds.queryagent.interfaces.presenter.pojos.Fulfills)
-   */
   @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Fulfills qa2re(final Fulfills qa) {
-    return qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Fulfills(qa.getDescription(), qa.getPurposeID(), qa.getVariantID());
+  public org.psikeds.resolutionengine.interfaces.pojos.FeatureValueType qa2re(final FeatureValueType qa) {
+    return (qa == null ? null : org.psikeds.resolutionengine.interfaces.pojos.FeatureValueType.fromValue(qa.value()));
   }
 
-  /**
-   * @param re
-   * @return qa
-   * @see org.psikeds.queryagent.transformer.Transformer#re2qa(org.psikeds.resolutionengine.interfaces.pojos.Purpose)
-   */
   @Override
-  public Purpose re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Purpose re) {
-    return re == null ? null : new Purpose(re.getLabel(), re.getDescription(), re.getId());
-  }
-
-  /**
-   * @param qa
-   * @return re
-   * @see org.psikeds.queryagent.transformer.Transformer#qa2re(org.psikeds.queryagent.interfaces.presenter.pojos.Purpose)
-   */
-  @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Purpose qa2re(final Purpose qa) {
-    return qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Purpose(qa.getLabel(), qa.getDescription(), qa.getId());
-  }
-
-  /**
-   * @param re
-   * @return qa
-   * @see org.psikeds.queryagent.transformer.Transformer#re2qa(org.psikeds.resolutionengine.interfaces.pojos.Purposes)
-   */
-  @Override
-  public Purposes re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Purposes re) {
-    Purposes qa = null;
+  public Knowledge re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Knowledge re) {
+    Knowledge qa = null;
     if (re != null) {
-      qa = new Purposes();
-      final List<org.psikeds.resolutionengine.interfaces.pojos.Purpose> lst = re.getPurpose();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Purpose p : lst) {
-        qa.addPurpose(re2qa(p));
+      final List<KnowledgeEntity> entities = new ArrayList<KnowledgeEntity>();
+      for (final org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity ke : re.getEntities()) {
+        entities.add(re2qa(ke));
       }
-      LOGGER.trace("re2qa: re = {}\n--> qa = {}", re, qa);
+      final List<Choice> choices = new ArrayList<Choice>();
+      for (final org.psikeds.resolutionengine.interfaces.pojos.Choice c : re.getChoices()) {
+        choices.add(re2qa(c));
+      }
+      qa = new Knowledge(entities, choices);
     }
     return qa;
   }
 
-  /**
-   * @param qa
-   * @return re
-   * @see org.psikeds.queryagent.transformer.Transformer#qa2re(org.psikeds.queryagent.interfaces.presenter.pojos.Purposes)
-   */
   @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Purposes qa2re(final Purposes qa) {
-    org.psikeds.resolutionengine.interfaces.pojos.Purposes re = null;
+  public org.psikeds.resolutionengine.interfaces.pojos.Knowledge qa2re(final Knowledge qa) {
+    org.psikeds.resolutionengine.interfaces.pojos.Knowledge re = null;
     if (qa != null) {
-      re = new org.psikeds.resolutionengine.interfaces.pojos.Purposes();
-      final List<Purpose> lst = qa.getPurpose();
-      for (final Purpose p : lst) {
-        re.addPurpose(qa2re(p));
+      final List<org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity> entities = new ArrayList<org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity>();
+      for (final KnowledgeEntity ke : qa.getEntities()) {
+        entities.add(qa2re(ke));
       }
-      LOGGER.trace("qa2re: qa = {}\n--> re = {}", qa, re);
+      final List<org.psikeds.resolutionengine.interfaces.pojos.Choice> choices = new ArrayList<org.psikeds.resolutionengine.interfaces.pojos.Choice>();
+      for (final Choice c : qa.getChoices()) {
+        choices.add(qa2re(c));
+      }
+      re = new org.psikeds.resolutionengine.interfaces.pojos.Knowledge(entities, choices);
     }
     return re;
   }
 
-  /**
-   * @param re
-   * @return qa
-   * @see org.psikeds.queryagent.transformer.Transformer#re2qa(org.psikeds.resolutionengine.interfaces.pojos.Rule)
-   */
-  @Override
-  public Rule re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Rule re) {
-    return re == null ? null : new Rule(re.getLabel(), re.getDescription(), re.getId());
-  }
-
-  /**
-   * @param qa
-   * @return re
-   * @see org.psikeds.queryagent.transformer.Transformer#qa2re(org.psikeds.queryagent.interfaces.presenter.pojos.Rule)
-   */
-  @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Rule qa2re(final Rule qa) {
-    return qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Rule(qa.getLabel(), qa.getDescription(), qa.getId());
-  }
-
-  /**
-   * @param re
-   * @return qa
-   * @see org.psikeds.queryagent.transformer.Transformer#re2qa(org.psikeds.resolutionengine.interfaces.pojos.Rules)
-   */
-  @Override
-  public Rules re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Rules re) {
-    Rules qa = null;
-    if (re != null) {
-      qa = new Rules();
-      final List<org.psikeds.resolutionengine.interfaces.pojos.Rule> lst = re.getRule();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Rule r : lst) {
-        qa.addRule(re2qa(r));
-      }
-      LOGGER.trace("re2qa: re = {}\n--> qa = {}", re, qa);
-    }
-    return qa;
-  }
-
-  /**
-   * @param qa
-   * @return re
-   * @see org.psikeds.queryagent.transformer.Transformer#qa2re(org.psikeds.queryagent.interfaces.presenter.pojos.Rules)
-   */
-  @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Rules qa2re(final Rules qa) {
-    org.psikeds.resolutionengine.interfaces.pojos.Rules re = null;
-    if (qa != null) {
-      re = new org.psikeds.resolutionengine.interfaces.pojos.Rules();
-      final List<Rule> lst = qa.getRule();
-      for (final Rule r : lst) {
-        re.addRule(qa2re(r));
-      }
-      LOGGER.trace("qa2re: qa = {}\n--> re = {}", qa, re);
-    }
-    return re;
-  }
-
-  /**
-   * @param re
-   * @return qa
-   * @see org.psikeds.queryagent.transformer.Transformer#re2qa(org.psikeds.resolutionengine.interfaces.pojos.Variant)
-   */
-  @Override
-  public Variant re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Variant re) {
-    return re == null ? null : new Variant(re.getLabel(), re.getDescription(), re.getId());
-  }
-
-  /**
-   * @param qa
-   * @return re
-   * @see org.psikeds.queryagent.transformer.Transformer#qa2re(org.psikeds.queryagent.interfaces.presenter.pojos.Variant)
-   */
-  @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Variant qa2re(final Variant qa) {
-    return qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Variant(qa.getLabel(), qa.getDescription(), qa.getId());
-  }
-
-  /**
-   * @param re
-   * @return qa
-   * @see org.psikeds.queryagent.transformer.Transformer#re2qa(org.psikeds.resolutionengine.interfaces.pojos.Variants)
-   */
-  @Override
-  public Variants re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Variants re) {
-    Variants qa = null;
-    if (re != null) {
-      qa = new Variants();
-      final List<org.psikeds.resolutionengine.interfaces.pojos.Variant> lst = re.getVariant();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Variant v : lst) {
-        qa.addVariant(re2qa(v));
-      }
-      LOGGER.trace("re2qa: re = {}\n--> qa = {}", re, qa);
-    }
-    return qa;
-  }
-
-  /**
-   * @param qa
-   * @return re
-   * @see org.psikeds.queryagent.transformer.Transformer#qa2re(org.psikeds.queryagent.interfaces.presenter.pojos.Variants)
-   */
-  @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Variants qa2re(final Variants qa) {
-    org.psikeds.resolutionengine.interfaces.pojos.Variants re = null;
-    if (qa != null) {
-      re = new org.psikeds.resolutionengine.interfaces.pojos.Variants();
-      final List<Variant> lst = qa.getVariant();
-      for (final Variant v : lst) {
-        re.addVariant(qa2re(v));
-      }
-      LOGGER.trace("qa2re: qa = {}\n--> re = {}", qa, re);
-    }
-    return re;
-  }
-
-  /**
-   * @param re
-   * @return qa
-   * @see org.psikeds.queryagent.transformer.Transformer#re2qa(org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity)
-   */
   @Override
   public KnowledgeEntity re2qa(final org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity re) {
     KnowledgeEntity qa = null;
     if (re != null) {
-      final Features features = re2qa(re.getFeatures());
-      final Purposes purposes = re2qa(re.getPurposes());
-      final Variants variants = re2qa(re.getVariants());
-      final Alternatives alternatives = re2qa(re.getAlternatives());
-      final Constituents constituents = re2qa(re.getConstituents());
-      final Events events = re2qa(re.getEvents());
-      final Rules rules = re2qa(re.getRules());
-      final boolean fullyResolved = re.isFullyResolved();
-      qa = new KnowledgeEntity(features, purposes, variants, alternatives, constituents, events, rules, fullyResolved);
-      LOGGER.trace("re2qa: re = {}\n--> qa = {}", re, qa);
+      final Purpose purpose = re2qa(re.getPurpose());
+      final Variant variant = re2qa(re.getVariant());
+      final List<KnowledgeEntity> siblings = new ArrayList<KnowledgeEntity>();
+      for (final org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity ke : re.getSiblings()) {
+        siblings.add(re2qa(ke));
+      }
+      final List<Choice> choices = new ArrayList<Choice>();
+      for (final org.psikeds.resolutionengine.interfaces.pojos.Choice c : re.getChoices()) {
+        choices.add(re2qa(c));
+      }
+      qa = new KnowledgeEntity(purpose, variant, siblings, choices);
     }
     return qa;
   }
 
-  /**
-   * @param qa
-   * @return re
-   * @see org.psikeds.queryagent.transformer.Transformer#qa2re(org.psikeds.queryagent.interfaces.presenter.pojos.KnowledgeEntity)
-   */
   @Override
   public org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity qa2re(final KnowledgeEntity qa) {
     org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity re = null;
     if (qa != null) {
-      final org.psikeds.resolutionengine.interfaces.pojos.Features features = qa2re(qa.getFeatures());
-      final org.psikeds.resolutionengine.interfaces.pojos.Purposes purposes = qa2re(qa.getPurposes());
-      final org.psikeds.resolutionengine.interfaces.pojos.Variants variants = qa2re(qa.getVariants());
-      final org.psikeds.resolutionengine.interfaces.pojos.Alternatives alternatives = qa2re(qa.getAlternatives());
-      final org.psikeds.resolutionengine.interfaces.pojos.Constituents constituents = qa2re(qa.getConstituents());
-      final org.psikeds.resolutionengine.interfaces.pojos.Events events = qa2re(qa.getEvents());
-      final org.psikeds.resolutionengine.interfaces.pojos.Rules rules = qa2re(qa.getRules());
-      final boolean fullyResolved = qa.isFullyResolved();
-      re = new org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity(features, purposes, variants, alternatives, constituents, events, rules, fullyResolved);
-      LOGGER.trace("qa2re: qa = {}\n--> re = {}", qa, re);
+      final org.psikeds.resolutionengine.interfaces.pojos.Purpose purpose = qa2re(qa.getPurpose());
+      final org.psikeds.resolutionengine.interfaces.pojos.Variant variant = qa2re(qa.getVariant());
+      final List<org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity> siblings = new ArrayList<org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity>();
+      for (final KnowledgeEntity ke : qa.getSiblings()) {
+        siblings.add(qa2re(ke));
+      }
+      final List<org.psikeds.resolutionengine.interfaces.pojos.Choice> choices = new ArrayList<org.psikeds.resolutionengine.interfaces.pojos.Choice>();
+      for (final Choice c : qa.getChoices()) {
+        choices.add(qa2re(c));
+      }
+      re = new org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity(purpose, variant, siblings, choices);
     }
     return re;
   }
 
-  /**
-   * @param re
-   * @return qa
-   * @see org.psikeds.queryagent.transformer.Transformer#re2qa(org.psikeds.resolutionengine.interfaces.pojos.InitResponse)
-   */
   @Override
-  public InitResponse re2qa(final org.psikeds.resolutionengine.interfaces.pojos.InitResponse re) {
-    InitResponse qa = null;
+  public Metadata re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Metadata re) {
+    return (re == null ? null : new Metadata(re.getInfomap()));
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.Metadata qa2re(final Metadata qa) {
+    return (qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Metadata(qa.getInfomap()));
+  }
+
+  @Override
+  public Purpose re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Purpose re) {
+    return re == null ? null : new Purpose(re.getLabel(), re.getDescription(), re.getId(), re.isRoot());
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.Purpose qa2re(final Purpose qa) {
+    return qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Purpose(qa.getLabel(), qa.getDescription(), qa.getId(), qa.isRoot());
+  }
+
+  @Override
+  public ResolutionRequest re2qa(final org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest re) {
+    ResolutionRequest qa = null;
     if (re != null) {
       final String sessionID = re.getSessionID();
-      final KnowledgeEntity knowledgeEntity = re2qa(re.getKnowledgeEntity());
-      qa = new InitResponse(sessionID, knowledgeEntity);
-      LOGGER.trace("re2qa: re = {}\n--> qa = {}", re, qa);
+      final Metadata metadata = re2qa(re.getMetadata());
+      final Knowledge knowledge = re2qa(re.getKnowledge());
+      final Decission decission = re2qa(re.getMadeDecission());
+      qa = new ResolutionRequest(sessionID, metadata, knowledge, decission);
     }
     return qa;
   }
 
-  /**
-   * @param qa
-   * @return re
-   * @see org.psikeds.queryagent.transformer.Transformer#qa2re(org.psikeds.queryagent.interfaces.presenter.pojos.InitResponse)
-   */
   @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.InitResponse qa2re(final InitResponse qa) {
-    org.psikeds.resolutionengine.interfaces.pojos.InitResponse re = null;
+  public org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest qa2re(final ResolutionRequest qa) {
+    org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest re = null;
     if (qa != null) {
       final String sessionID = qa.getSessionID();
-      final org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity knowledgeEntity = qa2re(qa.getKnowledgeEntity());
-      re = new org.psikeds.resolutionengine.interfaces.pojos.InitResponse(sessionID, knowledgeEntity);
-      LOGGER.trace("qa2re: qa = {}\n--> re = {}", qa, re);
+      final org.psikeds.resolutionengine.interfaces.pojos.Metadata metadata = qa2re(qa.getMetadata());
+      final org.psikeds.resolutionengine.interfaces.pojos.Knowledge knowledge = qa2re(qa.getKnowledge());
+      final org.psikeds.resolutionengine.interfaces.pojos.Decission decission = qa2re(qa.getMadeDecission());
+      re = new org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest(sessionID, metadata, knowledge, decission);
     }
     return re;
   }
 
-  /**
-   * @param re
-   * @return qa
-   * @see org.psikeds.queryagent.transformer.Transformer#re2qa(org.psikeds.resolutionengine.interfaces.pojos.SelectResponse)
-   */
   @Override
-  public SelectResponse re2qa(final org.psikeds.resolutionengine.interfaces.pojos.SelectResponse re) {
-    SelectResponse qa = null;
+  public ResolutionResponse re2qa(final org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse re) {
+    ResolutionResponse qa = null;
     if (re != null) {
       final String sessionID = re.getSessionID();
-      final KnowledgeEntity knowledgeEntity = re2qa(re.getKnowledgeEntity());
-      qa = new SelectResponse(sessionID, knowledgeEntity);
-      LOGGER.trace("re2qa: re = {}\n--> qa = {}", re, qa);
+      final Metadata metadata = re2qa(re.getMetadata());
+      final Knowledge knowledge = re2qa(re.getKnowledge());
+      final boolean resolved = re.isResolved();
+      qa = new ResolutionResponse(sessionID, metadata, knowledge, resolved);
+      for (final org.psikeds.resolutionengine.interfaces.pojos.Choice c : re.getPossibleChoices()) {
+        qa.addPossibleChoice(re2qa(c));
+      }
     }
     return qa;
   }
 
-  /**
-   * @param qa
-   * @return re
-   * @see org.psikeds.queryagent.transformer.Transformer#qa2re(org.psikeds.queryagent.interfaces.presenter.pojos.SelectResponse)
-   */
   @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.SelectResponse qa2re(final SelectResponse qa) {
-    org.psikeds.resolutionengine.interfaces.pojos.SelectResponse re = null;
+  public org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse qa2re(final ResolutionResponse qa) {
+    org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse re = null;
     if (qa != null) {
       final String sessionID = qa.getSessionID();
-      final org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity knowledgeEntity = qa2re(qa.getKnowledgeEntity());
-      re = new org.psikeds.resolutionengine.interfaces.pojos.SelectResponse(sessionID, knowledgeEntity);
-      LOGGER.trace("qa2re: qa = {}\n--> re = {}", qa, re);
+      final org.psikeds.resolutionengine.interfaces.pojos.Metadata metadata = qa2re(qa.getMetadata());
+      final org.psikeds.resolutionengine.interfaces.pojos.Knowledge knowledge = qa2re(qa.getKnowledge());
+      // choices and resolved will be automatically calculated by this constructor
+      re = new org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse(sessionID, metadata, knowledge);
     }
     return re;
   }
 
-  /**
-   * @param re
-   * @return qa
-   * @see org.psikeds.queryagent.transformer.Transformer#re2qa(org.psikeds.resolutionengine.interfaces.pojos.SelectRequest)
-   */
   @Override
-  public SelectRequest re2qa(final org.psikeds.resolutionengine.interfaces.pojos.SelectRequest re) {
-    SelectRequest qa = null;
+  public Variant re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Variant re) {
+    Variant qa = null;
     if (re != null) {
-      final String sessionID = re.getSessionID();
-      final String choice = re.getChoice();
-      final KnowledgeEntity knowledgeEntity = re2qa(re.getKnowledgeEntity());
-      qa = new SelectRequest(sessionID, knowledgeEntity, choice);
-      LOGGER.trace("re2qa: re = {}\n--> qa = {}", re, qa);
+      qa = new Variant(re.getLabel(), re.getDescription(), re.getId());
+      for (final org.psikeds.resolutionengine.interfaces.pojos.Feature f : re.getFeatures()) {
+        qa.addFeature(re2qa(f));
+      }
     }
     return qa;
   }
 
-  /**
-   * @param qa
-   * @return re
-   * @see org.psikeds.queryagent.transformer.Transformer#qa2re(org.psikeds.queryagent.interfaces.presenter.pojos.SelectRequest)
-   */
   @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.SelectRequest qa2re(final SelectRequest qa) {
-    org.psikeds.resolutionengine.interfaces.pojos.SelectRequest re = null;
+  public org.psikeds.resolutionengine.interfaces.pojos.Variant qa2re(final Variant qa) {
+    org.psikeds.resolutionengine.interfaces.pojos.Variant re = null;
     if (qa != null) {
-      final String sessionID = qa.getSessionID();
-      final String choice = qa.getChoice();
-      final org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity knowledgeEntity = qa2re(qa.getKnowledgeEntity());
-      re = new org.psikeds.resolutionengine.interfaces.pojos.SelectRequest(sessionID, knowledgeEntity, choice);
-      LOGGER.trace("qa2re: qa = {}\n--> re = {}", qa, re);
+      re = new org.psikeds.resolutionengine.interfaces.pojos.Variant(qa.getLabel(), qa.getDescription(), qa.getId());
+      for (final Feature f : qa.getFeatures()) {
+        re.addFeature(qa2re(f));
+      }
     }
     return re;
   }

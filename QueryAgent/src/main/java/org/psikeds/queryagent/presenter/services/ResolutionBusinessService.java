@@ -14,9 +14,8 @@
  *******************************************************************************/
 package org.psikeds.queryagent.presenter.services;
 
-import org.psikeds.queryagent.interfaces.presenter.pojos.InitResponse;
-import org.psikeds.queryagent.interfaces.presenter.pojos.SelectRequest;
-import org.psikeds.queryagent.interfaces.presenter.pojos.SelectResponse;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionRequest;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionResponse;
 import org.psikeds.queryagent.interfaces.presenter.services.ResolutionService;
 import org.psikeds.queryagent.requester.client.ResolutionEngineClient;
 import org.psikeds.queryagent.transformer.Transformer;
@@ -24,7 +23,7 @@ import org.psikeds.queryagent.transformer.impl.Re2QaTransformer;
 
 /**
  * Implementation of the ResolutionService invoking the corresponding
- * functionality of the ResolutionEngine.
+ * functionality of the ResolutionEngine by calling a ResolutionEngineClient.
  * 
  * @author marco@juliano.de
  */
@@ -62,21 +61,22 @@ public class ResolutionBusinessService implements ResolutionService {
   }
 
   /**
-   * @return InitResponse
+   * @return ResolutionResponse
    * @see org.psikeds.queryagent.interfaces.presenter.services.ResolutionService#init()
    */
   @Override
-  public InitResponse init() {
+  public ResolutionResponse init() {
     return getTransformer().re2qa(this.client.invokeInitService());
   }
 
   /**
-   * @param req SelectRequest
-   * @return SelectResponse
-   * @see org.psikeds.queryagent.interfaces.presenter.services.ResolutionService#select(org.psikeds.queryagent.interfaces.presenter.pojos.SelectRequest)
+   * @param req
+   *          ResolutionRequest
+   * @return ResolutionResponse
+   * @see org.psikeds.queryagent.interfaces.presenter.services.ResolutionService#select(org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionRequest)
    */
   @Override
-  public SelectResponse select(final SelectRequest req) {
+  public ResolutionResponse select(final ResolutionRequest req) {
     return getTransformer().re2qa(this.client.invokeSelectService(getTransformer().qa2re(req)));
   }
 }
