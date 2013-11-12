@@ -64,7 +64,7 @@ public class WebClientFactoryImpl implements WebClientFactory {
   }
 
   public WebClientFactoryImpl(final String acceptHeader, final String contentTypeHeader, final List<Object> providers) {
-    this(acceptHeader, contentTypeHeader, null, DEFAULT_USER_AGENT, DEFAULT_CACHE_CLIENTS);
+    this(acceptHeader, contentTypeHeader, providers, DEFAULT_USER_AGENT, DEFAULT_CACHE_CLIENTS);
   }
 
   public WebClientFactoryImpl(final String acceptHeader, final String contentTypeHeader, final List<Object> providers, final String userAgent, final boolean cacheClients) {
