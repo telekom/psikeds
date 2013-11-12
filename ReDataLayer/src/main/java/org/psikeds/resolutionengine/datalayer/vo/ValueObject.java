@@ -47,7 +47,7 @@ public class ValueObject implements Serializable, Comparable<Object> {
   }
 
   public String getId() {
-    return (StringUtils.isEmpty(this.id) ? String.valueOf(hashCode()) : this.id);
+    return this.id;
   }
 
   public void setId(final String value) {
@@ -86,6 +86,13 @@ public class ValueObject implements Serializable, Comparable<Object> {
       return 1;
     }
     final ValueObject vo = (ValueObject) obj;
+    // value objects without IDs can never be compared
+    if (StringUtils.isEmpty(vo.getId())) {
+      return 1;
+    }
+    if (StringUtils.isEmpty(this.getId())) {
+      return -1;
+    }
     // compare IDs
     return this.getId().compareTo(vo.getId());
   }
@@ -104,11 +111,12 @@ public class ValueObject implements Serializable, Comparable<Object> {
   private static String composeId(final ValueObject... vos) {
     final StringBuilder sb = new StringBuilder();
     for (final ValueObject v : vos) {
-      if (v != null) {
+      final String vid = (v == null ? null : v.getId());
+      if (!StringUtils.isEmpty(vid)) {
         if (sb.length() > 0) {
           sb.append(COMPOSE_ID_SEPARATOR);
         }
-        sb.append(v.getId());
+        sb.append(vid);
       }
     }
     return sb.toString();
@@ -116,12 +124,12 @@ public class ValueObject implements Serializable, Comparable<Object> {
 
   private static String composeId(final String... ids) {
     final StringBuilder sb = new StringBuilder();
-    for (final String str : ids) {
-      if (!StringUtils.isEmpty(str)) {
+    for (final String vid : ids) {
+      if (!StringUtils.isEmpty(vid)) {
         if (sb.length() > 0) {
           sb.append(COMPOSE_ID_SEPARATOR);
         }
-        sb.append(str);
+        sb.append(vid);
       }
     }
     return sb.toString();
