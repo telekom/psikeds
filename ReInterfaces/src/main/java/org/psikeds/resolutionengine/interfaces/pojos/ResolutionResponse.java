@@ -23,12 +23,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * Response-Object representing the current Context of a Resolution
  * sent by the Server back to the Client.
- *
+ * 
  * Note: Reading from and writing to JSON works out of the box.
- *       However for XML the XmlRootElement annotation is required.
- *
+ * However for XML the XmlRootElement annotation is required.
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 @XmlRootElement(name = "ResolutionResponse")
 public class ResolutionResponse extends BaseResolutionContext implements Serializable {
@@ -49,10 +49,14 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
   }
 
   public ResolutionResponse(final String sessionID, final Metadata metadata, final Knowledge knowledge) {
+    this(sessionID, metadata, knowledge, DEFAULT_MAX_TREE_DEPTHS);
+  }
+
+  public ResolutionResponse(final String sessionID, final Metadata metadata, final Knowledge knowledge, final long maxTreeDepth) {
     super(sessionID, metadata, knowledge);
-    this.choices = null;
-    this.resolved = false;
-    this.maxTreeDepth = DEFAULT_MAX_TREE_DEPTHS;
+    setMaxTreeDepth(maxTreeDepth);
+    setResolved(false);
+    setPossibleChoices(null);
     calculateChoices();
   }
 
@@ -84,7 +88,7 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
   }
 
   public void addAllPossibleChoices(final List<Choice> lst) {
-    if (lst != null && !lst.isEmpty()) {
+    if ((lst != null) && !lst.isEmpty()) {
       getPossibleChoices().addAll(lst);
     }
   }
@@ -119,7 +123,7 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
   }
 
   private void addChoices(final List<KnowledgeEntity> entities, final long depth) {
-    if (entities != null && !entities.isEmpty() && depth > 0) {
+    if ((entities != null) && !entities.isEmpty() && (depth > 0)) {
       for (final KnowledgeEntity ke : entities) {
         addChoices(ke, depth);
       }

@@ -34,11 +34,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ResolutionResponse extends BaseResolutionContext implements Serializable {
 
   private static final long serialVersionUID = 1L;
-  private static final long DEFAULT_MAX_TREE_DEPTHS = 15L;
 
   private List<Choice> choices;
   private boolean resolved;
-  private long maxTreeDepth;
 
   public ResolutionResponse() {
     this(null, null);
@@ -49,11 +47,17 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
   }
 
   public ResolutionResponse(final String sessionID, final Metadata metadata, final Knowledge knowledge) {
+    this(sessionID, metadata, knowledge, false);
+  }
+
+  public ResolutionResponse(final String sessionID, final Metadata metadata, final Knowledge knowledge, final boolean resolved) {
+    this(sessionID, metadata, knowledge, resolved, null);
+  }
+
+  public ResolutionResponse(final String sessionID, final Metadata metadata, final Knowledge knowledge, final boolean resolved, final List<Choice> choices) {
     super(sessionID, metadata, knowledge);
-    this.choices = null;
-    this.resolved = false;
-    this.maxTreeDepth = DEFAULT_MAX_TREE_DEPTHS;
-    calculateChoices();
+    setResolved(resolved);
+    setPossibleChoices(choices);
   }
 
   // -----------------------------------------------------------
@@ -92,44 +96,6 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
   public void clearPossibleChoices() {
     if (this.choices != null) {
       this.choices.clear();
-    }
-  }
-
-  public long getMaxTreeDepth() {
-    return this.maxTreeDepth;
-  }
-
-  public void setMaxTreeDepth(final long depth) {
-    this.maxTreeDepth = depth < 0 ? DEFAULT_MAX_TREE_DEPTHS : depth;
-  }
-
-  // -----------------------------------------------------------
-
-  public boolean calculateChoices() {
-    clearPossibleChoices();
-    if (this.knowledge != null) {
-      addAllPossibleChoices(this.knowledge.getChoices());
-      addChoices(this.knowledge.getEntities(), this.getMaxTreeDepth());
-      this.resolved = getPossibleChoices().isEmpty();
-    }
-    else {
-      this.resolved = true;
-    }
-    return this.resolved;
-  }
-
-  private void addChoices(final List<KnowledgeEntity> entities, final long depth) {
-    if ((entities != null) && !entities.isEmpty() && (depth > 0)) {
-      for (final KnowledgeEntity ke : entities) {
-        addChoices(ke, depth);
-      }
-    }
-  }
-
-  private void addChoices(final KnowledgeEntity ke, final long depth) {
-    if (ke != null) {
-      addAllPossibleChoices(ke.getChoices());
-      addChoices(ke.getSiblings(), depth - 1);
     }
   }
 }
