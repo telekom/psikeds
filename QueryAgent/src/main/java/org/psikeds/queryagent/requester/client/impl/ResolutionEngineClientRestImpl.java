@@ -19,12 +19,11 @@ import org.slf4j.LoggerFactory;
 
 import org.psikeds.queryagent.requester.client.ResolutionEngineClient;
 import org.psikeds.queryagent.requester.client.WebClientFactory;
-import org.psikeds.resolutionengine.interfaces.pojos.InitResponse;
-import org.psikeds.resolutionengine.interfaces.pojos.SelectRequest;
-import org.psikeds.resolutionengine.interfaces.pojos.SelectResponse;
+import org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest;
+import org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse;
 
 /**
- * Implementation of ResolutionEngineClient using REST.
+ * Implementation of ResolutionEngineClient using the REST Interface.
  * 
  * @author marco@juliano.de
  */
@@ -114,22 +113,23 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
   //------------------------------------------------------
 
   /**
-   * @return InitResponse
+   * @return ResolutionResponse
    * @see org.psikeds.queryagent.requester.client.ResolutionEngineClient#invokeInitService()
    */
   @Override
-  public InitResponse invokeInitService() {
-    return invokeService(this.initServiceUrl, this.initServiceMethod, InitResponse.class);
+  public ResolutionResponse invokeInitService() {
+    return invokeService(this.initServiceUrl, this.initServiceMethod, ResolutionResponse.class);
   }
 
   /**
-   * @param req SelectRequest
-   * @return SelectResponse
-   * @see org.psikeds.queryagent.requester.client.ResolutionEngineClient#invokeSelectService(org.psikeds.resolutionengine.interfaces.pojos.SelectRequest)
+   * @param req
+   *          ResolutionRequest
+   * @return ResolutionResponse
+   * @see org.psikeds.queryagent.requester.client.ResolutionEngineClient#invokeSelectService(org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest)
    */
   @Override
-  public SelectResponse invokeSelectService(final SelectRequest req) {
-    return invokeService(this.selectServiceUrl, this.selectServiceMethod, req, SelectRequest.class, SelectResponse.class);
+  public ResolutionResponse invokeSelectService(final ResolutionRequest req) {
+    return invokeService(this.selectServiceUrl, this.selectServiceMethod, req, ResolutionRequest.class, ResolutionResponse.class);
   }
 
   /**
