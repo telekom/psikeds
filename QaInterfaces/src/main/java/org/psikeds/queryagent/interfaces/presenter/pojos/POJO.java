@@ -29,7 +29,8 @@ import org.psikeds.common.util.ObjectDumper;
 public class POJO implements Serializable, Comparable<Object> {
 
   private static final long serialVersionUID = 1L;
-  private static final char COMPOSE_ID_SEPARATOR = '/';
+
+  public static final char COMPOSE_ID_SEPARATOR = '/';
 
   // unique id of this pojo
   protected String id;
@@ -106,7 +107,7 @@ public class POJO implements Serializable, Comparable<Object> {
 
   // ------------------------------------------------------
 
-  private static String composeId(final POJO... pojos) {
+  public static String composeId(final POJO... pojos) {
     final StringBuilder sb = new StringBuilder();
     for (final POJO p : pojos) {
       final String pid = (p == null ? null : p.getId());
@@ -120,7 +121,7 @@ public class POJO implements Serializable, Comparable<Object> {
     return sb.toString();
   }
 
-  private static String composeId(final String... ids) {
+  public static String composeId(final String... ids) {
     final StringBuilder sb = new StringBuilder();
     for (final String pid : ids) {
       if (!StringUtils.isEmpty(pid)) {

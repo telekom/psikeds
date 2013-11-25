@@ -2,13 +2,13 @@
 <!--
 psiKeds :- ps induced knowledge entity delivery system
 
-Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
 
 This file is free software: you can redistribute
 it and/or modify it under the terms of the
 [ ] GNU Affero General Public License
-[x] GNU General Public License
-[ ] GNU Lesser General Public License
+[ ] GNU General Public License
+[x] GNU Lesser General Public License
 [ ] Creatice Commons ShareAlike License
 
 For details see file LICENSING in the top project directory
@@ -22,12 +22,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-  <!-- TODO: JSF-GUI is currently obsolete and not working!!! -->
-
-  <bean id="allItemsBean" scope="session"
-    class="org.psikeds.queryagent.presenter.jsf.model.impl.ChocolatelistItem" />
-
-  <bean id="selectedItemBean" scope="session"
-    class="org.psikeds.queryagent.presenter.jsf.model.impl.ChocolateItem" />
+  <!-- at the moment there is only one model representing our current knowledge -->
+  <bean id="KnowledgeRepresentation" scope="session" class="org.psikeds.queryagent.presenter.jsf.model.KnowledgeRepresentation" />
 
 </beans>

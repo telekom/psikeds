@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+psiKeds :- ps induced knowledge entity delivery system
+
+Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+
+This file is free software: you can redistribute
+it and/or modify it under the terms of the
+[ ] GNU Affero General Public License
+[x] GNU General Public License
+[ ] GNU Lesser General Public License
+[ ] Creatice Commons ShareAlike License
+
+For details see file LICENSING in the top project directory
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:t="http://myfaces.apache.org/tomahawk">
+<f:view locale="#{facesContext.externalContext.requestLocale}">
+  <h:head>
+    <title>#{msg['apppkgs.page.name']}</title>
+    <link href="./css/layout.css" rel="stylesheet" type="text/css" />
+  </h:head>
+  <h:body>
+    <ui:fragment rendered="#{W7Apps.notInitialized or W7Apps.withoutData}">
+      <h2>
+        <h:outputFormat value="#{msg['apppkgs.empty.text']}" />
+      </h2>
+    </ui:fragment>
+    <ui:fragment rendered="#{!W7Apps.notInitialized and !W7Apps.withoutData}">
+      <h2>
+        <h:outputFormat value="#{msg['apppkgs.welcome.text']}" />
+      </h2>
+      <table class="app-table">
+        <tr>
+          <th class="app-table-header"><h:outputFormat value="#{msg['apppkgs.table.header']}" /></th>
+        </tr>
+        <tbody>
+          <ui:repeat var="app" value="#{W7Apps.applicationPackages}">
+            <tr>
+              <td class="app-table-row">#{app.value}</td>
+            </tr>
+          </ui:repeat>
+        </tbody>
+      </table>
+    </ui:fragment>
+    <p><h:messages showDetail="true" showSummary="false" /></p>
+    <h:form id="naviForm">
+      <ui:fragment rendered="#{W7Apps.notInitialized or W7Apps.withoutData}">
+        <h:commandButton value="#{msg['apppkgs.home.button']}" action="#{Ctrl.home()}" />
+      </ui:fragment>
+      <ui:fragment rendered="#{!W7Apps.notInitialized and !W7Apps.withoutData}">
+        <h:commandButton value="#{msg['apppkgs.back.button']}" action="#{Ctrl.back()}" />
+      </ui:fragment>
+    </h:form>
+  </h:body>
+</f:view>
+</html>
