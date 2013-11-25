@@ -24,12 +24,10 @@ public final class Constants {
 
   public static final String RESULT_HOME = "home";
   public static final String RESULT_BACK = "back";
-  public static final String RESULT_ADD = "add";
-  public static final String RESULT_DISPLAY = "display";
-  public static final String RESULT_LOAD = "load";
-
   public static final String RESULT_SUCCESS = "success";
   public static final String RESULT_ERROR = "error";
+  public static final String RESULT_CHOICES = "choices";
+  public static final String RESULT_APPPKGS = "apppkgs";
 
   private Constants() {
     // prevent instantiation

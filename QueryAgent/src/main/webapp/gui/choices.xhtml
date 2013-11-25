@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+psiKeds :- ps induced knowledge entity delivery system
+
+Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+
+This file is free software: you can redistribute
+it and/or modify it under the terms of the
+[ ] GNU Affero General Public License
+[x] GNU General Public License
+[ ] GNU Lesser General Public License
+[ ] Creatice Commons ShareAlike License
+
+For details see file LICENSING in the top project directory
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:t="http://myfaces.apache.org/tomahawk">
+<f:view locale="#{facesContext.externalContext.requestLocale}">
+  <h:head>
+    <title>#{msg['choices.page.name']}</title>
+    <link href="./css/layout.css" rel="stylesheet" type="text/css" />
+  </h:head>
+  <h:body>
+    <ui:fragment rendered="#{Choices.notInitialized or Choices.withoutData}">
+      <h2>
+        <h:outputFormat value="#{msg['choices.empty.text']}" />
+      </h2>
+    </ui:fragment>
+    <ui:fragment rendered="#{!Choices.notInitialized and !Choices.withoutData}">
+      <h2>
+        <h:outputFormat value="#{msg['choices.welcome.text']}" />
+      </h2>
+      <h:form id="selectForm">
+      <table class="di-table">
+        <tr>
+          <th class="di-table-header">Key</th>
+          <th class="di-table-header">Value</th>
+          <th class="di-table-header">Long Description</th>
+          <th class="di-table-header">Selection Key</th>
+          <th class="di-table-header">Type</th>
+          <th class="di-table-header">Level</th>
+          <th class="di-table-header">Command Link</th>
+        </tr>
+        <tbody>
+          <ui:repeat var="di" value="#{Choices.possibleChoices}">
+            <tr>
+              <td class="di-table-row">#{di.key}</td>
+              <td class="di-table-row">#{di.value}</td>
+              <td class="di-table-row">#{di.longDescription}</td>
+              <td class="di-table-row">#{di.selectionKey}</td>
+              <td class="di-table-row">#{di.type}</td>
+              <td class="di-table-row">#{di.level}</td>
+              <td class="di-table-row">
+                <h:commandLink id="resolve" action="#{Ctrl.resolve(di.selectionKey)}">#{di.selectionKey}</h:commandLink>
+              </td>
+            </tr>
+          </ui:repeat>
+        </tbody>
+      </table>
+      </h:form>
+    </ui:fragment>
+    <p><h:messages showDetail="true" showSummary="false" /></p>
+    <h:form id="naviForm">
+      <ui:fragment rendered="#{Choices.notInitialized or Choices.withoutData}">
+        <h:commandButton value="#{msg['choices.home.button']}" action="#{Ctrl.home()}" />
+      </ui:fragment>
+      <ui:fragment rendered="#{!Choices.notInitialized and !Choices.withoutData}">
+        <h:commandButton value="#{msg['choices.back.button']}" action="#{Ctrl.back()}" />
+      </ui:fragment>
+    </h:form>
+  </h:body>
+</f:view>
+</html>

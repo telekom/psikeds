@@ -2,13 +2,13 @@
 <!--
 psiKeds :- ps induced knowledge entity delivery system
 
-Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
 
 This file is free software: you can redistribute
 it and/or modify it under the terms of the
 [ ] GNU Affero General Public License
-[x] GNU General Public License
-[ ] GNU Lesser General Public License
+[ ] GNU General Public License
+[x] GNU Lesser General Public License
 [ ] Creatice Commons ShareAlike License
 
 For details see file LICENSING in the top project directory
@@ -21,27 +21,26 @@ For details see file LICENSING in the top project directory
   <navigation-rule>
     <from-view-id>/gui/home.xhtml</from-view-id>
     <navigation-case>
-      <from-outcome>load</from-outcome>
-      <to-view-id>/gui/list.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-    <navigation-case>
-      <from-outcome>display</from-outcome>
-      <to-view-id>/gui/list.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-    <navigation-case>
-      <from-outcome>add</from-outcome>
-      <to-view-id>/gui/input.xhtml</to-view-id>
+      <from-outcome>success</from-outcome>
+      <to-view-id>/gui/knowledge.xhtml</to-view-id>
       <redirect />
     </navigation-case>
   </navigation-rule>
 
   <navigation-rule>
-    <from-view-id>/gui/input.xhtml</from-view-id>
+    <from-view-id>/gui/knowledge.xhtml</from-view-id>
     <navigation-case>
       <from-outcome>success</from-outcome>
-      <to-view-id>/gui/list.xhtml</to-view-id>
+      <to-view-id>/gui/knowledge.xhtml</to-view-id>
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>choices</from-outcome>
+      <to-view-id>/gui/choices.xhtml</to-view-id>
+      <redirect />
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>apppkgs</from-outcome>
+      <to-view-id>/gui/apppkgs.xhtml</to-view-id>
       <redirect />
     </navigation-case>
     <navigation-case>
@@ -49,46 +48,27 @@ For details see file LICENSING in the top project directory
       <to-view-id>/gui/home.xhtml</to-view-id>
       <redirect />
     </navigation-case>
-    <navigation-case>
-      <!-- no from-outcome; everything else is an error -->
-      <to-view-id>/gui/error.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
   </navigation-rule>
 
   <navigation-rule>
-    <from-view-id>/gui/list.xhtml</from-view-id>
+    <from-view-id>/gui/choices.xhtml</from-view-id>
     <navigation-case>
       <from-outcome>success</from-outcome>
-      <to-view-id>/gui/selected.xhtml</to-view-id>
+      <to-view-id>/gui/knowledge.xhtml</to-view-id>
       <redirect />
-    </navigation-case>
-    <navigation-case>
-      <from-outcome>load</from-outcome>
-      <to-view-id>/gui/list.xhtml</to-view-id>
     </navigation-case>
     <navigation-case>
       <from-outcome>back</from-outcome>
-      <to-view-id>/gui/home.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-    <navigation-case>
-      <!-- no from-outcome; everything else is an error -->
-      <to-view-id>/gui/error.xhtml</to-view-id>
+      <to-view-id>/gui/knowledge.xhtml</to-view-id>
       <redirect />
     </navigation-case>
   </navigation-rule>
 
   <navigation-rule>
-    <from-view-id>/gui/selected.xhtml</from-view-id>
+    <from-view-id>/gui/apppkgs.xhtml</from-view-id>
     <navigation-case>
       <from-outcome>back</from-outcome>
-      <to-view-id>/gui/list.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-    <navigation-case>
-      <!-- no from-outcome; everything else is an error -->
-      <to-view-id>/gui/error.xhtml</to-view-id>
+      <to-view-id>/gui/knowledge.xhtml</to-view-id>
       <redirect />
     </navigation-case>
   </navigation-rule>

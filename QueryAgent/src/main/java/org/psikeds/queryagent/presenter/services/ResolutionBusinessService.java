@@ -66,7 +66,7 @@ public class ResolutionBusinessService implements ResolutionService {
    */
   @Override
   public ResolutionResponse init() {
-    return getTransformer().re2qa(this.client.invokeInitService());
+    return getTransformer().re2qa(getClient().invokeInitService());
   }
 
   /**
@@ -77,6 +77,6 @@ public class ResolutionBusinessService implements ResolutionService {
    */
   @Override
   public ResolutionResponse select(final ResolutionRequest req) {
-    return getTransformer().re2qa(this.client.invokeSelectService(getTransformer().qa2re(req)));
+    return getTransformer().re2qa(getClient().invokeSelectService(getTransformer().qa2re(req)));
   }
 }
