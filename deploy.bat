@@ -19,6 +19,10 @@
 @rem ---------------------------------------------------------------------------
 if "%OS%" == "Windows_NT" setlocal
 
+@rem ---------------------------------------------------------------------------
+@rem Configure your environment here ...
+@rem ---------------------------------------------------------------------------
+
 set "SCRIPT_DIR=%~dp0"
 set "CURRENT_DIR=%cd%"
 
@@ -32,11 +36,20 @@ set "QA_WAR=%QA_NAME%.war"
 set "QA_TARGET_DIR=%SCRIPT_DIR%QueryAgent\target"
 set "QA_FULL_PATH=%QA_TARGET_DIR%\%QA_WAR%"
 
+set "PSIKEDS_LOG_DIR=D:\logs"
+@rem set "PSIKEDS_LOG_DIR=%SCRIPT_DIR%logs"
+
+@rem ---------------------------------------------------------------------------
+@rem Do not modify below this line ...
 @rem ---------------------------------------------------------------------------
 
-if not "%CATALINA_HOME%" == "" goto checkStartScript
+if not "%CATALINA_HOME%" == "" goto setLogDir
 @echo Variable CATALINA_HOME is not defined
 goto end
+
+:setLogDir
+if not "%PSIKEDS_LOG_DIR%" == "" goto checkStartScript
+set "PSIKEDS_LOG_DIR=%CATALINA_HOME%\logs"
 
 :checkStartScript
 set "START_SCRIPT=%CATALINA_HOME%\bin\startup.bat"
@@ -78,6 +91,12 @@ goto end
 cd "%SCRIPT_DIR%"
 @rem echo Stopping Tomcat Server ...
 @rem CMD /C "%STOP_SCRIPT%"
+
+:delLogs
+if not exist %PSIKEDS_LOG_DIR% goto delRE
+@echo ... removing old Logfiles from %PSIKEDS_LOG_DIR% ...
+DEL /F /Q "%PSIKEDS_LOG_DIR%\psikeds*"
+DEL /F /Q "%PSIKEDS_LOG_DIR%\*.log"
 
 :delRE
 if not exist "%RE_FULL_PATH%" goto delQA
