@@ -7,8 +7,8 @@ Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
 This file is free software: you can redistribute
 it and/or modify it under the terms of the
 [ ] GNU Affero General Public License
-[x] GNU General Public License
-[ ] GNU Lesser General Public License
+[ ] GNU General Public License
+[x] GNU Lesser General Public License
 [ ] Creatice Commons ShareAlike License
 
 For details see file LICENSING in the top project directory
@@ -22,60 +22,72 @@ For details see file LICENSING in the top project directory
 <f:view locale="#{facesContext.externalContext.requestLocale}">
   <h:head>
     <title>#{msg['knowledge.page.name']}</title>
-    <link href="./css/layout.css" rel="stylesheet" type="text/css" />
+    <meta name="author" content="#{msg['global.author.tag']}" />
+    <meta name="keywords" content="#{msg['global.keywords.tag']}" />
+    <link href="#{msg['global.stylesheet.url']}" rel="stylesheet" type="text/css" />
+    <link href="#{msg['global.favicon.url']}" rel="shortcut icon" type="image/x-icon" />
   </h:head>
   <h:body>
+  <div id="container">
+    <ui:include src="header.xhtml" />
+    <div id='main_content'>
     <ui:fragment rendered="#{Knowledge.notInitialized or Knowledge.withoutData}">
-      <h2>
-        <h:outputFormat value="#{msg['knowledge.empty.text']}" />
-      </h2>
+      <p><b><h:outputText value="#{msg['knowledge.empty.text']}" /></b></p>
     </ui:fragment>
     <ui:fragment rendered="#{!Knowledge.notInitialized and !Knowledge.withoutData}">
-      <h2>
-        <h:outputFormat value="#{msg['knowledge.welcome.text']}" />
-      </h2>
+      <p><b><h:outputText value="#{msg['knowledge.overview.text']}" /></b></p>
       <h:form id="selectForm">
-      <table class="di-table">
-        <tr>
-          <th class="di-table-header">Key</th>
-          <th class="di-table-header">Value</th>
-          <th class="di-table-header">Long Description</th>
-          <th class="di-table-header">Selection Key</th>
-          <th class="di-table-header">Type</th>
-          <th class="di-table-header">Level</th>
-          <th class="di-table-header">Command Link</th>
-        </tr>
-        <tbody>
+        <div class="meta row-fluid detail">
           <ui:repeat var="di" value="#{Knowledge.knowledge}">
-            <tr>
-              <td class="di-table-row">#{di.key}</td>
-              <td class="di-table-row">#{di.value}</td>
-              <td class="di-table-row">#{di.longDescription}</td>
-              <td class="di-table-row">#{di.selectionKey}</td>
-              <td class="di-table-row">#{di.type}</td>
-              <td class="di-table-row">#{di.level}</td>
-              <td class="di-table-row">
-                <h:commandLink id="resolve" action="#{Ctrl.resolve(di.selectionKey)}">#{di.selectionKey}</h:commandLink>
-              </td>
-            </tr>
+            <ui:fragment rendered="#{di.type == 'Entity'}">
+              <ui:fragment rendered="#{di.level == 0}">
+                <p/>
+                <hr class="header_rule" />
+                <h3 class="#{di.type} level#{di.level}">#{di.value}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.longDescription}</h3>
+              </ui:fragment>
+              <ui:fragment rendered="#{di.level != 0}">
+                <h4 class="#{di.type} level#{di.level}">#{di.key}<h:outputText value="&#160;" />#{di.value}<h:outputText value="&#160;" />#{di.longDescription}</h4>
+              </ui:fragment>
+            </ui:fragment>
+            <ui:fragment rendered="#{di.type == 'Purpose'}">
+              <ui:fragment rendered="#{di.level == 0}">
+                <p/>
+                <hr class="header_rule" />
+                <h3 class="#{di.type} level#{di.level}"><h:outputText value="#{msg['knowledge.purpose.text']}" /><h:outputText value="&#160;" />#{di.value}</h3>
+              </ui:fragment>
+              <ui:fragment rendered="#{di.level != 0}">
+                <h4 class="#{di.type} level#{di.level}"><h:outputText value="#{msg['knowledge.purpose.text']}" /><h:outputText value="&#160;" />#{di.value}</h4>
+              </ui:fragment>
+            </ui:fragment>
+            <ui:fragment rendered="#{di.type == 'Variant'}">
+              <ul class="#{di.type} level#{di.level}">
+                <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">
+                  <h:outputText value="#{msg['knowledge.variant.text']}" />
+                  <h:outputText value="&#160;" />#{di.selectionKey}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />
+                  <h:commandLink id="resolve" action="#{Ctrl.resolve(di.selectionKey)}">#{di.value}</h:commandLink>
+                </li>
+              </ul>
+            </ui:fragment>
           </ui:repeat>
-        </tbody>
-      </table>
-      </h:form>
+        </div> <!-- meta -->
+     </h:form>
     </ui:fragment>
-    <p><h:messages showDetail="true" showSummary="false" /></p>
+    <ui:include src="messages.xhtml" />
     <h:form id="NaviForm">
     <ui:fragment rendered="#{Knowledge.notInitialized or Knowledge.withoutData}">
-      <h:commandButton value="#{msg['knowledge.home.button']}" action="#{Ctrl.home()}" />
+      <h:commandButton class="btn btn-small" value="#{msg['knowledge.home.button']}" action="#{Ctrl.home()}" />
     </ui:fragment>
     <ui:fragment rendered="#{!Knowledge.notInitialized and !Knowledge.withoutData}">
       <h:panelGrid columns="3">
-        <h:commandButton value="#{msg['knowledge.back.button']}" action="#{Ctrl.back()}" />
-        <h:commandButton value="#{msg['knowledge.choices.button']}" action="#{Ctrl.choices()}" />
-        <h:commandButton value="#{msg['knowledge.apppkgs.button']}" action="#{Ctrl.apppkgs()}" />
+        <h:commandButton class="btn btn-small" value="#{msg['knowledge.back.button']}" action="#{Ctrl.back()}" />
+        <h:commandButton class="btn btn-small" value="#{msg['knowledge.choices.button']}" action="#{Ctrl.choices()}" />
+        <h:commandButton class="btn btn-small" value="#{msg['knowledge.apppkgs.button']}" action="#{Ctrl.apppkgs()}" />
       </h:panelGrid>
     </ui:fragment>
     </h:form>
+    </div> <!-- main_content -->
+    <ui:include src="footer.xhtml" />
+  </div> <!-- container -->
   </h:body>
 </f:view>
 </html>

@@ -7,8 +7,8 @@ Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
 This file is free software: you can redistribute
 it and/or modify it under the terms of the
 [ ] GNU Affero General Public License
-[x] GNU General Public License
-[ ] GNU Lesser General Public License
+[ ] GNU General Public License
+[x] GNU Lesser General Public License
 [ ] Creatice Commons ShareAlike License
 
 For details see file LICENSING in the top project directory
@@ -22,35 +22,36 @@ For details see file LICENSING in the top project directory
 <f:view locale="#{facesContext.externalContext.requestLocale}">
   <h:head>
     <title>#{msg['home.page.name']}</title>
-    <link href="./css/layout.css" rel="stylesheet" type="text/css" />
+    <meta name="author" content="#{msg['global.author.tag']}" />
+    <meta name="keywords" content="#{msg['global.keywords.tag']}" />
+    <link href="#{msg['global.stylesheet.url']}" rel="stylesheet" type="text/css" />
+    <link href="#{msg['global.favicon.url']}" rel="shortcut icon" type="image/x-icon" />
   </h:head>
   <h:body>
+  <div id="container">
+    <ui:include src="header.xhtml" />
+    <div id='main_content'>
     <h:form id="naviForm">
-      <h2>
-        <h:outputFormat value="#{msg['home.welcome.text']}" />
-      </h2>
       <ui:fragment rendered="#{Knowledge.notInitialized or Knowledge.withoutData}">
+        <p><b><h:outputText value="#{msg['home.welcome.text']}" /></b></p>
         <h:panelGrid columns="2">
-          <h:outputLabel for="initlink" value="#{msg['home.init.text']}" />
-          <h:commandLink id="initlink" action="#{Ctrl.init()}">
-            <h:outputText value="#{msg['home.init.link']}" />
-          </h:commandLink>
+          <h:outputLabel for="initcmd" value="#{msg['home.init.label']}" />
+          <h:commandButton class="btn btn-small" id="initcmd" value="#{msg['home.init.cmd']}" action="#{Ctrl.init()}" />
         </h:panelGrid>
       </ui:fragment>
       <ui:fragment rendered="#{!Knowledge.notInitialized and !Knowledge.withoutData}">
+        <p><b><h:outputText value="#{msg['home.running.text']}" /></b></p>
         <h:panelGrid columns="2">
-          <h:outputLabel for="resumelink" value="#{msg['home.resume.text']}" />
-          <h:commandLink id="resumelink" action="#{Ctrl.resume()}">
-            <h:outputText value="#{msg['home.resume.link']}" />
-          </h:commandLink>
-          <h:outputLabel for="restartlink" value="#{msg['home.restart.text']}" />
-          <h:commandLink id="restartlink" action="#{Ctrl.init()}">
-            <h:outputText value="#{msg['home.restart.link']}" />
-          </h:commandLink>
+          <h:outputLabel for="resumecmd" value="#{msg['home.resume.label']}" />
+          <h:commandButton class="btn btn-small" id="resumecmd" value="#{msg['home.resume.cmd']}" action="#{Ctrl.resume()}" />
+          <h:outputLabel for="restartcmd" value="#{msg['home.restart.label']}" />
+          <h:commandButton class="btn btn-small" id="restartcmd" value="#{msg['home.restart.cmd']}" action="#{Ctrl.init()}" />
         </h:panelGrid>
       </ui:fragment>
-      <p><h:messages showDetail="true" showSummary="false" /></p>
     </h:form>
+    </div> <!-- main_content -->
+    <ui:include src="footer.xhtml" />
+  </div> <!-- container -->
   </h:body>
 </f:view>
 </html>

@@ -70,9 +70,11 @@ public class TreeView extends BaseView {
     final List<DisplayItem> lst = new ArrayList<DisplayItem>();
     try {
       LOGGER.trace("--> getKnowledge()");
-      final Knowledge k = this.model.getKnowledge();
-      addChoices(lst, k.getChoices());
-      addEntities(lst, k.getEntities());
+      if (!isWithoutData()) {
+        final Knowledge k = this.model.getKnowledge();
+        addEntities(lst, k.getEntities());
+        addChoices(lst, k.getChoices());
+      }
     }
     catch (final Exception ex) {
       LOGGER.error("getKnowledge() failed!", ex);
@@ -90,48 +92,59 @@ public class TreeView extends BaseView {
   }
 
   private void addChoices(final List<DisplayItem> lst, final List<Choice> choices, final DisplayItem parent) {
-    for (final Choice c : choices) {
-      final Purpose p = c.getPurpose();
-      final DisplayItem dp = new DisplayItem(p.getId(), p.getLabel(), p.getDescription(), DisplayItem.TYPE_PURPOSE);
-      if (parent != null) {
-        parent.addChild(dp);
-      }
-      lst.add(dp);
-      LOGGER.trace(String.valueOf(dp));
-      for (final Variant v : c.getVariants()) {
-        final DisplayItem dc = new DisplayItem(v.getId(), v.getLabel(), v.getDescription(), DisplayItem.TYPE_CHOICE);
-        dc.setSelectionKey(SelectionHelper.createSelectionString(p, v));
-        dp.addChild(dc);
-        lst.add(dc);
-        LOGGER.trace(String.valueOf(dc));
+    if ((lst != null) && (choices != null)) {
+      for (final Choice c : choices) {
+        final Purpose p = c.getPurpose();
+        final DisplayItem dp = new DisplayItem(p.getId(), p.getLabel(), p.getDescription(), DisplayItem.TYPE_PURPOSE);
+        if (parent != null) {
+          parent.addChild(dp);
+        }
+        lst.add(dp);
+        LOGGER.trace("Added P: {}", dp);
+        for (final Variant v : c.getVariants()) {
+          final DisplayItem dv = new DisplayItem(v.getId(), v.getLabel(), v.getDescription(), DisplayItem.TYPE_VARIANT);
+          dv.setSelectionKey(SelectionHelper.createSelectionString(p, v));
+          dp.addChild(dv);
+          lst.add(dv);
+          LOGGER.trace("Added V: {}", dv);
+        }
       }
     }
   }
+
+  // ------------------------------------------------------
 
   private void addEntities(final List<DisplayItem> lst, final List<KnowledgeEntity> entities) {
     addEntities(lst, entities, null);
   }
 
   private void addEntities(final List<DisplayItem> lst, final List<KnowledgeEntity> entities, final DisplayItem parent) {
-    for (final KnowledgeEntity ke : entities) {
-      final DisplayItem dke = createKnowledgeEntity(ke, parent);
-      lst.add(dke);
-      LOGGER.trace(String.valueOf(dke));
-      addChoices(lst, ke.getChoices(), dke);
-      addEntities(lst, ke.getSiblings(), dke);
+    if ((lst != null) && (entities != null)) {
+      for (final KnowledgeEntity ke : entities) {
+        final DisplayItem dke = createDisplayItem(ke);
+        if (dke != null) {
+          if (parent != null) {
+            parent.addChild(dke);
+          }
+          lst.add(dke);
+          LOGGER.trace("Added KE: {}", dke);
+          addEntities(lst, ke.getSiblings(), dke);
+          addChoices(lst, ke.getChoices(), dke);
+        }
+      }
     }
   }
 
-  private DisplayItem createKnowledgeEntity(final KnowledgeEntity ke, final DisplayItem parent) {
-    final Purpose p = ke.getPurpose();
-    final Variant v = ke.getVariant();
-    final String key = SelectionHelper.createSelectionString(p, v);
-    final String value = p.getLabel();
-    final String desc = (StringUtils.isEmpty(this.mapping) ? v.getLabel() : String.format(this.mapping, v.getLabel(), v.getDescription()));
-    final DisplayItem dke = new DisplayItem(key, value, desc, DisplayItem.TYPE_ENTITY);
-    if (parent != null) {
-      parent.addChild(dke);
+  private DisplayItem createDisplayItem(final KnowledgeEntity ke) {
+    DisplayItem di = null;
+    if (ke != null) {
+      final Purpose p = ke.getPurpose();
+      final Variant v = ke.getVariant();
+      final String key = SelectionHelper.createSelectionString(p, v);
+      final String value = p.getLabel();
+      final String desc = (StringUtils.isEmpty(this.mapping) ? v.getLabel() : String.format(this.mapping, v.getLabel()));
+      di = new DisplayItem(key, value, desc, DisplayItem.TYPE_ENTITY);
     }
-    return dke;
+    return di;
   }
 }

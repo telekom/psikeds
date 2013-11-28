@@ -41,14 +41,16 @@ public class W7AppPkgView extends BaseView {
   private static final Logger LOGGER = LoggerFactory.getLogger(W7AppPkgView.class);
 
   private String mapping;
+  private boolean skipEmpty;
 
   public W7AppPkgView() {
-    this(null, null);
+    this(null, null, true);
   }
 
-  public W7AppPkgView(final KnowledgeRepresentation model, final String mapping) {
+  public W7AppPkgView(final KnowledgeRepresentation model, final String mapping, final boolean skipEmpty) {
     super(model);
     this.mapping = mapping;
+    this.skipEmpty = skipEmpty;
   }
 
   public String getMapping() {
@@ -59,10 +61,28 @@ public class W7AppPkgView extends BaseView {
     this.mapping = mapping;
   }
 
+  public boolean isSkipEmpty() {
+    return this.skipEmpty;
+  }
+
+  public void setSkipEmpty(final boolean skipEmpty) {
+    this.skipEmpty = skipEmpty;
+  }
+
   // ------------------------------------------------------
 
   public boolean isWithoutData() {
     return (isNotInitialized() || this.model.getKnowledge().getEntities().isEmpty());
+  }
+
+  public boolean isSoftwareRequired() {
+    return getNumOfApps() > 0;
+
+  }
+
+  public int getNumOfApps() {
+    // not the most efficient way, but sufficient for our purpose
+    return (isWithoutData() ? 0 : getApplicationPackages().size());
   }
 
   /**
@@ -95,21 +115,36 @@ public class W7AppPkgView extends BaseView {
     if (ke != null) {
       LOGGER.trace("Adding KE to Map: {}", ke);
       final Variant v = ke.getVariant();
-      final String desc = (StringUtils.isEmpty(v.getDescription()) ? v.getLabel() : v.getDescription());
-      add2map(map, desc);
+      if (v != null) {
+        add2map(map, v.getLabel(), v.getDescription());
+      }
       for (final KnowledgeEntity sib : ke.getSiblings()) {
         add2map(map, sib);
       }
     }
   }
 
-  private void add2map(final Map<String, DisplayItem> map, final String desc) {
-    if (!StringUtils.isEmpty(desc)) {
-      final String key = desc;
-      final String value = (StringUtils.isEmpty(this.mapping) ? desc : String.format(this.mapping, desc));
-      LOGGER.trace("Adding Label to Map: {}", value);
-      final DisplayItem di = new DisplayItem(key, value, null, DisplayItem.TYPE_LABEL);
-      map.put(key, di);
+  private void add2map(final Map<String, DisplayItem> map, final String label, final String description) {
+    if (StringUtils.isEmpty(label)) {
+      LOGGER.trace("Skipping empty Label, this must never happen.");
+      return;
     }
+    String apppkg = description;
+    if (StringUtils.isEmpty(apppkg)) {
+      if (this.skipEmpty) {
+        LOGGER.trace("Skipping Variant {} with empty Description.", label);
+        return;
+      }
+      else {
+        apppkg = label;
+        LOGGER.trace("Falling back from Description to Label for Variant {}", label);
+      }
+    }
+    if (!StringUtils.isEmpty(this.mapping)) {
+      apppkg = String.format(this.mapping, apppkg);
+    }
+    LOGGER.trace("Adding App-Pkg-Name to Map: {}", apppkg);
+    final DisplayItem di = new DisplayItem(apppkg, apppkg, null, DisplayItem.TYPE_LABEL);
+    map.put(apppkg, di);
   }
 }
