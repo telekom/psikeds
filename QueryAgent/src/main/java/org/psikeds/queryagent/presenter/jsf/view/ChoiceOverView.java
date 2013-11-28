@@ -44,24 +44,27 @@ public class ChoiceOverView extends BaseView {
   }
 
   public boolean isWithoutData() {
-    return (isNotInitialized() || this.model.getPossibleChoices().isEmpty());
+    return (isNotInitialized() || isResolved() || this.model.getPossibleChoices().isEmpty());
   }
 
   public List<DisplayItem> getPossibleChoices() {
     final List<DisplayItem> lst = new ArrayList<DisplayItem>();
     try {
       LOGGER.trace("--> getPossibleChoices()");
-      final List<Choice> choices = this.model.getPossibleChoices();
-      for (final Choice c : choices) {
-        final Purpose p = c.getPurpose();
-        final DisplayItem dp = new DisplayItem(p.getId(), p.getLabel(), p.getDescription(), DisplayItem.TYPE_PURPOSE);
-        lst.add(dp);
-        for (final Variant v : c.getVariants()) {
-          final DisplayItem dc = new DisplayItem(v.getId(), v.getLabel(), v.getDescription(), DisplayItem.TYPE_CHOICE);
-          dc.setSelectionKey(SelectionHelper.createSelectionString(p, v));
-          dp.addChild(dc);
-          lst.add(dc);
-          LOGGER.trace(String.valueOf(dc));
+      if (!isWithoutData()) {
+        final List<Choice> choices = this.model.getPossibleChoices();
+        for (final Choice c : choices) {
+          final Purpose p = c.getPurpose();
+          final DisplayItem dp = new DisplayItem(p.getId(), p.getLabel(), p.getDescription(), DisplayItem.TYPE_PURPOSE);
+          lst.add(dp);
+          LOGGER.trace("Added P: {}", dp);
+          for (final Variant v : c.getVariants()) {
+            final DisplayItem dv = new DisplayItem(v.getId(), v.getLabel(), v.getDescription(), DisplayItem.TYPE_VARIANT);
+            dv.setSelectionKey(SelectionHelper.createSelectionString(p, v));
+            dp.addChild(dv);
+            lst.add(dv);
+            LOGGER.trace("Added V: {}", dv);
+          }
         }
       }
     }

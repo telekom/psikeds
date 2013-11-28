@@ -7,8 +7,8 @@ Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
 This file is free software: you can redistribute
 it and/or modify it under the terms of the
 [ ] GNU Affero General Public License
-[x] GNU General Public License
-[ ] GNU Lesser General Public License
+[ ] GNU General Public License
+[x] GNU Lesser General Public License
 [ ] Creatice Commons ShareAlike License
 
 For details see file LICENSING in the top project directory
@@ -22,16 +22,25 @@ For details see file LICENSING in the top project directory
 <f:view locale="#{facesContext.externalContext.requestLocale}">
   <h:head>
     <title>#{msg['error.page.name']}</title>
-    <link href="./css/layout.css" rel="stylesheet" type="text/css" />
+    <meta name="author" content="#{msg['global.author.tag']}" />
+    <meta name="keywords" content="#{msg['global.keywords.tag']}" />
+    <link href="#{msg['global.stylesheet.url']}" rel="stylesheet" type="text/css" />
+    <link href="#{msg['global.favicon.url']}" rel="shortcut icon" type="image/x-icon" />
   </h:head>
   <h:body>
+  <div id="container">
+    <ui:include src="header.xhtml" />
+    <div id='main_content'>
     <h:form id="naviForm">
       <h2>
         <h:outputFormat value="#{msg['error.page.text']}" />
       </h2>
-      <p><h:messages showDetail="true" showSummary="true" /></p>
-      <p><h:commandButton value="#{msg['error.home.button']}" action="#{Ctrl.home()}" /></p>
+      <ui:include src="messages.xhtml" />
+      <p><h:commandButton class="btn btn-small" value="#{msg['error.home.button']}" action="#{Ctrl.home()}" /></p>
     </h:form>
+    </div> <!-- main_content -->
+    <ui:include src="footer.xhtml" />
+  </div> <!-- container -->
   </h:body>
 </f:view>
 </html>
