@@ -65,6 +65,9 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
   private ResolutionCache cache;
   private Transformer trans;
   private IdGenerator gen;
+  private boolean resolveInitialKnowledge;
+  private boolean checkValidityOnStartup;
+  private boolean checkValidityAtRuntime;
 
   public ResolutionBusinessService() {
     this(null, null, null, null, null);
@@ -76,6 +79,33 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     this.cache = cache;
     this.trans = trans;
     this.gen = gen;
+    this.resolveInitialKnowledge = false;
+    this.checkValidityOnStartup = true;
+    this.checkValidityAtRuntime = true;
+  }
+
+  public boolean isCheckValidityOnStartup() {
+    return this.checkValidityOnStartup;
+  }
+
+  public void setCheckValidityOnStartup(final boolean checkValidityOnStartup) {
+    this.checkValidityOnStartup = checkValidityOnStartup;
+  }
+
+  public boolean isCheckValidityAtRuntime() {
+    return this.checkValidityAtRuntime;
+  }
+
+  public void setCheckValidityAtRuntime(final boolean checkValidityAtRuntime) {
+    this.checkValidityAtRuntime = checkValidityAtRuntime;
+  }
+
+  public boolean isResolveInitialKnowledge() {
+    return this.resolveInitialKnowledge;
+  }
+
+  public void setResolveInitialKnowledge(final boolean resolveInitialKnowledge) {
+    this.resolveInitialKnowledge = resolveInitialKnowledge;
   }
 
   public KnowledgeBase getKnowledgeBase() {
@@ -140,6 +170,9 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     Validate.notNull(this.gen, "No Session-ID-Generator!");
     Validate.notNull(this.cache, "No Resolution-Cache!");
     Validate.isTrue(getResolvers().size() > 0, "No Resolver-Chain!");
+    if (this.checkValidityOnStartup) {
+      checkValidity();
+    }
   }
 
   // ----------------------------------------------------------------
@@ -153,7 +186,9 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     ResolutionResponse resp = null;
     try {
       LOGGER.trace("--> init()");
-      checkValidity();
+      if (this.checkValidityAtRuntime) {
+        checkValidity();
+      }
       // create intial data for new resolution session
       final Metadata metadata = getMetadata();
       final String sessionID = createSessionId(metadata);
@@ -179,7 +214,9 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     ResolutionResponse resp = null;
     try {
       LOGGER.trace("--> select(); req = {}", req);
-      checkValidity();
+      if (this.checkValidityAtRuntime) {
+        checkValidity();
+      }
       // get data from request
       String sessionID = req.getSessionID();
       Knowledge oldKnowledge = req.getKnowledge();
@@ -234,10 +271,15 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     }
     // Initially there are no Entities, only Choice containing the Root-Purposes.
     Knowledge knowledge = new Knowledge(choices);
-    // However we must execute the Resolver-Chain, because in some rare Cases
-    // there might be some automatic Resolutions right in the Beginning, e.g.
-    // some Root-Purpose with exactly one variant.
-    knowledge = resolve(knowledge, null, metadata, sessionID);
+    if (this.resolveInitialKnowledge) {
+      // We must execute the Resolver-Chain, because sometimes there
+      // might be some automatic Resolutions right in the Beginning,
+      // e.g. some Root-Purpose with exactly one variant.
+      // However this automatic Resolution might not be desired, e.g.
+      // if Root-Purposes are Alternatives not mandatory.
+      // Therefore this Functionality is configurable.
+      knowledge = resolve(knowledge, null, metadata, sessionID);
+    }
     LOGGER.info("Generated initial Knowledge. S = {}\nK = {}", sessionID, knowledge);
     return knowledge;
   }

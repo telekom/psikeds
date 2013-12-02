@@ -52,6 +52,7 @@ public class AutoCompletion implements InitializingBean, Resolver {
 
   private KnowledgeBase kb;
   private Transformer trans;
+  private boolean autoCompleteRootPurposes;
 
   public AutoCompletion() {
     this(null, null);
@@ -60,6 +61,15 @@ public class AutoCompletion implements InitializingBean, Resolver {
   public AutoCompletion(final KnowledgeBase kb, final Transformer trans) {
     this.kb = kb;
     this.trans = trans;
+    this.autoCompleteRootPurposes = false;
+  }
+
+  public boolean isAutoCompleteRootPurposes() {
+    return this.autoCompleteRootPurposes;
+  }
+
+  public void setAutoCompleteRootPurposes(final boolean autoCompleteRootPurposes) {
+    this.autoCompleteRootPurposes = autoCompleteRootPurposes;
   }
 
   public KnowledgeBase getKnowledgeBase() {
@@ -98,7 +108,8 @@ public class AutoCompletion implements InitializingBean, Resolver {
    * @param knowledge
    *          current old Knowledge
    * @param decission
-   *          Decission (ignored!)
+   *          Decission Interactive decission by Client if not null, otherwise an automatic
+   *          Resolution
    * @param events
    *          RelevantEvents (ignored!)
    * @param rules
@@ -114,7 +125,7 @@ public class AutoCompletion implements InitializingBean, Resolver {
     boolean ok = false;
     try {
       LOGGER.debug("Autocompleting all Choices ...");
-      autocompleteKnowledge(knowledge, metadata);
+      autocompleteKnowledge(knowledge, decission, metadata);
       ok = true;
       return knowledge;
     }
@@ -123,7 +134,7 @@ public class AutoCompletion implements InitializingBean, Resolver {
     }
   }
 
-  private void autocompleteKnowledge(final Knowledge knowledge, final Metadata metadata) throws ResolutionException {
+  private void autocompleteKnowledge(final Knowledge knowledge, final Decission decission, final Metadata metadata) throws ResolutionException {
     try {
       LOGGER.trace("--> autocompleteKnowledge: Knowledge = {}", knowledge);
       if (knowledge == null) {
@@ -131,17 +142,18 @@ public class AutoCompletion implements InitializingBean, Resolver {
         LOGGER.warn(errmsg);
         throw new ResolutionException(errmsg);
       }
-      autocompleteEntities(knowledge.getEntities(), knowledge.getChoices(), metadata);
+      autocompleteEntities(decission, knowledge.getEntities(), knowledge.getChoices(), metadata);
     }
     finally {
       LOGGER.trace("<-- autocompleteKnowledge: Knowledge = {}", knowledge);
     }
   }
 
-  private void autocompleteEntities(final List<KnowledgeEntity> entities, final List<Choice> choices, final Metadata metadata) throws ResolutionException {
+  private void autocompleteEntities(final Decission decission, final List<KnowledgeEntity> entities, final List<Choice> choices, final Metadata metadata) throws ResolutionException {
     boolean ok = false;
+    final boolean interactive = (decission != null);
     try {
-      LOGGER.trace("--> autocompleteEntities: Entities = {}\nChoices = {}", entities, choices);
+      LOGGER.trace("--> autocompleteEntities: interactive = {}\nEntities = {}\nChoices = {}", interactive, entities, choices);
       // Step 1: Autocomplete current Choices
       final Iterator<Choice> iter = choices.iterator();
       while (iter.hasNext()) {
@@ -149,24 +161,30 @@ public class AutoCompletion implements InitializingBean, Resolver {
         final List<Variant> vars = c.getVariants();
         // Does this Choice contain one or none Variant(s)?
         if (vars.size() < 2) {
+          final Purpose p = c.getPurpose();
+          if (p.isRoot() && !interactive && !this.autoCompleteRootPurposes) {
+            // Auto-complete Root-Purposes only if Enabled or requested by Client-Decission
+            LOGGER.debug("Skipping Auto-Completion for Root-Purpose: {}", p);
+            continue;
+          }
+          LOGGER.debug("Auto-completing Choice: {}", c);
           if (!vars.isEmpty()) { // exactly one
-            LOGGER.trace("Found Choice with just one Variant: {}", c);
             // Create a new KnowledgeEntity containing Purpose, Variant and new Choices
-            final Purpose p = c.getPurpose();
             final Variant v = vars.get(0);
             final List<Choice> newchoices = getNewChoices(v);
             final KnowledgeEntity ke = new KnowledgeEntity(p, v, newchoices);
-            LOGGER.trace("Adding new KnowledgeEntity: {}", ke);
-            entities.add(ke);
+            addNewEntity(entities, ke);
+            // cleanup
+            vars.clear();
           }
-          // remove old Choice
+          // remove old Choice, also cleans up buggy choices without any variant
           completionMessage(metadata, c);
           iter.remove();
         }
       }
       // Step 2: Recursively check Siblings and autocomplete their Choices
       for (final KnowledgeEntity ke : entities) {
-        autocompleteEntities(ke.getSiblings(), ke.getChoices(), metadata);
+        autocompleteEntities(decission, ke.getSiblings(), ke.getChoices(), metadata);
       }
       // done
       ok = true;
@@ -178,8 +196,23 @@ public class AutoCompletion implements InitializingBean, Resolver {
       throw new ResolutionException(errmsg, ex);
     }
     finally {
-      LOGGER.trace("<-- autocompleteEntities: " + (ok ? "OK." : "ERROR!") + "\nEntities = {}\nChoices = {}", entities, choices);
+      LOGGER.trace("<-- autocompleteEntities: " + (ok ? "OK." : "ERROR!") + "\ninteractive = {}\nEntities = {}\nChoices = {}", interactive, entities, choices);
     }
+  }
+
+  private void addNewEntity(final List<KnowledgeEntity> entities, final KnowledgeEntity ke) {
+    for (final KnowledgeEntity e : entities) {
+      final String pid1 = e.getPurpose().getId();
+      final String pid2 = ke.getPurpose().getId();
+      final String vid1 = e.getVariant().getId();
+      final String vid2 = ke.getVariant().getId();
+      if (pid1.equals(pid2) && vid1.equals(vid2)) {
+        LOGGER.trace("Entity-List already contains KnowledgeEntity: {}", ke);
+        return;
+      }
+    }
+    LOGGER.trace("Adding new KnowledgeEntity: {}", ke);
+    entities.add(ke);
   }
 
   private List<Choice> getNewChoices(final Variant v) {
