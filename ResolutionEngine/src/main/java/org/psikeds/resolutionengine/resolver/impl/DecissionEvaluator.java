@@ -26,6 +26,7 @@ import org.psikeds.resolutionengine.interfaces.pojos.Decission;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
 import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity;
 import org.psikeds.resolutionengine.interfaces.pojos.Metadata;
+import org.psikeds.resolutionengine.interfaces.pojos.Purpose;
 import org.psikeds.resolutionengine.interfaces.pojos.Variant;
 import org.psikeds.resolutionengine.resolver.RelevantEvents;
 import org.psikeds.resolutionengine.resolver.RelevantRules;
@@ -44,11 +45,32 @@ public class DecissionEvaluator implements Resolver {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DecissionEvaluator.class);
 
+  private boolean rootPurposeOptional;
+
+  public DecissionEvaluator() {
+    this(true);
+  }
+
+  public DecissionEvaluator(final boolean rootPurposeOptional) {
+    this.rootPurposeOptional = rootPurposeOptional;
+  }
+
+  public boolean isRootPurposeOptional() {
+    return this.rootPurposeOptional;
+  }
+
+  public void setRootPurposeOptional(final boolean rootPurposeOptional) {
+    this.rootPurposeOptional = rootPurposeOptional;
+  }
+
+  //----------------------------------------------------------------
+
   /**
    * @param knowledge
    *          current old Knowledge
    * @param decission
-   *          Decission (can be null)
+   *          Decission Interactive decission by Client if not null, otherwise an automatic
+   *          Resolution
    * @param events
    *          RelevantEvents (ignored!)
    * @param rules
@@ -83,6 +105,8 @@ public class DecissionEvaluator implements Resolver {
       LOGGER.debug("... finished evaluating made Decission. " + (found ? "" : "NOT") + " found, " + (ok ? "OK." : "ERROR!"));
     }
   }
+
+  //----------------------------------------------------------------
 
   private boolean updateKnowledge(final Knowledge knowledge, final Decission decission, final Metadata metadata) throws ResolutionException {
     boolean found = false;
@@ -122,20 +146,42 @@ public class DecissionEvaluator implements Resolver {
 
   private boolean updateChoices(final List<Choice> choices, final Decission decission, final Metadata metadata) throws ResolutionException {
     boolean found = false;
+    boolean concernsRootPurpose = false;
     try {
       LOGGER.trace("--> updateChoices: Choices = {}", choices);
       for (final Choice c : choices) {
         final Variant v = c.matches(decission);
         if (v != null) {
           c.setVariant(v);
+          final Purpose p = c.getPurpose();
+          if ((p != null) && p.isRoot()) {
+            concernsRootPurpose = true;
+          }
           found = true;
           decissionMessage(metadata, decission, c);
+        }
+      }
+      if (concernsRootPurpose && this.rootPurposeOptional) {
+        // Client's decission concerned a Root-Purpose, which are optional,
+        // i.e. we must remove all other Root-Purposes from List of Choices.
+        for (final Choice c : choices) {
+          final Purpose p = c.getPurpose();
+          if ((p != null) && p.isRoot()) {
+            final Variant v = c.matches(decission);
+            if (v == null) {
+              // Found another Choice for a Root-Purpose, but it's not matching
+              // our decission. ==> Remove all Variants, Auto-Complete-Resolver
+              // will then clean it up.
+              c.getVariants().clear();
+              LOGGER.debug("Removed all Variants for Purpose {}", p);
+            }
+          }
         }
       }
       return found;
     }
     finally {
-      LOGGER.trace("<-- updateChoices: Found = {}\nChoices = {}", found, choices);
+      LOGGER.trace("<-- updateChoices: Found = {}\nConcernsRootPurpose = {}\nChoices = {}", found, concernsRootPurpose, choices);
     }
   }
 
