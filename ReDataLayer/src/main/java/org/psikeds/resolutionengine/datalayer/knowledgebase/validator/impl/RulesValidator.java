@@ -86,7 +86,7 @@ public class RulesValidator implements Validator {
           }
           final ContextPath cp = e.getContextPath();
           LOGGER.trace("Checking ContextPath of Event {}", e);
-          if (!checkContextPath(kb, cp, vid)) {
+          if (!checkContextPath(kb, cp, vid, e)) {
             valid = false;
             LOGGER.warn("ContextPath of Event is not valid: {}", e);
           }
@@ -102,7 +102,8 @@ public class RulesValidator implements Validator {
     }
   }
 
-  private boolean checkContextPath(final KnowledgeBase kb, final ContextPath cp, final String rootVariantId) {
+  private boolean checkContextPath(final KnowledgeBase kb, final ContextPath cp, final String rootVariantId, final Event e) {
+    final String eid = (e == null ? null : e.getId());
     final List<String> path = (cp == null ? null : cp.getPathIDs());
     LOGGER.trace("Path = {}", path);
     if ((path == null) || path.isEmpty()) {
@@ -111,20 +112,20 @@ public class RulesValidator implements Validator {
     }
     final String firstPathElement = path.get(0);
     if (!rootVariantId.equals(firstPathElement)) {
-      LOGGER.warn("ContextPath does not start with Root-Variant-Id of Event: {}", rootVariantId);
+      LOGGER.warn("ContextPath of Event {} does not start with Root-Variant-Id: {}", eid, rootVariantId);
       return false;
     }
     boolean variant = true;
     Object previous = null;
     for (final String id : path) {
       if (StringUtils.isEmpty(id)) {
-        LOGGER.warn("ContextPath contains empty ID!");
+        LOGGER.warn("ContextPath of Event {} contains empty ID!", e.getId());
         return false;
       }
       if (variant) {
         final Variant v = kb.getVariant(id);
         if ((v == null) || !v.getId().equals(id)) {
-          LOGGER.warn("ContextPath contains unknown Variant-ID: {}", id);
+          LOGGER.warn("ContextPath of Event {} contains unknown Variant-ID: {}", eid, id);
           return false;
         }
         if (previous != null) {
@@ -140,7 +141,7 @@ public class RulesValidator implements Validator {
             }
           }
           if (!found) {
-            LOGGER.warn("ContextPath contains illegal Edge from {} to {}", pid, id);
+            LOGGER.warn("ContextPath of Event {} contains illegal Edge from {} to {}", eid, pid, id);
             return false;
           }
         }
@@ -149,7 +150,7 @@ public class RulesValidator implements Validator {
       else {
         final Purpose p = kb.getPurpose(id);
         if ((p == null) || !p.getId().equals(id)) {
-          LOGGER.warn("ContextPath contains unknown Purpose-ID: {}", id);
+          LOGGER.warn("ContextPath of Event {} contains unknown Purpose-ID: {}", eid, id);
           return false;
         }
         if (previous != null) {
@@ -165,7 +166,7 @@ public class RulesValidator implements Validator {
             }
           }
           if (!found) {
-            LOGGER.warn("ContextPath contains illegal Edge from {} to {}", vid, id);
+            LOGGER.warn("ContextPath of Event {} contains illegal Edge from {} to {}", eid, vid, id);
             return false;
           }
         }
@@ -184,8 +185,8 @@ public class RulesValidator implements Validator {
       final List<Rule> lst = (rules == null ? null : rules.getRule());
       if ((lst != null) && !lst.isEmpty()) {
         for (final Rule r : lst) {
-          final String rid = r.getId();
-          final String vid = r.getVariantID();
+          final String rid = (r == null ? null : r.getId());
+          final String vid = (r == null ? null : r.getVariantID());
           if (StringUtils.isEmpty(rid) || StringUtils.isEmpty(vid)) {
             valid = false;
             LOGGER.warn("Rule contains illegal IDs: {}", r);
@@ -193,37 +194,37 @@ public class RulesValidator implements Validator {
           final Variant v = kb.getVariant(vid);
           if ((v == null) || !v.getId().equals(vid)) {
             valid = false;
-            LOGGER.warn("Variant referenced by Rule does not exists: {}", r);
+            LOGGER.warn("Variant {} referenced by Rule {} does not exists.", vid, rid);
           }
           final String peid = r.getPremiseEventID();
           final Event pe = kb.getEvent(peid);
           if ((pe == null) || !pe.getId().equals(peid)) {
             valid = false;
-            LOGGER.warn("Referenced Premise-Event does not exists: {}", r);
+            LOGGER.warn("Premise-Event referenced by Rule {} does not exists: {}", rid, peid);
           }
           if (StringUtils.isEmpty(pe.getVariantId()) || !pe.getVariantId().equals(vid)) {
             valid = false;
-            LOGGER.warn("Premise-Event and Rule are not attached to the same Variant: {} vs. {}", vid, pe.getVariantId());
+            LOGGER.warn("Premise-Event and Rule {} are not attached to the same Variant: {} vs. {}", rid, vid, pe.getVariantId());
           }
           final String teid = r.getTriggerEventID();
           final Event te = kb.getEvent(teid);
           if ((te == null) || !te.getId().equals(teid)) {
             valid = false;
-            LOGGER.warn("Referenced Trigger-Event does not exists: {}", r);
+            LOGGER.warn("Trigger-Event referenced by Rule {} does not exists: {}", rid, teid);
           }
           if (StringUtils.isEmpty(te.getVariantId()) || !te.getVariantId().equals(vid)) {
             valid = false;
-            LOGGER.warn("Trigger-Event and Rule are not attached to the same Variant: {} vs. {}", vid, te.getVariantId());
+            LOGGER.warn("Trigger-Event and Rule {} are not attached to the same Variant: {} vs. {}", rid, vid, te.getVariantId());
           }
           final String ceid = r.getConclusionEventID();
           final Event ce = kb.getEvent(ceid);
           if ((ce == null) || !ce.getId().equals(ceid)) {
             valid = false;
-            LOGGER.warn("Referenced Conclusion-Event does not exists: {}", r);
+            LOGGER.warn("Conclusion-Event referenced by Rule {} does not exists: {}", rid, ceid);
           }
           if (StringUtils.isEmpty(ce.getVariantId()) || !ce.getVariantId().equals(vid)) {
             valid = false;
-            LOGGER.warn("Conclusion-Event and Rule are not attached to the same Variant: {} vs. {}", vid, ce.getVariantId());
+            LOGGER.warn("Conclusion-Event and Rule {} are not attached to the same Variant: {} vs. {}", rid, vid, ce.getVariantId());
           }
         }
       }
