@@ -14,7 +14,6 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -85,7 +84,7 @@ public class RulesValidator implements Validator {
         }
         final ContextPath cp = e.getContextPath();
         LOGGER.trace("Checking ContextPath of Event {}", e);
-        if (!checkContextPath(kb, cp)) {
+        if (!checkContextPath(kb, cp, vid)) {
           valid = false;
           LOGGER.warn("ContextPath of Event is not valid: {}", e);
         }
@@ -99,11 +98,16 @@ public class RulesValidator implements Validator {
     }
   }
 
-  private boolean checkContextPath(final KnowledgeBase kb, final ContextPath cp) {
-    final List<String> path = (cp == null ? new ArrayList<String>() : cp.getPathIDs());
+  private boolean checkContextPath(final KnowledgeBase kb, final ContextPath cp, final String rootVariantId) {
+    final List<String> path = (cp == null ? null : cp.getPathIDs());
     LOGGER.trace("Path = {}", path);
-    if (path.isEmpty()) {
+    if ((path == null) || path.isEmpty()) {
       LOGGER.warn("ContextPath is empty!");
+      return false;
+    }
+    final String firstPathElement = path.get(0);
+    if (!rootVariantId.equals(firstPathElement)) {
+      LOGGER.warn("ContextPath does not start with Root-Variant-Id of Event: {}", rootVariantId);
       return false;
     }
     boolean variant = true;
@@ -191,17 +195,29 @@ public class RulesValidator implements Validator {
           valid = false;
           LOGGER.warn("Referenced Premise-Event does not exists: {}", r);
         }
+        if (StringUtils.isEmpty(pe.getVariantId()) || !pe.getVariantId().equals(vid)) {
+          valid = false;
+          LOGGER.warn("Premise-Event and Rule are not attached to the same Variant: {} vs. {}", vid, pe.getVariantId());
+        }
         final String teid = r.getTriggerEventID();
         final Event te = kb.getEvent(teid);
         if ((te == null) || !te.getId().equals(teid)) {
           valid = false;
           LOGGER.warn("Referenced Trigger-Event does not exists: {}", r);
         }
+        if (StringUtils.isEmpty(te.getVariantId()) || !te.getVariantId().equals(vid)) {
+          valid = false;
+          LOGGER.warn("Trigger-Event and Rule are not attached to the same Variant: {} vs. {}", vid, te.getVariantId());
+        }
         final String ceid = r.getConclusionEventID();
         final Event ce = kb.getEvent(ceid);
         if ((ce == null) || !ce.getId().equals(ceid)) {
           valid = false;
           LOGGER.warn("Referenced Conclusion-Event does not exists: {}", r);
+        }
+        if (StringUtils.isEmpty(ce.getVariantId()) || !ce.getVariantId().equals(vid)) {
+          valid = false;
+          LOGGER.warn("Conclusion-Event and Rule are not attached to the same Variant: {} vs. {}", vid, ce.getVariantId());
         }
       }
     }
