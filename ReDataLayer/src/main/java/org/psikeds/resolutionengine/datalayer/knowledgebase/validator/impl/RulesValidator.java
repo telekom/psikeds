@@ -56,7 +56,7 @@ public class RulesValidator implements Validator {
       LOGGER.debug("... finished validating KnowledgeBase regarding Rules and Events ... OK.");
     }
     catch (final ValidationException vaex) {
-      LOGGER.warn("... finished validating KnowledgeBase regarding Rules and Events ... NOT VALID!", vaex);
+      LOGGER.warn("... finished validating KnowledgeBase regarding Rules and Events ... NOT VALID: " + vaex.getMessage(), vaex);
       throw vaex;
     }
     catch (final Exception ex) {
@@ -68,33 +68,37 @@ public class RulesValidator implements Validator {
   private void validateEvents(final KnowledgeBase kb) throws ValidationException {
     boolean valid = true;
     try {
-      final Events events = kb.getEvents();
-      final List<Event> lst = events.getEvent();
-      for (final Event e : lst) {
-        final String eid = e.getId();
-        final String vid = e.getVariantId();
-        if (StringUtils.isEmpty(eid) || StringUtils.isEmpty(vid)) {
-          valid = false;
-          LOGGER.warn("Event contains illegal IDs: {}", e);
-        }
-        final Variant v = kb.getVariant(vid);
-        if ((v == null) || !v.getId().equals(vid)) {
-          valid = false;
-          LOGGER.warn("Variant referenced by Event does not exists: {}", e);
-        }
-        final ContextPath cp = e.getContextPath();
-        LOGGER.trace("Checking ContextPath of Event {}", e);
-        if (!checkContextPath(kb, cp, vid)) {
-          valid = false;
-          LOGGER.warn("ContextPath of Event is not valid: {}", e);
+      // Note: Events are optional, i.e. this Node can be null!
+      final Events events = (kb == null ? null : kb.getEvents());
+      final List<Event> lst = (events == null ? null : events.getEvent());
+      if ((lst != null) && !lst.isEmpty()) {
+        for (final Event e : lst) {
+          final String eid = e.getId();
+          final String vid = e.getVariantId();
+          if (StringUtils.isEmpty(eid) || StringUtils.isEmpty(vid)) {
+            valid = false;
+            LOGGER.warn("Event contains illegal IDs: {}", e);
+          }
+          final Variant v = kb.getVariant(vid);
+          if ((v == null) || !v.getId().equals(vid)) {
+            valid = false;
+            LOGGER.warn("Variant referenced by Event does not exists: {}", e);
+          }
+          final ContextPath cp = e.getContextPath();
+          LOGGER.trace("Checking ContextPath of Event {}", e);
+          if (!checkContextPath(kb, cp, vid)) {
+            valid = false;
+            LOGGER.warn("ContextPath of Event is not valid: {}", e);
+          }
         }
       }
     }
     catch (final Exception ex) {
       valid = false;
+      throw new ValidationException("Could not validate Events", ex);
     }
     if (!valid) {
-      throw new ValidationException("KnowledgeBase is not valid! See logfiles for details.");
+      throw new ValidationException("Invalid Events in KnowledgeBase!");
     }
   }
 
@@ -175,57 +179,61 @@ public class RulesValidator implements Validator {
   private void validateRules(final KnowledgeBase kb) throws ValidationException {
     boolean valid = true;
     try {
-      final Rules rules = kb.getRules();
-      final List<Rule> lst = rules.getRule();
-      for (final Rule r : lst) {
-        final String rid = r.getId();
-        final String vid = r.getVariantID();
-        if (StringUtils.isEmpty(rid) || StringUtils.isEmpty(vid)) {
-          valid = false;
-          LOGGER.warn("Rule contains illegal IDs: {}", r);
-        }
-        final Variant v = kb.getVariant(vid);
-        if ((v == null) || !v.getId().equals(vid)) {
-          valid = false;
-          LOGGER.warn("Variant referenced by Rule does not exists: {}", r);
-        }
-        final String peid = r.getPremiseEventID();
-        final Event pe = kb.getEvent(peid);
-        if ((pe == null) || !pe.getId().equals(peid)) {
-          valid = false;
-          LOGGER.warn("Referenced Premise-Event does not exists: {}", r);
-        }
-        if (StringUtils.isEmpty(pe.getVariantId()) || !pe.getVariantId().equals(vid)) {
-          valid = false;
-          LOGGER.warn("Premise-Event and Rule are not attached to the same Variant: {} vs. {}", vid, pe.getVariantId());
-        }
-        final String teid = r.getTriggerEventID();
-        final Event te = kb.getEvent(teid);
-        if ((te == null) || !te.getId().equals(teid)) {
-          valid = false;
-          LOGGER.warn("Referenced Trigger-Event does not exists: {}", r);
-        }
-        if (StringUtils.isEmpty(te.getVariantId()) || !te.getVariantId().equals(vid)) {
-          valid = false;
-          LOGGER.warn("Trigger-Event and Rule are not attached to the same Variant: {} vs. {}", vid, te.getVariantId());
-        }
-        final String ceid = r.getConclusionEventID();
-        final Event ce = kb.getEvent(ceid);
-        if ((ce == null) || !ce.getId().equals(ceid)) {
-          valid = false;
-          LOGGER.warn("Referenced Conclusion-Event does not exists: {}", r);
-        }
-        if (StringUtils.isEmpty(ce.getVariantId()) || !ce.getVariantId().equals(vid)) {
-          valid = false;
-          LOGGER.warn("Conclusion-Event and Rule are not attached to the same Variant: {} vs. {}", vid, ce.getVariantId());
+      // Note: Rules are optional, i.e. this Node can be null!
+      final Rules rules = (kb == null ? null : kb.getRules());
+      final List<Rule> lst = (rules == null ? null : rules.getRule());
+      if ((lst != null) && !lst.isEmpty()) {
+        for (final Rule r : lst) {
+          final String rid = r.getId();
+          final String vid = r.getVariantID();
+          if (StringUtils.isEmpty(rid) || StringUtils.isEmpty(vid)) {
+            valid = false;
+            LOGGER.warn("Rule contains illegal IDs: {}", r);
+          }
+          final Variant v = kb.getVariant(vid);
+          if ((v == null) || !v.getId().equals(vid)) {
+            valid = false;
+            LOGGER.warn("Variant referenced by Rule does not exists: {}", r);
+          }
+          final String peid = r.getPremiseEventID();
+          final Event pe = kb.getEvent(peid);
+          if ((pe == null) || !pe.getId().equals(peid)) {
+            valid = false;
+            LOGGER.warn("Referenced Premise-Event does not exists: {}", r);
+          }
+          if (StringUtils.isEmpty(pe.getVariantId()) || !pe.getVariantId().equals(vid)) {
+            valid = false;
+            LOGGER.warn("Premise-Event and Rule are not attached to the same Variant: {} vs. {}", vid, pe.getVariantId());
+          }
+          final String teid = r.getTriggerEventID();
+          final Event te = kb.getEvent(teid);
+          if ((te == null) || !te.getId().equals(teid)) {
+            valid = false;
+            LOGGER.warn("Referenced Trigger-Event does not exists: {}", r);
+          }
+          if (StringUtils.isEmpty(te.getVariantId()) || !te.getVariantId().equals(vid)) {
+            valid = false;
+            LOGGER.warn("Trigger-Event and Rule are not attached to the same Variant: {} vs. {}", vid, te.getVariantId());
+          }
+          final String ceid = r.getConclusionEventID();
+          final Event ce = kb.getEvent(ceid);
+          if ((ce == null) || !ce.getId().equals(ceid)) {
+            valid = false;
+            LOGGER.warn("Referenced Conclusion-Event does not exists: {}", r);
+          }
+          if (StringUtils.isEmpty(ce.getVariantId()) || !ce.getVariantId().equals(vid)) {
+            valid = false;
+            LOGGER.warn("Conclusion-Event and Rule are not attached to the same Variant: {} vs. {}", vid, ce.getVariantId());
+          }
         }
       }
     }
     catch (final Exception ex) {
       valid = false;
+      throw new ValidationException("Could not validate Rules", ex);
     }
     if (!valid) {
-      throw new ValidationException("KnowledgeBase is not valid! See logfiles for details.");
+      throw new ValidationException("Invalid Rules in KnowledgeBase!");
     }
   }
 
