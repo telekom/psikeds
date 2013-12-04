@@ -20,7 +20,7 @@ For details see file LICENSING in the top project directory
 
   <kb:meta>
     <kb:created>2013-09-09T12:00:00</kb:created>
-    <kb:lastmodified>2013-09-10T17:20:20</kb:lastmodified>
+    <kb:lastmodified>2013-12-03T19:37:23</kb:lastmodified>
     <kb:creator>marco@juliano.de</kb:creator>
     <kb:description>A simple example of a Knowledge Base</kb:description>
     <kb:description>Status: Work in Progress</kb:description>
@@ -167,22 +167,34 @@ For details see file LICENSING in the top project directory
       <kb:constitutes variantID="v22" purposeID="p3 p1" />
     </kb:constituents>
 
+    <!-- 
+    The following Events and Rule are not very reasonable but show
+    the Syntax of a Rule-Definition.
+    Please note, that a Rule and all its Events must be attched to
+    the same Variant and that the Start-Element of the corresponding
+    Context-Paths always must be the ID of that Variant!
+    -->
     <kb:events>
       <kb:event variantID="v11" id="e0001">
         <kb:label>Trigger Event 1</kb:label>
-        <kb:contextPath pathIDs="v11 p111 v1111"/>
+        <kb:contextPath pathIDs="v11 p111 v1111" />
       </kb:event>
       <kb:event variantID="v11" id="e0002">
         <kb:label>Premise Event 1</kb:label>
-        <kb:contextPath pathIDs="v11 p111"/>
+        <kb:contextPath pathIDs="v11 p112" />
       </kb:event>
       <kb:event variantID="v11" id="e0003">
         <kb:label>Conclusion Event 1</kb:label>
-        <kb:contextPath pathIDs="v1112"/>
+        <kb:contextPath pathIDs="v11 p112 v1121" />
       </kb:event>
     </kb:events>
 
     <kb:rules>
+      <!--
+      The following Rule says:
+      1. If e0001 and e0002 are true then e0003 must be applied (Modus Ponens)
+      2. If e0002 is true but e0003 is false then e0001 must be forbidden (Modus Tollens) 
+      -->
       <kb:rule id="rule42" variantID="v11" triggerEventID="e0001" premiseEventID="e0002" conclusionEventID="e0003">
          <kb:label>An example of a Rule</kb:label>
       </kb:rule>
