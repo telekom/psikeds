@@ -23,5 +23,5 @@ set "SCRIPT_DIR=%~dp0"
 set "CURRENT_DIR=%cd%"
 
 cd "%SCRIPT_DIR%"
-mvn clean install#
+mvn clean install
 cd "%CURRENT_DIR%"
