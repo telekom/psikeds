@@ -83,7 +83,7 @@ public class ResolutionBusinessServiceTest {
     this.resolvers = new ArrayList<Resolver>();
     this.resolvers.add(new DecissionEvaluator());
     this.resolvers.add(new AutoCompletion(this.kb, this.trans));
-    this.resolvers.add(new RulesEvaluator());
+    this.resolvers.add(new RulesEvaluator(this.kb, this.trans));
     this.cache = new ResolutionCache();
     this.srvc = new ResolutionBusinessService(
         this.kb,

@@ -35,7 +35,11 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <constructor-arg index="1" type="org.psikeds.resolutionengine.transformer.Transformer" ref="PojoTransformer" />
   </bean>
 
-  <bean id="RulesEvaluator" class="org.psikeds.resolutionengine.resolver.impl.RulesEvaluator" />
+  <bean id="RulesEvaluator" class="org.psikeds.resolutionengine.resolver.impl.RulesEvaluator">
+    <constructor-arg index="0" type="org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase" ref="knowledgeBase" />  <!-- defined in knowledgebase-context.xml -->
+    <constructor-arg index="1" type="org.psikeds.resolutionengine.transformer.Transformer" ref="PojoTransformer" />
+  </bean>
+
 
   <util:list id="ResolverChain">
     <ref bean="DecissionEvaluator" />

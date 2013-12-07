@@ -28,10 +28,9 @@ import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity;
 import org.psikeds.resolutionengine.interfaces.pojos.Metadata;
 import org.psikeds.resolutionengine.interfaces.pojos.Purpose;
 import org.psikeds.resolutionengine.interfaces.pojos.Variant;
-import org.psikeds.resolutionengine.resolver.RelevantEvents;
-import org.psikeds.resolutionengine.resolver.RelevantRules;
 import org.psikeds.resolutionengine.resolver.ResolutionException;
 import org.psikeds.resolutionengine.resolver.Resolver;
+import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
 
 /**
  * Based on the made Decission this Resolver will reduce the corresponding
@@ -71,10 +70,8 @@ public class DecissionEvaluator implements Resolver {
    * @param decission
    *          Decission Interactive decission by Client if not null, otherwise an automatic
    *          Resolution
-   * @param events
-   *          RelevantEvents (ignored!)
-   * @param rules
-   *          RelevantRules (ignored!)
+   * @param raeh
+   *          all Rules and Events currently relevant (ignored!)
    * @param metadata
    *          Metadata (optional, can be null)
    * @return Knowledge resulting new Knowledge
@@ -82,7 +79,7 @@ public class DecissionEvaluator implements Resolver {
    *           if any error occurs
    */
   @Override
-  public Knowledge resolve(final Knowledge knowledge, final Decission decission, final RelevantEvents events, final RelevantRules rules, final Metadata metadata) throws ResolutionException {
+  public Knowledge resolve(final Knowledge knowledge, final Decission decission, final RulesAndEventsHandler raeh, final Metadata metadata) throws ResolutionException {
     boolean ok = false;
     boolean found = false;
     try {
@@ -111,7 +108,7 @@ public class DecissionEvaluator implements Resolver {
   private boolean updateKnowledge(final Knowledge knowledge, final Decission decission, final Metadata metadata) throws ResolutionException {
     boolean found = false;
     try {
-      LOGGER.trace("--> updateKnowledge: Knowledge = {}\nDecission = {}", knowledge, decission);
+      LOGGER.trace("--> updateKnowledge(); Knowledge = {}\nDecission = {}", knowledge, decission);
       if (knowledge == null) {
         final String errmsg = "Cannot evaluate Decission: Knowledge is null!";
         LOGGER.warn(errmsg);
@@ -125,14 +122,14 @@ public class DecissionEvaluator implements Resolver {
       return found;
     }
     finally {
-      LOGGER.trace("<-- updateKnowledge: Found = {}\nKnowledge = {}\nDecission = {}", found, knowledge, decission);
+      LOGGER.trace("<-- updateKnowledge(); Found = {}; Knowledge = {}\nDecission = {}", found, knowledge, decission);
     }
   }
 
   private boolean updateEntity(final KnowledgeEntity ke, final Decission decission, final Metadata metadata) throws ResolutionException {
     boolean found = false;
     try {
-      LOGGER.trace("--> updateEntity: KnowledgeEntity = {}", ke);
+      LOGGER.trace("--> updateEntity(); KnowledgeEntity = {}", ke);
       found = updateChoices(ke.getChoices(), decission, metadata);
       for (final KnowledgeEntity sibling : ke.getSiblings()) {
         found = found | updateEntity(sibling, decission, metadata);
@@ -140,7 +137,7 @@ public class DecissionEvaluator implements Resolver {
       return found;
     }
     finally {
-      LOGGER.trace("<-- updateEntity: Found = {}\nKnowledgeEntity = {}", found, ke);
+      LOGGER.trace("<-- updateEntity(); Found = {}; KnowledgeEntity = {}", found, ke);
     }
   }
 
@@ -148,7 +145,7 @@ public class DecissionEvaluator implements Resolver {
     boolean found = false;
     boolean concernsRootPurpose = false;
     try {
-      LOGGER.trace("--> updateChoices: Choices = {}", choices);
+      LOGGER.trace("--> updateChoices(); Choices = {}", choices);
       for (final Choice c : choices) {
         final Variant v = c.matches(decission);
         if (v != null) {
@@ -181,7 +178,7 @@ public class DecissionEvaluator implements Resolver {
       return found;
     }
     finally {
-      LOGGER.trace("<-- updateChoices: Found = {}\nConcernsRootPurpose = {}\nChoices = {}", found, concernsRootPurpose, choices);
+      LOGGER.trace("<-- updateChoices(); Found = {}; ConcernsRootPurpose = {}\nChoices = {}", found, concernsRootPurpose, choices);
     }
   }
 
@@ -189,7 +186,7 @@ public class DecissionEvaluator implements Resolver {
     final String msg = String.format("Found Choice matching Decission.\nDecission = %s\nChoice = %s", decission, c);
     LOGGER.debug(msg);
     if (metadata != null) {
-      final String key = String.format("Decission%d", System.currentTimeMillis());
+      final String key = String.format("Decission_%s", decission.getId());
       metadata.saveInfo(key, msg);
     }
   }

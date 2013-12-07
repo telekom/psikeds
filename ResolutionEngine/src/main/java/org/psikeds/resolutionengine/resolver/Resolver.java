@@ -17,6 +17,7 @@ package org.psikeds.resolutionengine.resolver;
 import org.psikeds.resolutionengine.interfaces.pojos.Decission;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
 import org.psikeds.resolutionengine.interfaces.pojos.Metadata;
+import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
 
 /**
  * The chain of all Resolvers is our actual Resolution-Engine, i.e. this
@@ -38,10 +39,8 @@ public interface Resolver {
    *          current/old Knowledge
    * @param decission
    *          made Decission (can be null)
-   * @param events
-   *          all Events currently relevant
-   * @param rules
-   *          all Rules currently relevant
+   * @param raeh
+   *          all Rules and Events currently relevant
    * @param metadata
    *          optional Metadata (can be null)
    * @return Knowledge resulting new Knowledge
@@ -51,8 +50,7 @@ public interface Resolver {
   Knowledge resolve(
       Knowledge knowledge,
       Decission decission,
-      RelevantEvents events,
-      RelevantRules rules,
+      RulesAndEventsHandler raeh,
       Metadata metadata) throws ResolutionException;
 
 }
