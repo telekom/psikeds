@@ -33,10 +33,9 @@ import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity;
 import org.psikeds.resolutionengine.interfaces.pojos.Metadata;
 import org.psikeds.resolutionengine.interfaces.pojos.Purpose;
 import org.psikeds.resolutionengine.interfaces.pojos.Variant;
-import org.psikeds.resolutionengine.resolver.RelevantEvents;
-import org.psikeds.resolutionengine.resolver.RelevantRules;
 import org.psikeds.resolutionengine.resolver.ResolutionException;
 import org.psikeds.resolutionengine.resolver.Resolver;
+import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
 import org.psikeds.resolutionengine.transformer.Transformer;
 
 /**
@@ -110,10 +109,8 @@ public class AutoCompletion implements InitializingBean, Resolver {
    * @param decission
    *          Decission Interactive decission by Client if not null, otherwise an automatic
    *          Resolution
-   * @param events
-   *          RelevantEvents (ignored!)
-   * @param rules
-   *          RelevantRules (ignored!)
+   * @param raeh
+   *          all Rules and Events currently relevant (ignored!)
    * @param metadata
    *          Metadata (optional, can be null)
    * @return Knowledge resulting new Knowledge
@@ -121,7 +118,7 @@ public class AutoCompletion implements InitializingBean, Resolver {
    *           if any error occurs
    */
   @Override
-  public Knowledge resolve(final Knowledge knowledge, final Decission decission, final RelevantEvents events, final RelevantRules rules, final Metadata metadata) throws ResolutionException {
+  public Knowledge resolve(final Knowledge knowledge, final Decission decission, final RulesAndEventsHandler raeh, final Metadata metadata) throws ResolutionException {
     boolean ok = false;
     try {
       LOGGER.debug("Autocompleting all Choices ...");
@@ -136,7 +133,7 @@ public class AutoCompletion implements InitializingBean, Resolver {
 
   private void autocompleteKnowledge(final Knowledge knowledge, final Decission decission, final Metadata metadata) throws ResolutionException {
     try {
-      LOGGER.trace("--> autocompleteKnowledge: Knowledge = {}", knowledge);
+      LOGGER.trace("--> autocompleteKnowledge(); Knowledge = {}", knowledge);
       if (knowledge == null) {
         final String errmsg = "Cannot auto-complete: Knowledge is null!";
         LOGGER.warn(errmsg);
@@ -145,7 +142,7 @@ public class AutoCompletion implements InitializingBean, Resolver {
       autocompleteEntities(decission, knowledge.getEntities(), knowledge.getChoices(), metadata);
     }
     finally {
-      LOGGER.trace("<-- autocompleteKnowledge: Knowledge = {}", knowledge);
+      LOGGER.trace("<-- autocompleteKnowledge(); Knowledge = {}", knowledge);
     }
   }
 
@@ -153,7 +150,7 @@ public class AutoCompletion implements InitializingBean, Resolver {
     boolean ok = false;
     final boolean interactive = (decission != null);
     try {
-      LOGGER.trace("--> autocompleteEntities: interactive = {}\nEntities = {}\nChoices = {}", interactive, entities, choices);
+      LOGGER.trace("--> autocompleteEntities(); interactive = {}\nEntities = {}\nChoices = {}", interactive, entities, choices);
       // Step 1: Autocomplete current Choices
       final Iterator<Choice> iter = choices.iterator();
       while (iter.hasNext()) {
@@ -164,10 +161,15 @@ public class AutoCompletion implements InitializingBean, Resolver {
           final Purpose p = c.getPurpose();
           if (p.isRoot() && !interactive && !this.autoCompleteRootPurposes) {
             // Auto-complete Root-Purposes only if Enabled or requested by Client-Decission
-            LOGGER.debug("Skipping Auto-Completion for Root-Purpose: {}", p);
+            if (LOGGER.isTraceEnabled()) {
+              LOGGER.trace("Skipping Auto-Completion for Root-Purpose: {}", p);
+            }
+            else {
+              LOGGER.debug("Skipping Auto-Completion for Root-Purpose: {}", p.getId());
+            }
             continue;
           }
-          LOGGER.debug("Auto-completing Choice: {}", c);
+          LOGGER.trace("Auto-completing Choice: {}", c);
           if (!vars.isEmpty()) { // exactly one
             // Create a new KnowledgeEntity containing Purpose, Variant and new Choices
             final Variant v = vars.get(0);
@@ -196,7 +198,7 @@ public class AutoCompletion implements InitializingBean, Resolver {
       throw new ResolutionException(errmsg, ex);
     }
     finally {
-      LOGGER.trace("<-- autocompleteEntities: " + (ok ? "OK." : "ERROR!") + "\ninteractive = {}\nEntities = {}\nChoices = {}", interactive, entities, choices);
+      LOGGER.trace("<-- autocompleteEntities() = " + (ok ? "OK." : "ERROR!"));
     }
   }
 
@@ -207,20 +209,21 @@ public class AutoCompletion implements InitializingBean, Resolver {
       final String vid1 = e.getVariant().getId();
       final String vid2 = ke.getVariant().getId();
       if (pid1.equals(pid2) && vid1.equals(vid2)) {
-        LOGGER.trace("Entity-List already contains KnowledgeEntity: {}", ke);
+        LOGGER.trace("addNewEntity(): Entity-List already contains KnowledgeEntity: {}", ke);
         return;
       }
     }
-    LOGGER.trace("Adding new KnowledgeEntity: {}", ke);
+    LOGGER.trace("addNewEntity(): Adding new KnowledgeEntity: {}", ke);
     entities.add(ke);
   }
 
   private List<Choice> getNewChoices(final Variant v) {
     final List<Choice> choices = new ArrayList<Choice>();
+    String variantId = null;
     try {
-      LOGGER.trace("--> getNewChoices: Variant = {}", v);
+      LOGGER.trace("--> getNewChoices(); Variant = {}", v);
       // ensure clean data, therefore lookup parent-variant from knowledge base (again)
-      final String variantId = v.getId();
+      variantId = v.getId();
       final org.psikeds.resolutionengine.datalayer.vo.Variant parent = this.kb.getVariant(variantId);
       // get all purposes constituting parent-variant
       final org.psikeds.resolutionengine.datalayer.vo.Purposes newpurps = this.kb.getConstitutingPurposes(parent);
@@ -231,23 +234,25 @@ public class AutoCompletion implements InitializingBean, Resolver {
         // ... and transform parent-variant, purpose and new variant
         //     into a Choice-POJO for the Client
         final Choice c = this.trans.valueObject2Pojo(parent, p, newvars);
-        LOGGER.debug("Adding new Choice: {}", c);
+        LOGGER.trace("Adding new Choice: {}", c);
         choices.add(c);
       }
       // return list of all new choices
       return choices;
     }
     finally {
-      LOGGER.trace("<-- getNewChoices: Variant = {}\nChoices = {}", v, choices);
+      LOGGER.trace("<-- getNewChoices(); Variant = {}\nChoices = {}", variantId, choices);
     }
   }
 
   private void completionMessage(final Metadata metadata, final Choice c) {
-    final String msg = String.format("Completed: %s", c);
-    LOGGER.debug(msg);
-    if (metadata != null) {
-      final String key = String.format("AutoCompletion%d", System.currentTimeMillis());
-      metadata.saveInfo(key, msg);
+    if (c != null) {
+      final String msg = String.format("Completed Choice: %s", c);
+      LOGGER.debug(msg);
+      if (metadata != null) {
+        final String key = String.format("AutoCompletion_%s", c.getId());
+        metadata.saveInfo(key, msg);
+      }
     }
   }
 }

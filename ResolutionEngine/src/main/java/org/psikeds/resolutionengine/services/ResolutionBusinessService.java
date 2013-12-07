@@ -38,10 +38,9 @@ import org.psikeds.resolutionengine.interfaces.pojos.Metadata;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse;
 import org.psikeds.resolutionengine.interfaces.services.ResolutionService;
-import org.psikeds.resolutionengine.resolver.RelevantEvents;
-import org.psikeds.resolutionengine.resolver.RelevantRules;
 import org.psikeds.resolutionengine.resolver.ResolutionException;
 import org.psikeds.resolutionengine.resolver.Resolver;
+import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
 import org.psikeds.resolutionengine.transformer.Transformer;
 
 /**
@@ -57,8 +56,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
   private static final Logger LOGGER = LoggerFactory.getLogger(ResolutionBusinessService.class);
 
   private static final String SESS_KEY_KNOWLEDGE = "Knowledge";
-  private static final String SESS_KEY_EVENTS = "Events";
-  private static final String SESS_KEY_RULES = "Rules";
+  private static final String SESS_KEY_RULES_AND_EVENTS = "RulesAndEvents";
 
   private KnowledgeBase kb;
   private List<Resolver> resolverChain;
@@ -193,7 +191,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
       final Metadata metadata = getMetadata();
       final String sessionID = createSessionId(metadata);
       final Knowledge knowledge = getInitialKnowledge(metadata, sessionID);
-      // save intial knowledge and metadata in cache for next request
+      // save initial knowledge in cache for next request
       this.cache.saveObject(sessionID, SESS_KEY_KNOWLEDGE, knowledge);
       resp = new ResolutionResponse(sessionID, metadata, knowledge);
       return resp;
@@ -278,10 +276,15 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
       // However this automatic Resolution might not be desired, e.g.
       // if Root-Purposes are Alternatives not mandatory.
       // Therefore this Functionality is configurable.
-      knowledge = resolve(knowledge, null, metadata, sessionID);
+      knowledge = resolve(knowledge, metadata, sessionID);
     }
     LOGGER.info("Generated initial Knowledge. S = {}\nK = {}", sessionID, knowledge);
     return knowledge;
+  }
+
+  private Knowledge resolve(final Knowledge oldKnowledge, final Metadata metadata, final String sessionID) {
+    LOGGER.trace("Auto-Resolution!");
+    return resolve(oldKnowledge, null, metadata, sessionID);
   }
 
   private Knowledge resolve(final Knowledge oldKnowledge, final Decission decission, final Metadata metadata, final String sessionID) {
@@ -292,17 +295,15 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
       knowledge.setStable(true);
 
       // Get all Rules and Events relevant for this Session
-      final RelevantEvents events = getRelevantEvents(knowledge, sessionID);
-      final RelevantRules rules = getRelevantRules(knowledge, sessionID);
+      final RulesAndEventsHandler raeh = getRulesAndEvents(knowledge, metadata, sessionID);
 
       // Invoke every Resolver in Chain
       for (final Resolver res : getResolvers()) {
-        knowledge = res.resolve(knowledge, decission, events, rules, metadata);
+        knowledge = res.resolve(knowledge, decission, raeh, metadata);
       }
 
       // Cache Rules and Events for later reuse
-      this.cache.saveObject(sessionID, SESS_KEY_EVENTS, events);
-      this.cache.saveObject(sessionID, SESS_KEY_RULES, rules);
+      saveRulesAndEvents(sessionID, raeh);
 
       if (!knowledge.isStable()) {
         // Some Resolver signaled that the Knowledge is not stable yet, i.e.
@@ -310,7 +311,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
         // was applied or Choices with only one Variant were auto-completed.
         // Note: We do not supply any Decission because this was triggered
         // automatically and not by a Client-Interaction.
-        knowledge = resolve(knowledge, null, metadata, sessionID);
+        knowledge = resolve(knowledge, metadata, sessionID);
       }
 
       // done
@@ -322,22 +323,28 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     }
   }
 
-  private RelevantEvents getRelevantEvents(final Knowledge knowledge, final String sessionID) {
-    RelevantEvents events = (RelevantEvents) this.cache.getObject(sessionID, SESS_KEY_EVENTS);
-    if (events == null) {
-      events = new RelevantEvents(knowledge);
+  // ----------------------------------------------------------------
+
+  private RulesAndEventsHandler getRulesAndEvents(final Knowledge knowledge, final Metadata metadata, final String sessionID) {
+    RulesAndEventsHandler raeh = (RulesAndEventsHandler) this.cache.getObject(sessionID, SESS_KEY_RULES_AND_EVENTS);
+    if (raeh == null) {
+      raeh = createInitialRulesAndEvents(knowledge, metadata, sessionID);
+      saveRulesAndEvents(sessionID, raeh);
+      LOGGER.trace("Created new REAH: {}", raeh);
     }
-    LOGGER.trace("RelevantEvents = {}", events);
-    return events;
+    else {
+      LOGGER.trace("Got existing REAH from Cache: {}", raeh);
+    }
+    return raeh;
   }
 
-  private RelevantRules getRelevantRules(final Knowledge knowledge, final String sessionID) {
-    RelevantRules rules = (RelevantRules) this.cache.getObject(sessionID, SESS_KEY_RULES);
-    if (rules == null) {
-      rules = new RelevantRules(knowledge);
-    }
-    LOGGER.trace("RelevantRules = {}", rules);
-    return rules;
+  private RulesAndEventsHandler createInitialRulesAndEvents(final Knowledge knowledge, final Metadata metadata, final String sessionID) {
+    // TODO: performance optimization: do not start with all rules and events but with "visible" ones
+    return RulesAndEventsHandler.init(getKnowledgeBase());
+  }
+
+  private void saveRulesAndEvents(final String sessionID, final RulesAndEventsHandler raeh) {
+    this.cache.saveObject(sessionID, SESS_KEY_RULES_AND_EVENTS, raeh);
   }
 
   // ----------------------------------------------------------------
