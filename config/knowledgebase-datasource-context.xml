@@ -35,7 +35,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
   </bean>
   -->
 
-  <!-- This Definition will look for a KB within the psiKeds-Configuration-Directory -->
+  <!-- This Definition will look for a custom KB within the psiKeds-Configuration-Directory -->
   <bean id="kbXmlSource" class="org.psikeds.common.config.FileSystemResource"> 
     <constructor-arg index="0" type="java.lang.String" value="kb.xml" />
   </bean>
