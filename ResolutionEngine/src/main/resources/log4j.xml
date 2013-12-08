@@ -26,17 +26,24 @@
     <param name="DatePattern" value="'.'yyyy-MM-dd" />
     <param name="Append" value="true" />
     <param name="File" value="/var/logs/psikeds/psikeds.resolutionengine.log" />
+    <param name="File" value="D:/logs/psikeds.resolutionengine.log" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern"
         value="%d %-5r %-5p [%c] [%X{REQ}] [%X{SRVC}] [%X{CTX}] %m%n" />
     </layout>
-  </appender>#
+  </appender>
   -->
 
   <!-- ================ -->
   <!-- Limit categories -->
   <!-- ================ -->
 
+  <!-- 
+  Java-Logging is a scary mess: Anything else but Level=INFO for org.apache causes a ClassCircularityError!
+   ==> see:
+   http://mailman.qos.ch/pipermail/logback-user/2012-August/003451.html
+   http://stackoverflow.com/questions/2656565/classcircularityerror-when-running-tomcat6-from-eclipse
+   -->
   <category name="org.apache">
     <priority value="INFO" />
   </category>
@@ -54,27 +61,19 @@
   </category>
 
   <category name="org.psikeds">
-    <priority value="INFO" />
-  </category>
-
-  <category name="org.psikeds.common">
-    <priority value="DEBUG" />
-  </category>
-
-  <category name="org.psikeds.common.config">
-    <priority value="TRACE" />
+    <priority value="WARN" />
   </category>
 
   <category name="org.psikeds.resolutionengine">
+    <priority value="INFO" />
+  </category>
+
+    <category name="org.psikeds.resolutionengine.rules">
     <priority value="DEBUG" />
   </category>
 
-  <category name="org.psikeds.resolutionengine.resolver">
-    <priority value="TRACE" />
-  </category>
-
-  <category name="org.psikeds.resolutionengine.services">
-    <priority value="TRACE" />
+  <category name="org.psikeds.resolutionengine.resolver.impl.RulesEvaluator">
+    <priority value="DEBUG" />
   </category>
 
   <!-- ======================= -->

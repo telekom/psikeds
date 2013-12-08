@@ -59,6 +59,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
   private boolean autoCreateConclusionPath;
   private boolean createNonChoosableEntities;
   private boolean keepModusTollensForLater;
+  private boolean repeatAfterRulesApplied;
 
   public RulesEvaluator() {
     this(null, null);
@@ -70,6 +71,15 @@ public class RulesEvaluator implements InitializingBean, Resolver {
     this.autoCreateConclusionPath = true;
     this.createNonChoosableEntities = false;
     this.keepModusTollensForLater = true;
+    this.repeatAfterRulesApplied = false;
+  }
+
+  public boolean isRepeatAfterRulesApplied() {
+    return this.repeatAfterRulesApplied;
+  }
+
+  public void setRepeatAfterRulesApplied(final boolean repeatAfterRulesApplied) {
+    this.repeatAfterRulesApplied = repeatAfterRulesApplied;
   }
 
   public boolean isKeepModusTollensForLater() {
@@ -153,17 +163,27 @@ public class RulesEvaluator implements InitializingBean, Resolver {
         LOGGER.warn(errmsg);
         throw new ResolutionException(errmsg);
       }
+      // knowledge is clean so far
+      raeh.setKnowledgeDirty(false);
       // Part 1: Check Events, i.e. check whether an Event is still possible, triggered or already obsolete
       checkAllPossibleEvents(knowledge, raeh, metadata);
       // Part 2: Check Rules, i.e. apply or expire Rules depending on their Events (Premise, Trigger or Conclusion)
       stable = checkRules(knowledge, raeh, metadata);
       if (!stable) {
         // A rule was applied and it is neccessary to execute the full Resolver-Chain once again
-        LOGGER.debug("Knowledge is not stable, need another Iteration!");
+        LOGGER.debug("Knowledge is not stable, need another Iteration of all Resolvers!");
         knowledge.setStable(false);
       }
       ok = true;
-      return knowledge;
+      if (this.repeatAfterRulesApplied && raeh.isKnowledgeDirty()) {
+        // A rule was applied and we need to check Events and apply remaining Rules once again!
+        LOGGER.debug("Rule applied, repeating checks of Events and Rules.");
+        return resolve(knowledge, decission, raeh, metadata);
+      }
+      else {
+        // done
+        return knowledge;
+      }
     }
     finally {
       RulesAndEventsHandler.logContents(raeh);
@@ -510,6 +530,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
         LOGGER.debug("TRIGGERED: {}", r.getId());
       }
       raeh.setTriggered(r);
+      raeh.setKnowledgeDirty(true);
       if ((metadata != null) && LOGGER.isInfoEnabled()) {
         final String key = "R_" + r.getId() + suffix;
         final String msg = String.valueOf(r);
