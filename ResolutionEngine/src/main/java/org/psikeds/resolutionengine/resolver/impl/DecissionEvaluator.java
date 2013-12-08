@@ -170,7 +170,7 @@ public class DecissionEvaluator implements Resolver {
               // our decission. ==> Remove all Variants, Auto-Complete-Resolver
               // will then clean it up.
               c.getVariants().clear();
-              LOGGER.debug("Removed all Variants for Purpose {}", p);
+              LOGGER.info("Removed all Variants for Purpose {}", p);
             }
           }
         }
@@ -184,7 +184,12 @@ public class DecissionEvaluator implements Resolver {
 
   private void decissionMessage(final Metadata metadata, final Decission decission, final Choice c) {
     final String msg = String.format("Found Choice matching Decission.\nDecission = %s\nChoice = %s", decission, c);
-    LOGGER.debug(msg);
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug(msg);
+    }
+    else {
+      LOGGER.info("Applying Decission {}", decission);
+    }
     if (metadata != null) {
       final String key = String.format("Decission_%s", decission.getId());
       metadata.saveInfo(key, msg);

@@ -169,7 +169,12 @@ public class AutoCompletion implements InitializingBean, Resolver {
             }
             continue;
           }
-          LOGGER.trace("Auto-completing Choice: {}", c);
+          if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Auto-Completion for Purpose {} and Choice: {}", p, c);
+          }
+          else {
+            LOGGER.info("Auto-Completion for Purpose {}", p);
+          }
           if (!vars.isEmpty()) { // exactly one
             // Create a new KnowledgeEntity containing Purpose, Variant and new Choices
             final Variant v = vars.get(0);
