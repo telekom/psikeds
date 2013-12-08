@@ -42,7 +42,13 @@ For details see file LICENSING in the top project directory
         <div class="table_wrapper">
         <table id="app-table" class="table table-bordered table-striped">
           <tr>
-            <th class='table_header'><h:outputFormat value="#{msg['apppkgs.table.header']}"><f:param value="#{W7Apps.numOfApps}" /></h:outputFormat>
+            <th class='table_header'>
+              <ui:fragment rendered="#{W7Apps.numOfApps == 1}">
+                <h:outputText value="#{msg['apppkgs.table.header.single']}" />
+              </ui:fragment>
+              <ui:fragment rendered="#{W7Apps.numOfApps != 1}">
+                <h:outputFormat value="#{msg['apppkgs.table.header.multiple']}"><f:param value="#{W7Apps.numOfApps}" /></h:outputFormat>
+              </ui:fragment>
             </th>
           </tr>
           <tbody>

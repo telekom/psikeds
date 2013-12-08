@@ -44,7 +44,7 @@ For details see file LICENSING in the top project directory
           <ui:repeat var="di" value="#{Choices.possibleChoices}">
             <ui:fragment rendered="#{di.level == 0 or di.type == 'Purpose'}">
               <p/>
-              <h4 class="#{di.type} level#{di.level}"><h:outputText value="#{msg['choices.purpose.text']}" /><h:outputText value="&#160;" />#{di.value}</h4>
+              <h4 class="#{di.type} level#{di.level}"><h:outputText value="#{msg['choices.purpose.text']}" />#{di.value}</h4>
               <hr class="header_rule" />
             </ui:fragment>
             <ui:fragment rendered="#{di.level == 1 or di.type == 'Variant'}">

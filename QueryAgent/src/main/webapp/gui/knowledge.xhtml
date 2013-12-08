@@ -46,7 +46,8 @@ For details see file LICENSING in the top project directory
                 <h3 class="#{di.type} level#{di.level}">#{di.value}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.longDescription}</h3>
               </ui:fragment>
               <ui:fragment rendered="#{di.level != 0}">
-                <h4 class="#{di.type} level#{di.level}">#{di.key}<h:outputText value="&#160;" />#{di.value}<h:outputText value="&#160;" />#{di.longDescription}</h4>
+                <!-- <h4 class="#{di.type} level#{di.level}">#{di.key}<h:outputText value="&#160;" />#{di.value}<h:outputText value="&#160;" />#{di.longDescription}</h4> -->
+                <h4 class="#{di.type} level#{di.level}">#{di.value}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.longDescription}</h4>
               </ui:fragment>
             </ui:fragment>
             <ui:fragment rendered="#{di.type == 'Purpose'}">
@@ -70,7 +71,10 @@ For details see file LICENSING in the top project directory
             </ui:fragment>
           </ui:repeat>
         </div> <!-- meta -->
-     </h:form>
+      </h:form>
+      <ui:fragment rendered="#{Knowledge.resolved}">
+        <p><b><h:outputText value="#{msg['knowledge.resolved.text']}" /></b></p>
+      </ui:fragment>
     </ui:fragment>
     <ui:include src="messages.xhtml" />
     <h:form id="NaviForm">

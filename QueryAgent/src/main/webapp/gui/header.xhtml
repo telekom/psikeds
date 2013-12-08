@@ -25,7 +25,11 @@ For details see file LICENSING in the top project directory
         <span><h:outputText value="&#160;" /></span>
       </ui:fragment>
       <ui:fragment rendered="#{!Knowledge.notInitialized and !Knowledge.withoutData}">
-        <span><h:outputText value="#{msg['global.header.session']}" /><h:outputText value="&#160;" />#{Knowledge.sessionID}</span>
+        <h:form id="HeaderForm">
+          <span>
+            <h:commandLink id="home" action="#{Ctrl.home()}"><h:outputText value="#{msg['global.header.session']}" /><h:outputText value="&#160;" />#{Knowledge.sessionID}</h:commandLink>
+          </span>
+        </h:form>
       </ui:fragment>
     </div>
     <div class='page-header'>
