@@ -68,7 +68,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeBaseMock.class);
 
   private static final String TEST_DATA_DIR = "./src/test/resources/";
-  private static final File KNOWLEDGEBASE = new File(TEST_DATA_DIR, "Knowledgebase.json");
+  private static final File KNOWLEDGEBASE = new File(TEST_DATA_DIR, "KnowledgeBase.json");
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
