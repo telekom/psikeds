@@ -30,6 +30,10 @@ do the following steps:
 
 - add your deployer account to the group tomcat7
 
+- copy the complete content of the config direcgtory
+  delivered by the project into your own recently
+  generated config directory (e.g /home/reincke/psikeds)
+
 - in the psikeds git clone working directory call 
   bash> mvn clean install 
 
@@ -46,3 +50,19 @@ do the following steps:
    
 - restart the tomcat instance by using the command
   bash> sudo /etc/init.d/tomcat7 start
+
+- call http://localhost:8080/ in your browser on the install machine.
+  You should now see the tomcat-IT-Works-site
+
+- call http://localhost:8080/resolutionengine in your browser on the
+  install machine. You should now see the resolution engine
+  overview site
+
+- call http://localhost:8080/queryagent in your browser on the
+  install machine. You should now see the default query frontend
+  connected to the default knowledge base. Try to explore the
+  knowledge base. You should be able to request for an answer
+  to the standard query. And you should get a meaningful
+  answer.
+
+- Bingo.
