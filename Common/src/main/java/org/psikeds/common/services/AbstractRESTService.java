@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -23,12 +23,14 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.cxf.continuations.ContinuationProvider;
 import org.apache.cxf.jaxrs.ext.MessageContext;
 
+import org.springframework.beans.factory.InitializingBean;
+
 /**
  * Base for all REST-Services.
  * 
  * @author marco@juliano.de
  */
-public abstract class AbstractRESTService extends AbstractBaseService {
+public abstract class AbstractRESTService extends AbstractBaseService implements InitializingBean {
 
   @Context
   protected MessageContext context;
@@ -38,12 +40,12 @@ public abstract class AbstractRESTService extends AbstractBaseService {
    */
   @Override
   protected ContinuationProvider getContinuationProvider() {
-    getLogger().trace("--> getContinuationProvider()");
     ContinuationProvider prov = null;
     try {
+      getLogger().trace("--> getContinuationProvider()");
       final String key = ContinuationProvider.class.getName();
-      getLogger().debug("Getting {} from {}", key, String.valueOf(this.context));
-      prov = this.context == null ? null : (ContinuationProvider) this.context.get(key);
+      getLogger().debug("Getting {} from {}", key, this.context);
+      prov = (this.context == null ? null : (ContinuationProvider) this.context.get(key));
       return prov;
     }
     finally {
@@ -59,8 +61,16 @@ public abstract class AbstractRESTService extends AbstractBaseService {
     return buildResponse(Status.BAD_REQUEST, iaex.getMessage());
   }
 
+  protected Response buildResponse(final SecurityException sex) {
+    return buildResponse(Status.FORBIDDEN, sex.getMessage());
+  }
+
   protected Response buildResponse(final InterruptedIOException ioex) {
     return buildResponse(Status.REQUEST_TIMEOUT, ioex.getMessage());
+  }
+
+  protected Response buildResponse(final InterruptedException iex) {
+    return buildResponse(Status.REQUEST_TIMEOUT, iex.getMessage());
   }
 
   protected Response buildResponse(final Exception ex) {

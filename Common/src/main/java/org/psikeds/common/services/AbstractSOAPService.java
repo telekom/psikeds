@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -20,12 +20,14 @@ import javax.xml.ws.handler.MessageContext;
 
 import org.apache.cxf.continuations.ContinuationProvider;
 
+import org.springframework.beans.factory.InitializingBean;
+
 /**
  * Base for all SOAP-Services.
  * 
  * @author marco@juliano.de
  */
-public abstract class AbstractSOAPService extends AbstractBaseService {
+public abstract class AbstractSOAPService extends AbstractBaseService implements InitializingBean {
 
   @Context
   protected WebServiceContext context;
@@ -35,13 +37,13 @@ public abstract class AbstractSOAPService extends AbstractBaseService {
    */
   @Override
   protected ContinuationProvider getContinuationProvider() {
-    getLogger().trace("--> getContinuationProvider()");
     ContinuationProvider prov = null;
     try {
+      getLogger().trace("--> getContinuationProvider()");
       final MessageContext ctx = this.context == null ? null : this.context.getMessageContext();
       final String key = ContinuationProvider.class.getName();
-      getLogger().debug("Getting {} from {}", key, String.valueOf(ctx));
-      prov = ctx == null ? null : (ContinuationProvider) ctx.get(key);
+      getLogger().debug("Getting {} from {}", key, ctx);
+      prov = (ctx == null ? null : (ContinuationProvider) ctx.get(key));
       return prov;
     }
     finally {
