@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -21,8 +21,11 @@ import java.util.concurrent.Executor;
 
 import org.slf4j.Logger;
 
+import org.apache.commons.lang.Validate;
 import org.apache.cxf.continuations.Continuation;
 import org.apache.cxf.continuations.ContinuationProvider;
+
+import org.springframework.beans.factory.InitializingBean;
 
 import org.psikeds.common.exec.Callback;
 import org.psikeds.common.exec.Executable;
@@ -40,7 +43,7 @@ import org.psikeds.common.util.LoggingHelper;
  * 
  * @author marco@juliano.de
  */
-public abstract class AbstractBaseService {
+public abstract class AbstractBaseService implements InitializingBean {
 
   public static final boolean DEFAULT_ASYNC_SUPPORT = true;
   public static final long DEFAULT_SUSPENSION_TIMEOUT = 20000L;
@@ -48,61 +51,74 @@ public abstract class AbstractBaseService {
   public static final ExecutableFactory DEFAULT_EXECUTABLE_FACTORY = new GenericExecutableFactory();
 
   /**
-   * Time in milliseconds that an incomming request/continuation is suspended.
-   * Request/thread will be resumed either after this period of time or when
-   * callback signals that processing is finished.
+   * Time in milliseconds that an incomming request/continuation is
+   * suspended.
+   * Request/Thread will be resumed either after this period of Time
+   * or when Callback signals that Processing is finished.
    */
   protected long suspensionTimeout;
 
   /**
-   * Map containing all currently waiting Requests, i.e. all suspended
-   * Continuations
+   * Map containing all currently waiting Requests,
+   * i.e. all suspended Continuations
    */
   protected Map<String, Continuation> waitingRequests;
 
   /**
-   * Strategy used for executing requests. Default for synchronous processing
-   * is direct invocation (@see org.psikeds.common.exec.SynchronousExecutor)
-   * and for asynchronous processing a pool of threads (@see
-   * org.psikeds.common.exec.Threadpool). However you can plug in any strategy
-   * most suitable for your environment as long as it matches the
-   * asyncSupported flag.
+   * Strategy used for execution of Requests.
+   * Default for synchronous Processing is direct invocation
+   * (@see org.psikeds.common.exec.SynchronousExecutor)
+   * and for asynchronous Processing a Pool of Threads
+   * (@see org.psikeds.common.exec.Threadpool).
+   * However you can plug in any Strategy most suitable for your
+   * Environment as long as it matches the Flag asyncSupported.
    */
   protected Executor executionStrategy;
 
   /**
    * Factory for creating the required Executable.
+   * (@see org.psikeds.common.exec.Executable)
    */
   protected ExecutableFactory executableFactory;
 
   /**
-   * Shall requests be processed synchronous/blocking (false) or
-   * asynchronous/non-blocking (true).
-   * If Flag is set to true but execution platform does not support
-   * Continuations, an automatic fallback to synchronous processing will be
-   * performed.
+   * Shall Requests be processed synchronous/blocking (false) or
+   * asynchronous/non-blocking (true)?
+   * 
+   * If Flag is set to true but Execution-Platform does not support
+   * Continuations, an automatic fallback to synchronous processing
+   * will be performed.
    */
   protected boolean asyncSupported;
 
-  /**
-   * The default Service is asynchronous and using a Threadpool for generic
-   * Executables.
-   */
+  // ------------------------------------------------------------------------
+  // --- Constructors, Getters and Setters
+  // ------------------------------------------------------------------------
+
   public AbstractBaseService() {
     this(DEFAULT_ASYNC_SUPPORT);
   }
 
   public AbstractBaseService(final boolean asyncSupported) {
-    // By default, every Service gets a new/separate Threadpool!
-    this(asyncSupported, asyncSupported ? new Threadpool() : DEFAULT_SYNCHRONOUS_STRATEGY, DEFAULT_EXECUTABLE_FACTORY);
+    this(asyncSupported, DEFAULT_SUSPENSION_TIMEOUT);
   }
 
-  public AbstractBaseService(final boolean asyncSupported, final Executor executionStrategy, final ExecutableFactory executableFactory) {
-    this(asyncSupported, executionStrategy, executableFactory, new HashMap<String, Continuation>(), DEFAULT_SUSPENSION_TIMEOUT);
+  public AbstractBaseService(final long suspensionTimeout) {
+    this((suspensionTimeout > 0), suspensionTimeout);
   }
 
-  public AbstractBaseService(final boolean asyncSupported, final Executor executionStrategy, final ExecutableFactory executableFactory, final Map<String, Continuation> waitingRequests,
-      final long suspensionTimeout) {
+  public AbstractBaseService(final boolean asyncSupported, final long suspensionTimeout) {
+    // By default, every Service gets a new/separate Threadpool
+    this(asyncSupported, suspensionTimeout, asyncSupported ? new Threadpool() : DEFAULT_SYNCHRONOUS_STRATEGY, DEFAULT_EXECUTABLE_FACTORY);
+  }
+
+  public AbstractBaseService(final boolean asyncSupported, final long suspensionTimeout, final Executor executionStrategy, final ExecutableFactory executableFactory) {
+    // By default, every Service has a new/separate HashMap for its waiting/suspended Requests
+    this(asyncSupported, suspensionTimeout, executionStrategy, executableFactory, new HashMap<String, Continuation>());
+  }
+
+  public AbstractBaseService(final boolean asyncSupported, final long suspensionTimeout, final Executor executionStrategy, final ExecutableFactory executableFactory,
+      final Map<String, Continuation> waitingRequests) {
     this.asyncSupported = asyncSupported;
     this.executionStrategy = executionStrategy;
     this.executableFactory = executableFactory;
@@ -110,39 +126,62 @@ public abstract class AbstractBaseService {
     this.suspensionTimeout = suspensionTimeout;
   }
 
-  /**
-   * @param suspensionTimeout the suspensionTimeout to set
-   */
+  public long getSuspensionTimeout() {
+    return this.suspensionTimeout;
+  }
+
   public void setSuspensionTimeout(final long suspensionTimeout) {
     this.suspensionTimeout = suspensionTimeout;
   }
 
-  /**
-   * @param waitingRequests the waitingRequests to set
-   */
+  public Map<String, Continuation> getWaitingRequests() {
+    return this.waitingRequests;
+  }
+
   public void setWaitingRequests(final Map<String, Continuation> waitingRequests) {
     this.waitingRequests = waitingRequests;
   }
 
-  /**
-   * @param executionStrategy the executionStrategy to set
-   */
+  public Executor getExecutionStrategy() {
+    return this.executionStrategy;
+  }
+
   public void setExecutionStrategy(final Executor executionStrategy) {
     this.executionStrategy = executionStrategy;
   }
 
-  /**
-   * @param executableFactory the executableFactory to set
-   */
+  public ExecutableFactory getExecutableFactory() {
+    return this.executableFactory;
+  }
+
   public void setExecutableFactory(final ExecutableFactory executableFactory) {
     this.executableFactory = executableFactory;
   }
 
-  /**
-   * @param asyncSupported the asyncSupported to set
-   */
+  public boolean isAsyncSupported() {
+    return this.asyncSupported;
+  }
+
   public void setAsyncSupported(final boolean asyncSupported) {
     this.asyncSupported = asyncSupported;
+  }
+
+  // ------------------------------------------------------------------------
+  // --- Implementation of Interface InitializingBean
+  // ------------------------------------------------------------------------
+
+  /**
+   * Check that AbstractBaseService (or derived Class) was configured/wired correctly.
+   * 
+   * @throws Exception
+   * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+   */
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    Validate.notNull(this.executionStrategy, "No Execution-Strategy!");
+    Validate.notNull(this.executableFactory, "No Executable-Factory!");
+    Validate.notNull(this.waitingRequests, "No Map for waiting/suspsended Requests!");
+    Validate.isTrue((!this.asyncSupported || (this.suspensionTimeout > 0)), "Asynchronuous Invocation must specify a Suspension-Timeout greater than Zero!");
   }
 
   // ------------------------------------------------------------------------
@@ -154,19 +193,20 @@ public abstract class AbstractBaseService {
   }
 
   protected Object handleRequest(final String reqId, final Executable reqExec, final Object reqData) throws InterruptedIOException {
-    getLogger().trace("--> handleRequest({}, {}, {})", reqId, reqExec, reqData);
     Object respData = null;
     try {
+      getLogger().trace("--> handleRequest({}, {}, {})", reqId, reqExec, reqData);
       final Continuation cont = getContinuation(reqId);
       if (cont == null) {
         if (this.asyncSupported) {
-          getLogger().warn("Continuations and asynchronous invocation of requests are configured (asyncSupported=true), however not supported by plattform!!!");
-          getLogger().warn("Falling back to synchronous execution strategy: {}" + DEFAULT_SYNCHRONOUS_STRATEGY.getClass().getName());
+          getLogger()
+              .warn(
+                  "Continuations and asynchronous invocation of requests are configured (asyncSupported = {}), but not supported by Execution-Platform!\nFalling back to synchronous Execution-Strategy: {}",
+                  this.asyncSupported, DEFAULT_SYNCHRONOUS_STRATEGY.getClass().getName());
           this.asyncSupported = false;
           this.executionStrategy = DEFAULT_SYNCHRONOUS_STRATEGY;
         }
-        // new request, synchronous invocation, blocking and waiting
-        // for the result
+        // new request, synchronous invocation, blocking and waiting for the result
         respData = invokeSynchronous(reqId, reqExec, reqData);
         return respData;
       }
@@ -193,7 +233,9 @@ public abstract class AbstractBaseService {
             sb.append(" [");
             sb.append(reqExec);
             sb.append(']');
-            throw new InterruptedIOException(sb.toString());
+            final String msg = sb.toString();
+            getLogger().info(msg);
+            throw new InterruptedIOException(msg);
           }
         }
         return respData;
@@ -214,19 +256,21 @@ public abstract class AbstractBaseService {
   // ------------------------------------------------------------------------
 
   private Object invokeSynchronous(final String reqId, final Executable reqExec, final Object reqData) {
-    getLogger().trace("--> invokeSynchronous({}, {}, {})", reqId, reqExec, reqData);
     Object respData = null;
     try {
+      getLogger().trace("--> invokeSynchronous({}, {}, {})", reqId, reqExec, reqData);
       final Callback cb = new CallbackImpl(reqId, reqData);
       reqExec.setCallback(cb);
       this.executionStrategy.execute(reqExec);
       if (!cb.isFinished()) {
-        final StringBuilder sb = new StringBuilder("This must never happen! Synchronous execution of ");
+        final StringBuilder sb = new StringBuilder("This must never happen! Synchronous Execution of ");
         sb.append(reqId);
-        sb.append(" ended without being finished!? Check executable ");
+        sb.append(" ended without being finished!? Check implementation of Executable ");
         sb.append(reqExec);
-        sb.append(" and strategy ");
+        sb.append(" and Strategy ");
         sb.append(this.executionStrategy);
+        final String msg = sb.toString();
+        getLogger().error(msg);
         throw new IllegalThreadStateException(sb.toString());
       }
       respData = cb.getPayload();
@@ -238,14 +282,14 @@ public abstract class AbstractBaseService {
   }
 
   private void invokeAsync(final String reqId, final Continuation cont, final Executable reqExec, final Object reqData) {
-    getLogger().trace("--> invokeAsync({}, {}, {}, {})", reqId, cont, reqExec, reqData);
     try {
+      getLogger().trace("--> invokeAsync({}, {}, {}, {})", reqId, cont, reqExec, reqData);
       final Callback acb = new AsyncCallbackImpl(reqId, cont, reqData);
       reqExec.setCallback(acb);
       saveContinuation(reqId, cont);
-      // First suspend continuation then start execution within seperate
-      // thread. Otherwise worker thread could call resume() on
-      // continuation before suspend() was originally invoked.
+      // First suspend Continuation then start Execution within seperate
+      // Thread. Otherwise worker thread could call resume() on Continuation
+      // before suspend() was originally invoked!
       suspendRequest(cont);
       this.executionStrategy.execute(reqExec);
     }
@@ -255,8 +299,8 @@ public abstract class AbstractBaseService {
   }
 
   private boolean suspendRequest(final Continuation cont) {
-    getLogger().trace("--> suspendRequest({})", cont);
     try {
+      getLogger().trace("--> suspendRequest({})", cont);
       return cont.suspend(this.suspensionTimeout);
     }
     finally {
@@ -265,8 +309,8 @@ public abstract class AbstractBaseService {
   }
 
   private void saveContinuation(final String reqId, final Continuation cont) {
-    getLogger().trace("--> saveContinuation({}, {})", reqId, cont);
     try {
+      getLogger().trace("--> saveContinuation({}, {})", reqId, cont);
       synchronized (this.waitingRequests) {
         this.waitingRequests.put(reqId, cont);
         this.waitingRequests.notifyAll();
@@ -278,9 +322,9 @@ public abstract class AbstractBaseService {
   }
 
   private Continuation removeContinuation(final String reqId) {
-    getLogger().trace("--> removeContinuation({})", reqId);
     Continuation cont = null;
     try {
+      getLogger().trace("--> removeContinuation({})", reqId);
       synchronized (this.waitingRequests) {
         cont = this.waitingRequests.remove(reqId);
         this.waitingRequests.notifyAll();
@@ -293,11 +337,11 @@ public abstract class AbstractBaseService {
   }
 
   private Continuation getContinuation(final String reqId) {
-    getLogger().trace("--> getContinuation({})", reqId);
     Continuation cont = null;
     try {
+      getLogger().trace("--> getContinuation({})", reqId);
       if (!this.asyncSupported) {
-        getLogger().debug("Async invocation of requests is disabled per configuration.");
+        getLogger().debug("Asynchronuous Invocation of Requests is disabled per Configuration.");
         return cont;
       }
       cont = removeContinuation(reqId);
@@ -305,11 +349,11 @@ public abstract class AbstractBaseService {
         getLogger().debug("Found existing Continuation: {}", cont);
         return cont;
       }
-      getLogger().debug("Creating new Continuation for {}", reqId);
+      getLogger().debug("Creating new Continuation for Req-Id: {}", reqId);
       final ContinuationProvider prov = getContinuationProvider();
-      // provider might be null if continuations are not supported by the
-      // execution platform
-      cont = prov == null ? null : prov.getContinuation();
+      // Provider might be null if Continuations are not supported
+      // by the Execution-Platform
+      cont = (prov == null ? null : prov.getContinuation());
       return cont;
     }
     finally {
