@@ -25,6 +25,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import org.apache.commons.lang.Validate;
+
+import org.springframework.beans.factory.InitializingBean;
+
 import org.psikeds.knowledgebase.xml.KBParser;
 import org.psikeds.knowledgebase.xml.KBValidator;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
@@ -41,7 +45,7 @@ import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.Validator;
  * @author marco@juliano.de
  * 
  */
-public class XmlKnowledgeBaseFactory implements KnowledgeBaseFactory {
+public class XmlKnowledgeBaseFactory implements InitializingBean, KnowledgeBaseFactory {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(XmlKnowledgeBaseFactory.class);
 
@@ -61,11 +65,11 @@ public class XmlKnowledgeBaseFactory implements KnowledgeBaseFactory {
   }
 
   public XmlKnowledgeBaseFactory(final KBParser parser, final Transformer trans) {
-    this(parser, trans, false, null, null);
+    this(parser, trans, false, null, null); // not validating
   }
 
   public XmlKnowledgeBaseFactory(final KBParser parser, final Transformer trans, final List<Validator> validatorChain) {
-    this(parser, trans, true, null, validatorChain);
+    this(parser, trans, true, null, validatorChain); // validate
   }
 
   public XmlKnowledgeBaseFactory(final KBParser parser, final Transformer trans, final boolean validate, final KBValidator validator, final List<Validator> validatorChain) {
@@ -75,6 +79,21 @@ public class XmlKnowledgeBaseFactory implements KnowledgeBaseFactory {
     this.parser = parser;
     this.trans = (trans != null ? trans : new Xml2VoTransformer());
     this.kb = new XmlKnowledgeBase(this.trans);
+  }
+
+  // ----------------------------------------------------------------
+
+  /**
+   * Check that XmlKnowledgeBaseFactory was configured/wired correctly.
+   * 
+   * @throws Exception
+   * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+   */
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    Validate.notNull(this.parser, "No XML-Parser!");
+    Validate.notNull(this.trans, "No Transformer!");
+    Validate.notNull(this.kb, "No Knowledge-Base!");
   }
 
   // ----------------------------------------------------------------
@@ -132,6 +151,8 @@ public class XmlKnowledgeBaseFactory implements KnowledgeBaseFactory {
   // ----------------------------------------------------------------
 
   /**
+   * Factory Method: Parse XML and create new Knowledge-Base
+   * 
    * @return KnowledgeBase
    * @throws ValidationException
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBaseFactory#create()
@@ -141,12 +162,12 @@ public class XmlKnowledgeBaseFactory implements KnowledgeBaseFactory {
     try {
       LOGGER.trace("--> create()");
 
-      // Step 0: Knowledge-Base not loaded and valid yet.
+      // Step 0: Knowledge-Base not loaded and not valid yet.
       this.kb.setValid(false);
 
       // Step 1: Validate syntactical structure of XML against XSD (if specified)
       if (this.validate && (this.validator != null)) {
-        LOGGER.debug("Validating XML against XSD.");
+        LOGGER.debug("Syntactical validation XML against XSD.");
         this.validator.validate();
       }
 
@@ -156,31 +177,33 @@ public class XmlKnowledgeBaseFactory implements KnowledgeBaseFactory {
       this.parser.parseXmlElements();
 
       // Step 3: Validate data structure of Knowledge-Base regarding logical consistency
-      if (this.validate) {
-        LOGGER.debug("Validating data structures.");
+      if (this.validate && (this.validatorChain != null) && !this.validatorChain.isEmpty()) {
+        LOGGER.debug("Validating XML data structures regarding logical Consistency.");
         for (final Validator val : getValidators()) {
-          LOGGER.trace(String.valueOf(val));
           if (val != null) {
+            if (LOGGER.isTraceEnabled()) {
+              LOGGER.trace(String.valueOf(val));
+            }
             val.validate(this.kb);
           }
         }
       }
 
-      // Step 4: Everything ok!
+      // Step 4: No Exception, everything ok!
       this.kb.setValid(true);
       return this.kb;
     }
     catch (final XMLStreamException xmlex) {
-      throw new ValidationException(xmlex);
+      throw new ValidationException("XML or XSD not readable.", xmlex);
     }
     catch (final SAXException saxex) {
-      throw new ValidationException(saxex);
+      throw new ValidationException("XML data is not valid against the XSD.", saxex);
     }
     catch (final JAXBException jaxbex) {
-      throw new ValidationException(jaxbex);
+      throw new ValidationException("Cannot create Java Objects from XML data.", jaxbex);
     }
     catch (final IOException ioex) {
-      throw new ValidationException(ioex);
+      throw new ValidationException("Cannot read data from Stream.", ioex);
     }
     finally {
       LOGGER.trace("<-- create()");
