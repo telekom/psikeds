@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -23,60 +23,86 @@ import org.psikeds.common.idgen.IdGenerator;
 
 /**
  * Generates a (most probably) unique Request-ID like this:
- *
- * <hostname>-<current time in ms>-<random ascii characters>
+ * 
+ * <hostname>-<random ascii characters>-<current time in ms>
  * 
  * @author marco@juliano.de
  */
 public class RequestIdGenerator extends RandomStringGenerator implements IdGenerator {
 
+  public static final boolean DEFAULT_INCLUDE_HOSTNAME = false;
+  public static final boolean DEFAULT_RESOLVE_HOSTNAME = false;
+  public static final boolean DEFAULT_INCLUDE_TIMESTAMP = true;
+
   private boolean includeHostname;
+  private boolean resolveHostname;
   private boolean includeTimestamp;
   private String hostName;
 
-  /**
-   * @throws NoSuchAlgorithmException
-   */
   public RequestIdGenerator() throws NoSuchAlgorithmException {
-    this(true, true);
+    this(DEFAULT_INCLUDE_TIMESTAMP, DEFAULT_INCLUDE_HOSTNAME, DEFAULT_RESOLVE_HOSTNAME);
   }
 
-  /**
-   * @param ts
-   * @param hn
-   * @throws NoSuchAlgorithmException
-   */
-  public RequestIdGenerator(final boolean ts, final boolean hn) throws NoSuchAlgorithmException {
+  public RequestIdGenerator(final boolean its, final boolean ihn, final boolean rhn) throws NoSuchAlgorithmException {
     super();
-    this.includeTimestamp = ts;
-    this.includeHostname = hn;
+    this.includeTimestamp = its;
+    this.includeHostname = ihn;
+    this.resolveHostname = rhn;
     initHostName();
   }
 
-  private void initHostName() {
+  public void initHostName() {
     try {
-      final InetAddress localMachine = InetAddress.getLocalHost();
-      this.hostName = localMachine.getHostName();
+      if (this.includeHostname && StringUtils.isEmpty(this.hostName)) {
+        final InetAddress localMachine = InetAddress.getLocalHost();
+        // InetAddress.getHostName() performs a Nameservice-Lookup.
+        // This can be a very expensive Operation, worst case blocking
+        // for several Minutes until some Timeout occurs!
+        this.hostName = (this.resolveHostname ? localMachine.getHostName() : localMachine.getHostAddress());
+      }
     }
     catch (final Exception ex) {
       this.hostName = null;
       this.includeHostname = false;
+      this.resolveHostname = false;
     }
   }
 
-  /**
-   * @param includeHostname the includeHostname to set
-   */
+  // ------------------------------------------------------
+
+  public String getHostName() {
+    return this.hostName;
+  }
+
+  public void setHostName(final String hostName) {
+    this.hostName = hostName;
+  }
+
+  public boolean isResolveHostname() {
+    return this.resolveHostname;
+  }
+
+  public void setResolveHostname(final boolean resolveHostname) {
+    this.resolveHostname = resolveHostname;
+  }
+
+  public boolean isIncludeHostname() {
+    return this.includeHostname;
+  }
+
   public void setIncludeHostname(final boolean includeHostname) {
     this.includeHostname = includeHostname;
   }
 
-  /**
-   * @param includeTimestamp the includeTimestamp to set
-   */
+  public boolean isIncludeTimestamp() {
+    return this.includeTimestamp;
+  }
+
   public void setIncludeTimestamp(final boolean includeTimestamp) {
     this.includeTimestamp = includeTimestamp;
   }
+
+  // ------------------------------------------------------
 
   /**
    * @return String next request id
@@ -89,11 +115,11 @@ public class RequestIdGenerator extends RandomStringGenerator implements IdGener
       sb.append(this.hostName);
       sb.append('-');
     }
-    if (this.includeTimestamp) {
-      sb.append(System.currentTimeMillis());
-      sb.append('-');
-    }
     sb.append(super.getNextId());
+    if (this.includeTimestamp) {
+      sb.append('-');
+      sb.append(System.currentTimeMillis());
+    }
     return sb.toString();
   }
 }
