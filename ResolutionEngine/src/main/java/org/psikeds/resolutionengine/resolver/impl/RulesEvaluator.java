@@ -640,6 +640,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
   // Part 2 - Step C: Modus Ponens: trigger Conclusion
   private void applyRuleModusPonens(final Rule r, final Knowledge knowledge, final RulesAndEventsHandler raeh, final Metadata metadata) {
     LOGGER.info("MODUS PONENS - applying Conclusion-Event of Rule: {}", r);
+    // TODO: performance optimization: remember root of variant, do not search again
     final List<KnowledgeEntity> root = findRoot(r, knowledge);
     final String eventId = r.getConclusionEventID();
     if (applyConclusionEvent(root, eventId)) {
@@ -905,6 +906,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
   // Part 2 - Step D: Modus Tollens: disable Trigger
   private void applyRuleModusTollens(final Rule r, final Knowledge knowledge, final RulesAndEventsHandler raeh, final Metadata metadata) {
     LOGGER.info("MODUS TOLLENS - disabling Trigger-Event of Rule: {}", r);
+    // TODO: performance optimization: remember root of variant, do not search again
     final List<KnowledgeEntity> root = findRoot(r, knowledge);
     final String eventId = r.getTriggerEventID();
     if (disableTriggerEvent(root, eventId)) {
@@ -1047,4 +1049,6 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       findRoot(result, rootVariantId, ke.getSiblings());
     }
   }
+
+  // TODO: refactoring: this class is too large and too complex; extract some functionality to separate classes
 }

@@ -46,7 +46,7 @@ public class DecissionEvaluator implements InitializingBean, Resolver {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DecissionEvaluator.class);
 
-  public static boolean DEFAULT_ROOT_PURPOSE_OPTIONAL = true;
+  public static final boolean DEFAULT_ROOT_PURPOSE_OPTIONAL = true;
 
   private boolean rootPurposeOptional;
 
@@ -109,6 +109,7 @@ public class DecissionEvaluator implements InitializingBean, Resolver {
           throw new ResolutionException(errmsg);
         }
         found = updateKnowledge(knowledge, decission, metadata);
+        // TODO: performance optimization: update possible events and rules based on decission
       }
       else {
         LOGGER.debug("Skipping Evaluation, Decission is null.");
