@@ -2,7 +2,7 @@
 <!--
 psiKeds :- ps induced knowledge entity delivery system
 
-Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
 
 This file is free software: you can redistribute
 it and/or modify it under the terms of the
@@ -22,24 +22,33 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-  <bean id="ResolutionCache" class="org.psikeds.resolutionengine.cache.ResolutionCache" />
+  <bean id="ResolutionCache" class="org.psikeds.resolutionengine.cache.ResolutionCache">
+    <constructor-arg index="0" value="${resolutionengine.cache.sessions.per.server}" />
+    <constructor-arg index="1" value="${resolutionengine.cache.objects.per.session}" />
+  </bean>
 
   <bean id="PojoTransformer" class="org.psikeds.resolutionengine.transformer.impl.Vo2PojoTransformer" />
 
   <bean id="SessionIdGenerator" class="org.psikeds.common.idgen.impl.SessionIdGenerator" />
 
-  <bean id="DecissionEvaluator" class="org.psikeds.resolutionengine.resolver.impl.DecissionEvaluator" />
+  <bean id="DecissionEvaluator" class="org.psikeds.resolutionengine.resolver.impl.DecissionEvaluator">
+    <constructor-arg index="0" value="${resolutionengine.resolver.decission.optional.root.purposes}" />
+  </bean>
 
   <bean id="AutoCompletionResolver" class="org.psikeds.resolutionengine.resolver.impl.AutoCompletion">
     <constructor-arg index="0" type="org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase" ref="knowledgeBase" />  <!-- defined in knowledgebase-context.xml -->
     <constructor-arg index="1" type="org.psikeds.resolutionengine.transformer.Transformer" ref="PojoTransformer" />
+    <constructor-arg index="2" value="${resolutionengine.resolver.autocomplete.root.purposes}" />
   </bean>
 
   <bean id="RulesEvaluator" class="org.psikeds.resolutionengine.resolver.impl.RulesEvaluator">
     <constructor-arg index="0" type="org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase" ref="knowledgeBase" />  <!-- defined in knowledgebase-context.xml -->
     <constructor-arg index="1" type="org.psikeds.resolutionengine.transformer.Transformer" ref="PojoTransformer" />
+    <constructor-arg index="2" value="${resolutionengine.resolver.rules.create.missing.conclusion.path}" />
+    <constructor-arg index="3" value="${resolutionengine.resolver.rules.create.non.choosable.entities}" />
+    <constructor-arg index="4" value="${resolutionengine.resolver.rules.keep.modus.tollens.for.later}" />
+    <constructor-arg index="5" value="${resolutionengine.resolver.rules.repeat.after.rules.applied}" />
   </bean>
-
 
   <util:list id="ResolverChain">
     <ref bean="DecissionEvaluator" />
@@ -53,6 +62,9 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <constructor-arg index="2" type="org.psikeds.resolutionengine.cache.ResolutionCache" ref="ResolutionCache"/>
     <constructor-arg index="3" type="org.psikeds.resolutionengine.transformer.Transformer" ref="PojoTransformer" />
     <constructor-arg index="4" type="org.psikeds.common.idgen.IdGenerator" ref="SessionIdGenerator" />
+    <constructor-arg index="5" value="${resolutionengine.service.resolve.initial.knowledge}" />
+    <constructor-arg index="6" value="${resolutionengine.service.check.validity.on.startup}" />
+    <constructor-arg index="7" value="${resolutionengine.service.check.validity.at.runtime}" />
   </bean>
 
 </beans>
