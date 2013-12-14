@@ -37,6 +37,7 @@ import org.psikeds.resolutionengine.resolver.ResolutionException;
 import org.psikeds.resolutionengine.resolver.Resolver;
 import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
 import org.psikeds.resolutionengine.transformer.Transformer;
+import org.psikeds.resolutionengine.transformer.impl.Vo2PojoTransformer;
 
 /**
  * This Resolver completes automatically all Choices, i.e. it constructs
@@ -49,18 +50,29 @@ public class AutoCompletion implements InitializingBean, Resolver {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(AutoCompletion.class);
 
+  public static final Transformer DEFAULT_TRANSFORMER = new Vo2PojoTransformer();
+  public static final boolean DEFAULT_COMPLETE_ROOT_PURPOSES = false;
+
   private KnowledgeBase kb;
   private Transformer trans;
   private boolean autoCompleteRootPurposes;
 
   public AutoCompletion() {
-    this(null, null);
+    this(null);
+  }
+
+  public AutoCompletion(final KnowledgeBase kb) {
+    this(kb, DEFAULT_TRANSFORMER, DEFAULT_COMPLETE_ROOT_PURPOSES);
   }
 
   public AutoCompletion(final KnowledgeBase kb, final Transformer trans) {
+    this(kb, trans, DEFAULT_COMPLETE_ROOT_PURPOSES);
+  }
+
+  public AutoCompletion(final KnowledgeBase kb, final Transformer trans, final boolean complete) {
     this.kb = kb;
     this.trans = trans;
-    this.autoCompleteRootPurposes = false;
+    this.autoCompleteRootPurposes = complete;
   }
 
   public boolean isAutoCompleteRootPurposes() {
@@ -97,6 +109,7 @@ public class AutoCompletion implements InitializingBean, Resolver {
    */
   @Override
   public void afterPropertiesSet() throws Exception {
+    LOGGER.info("Config: Auto-Completion for Root-Purpose: {}", this.autoCompleteRootPurposes);
     Validate.notNull(this.kb, "No Knowledge-Base!");
     Validate.notNull(this.trans, "No Transformer!");
   }

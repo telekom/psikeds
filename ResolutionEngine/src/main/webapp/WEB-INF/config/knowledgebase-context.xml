@@ -2,7 +2,7 @@
 <!--
 psiKeds :- ps induced knowledge entity delivery system
 
-Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
 
 This file is free software: you can redistribute
 it and/or modify it under the terms of the
@@ -23,7 +23,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
   <bean id="XMLParser" class="org.psikeds.knowledgebase.xml.impl.XMLParser">
-    <constructor-arg index="0" type="org.springframework.core.io.Resource" ref="kbXmlSource" />  <!-- defined in knowledgebase-datasource-context.xml -->
+    <constructor-arg index="0" type="org.springframework.core.io.Resource" ref="${resolutionengine.knowledgebase.datasource.name}" />  <!-- defined in resolutionengine.properties and knowledgebase-datasource-context.xml -->
   </bean>
 
   <bean id="XmlTransformer" class="org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.impl.Xml2VoTransformer" />

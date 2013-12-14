@@ -18,16 +18,19 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 
 import org.psikeds.common.idgen.IdGenerator;
 
 /**
  * Generates a random ASCII-String by generating random Bytes
  * and encoding them Base64.
+ * 
  * Note: The Base64-encoded String is longer than the specified
  * Number of Bytes.
  * 
  * @see <a href="http://www.ietf.org/rfc/rfc2045.txt">RFC 2045</a>
+ * 
  * @author marco@juliano.de
  */
 public class RandomStringGenerator implements IdGenerator {
@@ -35,12 +38,17 @@ public class RandomStringGenerator implements IdGenerator {
   /**
    * Default algorithm used for generating (pseudo) random bytes
    */
-  private static final String DEFAULT_RANDOM_ALGORITHM = "SHA1PRNG";
+  public static final String DEFAULT_RANDOM_ALGORITHM = "SHA1PRNG";
 
   /**
    * Default length of random String: 12 Bytes = 96 Bits = 16 Chars in Base64
    */
-  private static final int DEFAULT_NUMBER_OF_BYTES = 12;
+  public static final int DEFAULT_NUMBER_OF_BYTES = 12;
+
+  /**
+   * Minimum length of random String: 3 Bytes = 24 Bits = 4 Chars in Base64
+   */
+  public static final int MINIMUM_NUMBER_OF_BYTES = 3;
 
   private String randomAlgorithm;
   private int numberOfBytes;
@@ -61,6 +69,9 @@ public class RandomStringGenerator implements IdGenerator {
    *          the numberOfBytes to set
    */
   public void setNumberOfBytes(final int numberOfBytes) {
+    if (numberOfBytes < MINIMUM_NUMBER_OF_BYTES) {
+      throw new IllegalArgumentException();
+    }
     this.numberOfBytes = numberOfBytes;
   }
 
@@ -69,6 +80,9 @@ public class RandomStringGenerator implements IdGenerator {
    *          the randomAlgorithm to set
    */
   public void setRandomAlgorithm(final String randomAlgorithm) throws NoSuchAlgorithmException {
+    if (StringUtils.isEmpty(randomAlgorithm)) {
+      throw new NoSuchAlgorithmException();
+    }
     if ((this.secran == null) || !randomAlgorithm.equals(this.randomAlgorithm)) {
       this.secran = SecureRandom.getInstance(randomAlgorithm);
       this.randomAlgorithm = randomAlgorithm;

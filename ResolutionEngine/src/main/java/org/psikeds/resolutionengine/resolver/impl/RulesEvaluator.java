@@ -41,6 +41,7 @@ import org.psikeds.resolutionengine.resolver.ResolutionException;
 import org.psikeds.resolutionengine.resolver.Resolver;
 import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
 import org.psikeds.resolutionengine.transformer.Transformer;
+import org.psikeds.resolutionengine.transformer.impl.Vo2PojoTransformer;
 
 /**
  * This Resolver will evaluate the possible Events und apply all Rules
@@ -54,6 +55,12 @@ public class RulesEvaluator implements InitializingBean, Resolver {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RulesEvaluator.class);
 
+  public static final Transformer DEFAULT_TRANSFORMER = new Vo2PojoTransformer();
+  public static final boolean DEFAULT_CREATE_CONCLUSION_PATH = true;
+  public static final boolean DEFAULT_CREATE_NON_CHOOSABLE_ENTITIES = false;
+  public static final boolean DEFAULT_KEEP_MODUS_TOLLENS_FOR_LATER = true;
+  public static final boolean DEFAULT_REPEAT_AFTER_RULES_APPLIED = false;
+
   private KnowledgeBase kb;
   private Transformer trans;
   private boolean autoCreateConclusionPath;
@@ -62,16 +69,24 @@ public class RulesEvaluator implements InitializingBean, Resolver {
   private boolean repeatAfterRulesApplied;
 
   public RulesEvaluator() {
-    this(null, null);
+    this(null);
+  }
+
+  public RulesEvaluator(final KnowledgeBase kb) {
+    this(kb, DEFAULT_TRANSFORMER);
   }
 
   public RulesEvaluator(final KnowledgeBase kb, final Transformer trans) {
+    this(kb, trans, DEFAULT_CREATE_CONCLUSION_PATH, DEFAULT_CREATE_NON_CHOOSABLE_ENTITIES, DEFAULT_KEEP_MODUS_TOLLENS_FOR_LATER, DEFAULT_REPEAT_AFTER_RULES_APPLIED);
+  }
+
+  public RulesEvaluator(final KnowledgeBase kb, final Transformer trans, final boolean createConclusion, final boolean createNonChoosable, final boolean keepForLater, final boolean repeatAfterRules) {
     this.kb = kb;
     this.trans = trans;
-    this.autoCreateConclusionPath = true;
-    this.createNonChoosableEntities = false;
-    this.keepModusTollensForLater = true;
-    this.repeatAfterRulesApplied = false;
+    this.autoCreateConclusionPath = createConclusion;
+    this.createNonChoosableEntities = createNonChoosable;
+    this.keepModusTollensForLater = keepForLater;
+    this.repeatAfterRulesApplied = repeatAfterRules;
   }
 
   public boolean isRepeatAfterRulesApplied() {
@@ -132,6 +147,13 @@ public class RulesEvaluator implements InitializingBean, Resolver {
    */
   @Override
   public void afterPropertiesSet() throws Exception {
+    if (LOGGER.isInfoEnabled()) {
+      final StringBuilder sb = new StringBuilder("Config: Auto-Creation of Conclusion-Path: {}\n");
+      sb.append("Creation of not choosable Knowledge-Entities: {}\n");
+      sb.append("Keeping Modus Tollens for later: {}\n");
+      sb.append("Repeat after Rules were applied: {}");
+      LOGGER.info(sb.toString(), this.autoCreateConclusionPath, this.createNonChoosableEntities, this.keepModusTollensForLater, this.repeatAfterRulesApplied);
+    }
     Validate.notNull(this.kb, "No Knowledge-Base!");
     Validate.notNull(this.trans, "No Transformer!");
   }
@@ -618,6 +640,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
   // Part 2 - Step C: Modus Ponens: trigger Conclusion
   private void applyRuleModusPonens(final Rule r, final Knowledge knowledge, final RulesAndEventsHandler raeh, final Metadata metadata) {
     LOGGER.info("MODUS PONENS - applying Conclusion-Event of Rule: {}", r);
+    // TODO: performance optimization: remember root of variant, do not search again
     final List<KnowledgeEntity> root = findRoot(r, knowledge);
     final String eventId = r.getConclusionEventID();
     if (applyConclusionEvent(root, eventId)) {
@@ -883,6 +906,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
   // Part 2 - Step D: Modus Tollens: disable Trigger
   private void applyRuleModusTollens(final Rule r, final Knowledge knowledge, final RulesAndEventsHandler raeh, final Metadata metadata) {
     LOGGER.info("MODUS TOLLENS - disabling Trigger-Event of Rule: {}", r);
+    // TODO: performance optimization: remember root of variant, do not search again
     final List<KnowledgeEntity> root = findRoot(r, knowledge);
     final String eventId = r.getTriggerEventID();
     if (disableTriggerEvent(root, eventId)) {
@@ -1025,4 +1049,6 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       findRoot(result, rootVariantId, ke.getSiblings());
     }
   }
+
+  // TODO: refactoring: this class is too large and too complex; extract some functionality to separate classes
 }

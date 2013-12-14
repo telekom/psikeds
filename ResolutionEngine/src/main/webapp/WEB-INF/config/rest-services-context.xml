@@ -30,6 +30,7 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
   <bean id="resolutionRESTService" class="org.psikeds.resolutionengine.interfaces.rest.ResolutionRESTService">
     <constructor-arg index="0" type="org.psikeds.resolutionengine.interfaces.services.ResolutionService" ref="resolutionBusinessService" />  <!-- defined in business-services-context.xml -->
+    <!-- TODO: add settings for timeouts and threads -->
   </bean>
 
   <!-- Putting it all together: Configre the JAX-RS-Server -->

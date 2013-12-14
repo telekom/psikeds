@@ -1,15 +1,15 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
- * 
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
- * 
+ *
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
  * [x] GNU Affero General Public License
  * [ ] GNU General Public License
  * [ ] GNU Lesser General Public License
  * [ ] Creatice Commons ShareAlike License
- * 
+ *
  * For details see file LICENSING in the top project directory
  *******************************************************************************/
 package org.psikeds.common.interceptor;
@@ -22,6 +22,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.commons.lang.Validate;
 import org.apache.cxf.common.i18n.UncheckedException;
 import org.apache.cxf.common.util.StringUtils;
 import org.apache.cxf.helpers.CastUtils;
@@ -32,6 +33,8 @@ import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.apache.cxf.phase.Phase;
 
+import org.springframework.beans.factory.InitializingBean;
+
 import org.psikeds.common.idgen.IdGenerator;
 import org.psikeds.common.util.LoggingHelper;
 
@@ -41,16 +44,25 @@ import org.psikeds.common.util.LoggingHelper;
  * both SOAP- and REST-Services.
  * 
  * @author marco@juliano.de
+ * 
  */
-public class RequestIdGenerationInterceptor<T extends Message> extends AbstractPhaseInterceptor<T> {
-
-  private static final String DEFAULT_REQUEST_ID_HTTP_HEADER = "psiKeds-Request-Id";
+public class RequestIdGenerationInterceptor<T extends Message> extends AbstractPhaseInterceptor<T> implements InitializingBean {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RequestIdGenerationInterceptor.class);
 
+  public static final String DEFAULT_REQ_ID_HTTP_HEADER = "psiKeds-Request-Id";
+  public static final String DEFAULT_INTERCEPTOR_PHASE = Phase.PRE_INVOKE;
+  public static final boolean DEFAULT_READ_REQ_ID_FROM_HTTP_HEADER = false;
+  public static final boolean DEFAULT_WRITE_REQ_ID_TO_HTTP_HEADER = false;
+  public static final boolean DEFAULT_READ_REQ_ID_FROM_CXF_MSG_ID = false;
+  public static final boolean DEFAULT_WRITE_REQ_ID_TO_CXF_MSG_ID = true;
+  // Setting this to false, i.e. adding Req-Id not to the
+  // Request-Parameters will most probably result in errors 
+  public static final boolean DEFAULT_ADD_REQ_ID_TO_PARAMS = true;
+
   private IdGenerator generator;
+  private String nameOfRequestIdHttpHeader;
   private boolean readRequestIdFromHttpHeader;
-  private String nameOfRequestIdttpHeader;
   private boolean writeRequestIdToHttpHeader;
   private boolean readRequestIdFromCxfMsgId;
   private boolean writeRequestIdToCxfMsgId;
@@ -61,74 +73,96 @@ public class RequestIdGenerationInterceptor<T extends Message> extends AbstractP
   }
 
   public RequestIdGenerationInterceptor(final IdGenerator generator) {
-    this(Phase.PRE_INVOKE, generator);
+    this(DEFAULT_INTERCEPTOR_PHASE, generator);
   }
 
   public RequestIdGenerationInterceptor(final String phase, final IdGenerator generator) {
     super(phase);
     this.generator = generator;
-    this.readRequestIdFromHttpHeader = false;
-    this.nameOfRequestIdttpHeader = DEFAULT_REQUEST_ID_HTTP_HEADER;
-    this.writeRequestIdToHttpHeader = false;
-    this.readRequestIdFromCxfMsgId = false;
-    this.writeRequestIdToCxfMsgId = true;
-    this.addRequestIdToParameters = true;
+    this.nameOfRequestIdHttpHeader = DEFAULT_REQ_ID_HTTP_HEADER;
+    this.readRequestIdFromHttpHeader = DEFAULT_READ_REQ_ID_FROM_HTTP_HEADER;
+    this.writeRequestIdToHttpHeader = DEFAULT_WRITE_REQ_ID_TO_HTTP_HEADER;
+    this.readRequestIdFromCxfMsgId = DEFAULT_READ_REQ_ID_FROM_CXF_MSG_ID;
+    this.writeRequestIdToCxfMsgId = DEFAULT_WRITE_REQ_ID_TO_CXF_MSG_ID;
+    this.addRequestIdToParameters = DEFAULT_ADD_REQ_ID_TO_PARAMS;
   }
 
-  /**
-   * @param generator the generator to set
-   */
-  public void setRequestIdGenerator(final IdGenerator generator) {
+  // ------------------------------------------------------
+
+  public IdGenerator getGenerator() {
+    return this.generator;
+  }
+
+  public void setGenerator(final IdGenerator generator) {
     this.generator = generator;
   }
 
-  /**
-   * @param appendRequestIdToParameters the appendRequestIdToParameters to set
-   */
-  public void setAddRequestIdToParameters(final boolean addRequestIdToParameters) {
-    this.addRequestIdToParameters = addRequestIdToParameters;
+  public boolean isReadRequestIdFromHttpHeader() {
+    return this.readRequestIdFromHttpHeader;
   }
 
-  /**
-   * @param readRequestIdFromHttpHeader the readRequestIdFromHttpHeader to
-   *          set
-   */
   public void setReadRequestIdFromHttpHeader(final boolean readRequestIdFromHttpHeader) {
     this.readRequestIdFromHttpHeader = readRequestIdFromHttpHeader;
   }
 
-  /**
-   * @param nameOfRequestIdttpHeader the nameOfRequestIdttpHeader to set
-   */
-  public void setNameOfRequestIdttpHeader(final String nameOfRequestIdttpHeader) {
-    this.nameOfRequestIdttpHeader = nameOfRequestIdttpHeader;
+  public String getNameOfRequestIdHttpHeader() {
+    return this.nameOfRequestIdHttpHeader;
   }
 
-  /**
-   * @param writeRequestIdToHttpHeader the writeRequestIdToHttpHeader to
-   *          set
-   */
+  public void setNameOfRequestIdHttpHeader(final String nameOfRequestIdHttpHeader) {
+    this.nameOfRequestIdHttpHeader = nameOfRequestIdHttpHeader;
+  }
+
+  public boolean isWriteRequestIdToHttpHeader() {
+    return this.writeRequestIdToHttpHeader;
+  }
+
   public void setWriteRequestIdToHttpHeader(final boolean writeRequestIdToHttpHeader) {
     this.writeRequestIdToHttpHeader = writeRequestIdToHttpHeader;
   }
 
-  /**
-   * @param readRequestIdFromCxfMsgId the readRequestIdFromCxfMsgId to set
-   */
+  public boolean isReadRequestIdFromCxfMsgId() {
+    return this.readRequestIdFromCxfMsgId;
+  }
+
   public void setReadRequestIdFromCxfMsgId(final boolean readRequestIdFromCxfMsgId) {
     this.readRequestIdFromCxfMsgId = readRequestIdFromCxfMsgId;
   }
 
-  /**
-   * @param writeRequestIdToCxfMsgId the writeRequestIdToCxfMsgId to set
-   */
+  public boolean isWriteRequestIdToCxfMsgId() {
+    return this.writeRequestIdToCxfMsgId;
+  }
+
   public void setWriteRequestIdToCxfMsgId(final boolean writeRequestIdToCxfMsgId) {
     this.writeRequestIdToCxfMsgId = writeRequestIdToCxfMsgId;
   }
 
+  public boolean isAddRequestIdToParameters() {
+    return this.addRequestIdToParameters;
+  }
+
+  public void setAddRequestIdToParameters(final boolean addRequestIdToParameters) {
+    this.addRequestIdToParameters = addRequestIdToParameters;
+  }
+
+  //------------------------------------------------------
+
+  /**
+   * Check that RequestIdGenerationInterceptor was configured/wired correctly.
+   * 
+   * @throws Exception
+   * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+   */
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    Validate.notNull(this.generator, "No Request-ID-Generator!");
+  }
+
+  //------------------------------------------------------
+
   /**
    * @param message
-   * @throws Fault
+   * @throws UncheckedException
    * @see org.apache.cxf.interceptor.Interceptor#handleMessage(org.apache.cxf.message.Message)
    */
   @Override
@@ -184,9 +218,11 @@ public class RequestIdGenerationInterceptor<T extends Message> extends AbstractP
     }
   }
 
+  //------------------------------------------------------
+
   private boolean isREST(final T message) {
     final Object obj = message == null ? null : message.get(Message.REST_MESSAGE);
-    return obj instanceof Boolean && (Boolean) obj;
+    return (obj instanceof Boolean) && (Boolean) obj;
   }
 
   private String generateNewRequestId() {
@@ -197,10 +233,10 @@ public class RequestIdGenerationInterceptor<T extends Message> extends AbstractP
 
   private String getRequestIdFromHTTPHeader(final T message) {
     String reqid = null;
-    if (!StringUtils.isEmpty(this.nameOfRequestIdttpHeader)) {
+    if (!StringUtils.isEmpty(this.nameOfRequestIdHttpHeader)) {
       final Map<String, List<String>> headers = CastUtils.cast((Map<?, ?>) message.get(Message.PROTOCOL_HEADERS));
       if (headers != null) {
-        final List<String> rih = headers.get(this.nameOfRequestIdttpHeader);
+        final List<String> rih = headers.get(this.nameOfRequestIdHttpHeader);
         final int len = rih == null ? 0 : rih.size();
         if (len > 0) {
           // same http header could exist several times
@@ -214,26 +250,26 @@ public class RequestIdGenerationInterceptor<T extends Message> extends AbstractP
   }
 
   private void setRequestIdAsHTTPHeader(final T message, final String reqid) {
-    if (!StringUtils.isEmpty(this.nameOfRequestIdttpHeader) && !StringUtils.isEmpty(reqid)) {
+    if (!StringUtils.isEmpty(this.nameOfRequestIdHttpHeader) && !StringUtils.isEmpty(reqid)) {
       Map<String, List<String>> headers = CastUtils.cast((Map<?, ?>) message.get(Message.PROTOCOL_HEADERS));
       if (headers == null) {
         headers = new HashMap<String, List<String>>();
       }
-      List<String> rih = headers.get(this.nameOfRequestIdttpHeader);
+      List<String> rih = headers.get(this.nameOfRequestIdHttpHeader);
       if (rih == null) {
         rih = new ArrayList<String>();
       }
       if (rih.isEmpty()) {
-        LOGGER.debug("Adding new HTTP-Header: {} = {}", this.nameOfRequestIdttpHeader, reqid);
+        LOGGER.debug("Adding new HTTP-Header: {} = {}", this.nameOfRequestIdHttpHeader, reqid);
         rih.add(reqid);
       }
       else {
-        LOGGER.debug("Replacing existing HTTP-Header: {} = {}", this.nameOfRequestIdttpHeader, reqid);
+        LOGGER.debug("Replacing existing HTTP-Header: {} = {}", this.nameOfRequestIdHttpHeader, reqid);
         // same http header could exist several times
         // we simply replace the first one in that case
         rih.set(0, reqid);
       }
-      headers.put(this.nameOfRequestIdttpHeader, rih);
+      headers.put(this.nameOfRequestIdHttpHeader, rih);
       message.put(Message.PROTOCOL_HEADERS, headers);
     }
   }
@@ -250,7 +286,7 @@ public class RequestIdGenerationInterceptor<T extends Message> extends AbstractP
   }
 
   private void setCxfMessageId(final T message, final String msgid) {
-    if (message != null && !StringUtils.isEmpty(msgid)) {
+    if ((message != null) && !StringUtils.isEmpty(msgid)) {
       message.setId(msgid);
       final Exchange exch = message.getExchange();
       if (exch != null) {
