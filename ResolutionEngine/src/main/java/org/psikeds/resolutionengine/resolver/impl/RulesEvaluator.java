@@ -41,6 +41,7 @@ import org.psikeds.resolutionengine.resolver.ResolutionException;
 import org.psikeds.resolutionengine.resolver.Resolver;
 import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
 import org.psikeds.resolutionengine.transformer.Transformer;
+import org.psikeds.resolutionengine.transformer.impl.Vo2PojoTransformer;
 
 /**
  * This Resolver will evaluate the possible Events und apply all Rules
@@ -54,6 +55,12 @@ public class RulesEvaluator implements InitializingBean, Resolver {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RulesEvaluator.class);
 
+  public static final Transformer DEFAULT_TRANSFORMER = new Vo2PojoTransformer();
+  public static final boolean DEFAULT_CREATE_CONCLUSION_PATH = true;
+  public static final boolean DEFAULT_CREATE_NON_CHOOSABLE_ENTITIES = false;
+  public static final boolean DEFAULT_KEEP_MODUS_TOLLENS_FOR_LATER = true;
+  public static final boolean DEFAULT_REPEAT_AFTER_RULES_APPLIED = false;
+
   private KnowledgeBase kb;
   private Transformer trans;
   private boolean autoCreateConclusionPath;
@@ -62,16 +69,24 @@ public class RulesEvaluator implements InitializingBean, Resolver {
   private boolean repeatAfterRulesApplied;
 
   public RulesEvaluator() {
-    this(null, null);
+    this(null);
+  }
+
+  public RulesEvaluator(final KnowledgeBase kb) {
+    this(kb, DEFAULT_TRANSFORMER);
   }
 
   public RulesEvaluator(final KnowledgeBase kb, final Transformer trans) {
+    this(kb, trans, DEFAULT_CREATE_CONCLUSION_PATH, DEFAULT_CREATE_NON_CHOOSABLE_ENTITIES, DEFAULT_KEEP_MODUS_TOLLENS_FOR_LATER, DEFAULT_REPEAT_AFTER_RULES_APPLIED);
+  }
+
+  public RulesEvaluator(final KnowledgeBase kb, final Transformer trans, final boolean createConclusion, final boolean createNonChoosable, final boolean keepForLater, final boolean repeatAfterRules) {
     this.kb = kb;
     this.trans = trans;
-    this.autoCreateConclusionPath = true;
-    this.createNonChoosableEntities = false;
-    this.keepModusTollensForLater = true;
-    this.repeatAfterRulesApplied = false;
+    this.autoCreateConclusionPath = createConclusion;
+    this.createNonChoosableEntities = createNonChoosable;
+    this.keepModusTollensForLater = keepForLater;
+    this.repeatAfterRulesApplied = repeatAfterRules;
   }
 
   public boolean isRepeatAfterRulesApplied() {
@@ -132,6 +147,13 @@ public class RulesEvaluator implements InitializingBean, Resolver {
    */
   @Override
   public void afterPropertiesSet() throws Exception {
+    if (LOGGER.isInfoEnabled()) {
+      final StringBuilder sb = new StringBuilder("Config: Auto-Creation of Conclusion-Path: {}\n");
+      sb.append("Creation of not choosable Knowledge-Entities: {}\n");
+      sb.append("Keeping Modus Tollens for later: {}\n");
+      sb.append("Repeat after Rules were applied: {}");
+      LOGGER.info(sb.toString(), this.autoCreateConclusionPath, this.createNonChoosableEntities, this.keepModusTollensForLater, this.repeatAfterRulesApplied);
+    }
     Validate.notNull(this.kb, "No Knowledge-Base!");
     Validate.notNull(this.trans, "No Transformer!");
   }

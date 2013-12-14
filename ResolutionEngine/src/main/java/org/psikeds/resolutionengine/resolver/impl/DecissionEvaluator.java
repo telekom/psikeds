@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.cxf.common.util.StringUtils;
 
+import org.springframework.beans.factory.InitializingBean;
+
 import org.psikeds.resolutionengine.interfaces.pojos.Choice;
 import org.psikeds.resolutionengine.interfaces.pojos.Decission;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
@@ -40,14 +42,16 @@ import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
  * 
  * @author marco@juliano.de
  */
-public class DecissionEvaluator implements Resolver {
+public class DecissionEvaluator implements InitializingBean, Resolver {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DecissionEvaluator.class);
+
+  public static boolean DEFAULT_ROOT_PURPOSE_OPTIONAL = true;
 
   private boolean rootPurposeOptional;
 
   public DecissionEvaluator() {
-    this(true);
+    this(DEFAULT_ROOT_PURPOSE_OPTIONAL);
   }
 
   public DecissionEvaluator(final boolean rootPurposeOptional) {
@@ -62,7 +66,21 @@ public class DecissionEvaluator implements Resolver {
     this.rootPurposeOptional = rootPurposeOptional;
   }
 
-  //----------------------------------------------------------------
+  // ----------------------------------------------------------------
+
+  /**
+   * Check that Decission-Evaluator was configured/wired correctly.
+   * 
+   * @throws Exception
+   * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+   */
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    LOGGER.info("Config: Root-Purposes are optional: {}", this.rootPurposeOptional);
+    // nothing to validate
+  }
+
+  // ----------------------------------------------------------------
 
   /**
    * @param knowledge
