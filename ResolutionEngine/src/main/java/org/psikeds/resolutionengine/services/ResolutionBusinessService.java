@@ -58,6 +58,10 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
   private static final String SESS_KEY_KNOWLEDGE = "Knowledge";
   private static final String SESS_KEY_RULES_AND_EVENTS = "RulesAndEvents";
 
+  public static final boolean DEFAULT_RESOLVE_INITIAL_KNOWLEDGE = false;
+  public static final boolean DEFAULT_CHECK_VALIDITY_ON_STARTUP = true;
+  public static final boolean DEFAULT_CHECK_VALIDITY_AT_RUNTIME = true;
+
   private KnowledgeBase kb;
   private List<Resolver> resolverChain;
   private ResolutionCache cache;
@@ -72,14 +76,19 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
   }
 
   public ResolutionBusinessService(final KnowledgeBase kb, final List<Resolver> resolverChain, final ResolutionCache cache, final Transformer trans, final IdGenerator gen) {
+    this(kb, resolverChain, cache, trans, gen, DEFAULT_RESOLVE_INITIAL_KNOWLEDGE, DEFAULT_CHECK_VALIDITY_ON_STARTUP, DEFAULT_CHECK_VALIDITY_AT_RUNTIME);
+  }
+
+  public ResolutionBusinessService(final KnowledgeBase kb, final List<Resolver> resolverChain, final ResolutionCache cache, final Transformer trans, final IdGenerator gen,
+      final boolean resolve, final boolean startup, final boolean runtime) {
     this.kb = kb;
     this.resolverChain = resolverChain;
     this.cache = cache;
     this.trans = trans;
     this.gen = gen;
-    this.resolveInitialKnowledge = false;
-    this.checkValidityOnStartup = true;
-    this.checkValidityAtRuntime = true;
+    this.resolveInitialKnowledge = resolve;
+    this.checkValidityOnStartup = startup;
+    this.checkValidityAtRuntime = runtime;
   }
 
   public boolean isCheckValidityOnStartup() {
@@ -163,12 +172,19 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
    */
   @Override
   public void afterPropertiesSet() throws Exception {
+    if (LOGGER.isInfoEnabled()) {
+      final StringBuilder sb = new StringBuilder("Config: Resolve initial Knowledge: {}\n");
+      sb.append("Check validity of Knowledge-Base on Startup: {}\n");
+      sb.append("Check validity of Knowledge-Base at Runtime: {}");
+      LOGGER.info(sb.toString(), this.resolveInitialKnowledge, this.checkValidityOnStartup, this.checkValidityAtRuntime);
+    }
     Validate.notNull(this.kb, "No Knowledge-Base!");
     Validate.notNull(this.trans, "No Transformer!");
     Validate.notNull(this.gen, "No Session-ID-Generator!");
     Validate.notNull(this.cache, "No Resolution-Cache!");
     Validate.isTrue(getResolvers().size() > 0, "No Resolver-Chain!");
     if (this.checkValidityOnStartup) {
+      LOGGER.info("Checking validity of Knowledge-Base.");
       checkValidity();
     }
   }
