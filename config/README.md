@@ -10,18 +10,8 @@ basic configuration that must be provided within an external configuration
 directory.
 
 The location of the psiKeds-configuration-directory can be specified by using
-<<<<<<< HEAD
-<<<<<<< HEAD
 the Java-VM-parameter *"-Dorg.psikeds.config.dir"* or is otherwise by default
 *"${user.home}/psikeds/"*
-=======
-the Java-VM-parameter *-Dorg.psikeds.config.dir* or is otherwise by default
-*${user.home}/psikeds/*
->>>>>>> ADD: formatting and linking
-=======
-the Java-VM-parameter *"-Dorg.psikeds.config.dir"* or is otherwise by default
-*"${user.home}/psikeds/"*
->>>>>>> ADD: formatting and linking
 
 This configuration directory must at least contain *queryagent.properties*
 (for running the Query Agent) and *resolutionengine.properties* (for running
@@ -33,23 +23,6 @@ spring-application-context-file that will then overwrite the corresponding
 one packaged within the WAR-file.
 
 All spring configuration files can be found here:
-<<<<<<< HEAD
-<<<<<<< HEAD
-- [ResolutionEngine/src/main/webapp/WEB-INF/config](../ResolutionEngine/src/main/webapp/WEB-INF/config/)
-- [QueryAgent/src/main/webapp/WEB-INF/spring-config](../QueryAgent/src/main/webapp/WEB-INF/spring-config/)
-
-This directory is a simple example of a psiKeds-configuration-directory.
-For getting started you can simply copy the contents of this directory to
-the directory *"${user.home}/psikeds/"*
-=======
-- [ResolutionEngine\src\main\webapp\WEB-INF\config](ResolutionEngine\src\main\webapp\WEB-INF\config)
-- [QueryAgent\src\main\webapp\WEB-INF\spring-config](QueryAgent\src\main\webapp\WEB-INF\spring-config)
-
-This directory is a simple example of a psiKeds-configuration-directory.
-For getting started you can simply copy the contents of this directory to
-the directory *${user.home}/psikeds/*
->>>>>>> ADD: formatting and linking
-=======
 - [ResolutionEngine/src/main/webapp/WEB-INF/config](../ResolutionEngine/src/main/webapp/WEB-INF/config/)
 - [QueryAgent/src/main/webapp/WEB-INF/spring-config](../QueryAgent/src/main/webapp/WEB-INF/spring-config/)
 
@@ -61,4 +34,3 @@ with a custom one.
 
 For getting started you can simply copy the contents of this directory to
 the directory *"${user.home}/psikeds/"*
->>>>>>> ADD: formatting and linking
