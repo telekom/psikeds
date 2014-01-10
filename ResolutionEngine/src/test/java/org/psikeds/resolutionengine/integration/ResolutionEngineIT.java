@@ -62,7 +62,7 @@ import org.psikeds.resolutionengine.interfaces.pojos.Variant;
  */
 public class ResolutionEngineIT {
 
-  private static final String LOG4J = "./src/main/resources/log4j.xml";
+  private static final String LOG4J = System.getProperty("org.psikeds.test.log4j.xml", "./src/main/resources/log4j.xml");
   private static final Logger LOGGER = LoggerFactory.getLogger(ResolutionEngineIT.class);
 
   private String baseUrl;

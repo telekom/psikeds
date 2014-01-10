@@ -50,10 +50,10 @@ import org.psikeds.queryagent.interfaces.presenter.services.ResolutionService;
  */
 public class ResolutionServiceTest {
 
-  private static final String LOG4J = "../QueryAgent/src/main/resources/log4j.xml";
+  private static final String LOG4J = System.getProperty("org.psikeds.test.log4j.xml", "../QueryAgent/src/main/resources/log4j.xml");
   private static final Logger LOGGER = LoggerFactory.getLogger(ResolutionServiceTest.class);
 
-  private static final String TEST_DATA_DIR = "./src/test/resources/";
+  private static final String TEST_DATA_DIR = System.getProperty("org.psikeds.test.data.dir", "./src/test/resources/");
   private static final File INIT_KNOWLEDGE = new File(TEST_DATA_DIR, "InitKnowledge.json");
   private static final File SELECT_KNOWLEDGE = new File(TEST_DATA_DIR, "SelectKnowledge.json");
   private static final File DECISSION = new File(TEST_DATA_DIR, "Decission.json");

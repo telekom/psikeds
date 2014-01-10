@@ -64,10 +64,10 @@ import org.psikeds.resolutionengine.datalayer.vo.Variants;
  */
 public class KnowledgeBaseMock implements KnowledgeBase {
 
-  private static final String LOG4J = "../ResolutionEngine/src/main/resources/log4j.xml";
+  private static final String LOG4J = System.getProperty("org.psikeds.test.log4j.xml", "./src/main/resources/log4j.xml");
   private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeBaseMock.class);
 
-  private static final String TEST_DATA_DIR = "./src/test/resources/";
+  private static final String TEST_DATA_DIR = System.getProperty("org.psikeds.test.data.dir", "./src/test/resources/");
   private static final File KNOWLEDGEBASE = new File(TEST_DATA_DIR, "KnowledgeBase.json");
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
