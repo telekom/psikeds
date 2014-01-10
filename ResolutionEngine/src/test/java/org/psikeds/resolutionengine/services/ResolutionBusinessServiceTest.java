@@ -61,7 +61,7 @@ import org.psikeds.resolutionengine.transformer.impl.Vo2PojoTransformer;
  */
 public class ResolutionBusinessServiceTest {
 
-  private static final String LOG4J = "./src/main/resources/log4j.xml";
+  private static final String LOG4J = System.getProperty("org.psikeds.test.log4j.xml", "./src/main/resources/log4j.xml");
   private static final Logger LOGGER = LoggerFactory.getLogger(ResolutionBusinessServiceTest.class);
 
   private KnowledgeBase kb;

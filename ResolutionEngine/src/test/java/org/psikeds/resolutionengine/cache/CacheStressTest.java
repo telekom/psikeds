@@ -43,7 +43,7 @@ import org.psikeds.common.idgen.impl.SessionIdGenerator;
  */
 public class CacheStressTest {
 
-  private static final String LOG4J = "./src/main/resources/log4j.xml";
+  private static final String LOG4J = System.getProperty("org.psikeds.test.log4j.xml", "./src/main/resources/log4j.xml");
   private static final Logger LOGGER = LoggerFactory.getLogger(CacheStressTest.class);
 
   private IdGenerator sidgen;
