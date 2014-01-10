@@ -36,16 +36,16 @@ import org.apache.log4j.xml.DOMConfigurator;
 
 /**
  * Integration-Tests for Query-Agent running online against Application Server.
- *
+ * 
  * Note: Anything called *Test.java is a Unit-Test executed offline by Surefire.
- *       Everythinf called *IT.java is an Integration-Test executed online by Failsafe.
- *
+ * Everythinf called *IT.java is an Integration-Test executed online by Failsafe.
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class QueryAgentIT {
 
-  private static final String LOG4J = "./src/main/resources/log4j.xml";
+  private static final String LOG4J = System.getProperty("org.psikeds.test.log4j.xml", "./src/main/resources/log4j.xml");
   private static final Logger LOGGER = LoggerFactory.getLogger(QueryAgentIT.class);
 
   private String baseUrl;

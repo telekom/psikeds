@@ -56,8 +56,8 @@ import org.psikeds.resolutionengine.datalayer.vo.Variants;
 public class KnowledgeBaseTest {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeBaseTest.class);
-  private static final String LOG4J = "../ResolutionEngine/src/main/resources/log4j.xml";
-  private static final String XML = "../KnowledgeBase/src/main/resources/kb.xml";
+  private static final String LOG4J = System.getProperty("org.psikeds.test.log4j.xml", "../ResolutionEngine/src/main/resources/log4j.xml");
+  private static final String XML = System.getProperty("org.psikeds.test.kb.xml", "../KnowledgeBase/src/main/resources/kb.xml");
 
   @BeforeClass
   public static void setUpBeforeClass() {

@@ -49,10 +49,10 @@ import org.psikeds.resolutionengine.interfaces.pojos.Variant;
  */
 public class ResolutionEngineClientTool {
 
-  private static final String LOG4J = "./src/main/resources/log4j.xml";
+  private static final String LOG4J = System.getProperty("org.psikeds.test.log4j.xml", "./src/main/resources/log4j.xml");
   private static final Logger LOGGER = LoggerFactory.getLogger(ResolutionEngineClientTool.class);
 
-  private static final String TEST_DATA_DIR = "./src/test/resources/";
+  private static final String TEST_DATA_DIR = System.getProperty("org.psikeds.test.data.dir", "./src/test/resources/");
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
   private static boolean doInvokeInit = true;

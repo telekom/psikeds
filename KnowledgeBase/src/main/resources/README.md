@@ -9,4 +9,4 @@ This directory contains the current Definition of the psiKeds Knowledge Base
 Note:
 -----
 The File *kb.xsd* and *kb.xml* are also used for building and unit testing.
-Therefore do not rename the files!
+Therefore do not rename or remove these files!!!

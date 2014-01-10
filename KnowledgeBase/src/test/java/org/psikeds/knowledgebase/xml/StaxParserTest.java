@@ -44,14 +44,14 @@ import org.psikeds.knowledgebase.xml.impl.XSDValidator;
  */
 public class StaxParserTest {
 
-  private static final String LOG4J = "../ResolutionEngine/src/main/resources/log4j.xml";
+  private static final String LOG4J = System.getProperty("org.psikeds.test.log4j.xml", "../ResolutionEngine/src/main/resources/log4j.xml");
   private static final Logger LOGGER = LoggerFactory.getLogger(StaxParserTest.class);
 
   private static final String RESOURCE_PATH = "./src/main/resources/";
-  private static final String XSD = RESOURCE_PATH + "kb.xsd";
-  private static final String XML = RESOURCE_PATH + "kb.xml";
+  private static final String XSD = System.getProperty("org.psikeds.test.kb.xsd", RESOURCE_PATH + "kb.xsd");
+  private static final String XML = System.getProperty("org.psikeds.test.kb.xml", RESOURCE_PATH + "kb.xml");
 
-  private static final String ENCODING = "UTF-8";
+  private static final String ENCODING = System.getProperty("org.psikeds.test.encoding", "UTF-8");
 
   @BeforeClass
   public static void setUpBeforeClass() {
