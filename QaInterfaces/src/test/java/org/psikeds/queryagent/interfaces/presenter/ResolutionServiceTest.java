@@ -93,6 +93,17 @@ public class ResolutionServiceTest {
     final Knowledge ike = ires.getKnowledge();
     assertNotNull("No initial Knowledge!", ike);
 
+    LOGGER.info("... getting current Knowledge ...");
+    final ResolutionResponse cres = this.srvc.current(sessionID1);
+    LOGGER.trace("Received:\n{}", cres);
+
+    assertNotNull("No Response for current Knowledge!", cres);
+    final String sessionID2 = cres.getSessionID();
+    assertTrue("No SessionID in Resolution-Response!", (sessionID2 != null) && (sessionID2.length() > 0));
+    final Knowledge cke = cres.getKnowledge();
+    assertNotNull("No current Knowledge!", cke);
+    assertEquals("SessionIDs are not matching!", sessionID1, sessionID2);
+
     LOGGER.info("... making a Decission and asking for Resolution ...");
     final Decission decission = readObjectFromJsonFile(DECISSION, Decission.class);
     final ResolutionRequest sreq = new ResolutionRequest(sessionID1, decission);
@@ -101,11 +112,11 @@ public class ResolutionServiceTest {
     LOGGER.trace("Received:\n{}", sres);
 
     assertNotNull("No Resolution-Response!", sres);
-    final String sessionID2 = sres.getSessionID();
-    assertTrue("No SessionID in Resolution-Response!", (sessionID2 != null) && (sessionID2.length() > 0));
+    final String sessionID3 = sres.getSessionID();
+    assertTrue("No SessionID in Resolution-Response!", (sessionID3 != null) && (sessionID3.length() > 0));
     final Knowledge ske = sres.getKnowledge();
     assertNotNull("No Knowledge in Resolution-Response!", ske);
-    assertEquals("SessionIDs are not matching!", sessionID1, sessionID2);
+    assertEquals("SessionIDs are not matching!", sessionID1, sessionID3);
 
     LOGGER.info("... done. Resolution worked as expected.");
   }

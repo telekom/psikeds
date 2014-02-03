@@ -19,20 +19,20 @@ import org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse;
 
 /**
  * Interface of the ResolutionService.
- *
+ * 
  * Must be implemented by any Business Service Implementation that shall be
  * plugged as an Delegate into the corresponding REST- or SOAP-Service.
- *
+ * 
  * Note that the actual REST- and SOAP-Service has some additional Parameters
  * like a Request-Id that will be automatically added by an CXF-Interceptor.
  * Therefore the REST- or SOAP-Implementations can but don't have to implement
  * this Interface.
- *
+ * 
  * However any Client invoking the Service should use this Interface to create
  * its Service-Call.
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public interface ResolutionService {
 
@@ -45,9 +45,17 @@ public interface ResolutionService {
   ResolutionResponse init();
 
   /**
+   * Return the current state of Knowledge for a given Session-ID.
+   * 
+   * @param sessionID
+   * @return ResolutionResponse
+   */
+  ResolutionResponse current(String sessionID);
+
+  /**
    * Make a decission, i.e. select a Variant for a Purpose, and request a
    * Resolution. Returns new Knowledge resulting from that Decission.
-   *
+   * 
    * @param req
    * @return ResolutionResponse
    */

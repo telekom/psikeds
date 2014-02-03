@@ -35,7 +35,10 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <constructor-arg index="0" type="org.psikeds.queryagent.requester.client.WebClientFactory" ref="webClientFactory" />
     <constructor-arg index="1" type="java.lang.String" value="${resolutionengine.rest.init.url}" />
     <constructor-arg index="2" type="java.lang.String" value="${resolutionengine.rest.init.method}" />
-    <constructor-arg index="3" type="java.lang.String" value="${resolutionengine.rest.select.url}" />
-    <constructor-arg index="4" type="java.lang.String" value="${resolutionengine.rest.select.method}" />
+    <constructor-arg index="3" type="java.lang.String" value="${resolutionengine.rest.current.url}" />
+    <constructor-arg index="4" type="java.lang.String" value="${resolutionengine.rest.current.method}" />
+    <constructor-arg index="5" type="java.lang.String" value="${resolutionengine.rest.select.url}" />
+    <constructor-arg index="6" type="java.lang.String" value="${resolutionengine.rest.select.method}" />
   </bean>
+
 </beans>

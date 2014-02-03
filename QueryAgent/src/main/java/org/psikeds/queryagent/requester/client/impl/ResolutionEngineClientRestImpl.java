@@ -32,16 +32,23 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
   private static final Logger LOGGER = LoggerFactory.getLogger(ResolutionEngineClientRestImpl.class);
 
   public static final String DEFAULT_RESOLUTION_ENGINE_BASE_REST_URL = "http://localhost:8080/resolutionengine/services/rest/";
+
   public static final String DEFAULT_INIT_SERVICE_SUB_CTX = "resolution/init";
+  public static final String DEFAULT_CURRENT_SERVICE_SUB_CTX = "resolution/current";
   public static final String DEFAULT_SELECT_SERVICE_SUB_CTX = "resolution/select";
-  public static final String DEFAULT_INIT_SERVICE_REST_URL = DEFAULT_RESOLUTION_ENGINE_BASE_REST_URL + DEFAULT_INIT_SERVICE_SUB_CTX;
-  public static final String DEFAULT_SELECT_SERVICE_REST_URL = DEFAULT_RESOLUTION_ENGINE_BASE_REST_URL + DEFAULT_SELECT_SERVICE_SUB_CTX;
+
+//  public static final String DEFAULT_INIT_SERVICE_REST_URL = DEFAULT_RESOLUTION_ENGINE_BASE_REST_URL + DEFAULT_INIT_SERVICE_SUB_CTX;
+//  public static final String DEFAULT_CURRENT_SERVICE_REST_URL = DEFAULT_RESOLUTION_ENGINE_BASE_REST_URL + DEFAULT_CURRENT_SERVICE_SUB_CTX;
+//  public static final String DEFAULT_SELECT_SERVICE_REST_URL = DEFAULT_RESOLUTION_ENGINE_BASE_REST_URL + DEFAULT_SELECT_SERVICE_SUB_CTX;
 
   public static final String DEFAULT_INIT_SERVICE_METHOD = "GET";
+  public static final String DEFAULT_CURRENT_SERVICE_METHOD = "GET";
   public static final String DEFAULT_SELECT_SERVICE_METHOD = "POST";
 
   private String initServiceUrl;
   private String initServiceMethod;
+  private String currentServiceUrl;
+  private String currentServiceMethod;
   private String selectServiceUrl;
   private String selectServiceMethod;
 
@@ -50,28 +57,33 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
   }
 
   public ResolutionEngineClientRestImpl(final WebClientFactory clientFactory) {
-    this(clientFactory,
-        DEFAULT_INIT_SERVICE_REST_URL, DEFAULT_INIT_SERVICE_METHOD,
-        DEFAULT_SELECT_SERVICE_REST_URL, DEFAULT_SELECT_SERVICE_METHOD);
+    this(clientFactory, DEFAULT_RESOLUTION_ENGINE_BASE_REST_URL);
   }
 
   public ResolutionEngineClientRestImpl(final WebClientFactory clientFactory, final String reBaseUrl) {
     this(clientFactory,
         reBaseUrl + DEFAULT_INIT_SERVICE_SUB_CTX, DEFAULT_INIT_SERVICE_METHOD,
+        reBaseUrl + DEFAULT_CURRENT_SERVICE_SUB_CTX, DEFAULT_CURRENT_SERVICE_METHOD,
         reBaseUrl + DEFAULT_SELECT_SERVICE_SUB_CTX, DEFAULT_SELECT_SERVICE_METHOD);
   }
 
-  public ResolutionEngineClientRestImpl(final String initServiceUrl, final String initServiceMethod,
+  public ResolutionEngineClientRestImpl(
+      final String initServiceUrl, final String initServiceMethod,
+      final String currentServiceUrl, final String currentServiceMethod,
       final String selectServiceUrl, final String selectServiceMethod) {
-    this(null, initServiceUrl, initServiceMethod, selectServiceUrl, selectServiceMethod);
+    this(null, initServiceUrl, initServiceMethod, currentServiceUrl, selectServiceUrl, currentServiceMethod, selectServiceMethod);
   }
 
-  public ResolutionEngineClientRestImpl(final WebClientFactory clientFactory,
+  public ResolutionEngineClientRestImpl(
+      final WebClientFactory clientFactory,
       final String initServiceUrl, final String initServiceMethod,
+      final String currentServiceUrl, final String currentServiceMethod,
       final String selectServiceUrl, final String selectServiceMethod) {
     super(clientFactory);
     this.initServiceUrl = initServiceUrl;
     this.initServiceMethod = initServiceMethod;
+    this.currentServiceUrl = currentServiceUrl;
+    this.currentServiceMethod = currentServiceMethod;
     this.selectServiceUrl = selectServiceUrl;
     this.selectServiceMethod = selectServiceMethod;
   }
@@ -92,6 +104,22 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
 
   public void setInitServiceMethod(final String initServiceMethod) {
     this.initServiceMethod = initServiceMethod;
+  }
+
+  public String getCurrentServiceUrl() {
+    return this.currentServiceUrl;
+  }
+
+  public void setCurrentServiceUrl(final String currentServiceUrl) {
+    this.currentServiceUrl = currentServiceUrl;
+  }
+
+  public String getCurrentServiceMethod() {
+    return this.currentServiceMethod;
+  }
+
+  public void setCurrentServiceMethod(final String currentServiceMethod) {
+    this.currentServiceMethod = currentServiceMethod;
   }
 
   public String getSelectServiceUrl() {
@@ -119,6 +147,16 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
   @Override
   public ResolutionResponse invokeInitService() {
     return invokeService(this.initServiceUrl, this.initServiceMethod, ResolutionResponse.class);
+  }
+
+  /**
+   * @param sessionID
+   * @return ResolutionResponse
+   * @see org.psikeds.queryagent.requester.client.ResolutionEngineClient#invokeSelectService(java.lang.String)
+   */
+  @Override
+  public ResolutionResponse invokeCurrentService(final String sessionID) {
+    return invokeService(this.currentServiceUrl, this.currentServiceMethod, sessionID, String.class, ResolutionResponse.class);
   }
 
   /**

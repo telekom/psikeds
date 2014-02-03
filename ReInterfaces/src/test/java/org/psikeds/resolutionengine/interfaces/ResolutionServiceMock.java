@@ -92,6 +92,18 @@ public class ResolutionServiceMock implements ResolutionService {
   }
 
   /**
+   * @param sessionID
+   * @return ResolutionResponse
+   * @see org.psikeds.resolutionengine.interfaces.services.ResolutionService#current(java.lang.String)
+   */
+  @Override
+  public ResolutionResponse current(final String sessionID) {
+    final ResolutionResponse resp = init();
+    resp.setSessionID(sessionID);
+    return resp;
+  }
+
+  /**
    * @param req
    * @return ResolutionResponse
    * @see org.psikeds.resolutionengine.interfaces.services.ResolutionService#select(org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest)

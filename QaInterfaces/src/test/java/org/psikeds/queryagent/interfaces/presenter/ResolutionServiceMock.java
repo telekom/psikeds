@@ -84,7 +84,7 @@ public class ResolutionServiceMock implements ResolutionService {
 
   /**
    * @return ResolutionResponse
-   * @see org.psikeds.resolutionengine.interfaces.services.ResolutionService#init()
+   * @see org.psikeds.queryagent.interfaces.presenter.services.ResolutionService#init()
    */
   @Override
   public ResolutionResponse init() {
@@ -92,9 +92,21 @@ public class ResolutionServiceMock implements ResolutionService {
   }
 
   /**
+   * @param sessionID
+   * @return ResolutionResponse
+   * @see org.psikeds.queryagent.interfaces.presenter.services.ResolutionService#current(java.lang.String)
+   */
+  @Override
+  public ResolutionResponse current(final String sessionID) {
+    final ResolutionResponse resp = init();
+    resp.setSessionID(sessionID);
+    return resp;
+  }
+
+  /**
    * @param req
    * @return ResolutionResponse
-   * @see org.psikeds.resolutionengine.interfaces.services.ResolutionService#select(org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest)
+   * @see org.psikeds.queryagent.interfaces.presenter.services.ResolutionService#select(org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest)
    */
   @Override
   public ResolutionResponse select(final ResolutionRequest req) {

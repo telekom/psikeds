@@ -35,7 +35,7 @@ import org.psikeds.resolutionengine.interfaces.services.ResolutionService;
  * SOAP Service "implementing" the ResolutionService. It does not really
  * implement this Interface but invokes a delegate implementation the Interface
  * {@link org.psikeds.resolutionengine.interfaces.services.ResolutionService}
- *
+ * 
  * @author marco@juliano.de
  */
 @WebService(name = "ResolutionService", targetNamespace = "org.psikeds.resolutionengine.soap", serviceName = "ResolutionService")
@@ -58,12 +58,30 @@ public class ResolutionSOAPService extends AbstractSOAPService {
   }
 
   @WebMethod(operationName = "doInit")
-  @WebResult(name = "ResolutionResponse", targetNamespace = "org.psikeds.resolutionengine.soap")
+  @WebResult(name = "InitResponse", targetNamespace = "org.psikeds.resolutionengine.soap")
   public ResolutionResponse doInit(final String reqid) {
     try {
       final ResolutionResponse resp = (ResolutionResponse) handleRequest(reqid, getExecutable(this.delegate, "init"));
-      if (resp == null || resp.getKnowledge() == null || resp.getSessionID() == null) {
+      if ((resp == null) || (resp.getKnowledge() == null) || (resp.getSessionID() == null)) {
         throw new IllegalStateException("Failed to create Session and to initialize Knowledge!");
+      }
+      return resp;
+    }
+    catch (final Exception ex) {
+      throw new Fault(ex);
+    }
+  }
+
+  @WebMethod(operationName = "getCurrent")
+  @WebResult(name = "CurrentResponse", targetNamespace = "org.psikeds.resolutionengine.soap")
+  public ResolutionResponse getCurrent(@WebParam(name = "SessionID") final String sessionID, final String reqid) {
+    try {
+      if (sessionID == null) {
+        throw new IllegalArgumentException("No Session-ID!");
+      }
+      final ResolutionResponse resp = (ResolutionResponse) handleRequest(reqid, getExecutable(this.delegate, "current"), sessionID);
+      if ((resp == null) || (resp.getKnowledge() == null) || (resp.getSessionID() == null)) {
+        throw new IllegalArgumentException(String.valueOf(sessionID));
       }
       return resp;
     }
@@ -76,11 +94,11 @@ public class ResolutionSOAPService extends AbstractSOAPService {
   @WebResult(name = "SelectResponse", targetNamespace = "org.psikeds.resolutionengine.soap")
   public ResolutionResponse doSelect(@WebParam(name = "ResolutionRequest") final ResolutionRequest req, final String reqid) {
     try {
-      if (req == null || req.getSessionID() == null && req.getKnowledge() == null) {
+      if ((req == null) || ((req.getSessionID() == null) && (req.getKnowledge() == null))) {
         throw new IllegalArgumentException(String.valueOf(req));
       }
       final ResolutionResponse resp = (ResolutionResponse) handleRequest(reqid, getExecutable(this.delegate, "select"), req);
-      if (resp == null || resp.getKnowledge() == null || resp.getSessionID() == null) {
+      if ((resp == null) || (resp.getKnowledge() == null) || (resp.getSessionID() == null)) {
         throw new IllegalArgumentException(String.valueOf(req));
       }
       return resp;

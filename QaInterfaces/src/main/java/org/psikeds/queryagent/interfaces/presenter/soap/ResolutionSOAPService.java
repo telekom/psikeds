@@ -58,12 +58,30 @@ public class ResolutionSOAPService extends AbstractSOAPService {
   }
 
   @WebMethod(operationName = "doInit")
-  @WebResult(name = "ResolutionResponse", targetNamespace = "org.psikeds.queryagent.soap")
+  @WebResult(name = "InitResponse", targetNamespace = "org.psikeds.queryagent.soap")
   public ResolutionResponse doInit(final String reqid) {
     try {
       final ResolutionResponse resp = (ResolutionResponse) handleRequest(reqid, getExecutable(this.delegate, "init"));
       if ((resp == null) || (resp.getKnowledge() == null) || (resp.getSessionID() == null)) {
         throw new IllegalStateException("Failed to create Session and to initialize Resolution!");
+      }
+      return resp;
+    }
+    catch (final Exception ex) {
+      throw new Fault(ex);
+    }
+  }
+
+  @WebMethod(operationName = "getCurrent")
+  @WebResult(name = "CurrentResponse", targetNamespace = "org.psikeds.queryagent.soap")
+  public ResolutionResponse getCurrent(@WebParam(name = "SessionID") final String sessionID, final String reqid) {
+    try {
+      if (sessionID == null) {
+        throw new IllegalArgumentException("No Session-ID!");
+      }
+      final ResolutionResponse resp = (ResolutionResponse) handleRequest(reqid, getExecutable(this.delegate, "current"), sessionID);
+      if ((resp == null) || (resp.getKnowledge() == null) || (resp.getSessionID() == null)) {
+        throw new IllegalArgumentException(String.valueOf(sessionID));
       }
       return resp;
     }

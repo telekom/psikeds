@@ -73,6 +73,25 @@ public class ResolutionRESTService extends AbstractRESTService {
     }
   }
 
+  @GET
+  @Path("/current")
+  @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+  public Response current(final String sessionID, final String reqid) {
+    try {
+      if (sessionID == null) {
+        return buildResponse(Status.BAD_REQUEST, "No Session-ID!");
+      }
+      final ResolutionResponse resp = (ResolutionResponse) handleRequest(reqid, getExecutable(this.delegate, "current"), sessionID);
+      if ((resp != null) && (resp.getKnowledge() != null) && (resp.getSessionID() != null)) {
+        return buildResponse(Status.OK, resp);
+      }
+      return buildResponse(Status.BAD_REQUEST, String.valueOf(sessionID));
+    }
+    catch (final Exception ex) {
+      return buildResponse(ex);
+    }
+  }
+
   @POST
   @Path("/select")
   @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })

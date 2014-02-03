@@ -70,6 +70,16 @@ public class ResolutionBusinessService implements ResolutionService {
   }
 
   /**
+   * @param sessionID
+   * @return ResolutionResponse
+   * @see org.psikeds.queryagent.interfaces.presenter.services.ResolutionService#current(java.lang.String)
+   */
+  @Override
+  public ResolutionResponse current(final String sessionID) {
+    return getTransformer().re2qa(getClient().invokeCurrentService(sessionID));
+  }
+
+  /**
    * @param req
    *          ResolutionRequest
    * @return ResolutionResponse

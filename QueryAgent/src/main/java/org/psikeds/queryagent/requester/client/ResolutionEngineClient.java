@@ -27,5 +27,7 @@ public interface ResolutionEngineClient {
 
   ResolutionResponse invokeInitService();
 
+  ResolutionResponse invokeCurrentService(String sessionID);
+
   ResolutionResponse invokeSelectService(ResolutionRequest req);
 }

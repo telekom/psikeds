@@ -45,6 +45,14 @@ public interface ResolutionService {
   ResolutionResponse init();
 
   /**
+   * Return the current state of Knowledge for a given SessionID.
+   * 
+   * @param sessionID
+   * @return ResolutionResponse
+   */
+  ResolutionResponse current(String sessionID);
+
+  /**
    * Make a decission, i.e. select a Variant for a Purpose, and request a
    * Resolution. Returns new Knowledge resulting from that Decission.
    * 

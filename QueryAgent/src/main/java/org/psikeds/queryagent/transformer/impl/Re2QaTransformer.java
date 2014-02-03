@@ -214,8 +214,12 @@ public class Re2QaTransformer implements Transformer {
       final String sessionID = re.getSessionID();
       final Metadata metadata = re2qa(re.getMetadata());
       final Knowledge knowledge = re2qa(re.getKnowledge());
-      final Decission decission = re2qa(re.getMadeDecission());
-      qa = new ResolutionRequest(sessionID, metadata, knowledge, decission);
+      qa = new ResolutionRequest(sessionID, metadata, knowledge);
+      for (final org.psikeds.resolutionengine.interfaces.pojos.Decission decission : re.getMadeDecissions()) {
+        if (decission != null) {
+          qa.addMadeDecission(re2qa(decission));
+        }
+      }
     }
     return qa;
   }
@@ -227,8 +231,12 @@ public class Re2QaTransformer implements Transformer {
       final String sessionID = qa.getSessionID();
       final org.psikeds.resolutionengine.interfaces.pojos.Metadata metadata = qa2re(qa.getMetadata());
       final org.psikeds.resolutionengine.interfaces.pojos.Knowledge knowledge = qa2re(qa.getKnowledge());
-      final org.psikeds.resolutionengine.interfaces.pojos.Decission decission = qa2re(qa.getMadeDecission());
-      re = new org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest(sessionID, metadata, knowledge, decission);
+      re = new org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest(sessionID, metadata, knowledge);
+      for (final Decission decission : qa.getMadeDecissions()) {
+        if (decission != null) {
+          re.addMadeDecission(qa2re(decission));
+        }
+      }
     }
     return re;
   }
