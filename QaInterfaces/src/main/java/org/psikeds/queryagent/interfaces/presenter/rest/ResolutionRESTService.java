@@ -51,8 +51,23 @@ public class ResolutionRESTService extends AbstractRESTService {
   private final ResolutionService delegate;
 
   public ResolutionRESTService(final ResolutionService delegate) {
+    super();
     this.delegate = delegate;
-    this.context = null;
+  }
+
+  public ResolutionRESTService(final ResolutionService delegate, final boolean asyncSupported) {
+    super(asyncSupported);
+    this.delegate = delegate;
+  }
+
+  public ResolutionRESTService(final ResolutionService delegate, final long suspensionTimeout) {
+    super(suspensionTimeout);
+    this.delegate = delegate;
+  }
+
+  public ResolutionRESTService(final ResolutionService delegate, final boolean asyncSupported, final long suspensionTimeout) {
+    super(asyncSupported, suspensionTimeout);
+    this.delegate = delegate;
   }
 
   // -----------------------------------------------------

@@ -30,6 +30,8 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
   <bean id="resolutionRESTService" class="org.psikeds.queryagent.interfaces.presenter.rest.ResolutionRESTService">
     <constructor-arg index="0" type="org.psikeds.queryagent.interfaces.presenter.services.ResolutionService" ref="resolutionBusinessService" />  <!-- defined in business-services-context.xml -->
+    <constructor-arg index="1" value="${queryagent.service.async.enabled}" />
+    <constructor-arg index="2" value="${queryagent.service.async.timeout}" />
   </bean>
 
   <!-- Putting it all together: Configre the JAX-RS-Server -->

@@ -59,7 +59,6 @@ public class Vo2PojoTransformer implements Transformer {
     Metadata pojo = null;
     if (vo != null) {
       pojo = new Metadata();
-      // TODO: tbd: Any country- or language-specific Settings here?
       final Calendar ts = vo.getLastmodified() == null ? vo.getCreated() : vo.getLastmodified();
       if (ts != null) {
         pojo.saveInfo(

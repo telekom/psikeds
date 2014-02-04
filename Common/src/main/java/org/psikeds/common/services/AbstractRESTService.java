@@ -35,6 +35,26 @@ public abstract class AbstractRESTService extends AbstractBaseService implements
   @Context
   protected MessageContext context;
 
+  public AbstractRESTService() {
+    super();
+    this.context = null;
+  }
+
+  public AbstractRESTService(final boolean asyncSupported) {
+    super(asyncSupported);
+    this.context = null;
+  }
+
+  public AbstractRESTService(final long suspensionTimeout) {
+    super(suspensionTimeout);
+    this.context = null;
+  }
+
+  public AbstractRESTService(final boolean asyncSupported, final long suspensionTimeout) {
+    super(asyncSupported, suspensionTimeout);
+    this.context = null;
+  }
+
   /**
    * @see org.psikeds.common.services.AbstractBaseService#getContinuationProvider()
    */
