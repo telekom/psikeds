@@ -125,11 +125,8 @@ public class StaxParserTest {
       LOGGER.info(message);
       fail(message);
     }
-    assertEquals("We expected just 1 XML-Element (RootElement) but got "
-        + numElems, 1, numElems);
-    assertEquals("Number of Elements counted by Parser (" + numElems
-        + ") and CallBackHandler (" + tcbh.counter + ") are not equal.",
-        numElems, tcbh.counter);
+    assertEquals("We expected just 1 XML-Element (RootElement) but got " + numElems, 1, numElems);
+    assertEquals("Number of Elements counted by Parser (" + numElems + ") and CallBackHandler (" + tcbh.counter + ") are not equal.", numElems, tcbh.counter);
   }
 
   /**
@@ -151,11 +148,8 @@ public class StaxParserTest {
       LOGGER.info(message);
       fail(message);
     }
-    assertEquals("We expected just 1 XML-Element (RootElement) but got "
-        + numElems, 1, numElems);
-    assertEquals("Number of Elements counted by Parser (" + numElems
-        + ") and CallBackHandler (" + tcbh.counter + ") are not equal.",
-        numElems, tcbh.counter);
+    assertEquals("We expected just 1 XML-Element (RootElement) but got " + numElems, 1, numElems);
+    assertEquals("Number of Elements counted by Parser (" + numElems + ") and CallBackHandler (" + tcbh.counter + ") are not equal.", numElems, tcbh.counter);
   }
 
   /**
@@ -203,7 +197,8 @@ public class StaxParserTest {
   @Test
   public void testXmlParserWithFileAndSkippingElements() {
     final TestCallbackHandler tcbh = new TestCallbackHandler();
-    final int numSkipped = 8;
+    final int numSkipped = 10; // skip all metadata and data-element
+    final long expected = 7; // count elements within data, i.e. features, purposes, variants, ...
     long numElems = 0;
     try {
       LOGGER.info("Parsing XML " + XML + " skipping " + numSkipped + " Elements ...");
@@ -219,7 +214,6 @@ public class StaxParserTest {
       LOGGER.info(message);
       fail(message);
     }
-    final long expected = 7;
     assertEquals("We expected " + expected + " XML-Elements but got " + numElems, expected, numElems);
     assertEquals("Number of Elements counted by Parser (" + numElems + ") and CallBackHandler (" + tcbh.counter + ") are not equal.", numElems, tcbh.counter);
   }

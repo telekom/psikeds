@@ -19,55 +19,38 @@ For details see file LICENSING in the top project directory
   xsi:schemaLocation="http://org.psikeds.knowledgebase kb.xsd">
 
   <kb:meta>
-    <kb:created>2014-02-10T09:53:17</kb:created>
-    <kb:lastmodified>2014-02-12T18:02:43</kb:lastmodified>
-    <kb:language>EN</kb:language>
-    <kb:version>V0.8</kb:version>
+    <kb:created>2013-09-09T12:00:00</kb:created>
+    <kb:lastmodified>2013-12-03T19:37:23</kb:lastmodified>
     <kb:creator>marco@juliano.de</kb:creator>
-    <kb:description>An example of a Knowledge Base with Features and Relations</kb:description>
+    <kb:description>A simple example of a Knowledge Base</kb:description>
     <kb:description>Status: Work in Progress</kb:description>
   </kb:meta>
 
   <kb:data>
+
     <kb:features>
       <kb:feature id="f0001">
-        <kb:label>A list of Colors</kb:label>
-        <kb:valueSet>
-          <kb:valueType>string</kb:valueType>
-          <kb:value>Red</kb:value>
-          <kb:value>Green</kb:value>
-          <kb:value>Blue</kb:value>
-          <kb:value>Yellow</kb:value>
-          <kb:value>Magenta</kb:value>
-        </kb:valueSet>
+        <kb:label>A decimal number</kb:label>
+        <kb:value>42.0</kb:value>
+        <kb:featureValueType>float</kb:featureValueType>
       </kb:feature>
       <kb:feature id="f0002">
-        <kb:label>A set of Numbers</kb:label>
-        <kb:valueSet>
-          <kb:valueType>float</kb:valueType>
-          <kb:value>3.14159</kb:value> <!-- PI -->
-          <kb:value>2.71828</kb:value> <!-- euler -->
-          <kb:value>1.41421</kb:value> <!-- sqrt 2  -->
-          <kb:value>1.61803</kb:value> <!-- golden ratio -->
-        </kb:valueSet>
+        <kb:label>A Range from 1 to 10</kb:label>
+        <kb:range>
+          <kb:minValue>1</kb:minValue>
+          <kb:maxValue>10</kb:maxValue>
+        </kb:range>
+        <kb:featureValueType>integer</kb:featureValueType>
       </kb:feature>
       <kb:feature id="f0003">
-        <kb:label>A range of Numbers: 0, 2, 4, 6, 8, 10</kb:label>
-        <kb:valueRange>
-          <kb:valueType>integer</kb:valueType>
-          <kb:minInclusive>0</kb:minInclusive>
-          <kb:maxExclusive>11</kb:maxExclusive>
-          <kb:step>2</kb:step>
-        </kb:valueRange>
+        <kb:label>Just a String</kb:label>
+        <kb:value>String Text Characters Letters Whatever</kb:value>
+        <kb:featureValueType>string</kb:featureValueType>
       </kb:feature>
       <kb:feature id="f0004">
-        <kb:label>Another range of Numbers: 0.1, 0.2, 0.3, 0.4, 0.5</kb:label>
-        <kb:valueRange>
-          <kb:valueType>float</kb:valueType>
-          <kb:minInclusive>0.10000</kb:minInclusive>
-          <kb:maxExclusive>0.56789</kb:maxExclusive>
-          <kb:step>0.1</kb:step>
-        </kb:valueRange>
+        <kb:label>This is a boolean Value</kb:label>
+        <kb:value>true</kb:value>
+        <kb:featureValueType>boolean</kb:featureValueType>
       </kb:feature>
     </kb:features>
 
@@ -192,53 +175,28 @@ For details see file LICENSING in the top project directory
     Context-Paths always must be the ID of that Variant!
     -->
     <kb:events>
-      <kb:event variantID="v11" id="e0001" featureEvent="false">
+      <kb:event variantID="v11" id="e0001">
+        <kb:label>Trigger Event 1</kb:label>
+        <kb:contextPath pathIDs="v11 p111 v1111" />
+      </kb:event>
+      <kb:event variantID="v11" id="e0002">
         <kb:label>Premise Event 1</kb:label>
-        <kb:context pathIDs="v11 p111" />
-        <kb:trigger entityID="v1111" notEvent="false"/>
+        <kb:contextPath pathIDs="v11 p112" />
       </kb:event>
-      <kb:event variantID="v11" id="e0002" featureEvent="false">
-        <kb:label>Premise Event 2</kb:label>
-        <kb:context pathIDs="v11 p111" />
-        <kb:trigger entityID="v1112" notEvent="false"/>
-      </kb:event>
-      <kb:event variantID="v11" id="e0003" featureEvent="false">
-        <kb:label>Premise Event 3</kb:label>
-        <kb:context pathIDs="v11 p111" />
-        <kb:trigger entityID="v1113" notEvent="false"/>
-      </kb:event>
-      <kb:event variantID="v11" id="e0004" featureEvent="false">
+      <kb:event variantID="v11" id="e0003">
         <kb:label>Conclusion Event 1</kb:label>
-        <kb:context pathIDs="v11 p112" />
-        <kb:trigger entityID="v1121" notEvent="false"/>
-      </kb:event>
-      <kb:event variantID="v11" id="e0005" featureEvent="false">
-        <kb:label>Conclusion Event 2</kb:label>
-        <kb:context pathIDs="v11 p112" />
-        <kb:trigger entityID="v1122" notEvent="false"/>
-      </kb:event>
-      <kb:event variantID="v11" id="e0006" featureEvent="false">
-        <kb:label>Conclusion Event 3</kb:label>
-        <kb:context pathIDs="v11 p112" />
-        <kb:trigger entityID="v1123" notEvent="false"/>
+        <kb:contextPath pathIDs="v11 p112 v1121" />
       </kb:event>
     </kb:events>
 
     <kb:rules>
       <!--
-      The following Rules say:
-      1. If e0001 then e0004 must be applied (Modus Ponens)
-      2. If e0004 is false then e0001 must be forbidden (Modus Tollens)
-      3. Same applies for e0002->e0005 and e0003->e0006 
+      The following Rule says:
+      1. If e0001 and e0002 are true then e0003 must be applied (Modus Ponens)
+      2. If e0002 is true but e0003 is false then e0001 must be forbidden (Modus Tollens) 
       -->
-      <kb:rule id="rule1" variantID="v11" premiseEventID="e0001" conclusionEventID="e0004">
-         <kb:label>First example of a Rule</kb:label>
-      </kb:rule>
-      <kb:rule id="rule2" variantID="v11" premiseEventID="e0002" conclusionEventID="e0005">
-         <kb:label>First example of a Rule</kb:label>
-      </kb:rule>
-      <kb:rule id="rule3" variantID="v11" premiseEventID="e0003" conclusionEventID="e0006">
-         <kb:label>First example of a Rule</kb:label>
+      <kb:rule id="rule42" variantID="v11" triggerEventID="e0001" premiseEventID="e0002" conclusionEventID="e0003">
+         <kb:label>An example of a Rule</kb:label>
       </kb:rule>
     </kb:rules>
 

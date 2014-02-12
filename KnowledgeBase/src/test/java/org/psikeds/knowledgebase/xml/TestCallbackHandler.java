@@ -46,7 +46,12 @@ public class TestCallbackHandler implements KBParserCallback {
     final StringBuilder sb = new StringBuilder();
     sb.append(this.counter);
     sb.append(".: ");
-    sb.append(this.dumper.dump(element));
+    if (LOGGER.isDebugEnabled()) {
+      sb.append(this.dumper.dump(element));
+    }
+    else {
+      LOGGER.info(String.valueOf(element));
+    }
     sb.append('\n');
     LOGGER.debug(sb.toString());
   }
