@@ -23,9 +23,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Meta-Infos regarding the Knowledge-Base.
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class Meta extends ValueObject implements Serializable {
 
@@ -33,21 +33,36 @@ public class Meta extends ValueObject implements Serializable {
 
   private Calendar created;
   private Calendar lastmodified;
+  private Calendar loaded;
+  private String language;
+  private String version;
   private List<String> creator;
   private List<String> description;
-  private Map<String, Object> optionalInfo;
+  private Map<String, Object> additionalInfo;
 
   public Meta() {
-    this(null, null, null, null, null);
+    this(null, null, null, null, null, null);
   }
 
-  public Meta(final Calendar created, final Calendar lastmodified, final List<String> creator, final List<String> description, final Map<String, Object> optionalInfo) {
+  public Meta(final Calendar created, final Calendar lastmodified,
+      final String language, final String version,
+      final List<String> creator, final List<String> description) {
+    this(created, lastmodified, null, language, version, creator, description, null);
+  }
+
+  public Meta(final Calendar created, final Calendar lastmodified, final Calendar loaded,
+      final String language, final String version,
+      final List<String> creator, final List<String> description,
+      final Map<String, Object> additionalInfo) {
     super();
     setCreated(created);
     setLastmodified(lastmodified);
+    setLoaded(loaded);
+    setLanguage(language);
+    setVersion(version);
     setCreator(creator);
     setDescription(description);
-    setOptionalInfo(optionalInfo);
+    setAdditionalInfo(additionalInfo);
   }
 
   public Calendar getCreated() {
@@ -64,6 +79,36 @@ public class Meta extends ValueObject implements Serializable {
 
   public void setLastmodified(final Calendar value) {
     this.lastmodified = value;
+  }
+
+  public Calendar getLoaded() {
+    return this.loaded;
+  }
+
+  public void setLoaded(final Calendar loaded) {
+    if (loaded != null) {
+      this.loaded = loaded;
+    }
+    else {
+      // now!
+      this.loaded = Calendar.getInstance();
+    }
+  }
+
+  public String getLanguage() {
+    return this.language;
+  }
+
+  public void setLanguage(final String language) {
+    this.language = language;
+  }
+
+  public String getVersion() {
+    return this.version;
+  }
+
+  public void setVersion(final String version) {
+    this.version = version;
   }
 
   public List<String> getCreator() {
@@ -96,18 +141,20 @@ public class Meta extends ValueObject implements Serializable {
     this.description = lst;
   }
 
-  public Map<String, Object> getOptionalInfo() {
-    if (this.optionalInfo == null) {
-      this.optionalInfo = new ConcurrentHashMap<String, Object>();
+  public Map<String, Object> getAdditionalInfo() {
+    if (this.additionalInfo == null) {
+      this.additionalInfo = new ConcurrentHashMap<String, Object>();
     }
-    return this.optionalInfo;
+    return this.additionalInfo;
   }
 
-  public void setOptionalInfo(final Map<String, Object> optionalInfo) {
-    this.optionalInfo = optionalInfo;
+  public void setAdditionalInfo(final Map<String, Object> additionalInfo) {
+    this.additionalInfo = additionalInfo;
   }
 
-  public void addOptionalInfo(final String key, final Object value) {
-    getOptionalInfo().put(key, value);
+  public void addAdditionalInfo(final String key, final Object value) {
+    if ((key != null) && (value != null)) {
+      getAdditionalInfo().put(key, value);
+    }
   }
 }

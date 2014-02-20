@@ -34,7 +34,6 @@ import org.psikeds.knowledgebase.xml.KBValidator;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBaseFactory;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer;
-import org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.impl.Xml2VoTransformer;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.ValidationException;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.Validator;
 
@@ -53,7 +52,6 @@ public class XmlKnowledgeBaseFactory implements InitializingBean, KnowledgeBaseF
   private List<Validator> validatorChain; // list of semantic validators
   private KBValidator validator; // syntactic validator (xml against xsd)
   private KBParser parser;
-  private Transformer trans;
   private final XmlKnowledgeBase kb;
 
   public XmlKnowledgeBaseFactory() {
@@ -64,12 +62,8 @@ public class XmlKnowledgeBaseFactory implements InitializingBean, KnowledgeBaseF
     this(parser, null);
   }
 
-  public XmlKnowledgeBaseFactory(final KBParser parser, final Transformer trans) {
-    this(parser, trans, false, null, null); // not validating
-  }
-
-  public XmlKnowledgeBaseFactory(final KBParser parser, final Transformer trans, final List<Validator> validatorChain) {
-    this(parser, trans, true, null, validatorChain); // validate
+  public XmlKnowledgeBaseFactory(final KBParser parser, final List<Validator> validatorChain) {
+    this(parser, null, ((validatorChain != null) && !validatorChain.isEmpty()), null, validatorChain); // validate if there are validators
   }
 
   public XmlKnowledgeBaseFactory(final KBParser parser, final Transformer trans, final boolean validate, final KBValidator validator, final List<Validator> validatorChain) {
@@ -77,8 +71,7 @@ public class XmlKnowledgeBaseFactory implements InitializingBean, KnowledgeBaseF
     this.validatorChain = validatorChain;
     this.validator = validator;
     this.parser = parser;
-    this.trans = (trans != null ? trans : new Xml2VoTransformer());
-    this.kb = new XmlKnowledgeBase(this.trans);
+    this.kb = new XmlKnowledgeBase(trans);
   }
 
   // ----------------------------------------------------------------
@@ -92,8 +85,8 @@ public class XmlKnowledgeBaseFactory implements InitializingBean, KnowledgeBaseF
   @Override
   public void afterPropertiesSet() throws Exception {
     Validate.notNull(this.parser, "No XML-Parser!");
-    Validate.notNull(this.trans, "No Transformer!");
     Validate.notNull(this.kb, "No Knowledge-Base!");
+    Validate.notNull(this.kb.getTransformer(), "No XML-Transformer!");
   }
 
   // ----------------------------------------------------------------
@@ -129,8 +122,6 @@ public class XmlKnowledgeBaseFactory implements InitializingBean, KnowledgeBaseF
     this.validator = validator;
   }
 
-  // ----------------------------------------------------------------
-
   public KBParser getParser() {
     return this.parser;
   }
@@ -140,11 +131,10 @@ public class XmlKnowledgeBaseFactory implements InitializingBean, KnowledgeBaseF
   }
 
   public Transformer getTransformer() {
-    return this.trans;
+    return this.kb.getTransformer();
   }
 
   public void setTransformer(final Transformer trans) {
-    this.trans = trans;
     this.kb.setTransformer(trans);
   }
 

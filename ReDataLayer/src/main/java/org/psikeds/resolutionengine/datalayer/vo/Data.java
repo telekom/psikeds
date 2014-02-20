@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -18,9 +18,9 @@ import java.io.Serializable;
 
 /**
  * Wrapper for all Knowledge-Data.
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class Data extends ValueObject implements Serializable {
 
@@ -33,12 +33,15 @@ public class Data extends ValueObject implements Serializable {
   private Constituents constituents;
   private Events events;
   private Rules rules;
+  private Relations relations;
 
   public Data() {
-    this(null, null, null, null, null, null, null);
+    this(null, null, null, null, null, null, null, null);
   }
 
-  public Data(final Features features, final Purposes purposes, final Variants variants, final Alternatives alternatives, final Constituents constituents, final Events events, final Rules rules) {
+  public Data(final Features features, final Purposes purposes, final Variants variants,
+      final Alternatives alternatives, final Constituents constituents,
+      final Events events, final Rules rules, final Relations relations) {
     super();
     this.features = features;
     this.purposes = purposes;
@@ -47,6 +50,7 @@ public class Data extends ValueObject implements Serializable {
     this.constituents = constituents;
     this.events = events;
     this.rules = rules;
+    this.relations = relations;
   }
 
   public Features getFeatures() {
@@ -103,5 +107,13 @@ public class Data extends ValueObject implements Serializable {
 
   public void setRules(final Rules value) {
     this.rules = value;
+  }
+
+  public Relations getRelations() {
+    return this.relations;
+  }
+
+  public void setRelations(final Relations relations) {
+    this.relations = relations;
   }
 }

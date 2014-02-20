@@ -15,143 +15,200 @@
 package org.psikeds.resolutionengine.datalayer.vo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * This object represents a single Feature / Attribute of a Variant.
+ * This Object defines a Feature, i.e. Type and possible Values of an Attribute
+ * that can be assigned to a Variant.
  * 
- * Note: ID must be globally unique!
+ * Note: Feature-ID must be globally unique!
  * 
  * @author marco@juliano.de
  * 
  */
-public class Feature extends ValueObject implements Serializable {
+public class Feature<T> extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
   private String label;
   private String description;
-  private String minValue;
-  private String maxValue;
-  private FeatureValueType valueType;
-  private boolean range;
+  private Class<? extends T> valueType;
+  private List<T> values;
 
-  /**
-   * Default constructor: use Setters for Initialization
-   * 
-   */
   public Feature() {
-    this(null, null, null, null, null, null, false);
+    this(null, null, null, null);
   }
 
-  /**
-   * Constructor for a Feature with a discrete Value
-   * 
-   * @param label
-   * @param description
-   * @param id
-   * @param value
-   * @param fvt
-   * 
-   */
-  public Feature(final String label, final String description, final String id, final String value, final FeatureValueType fvt) {
-    this(label, description, id, value, null, fvt, false);
+  public Feature(final String label, final String description, final String featureID, final Class<? extends T> valueType) {
+    this(label, description, featureID, valueType, null);
   }
 
-  /**
-   * Constructor for a Feature with a Range from minValue to maxValue
-   * 
-   * @param label
-   * @param description
-   * @param id
-   * @param minValue
-   * @param maxValue
-   * @param fvt
-   * 
-   */
-  public Feature(final String label, final String description, final String id, final String minValue, final String maxValue, final FeatureValueType fvt) {
-    this(label, description, id, minValue, maxValue, fvt, true);
-  }
-
-  /**
-   * Internal constructor
-   * 
-   * @param label
-   * @param description
-   * @param id
-   * @param minValue
-   * @param maxValue
-   * @param fvt
-   * @param range
-   */
-  private Feature(final String label, final String description, final String id, final String minValue, final String maxValue, final FeatureValueType fvt, final boolean range) {
-    super(id);
+  public Feature(final String label, final String description, final String featureID, final Class<? extends T> valueType, final List<T> values) {
+    super(featureID);
     this.label = label;
     this.description = description;
-    this.minValue = minValue;
-    this.maxValue = maxValue;
-    this.valueType = fvt == null ? FeatureValueType.STRING : fvt;
-    this.range = range;
+    this.valueType = valueType;
+    this.values = values;
   }
+
+  // ----------------------------------------------------------------
 
   public String getLabel() {
     return this.label;
   }
 
-  public void setLabel(final String value) {
-    this.label = value;
+  public void setLabel(final String label) {
+    this.label = label;
   }
 
   public String getDescription() {
     return this.description;
   }
 
-  public void setDescription(final String value) {
-    this.description = value;
+  public void setDescription(final String description) {
+    this.description = description;
   }
 
-  public String getMinValue() {
-    return this.minValue;
+  public List<T> getValues() {
+    if (this.values == null) {
+      this.values = new ArrayList<T>();
+    }
+    return this.values;
   }
 
-  public String getValue() {
-    return this.minValue;
+  public void addValue(final T value) {
+    getValues().add(value);
   }
 
-  public void setMinValue(final String minValue) {
-    this.minValue = minValue;
-    this.range = true;
+  public void setValues(final List<T> values) {
+    this.values = values;
   }
 
-  public void setValue(final String value) {
-    this.minValue = value;
-    this.range = false;
-  }
-
-  public String getMaxValue() {
-    return this.maxValue;
-  }
-
-  public void setMaxValue(final String maxValue) {
-    this.maxValue = maxValue;
-    this.range = true;
-  }
-
-  public FeatureValueType getValueType() {
+  public Class<? extends T> getValueType() {
     return this.valueType;
   }
 
-  public void setValueType(final FeatureValueType valueType) {
+  public void setValueType(final Class<? extends T> valueType) {
     this.valueType = valueType;
   }
 
-  public boolean isRange() {
-    return this.range;
+  // ----------------------------------------------------------------
+
+  public static Feature<?> getFeature(final String label, final String description, final String featureID, final String valueType, final List<String> values) {
+    if ("integer".equalsIgnoreCase(valueType)) {
+      final Feature<Integer> fi = new Feature<Integer>(label, description, featureID, Integer.class);
+      for (final String val : values) {
+        try {
+          final Integer i = new Integer(Integer.parseInt(val.trim()));
+          fi.addValue(i);
+        }
+        catch (final Exception ex) {
+          throw new IllegalArgumentException("Not an Integer Value: " + val, ex);
+        }
+      }
+      return fi;
+    }
+    else if ("float".equalsIgnoreCase(valueType)) {
+      final Feature<Float> ff = new Feature<Float>(label, description, featureID, Float.class);
+      for (final String val : values) {
+        try {
+          final Float f = new Float(Float.parseFloat(val.trim()));
+          ff.addValue(f);
+        }
+        catch (final Exception ex) {
+          throw new IllegalArgumentException("Not a Float Value: " + val, ex);
+        }
+      }
+      return ff;
+    }
+    else if ("string".equalsIgnoreCase(valueType)) {
+      return new Feature<String>(label, description, featureID, String.class, values);
+    }
+    else {
+      throw new IllegalArgumentException("Unsupported Value Type: " + valueType);
+    }
   }
 
-  public void setRange(final boolean range) {
-    this.range = range;
-    if (!this.range) {
-      this.maxValue = null;
+  public static Feature<?> getFeature(final String label, final String description, final String featureID, final String valueType, final String minInclusive, final String maxExclusive) {
+    return getFeature(label, description, featureID, valueType, minInclusive, maxExclusive, null);
+  }
+
+  public static Feature<?> getFeature(final String label, final String description, final String featureID, final String valueType, final String minInclusive, final String maxExclusive,
+      final String step) {
+    if ("integer".equalsIgnoreCase(valueType)) {
+      final Feature<Integer> fi = new Feature<Integer>(label, description, featureID, Integer.class);
+      int inc;
+      int min;
+      int max;
+      try {
+        inc = Integer.parseInt(step.trim());
+        if (inc <= 0) {
+          throw new IllegalArgumentException();
+        }
+      }
+      catch (final Exception ex) {
+        inc = 1; // default
+      }
+      try {
+        min = Integer.parseInt(minInclusive.trim());
+      }
+      catch (final Exception ex) {
+        throw new IllegalArgumentException("Not an Integer Value: " + minInclusive, ex);
+      }
+      try {
+        max = Integer.parseInt(maxExclusive.trim());
+      }
+      catch (final Exception ex) {
+        throw new IllegalArgumentException("Not an Integer Value: " + maxExclusive, ex);
+      }
+      if (max < min) {
+        throw new IllegalArgumentException("maxExclusive must not be smaller than minInclusive!");
+      }
+      for (int i = min; i < max; i = i + inc) {
+        fi.addValue(new Integer(i));
+      }
+      return fi;
+    }
+    else if ("float".equalsIgnoreCase(valueType)) {
+      final Feature<Float> ff = new Feature<Float>(label, description, featureID, Float.class);
+      float inc;
+      float min;
+      float max;
+      try {
+        inc = Float.parseFloat(step.trim());
+        if (inc <= 0.0f) {
+          throw new IllegalArgumentException();
+        }
+      }
+      catch (final Exception ex) {
+        inc = 1.0f; // default
+      }
+      try {
+        min = Float.parseFloat(minInclusive.trim());
+      }
+      catch (final Exception ex) {
+        throw new IllegalArgumentException("Not a Float Value: " + minInclusive, ex);
+      }
+      try {
+        max = Float.parseFloat(maxExclusive.trim());
+      }
+      catch (final Exception ex) {
+        throw new IllegalArgumentException("Not a Float Value: " + maxExclusive, ex);
+      }
+      if (max < min) {
+        throw new IllegalArgumentException("maxExclusive must not be smaller than minInclusive!");
+      }
+      for (float f = min; f < max; f = f + inc) {
+        ff.addValue(new Float(f));
+      }
+      return ff;
+    }
+    else if ("string".equalsIgnoreCase(valueType)) {
+      throw new IllegalArgumentException("Value Type String is not allowed for Ranges!");
+    }
+    else {
+      throw new IllegalArgumentException("Unsupported Value Type: " + valueType);
     }
   }
 }

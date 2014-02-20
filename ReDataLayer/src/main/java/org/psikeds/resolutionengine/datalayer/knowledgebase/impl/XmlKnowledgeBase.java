@@ -40,6 +40,8 @@ import org.psikeds.resolutionengine.datalayer.vo.Knowledgebase;
 import org.psikeds.resolutionengine.datalayer.vo.Meta;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
 import org.psikeds.resolutionengine.datalayer.vo.Purposes;
+import org.psikeds.resolutionengine.datalayer.vo.Relation;
+import org.psikeds.resolutionengine.datalayer.vo.Relations;
 import org.psikeds.resolutionengine.datalayer.vo.Rule;
 import org.psikeds.resolutionengine.datalayer.vo.Rules;
 import org.psikeds.resolutionengine.datalayer.vo.Variant;
@@ -67,17 +69,21 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   private static final String KEY_ALL_CONSTITUENTS = "kb.all.constituents";
   private static final String KEY_ALL_EVENTS = "kb.all.events";
   private static final String KEY_ALL_RULES = "kb.all.rules";
+  private static final String KEY_ALL_RELATIONS = "kb.all.relations";
 
   private static final String KEY_PREFIX_FEATURE = "kb.feature.";
   private static final String KEY_PREFIX_PURPOSE = "kb.purpose.";
   private static final String KEY_PREFIX_VARIANT = "kb.variant.";
   private static final String KEY_PREFIX_EVENT = "kb.event.";
   private static final String KEY_PREFIX_RULE = "kb.rule.";
+  private static final String KEY_PREFIX_RELATION = "kb.relation.";
+
   private static final String KEY_PREFIX_FULFILLS = "kb.fulfills.";
   private static final String KEY_PREFIX_CONSTITUTES = "kb.constitutes.";
 
   private static final String KEY_PREFIX_ATTACHED_EVENTS = "kb.attached.events.";
   private static final String KEY_PREFIX_ATTACHED_RULES = "kb.attached.rules.";
+  private static final String KEY_PREFIX_ATTACHED_RELATIONS = "kb.attached.relations.";
 
   private static final String KEY_ROOT_PURPOSES = "kb.root.purposes";
 
@@ -86,11 +92,11 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   private boolean valid;
 
   public XmlKnowledgeBase() {
-    this(new Xml2VoTransformer());
+    this(null);
   }
 
   public XmlKnowledgeBase(final Transformer trans) {
-    this(trans, new ConcurrentHashMap<String, Object>());
+    this(trans, null);
   }
 
   public XmlKnowledgeBase(final Transformer trans, final Map<String, Object> knowledge) {
@@ -98,9 +104,9 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   }
 
   public XmlKnowledgeBase(final Transformer trans, final Map<String, Object> knowledge, final boolean valid) {
-    this.trans = trans;
-    this.knowledge = knowledge;
-    this.valid = valid;
+    setTransformer(trans);
+    setKnowledge(knowledge);
+    setValid(valid);
   }
 
   public Transformer getTransformer() {
@@ -108,7 +114,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   }
 
   public void setTransformer(final Transformer trans) {
-    this.trans = trans;
+    this.trans = (trans != null ? trans : new Xml2VoTransformer());
   }
 
   public Map<String, Object> getKnowledge() {
@@ -116,7 +122,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   }
 
   public void setKnowledge(final Map<String, Object> knowledge) {
-    this.knowledge = knowledge;
+    this.knowledge = (knowledge != null ? knowledge : new ConcurrentHashMap<String, Object>());
   }
 
   public void setValid(final boolean valid) {
@@ -199,16 +205,25 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
     return (Rules) load(KEY_ALL_RULES);
   }
 
-  // -------------------------------------------------------------
+  /**
+   * @return all Relations
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getRelations()
+   */
+  @Override
+  public Relations getRelations() {
+    return (Relations) load(KEY_ALL_RELATIONS);
+  }
+
+  //-------------------------------------------------------------
 
   /**
    * @param featureId
-   * @return Feature
+   * @return Feature<?>
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFeature(java.lang.String)
    */
   @Override
-  public Feature getFeature(final String featureId) {
-    return (Feature) load(KEY_PREFIX_FEATURE + featureId);
+  public Feature<?> getFeature(final String featureId) {
+    return (Feature<?>) load(KEY_PREFIX_FEATURE, featureId);
   }
 
   /**
@@ -218,7 +233,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
    */
   @Override
   public Purpose getPurpose(final String purposeId) {
-    return (Purpose) load(KEY_PREFIX_PURPOSE + purposeId);
+    return (Purpose) load(KEY_PREFIX_PURPOSE, purposeId);
   }
 
   /**
@@ -228,7 +243,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
    */
   @Override
   public Variant getVariant(final String variantId) {
-    return (Variant) load(KEY_PREFIX_VARIANT + variantId);
+    return (Variant) load(KEY_PREFIX_VARIANT, variantId);
   }
 
   /**
@@ -238,7 +253,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
    */
   @Override
   public Event getEvent(final String eventId) {
-    return (Event) load(KEY_PREFIX_EVENT + eventId);
+    return (Event) load(KEY_PREFIX_EVENT, eventId);
   }
 
   /**
@@ -248,8 +263,20 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
    */
   @Override
   public Rule getRule(final String ruleId) {
-    return (Rule) load(KEY_PREFIX_RULE + ruleId);
+    return (Rule) load(KEY_PREFIX_RULE, ruleId);
   }
+
+  /**
+   * @param relationId
+   * @return Relation
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getRelation(java.lang.String)
+   */
+  @Override
+  public Relation getRelation(final String relationId) {
+    return (Relation) load(KEY_PREFIX_RELATION, relationId);
+  }
+
+  //-------------------------------------------------------------
 
   /**
    * @param purposeId
@@ -258,7 +285,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
    */
   @Override
   public Fulfills getFulfills(final String purposeId) {
-    return (Fulfills) load(KEY_PREFIX_FULFILLS + purposeId);
+    return (Fulfills) load(KEY_PREFIX_FULFILLS, purposeId);
   }
 
   /**
@@ -268,7 +295,30 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
    */
   @Override
   public Constitutes getConstitutes(final String variantId) {
-    return (Constitutes) load(KEY_PREFIX_CONSTITUTES + variantId);
+    return (Constitutes) load(KEY_PREFIX_CONSTITUTES, variantId);
+  }
+
+  /**
+   * @param variantId
+   * @return all features of this variant
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFeatures(java.lang.String)
+   */
+  @Override
+  public Features getFeatures(final String variantId) {
+    final Features feats = new Features();
+    if (!StringUtils.isEmpty(variantId)) {
+      final Variant variant = getVariant(variantId);
+      if (variant != null) {
+        final List<String> fids = variant.getFeatureIds();
+        for (final String featureId : fids) {
+          final Feature<?> f = getFeature(featureId);
+          if (f != null) {
+            feats.addFeature(f);
+          }
+        }
+      }
+    }
+    return feats;
   }
 
   /**
@@ -278,7 +328,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
    */
   @Override
   public Events getAttachedEvents(final String variantId) {
-    return (Events) load(KEY_PREFIX_ATTACHED_EVENTS + variantId);
+    return (Events) load(KEY_PREFIX_ATTACHED_EVENTS, variantId);
   }
 
   /**
@@ -288,7 +338,17 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
    */
   @Override
   public Rules getAttachedRules(final String variantId) {
-    return (Rules) load(KEY_PREFIX_ATTACHED_RULES + variantId);
+    return (Rules) load(KEY_PREFIX_ATTACHED_RULES, variantId);
+  }
+
+  /**
+   * @param variantId
+   * @return Relations attached to Variant
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getAttachedRelations(java.lang.String)
+   */
+  @Override
+  public Relations getAttachedRelations(final String variantId) {
+    return (Relations) load(KEY_PREFIX_ATTACHED_RELATIONS, variantId);
   }
 
   // -------------------------------------------------------------
@@ -326,13 +386,22 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   }
 
   /**
-   * @param purpose
-   * @return all variants fulfilling this purpose
-   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFulfillingVariants(org.psikeds.resolutionengine.datalayer.vo.Purpose)
+   * @param purposeId
+   * @param variantId
+   * @return true if purpose is fulfilled by variant
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#isFulfilledBy(java.lang.String,
+   *      java.lang.String)
    */
   @Override
-  public Variants getFulfillingVariants(final Purpose purpose) {
-    return purpose == null ? new Variants() : getFulfillingVariants(purpose.getId());
+  public boolean isFulfilledBy(final String purposeId, final String variantId) {
+    final Variants vars = getFulfillingVariants(purposeId);
+    final List<Variant> lst = vars.getVariant();
+    for (final Variant idx : lst) {
+      if ((idx != null) && variantId.equals(idx.getId())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -359,48 +428,46 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   }
 
   /**
-   * @param variant
-   * @return all purposes that constitute this variant
-   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getConstitutingPurposes(org.psikeds.resolutionengine.datalayer.vo.Variant)
+   * @param variantId
+   * @param purposeId
+   * @return true if variant is constituted by purpose
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#isConstitutedBy(java.lang.String,
+   *      java.lang.String)
    */
   @Override
-  public Purposes getConstitutingPurposes(final Variant variant) {
-    return variant == null ? new Purposes() : getConstitutingPurposes(variant.getId());
+  public boolean isConstitutedBy(final String variantId, final String purposeId) {
+    final Purposes purps = getConstitutingPurposes(variantId);
+    final List<Purpose> lst = purps.getPurpose();
+    for (final Purpose idx : lst) {
+      if ((idx != null) && purposeId.equals(idx.getId())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
    * @param variantId
-   * @return all features of this variant
-   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFeatures(java.lang.String)
+   * @param featureId
+   * @return true if variant has this feature
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#hasFeature(java.lang.String,
+   *      java.lang.String)
    */
   @Override
-  public Features getFeatures(final String variantId) {
-    final Variant variant = getVariant(variantId);
-    return getFeatures(variant);
-  }
-
-  /**
-   * @param variant
-   * @return all features of this variant
-   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFeatures(org.psikeds.resolutionengine.datalayer.vo.Variant)
-   */
-  @Override
-  public Features getFeatures(final Variant variant) {
-    final Features feats = new Features();
-    if (variant != null) {
-      final List<String> fids = variant.getFeatureIds();
-      for (final String featureId : fids) {
-        final Feature f = getFeature(featureId);
-        if (f != null) {
-          feats.addFeature(f);
-        }
+  public boolean hasFeature(final String variantId, final String featureId) {
+    final Features feats = getFeatures(variantId);
+    final List<Feature<?>> lst = feats.getFeature();
+    for (final Feature<?> idx : lst) {
+      if ((idx != null) && featureId.equals(idx.getId())) {
+        return true;
       }
     }
-    return feats;
+    return false;
   }
 
   /**
-   * @return boolean valid
+   * @return true if knowledge base is valid or false if any problems were detected during
+   *         loading/initialization
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#isValid()
    */
   @Override
@@ -449,6 +516,9 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
       else if (element instanceof org.psikeds.knowledgebase.jaxb.Rules) {
         setRules(this.trans.xml2ValueObject((org.psikeds.knowledgebase.jaxb.Rules) element));
       }
+      else if (element instanceof org.psikeds.knowledgebase.jaxb.Relations) {
+        setRelations(this.trans.xml2ValueObject((org.psikeds.knowledgebase.jaxb.Relations) element));
+      }
       else {
         LOGGER.warn("Skipping unexpected XML-Element:\n{}", element);
       }
@@ -486,15 +556,18 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
       setConstituents(data.getConstituents());
       setEvents(data.getEvents());
       setRules(data.getRules());
+      setRelations(data.getRelations());
     }
   }
 
   private void setFeatures(final Features feats) {
     if (feats != null) {
       save(KEY_ALL_FEATURES, feats);
-      final List<Feature> lst = feats.getFeature();
-      for (final Feature f : lst) {
-        save(KEY_PREFIX_FEATURE + f.getId(), f);
+      final List<Feature<?>> lst = feats.getFeature();
+      for (final Feature<?> f : lst) {
+        if (f != null) {
+          save(KEY_PREFIX_FEATURE, f.getId(), f);
+        }
       }
     }
   }
@@ -506,7 +579,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
       final List<Purpose> lst = purps.getPurpose();
       for (final Purpose p : lst) {
         if (p != null) {
-          save(KEY_PREFIX_PURPOSE + p.getId(), p);
+          save(KEY_PREFIX_PURPOSE, p.getId(), p);
           if (p.isRoot()) {
             root.addPurpose(p);
           }
@@ -521,7 +594,9 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
       save(KEY_ALL_VARIANTS, vars);
       final List<Variant> lst = vars.getVariant();
       for (final Variant v : lst) {
-        save(KEY_PREFIX_VARIANT + v.getId(), v);
+        if (v != null) {
+          save(KEY_PREFIX_VARIANT, v.getId(), v);
+        }
       }
     }
   }
@@ -551,8 +626,10 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
       save(KEY_ALL_EVENTS, evnts);
       final List<Event> lst = evnts.getEvent();
       for (final Event e : lst) {
-        save(KEY_PREFIX_EVENT + e.getId(), e);
-        attacheEvent(e);
+        if (e != null) {
+          save(KEY_PREFIX_EVENT, e.getId(), e);
+          attachEvent(e);
+        }
       }
     }
   }
@@ -562,8 +639,23 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
       save(KEY_ALL_RULES, rules);
       final List<Rule> lst = rules.getRule();
       for (final Rule r : lst) {
-        save(KEY_PREFIX_RULE + r.getId(), r);
-        attacheRule(r);
+        if (r != null) {
+          save(KEY_PREFIX_RULE, r.getId(), r);
+          attachRule(r);
+        }
+      }
+    }
+  }
+
+  private void setRelations(final Relations relations) {
+    if (relations != null) {
+      save(KEY_ALL_RELATIONS, relations);
+      final List<Relation> lst = relations.getRelation();
+      for (final Relation r : lst) {
+        if (r != null) {
+          save(KEY_PREFIX_RELATION, r.getId(), r);
+          attachRelation(r);
+        }
       }
     }
   }
@@ -571,46 +663,67 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   // -------------------------------------------------------------
 
   private void setConstitutes(final Constitutes cons) {
-    if (cons != null) {
-      final String variantId = cons.getVariantID();
-      save(KEY_PREFIX_CONSTITUTES + variantId, cons);
-    }
+    final String variantId = (cons == null ? null : cons.getVariantID());
+    save(KEY_PREFIX_CONSTITUTES, variantId, cons);
   }
 
   private void setFulfills(final Fulfills full) {
-    if (full != null) {
-      final String purposeId = full.getPurposeID();
-      save(KEY_PREFIX_FULFILLS + purposeId, full);
+    final String purposeId = (full == null ? null : full.getPurposeID());
+    save(KEY_PREFIX_FULFILLS, purposeId, full);
+  }
+
+  private void attachEvent(final Event e) {
+    final String variantId = (e == null ? null : e.getVariantId());
+    if (!StringUtils.isEmpty(variantId)) {
+      Events evts = getAttachedEvents(variantId);
+      if (evts == null) {
+        evts = new Events();
+      }
+      evts.addEvent(e);
+      save(KEY_PREFIX_ATTACHED_EVENTS, variantId, evts);
     }
   }
 
-  private void attacheEvent(final Event e) {
-    final String variantId = e.getVariantId();
-    Events evts = getAttachedEvents(variantId);
-    if (evts == null) {
-      evts = new Events();
+  private void attachRule(final Rule r) {
+    final String variantId = (r == null ? null : r.getVariantID());
+    if (!StringUtils.isEmpty(variantId)) {
+      Rules rules = getAttachedRules(variantId);
+      if (rules == null) {
+        rules = new Rules();
+      }
+      rules.addRule(r);
+      save(KEY_PREFIX_ATTACHED_RULES, variantId, rules);
     }
-    evts.addEvent(e);
-    save(KEY_PREFIX_ATTACHED_EVENTS + variantId, evts);
   }
 
-  private void attacheRule(final Rule r) {
-    final String variantId = r.getVariantID();
-    Rules rules = getAttachedRules(variantId);
-    if (rules == null) {
-      rules = new Rules();
+  private void attachRelation(final Relation r) {
+    final String variantId = (r == null ? null : r.getVariantID());
+    if (!StringUtils.isEmpty(variantId)) {
+      Relations relations = getAttachedRelations(variantId);
+      if (relations == null) {
+        relations = new Relations();
+      }
+      relations.addRelation(r);
+      save(KEY_PREFIX_ATTACHED_RELATIONS, variantId, relations);
     }
-    rules.addRule(r);
-    save(KEY_PREFIX_ATTACHED_RULES + variantId, rules);
   }
 
   // -------------------------------------------------------------
 
+  private void save(final String key, final String subkey, final Object value) {
+    if (!StringUtils.isEmpty(key) && !StringUtils.isEmpty(subkey)) {
+      save(key + subkey, value);
+    }
+  }
+
   private void save(final String key, final Object value) {
     if ((value != null) && !StringUtils.isEmpty(key)) {
-      LOGGER.trace("save: key = {}\nvalue = {}", key, value);
       this.knowledge.put(key, value);
     }
+  }
+
+  private Object load(final String key, final String subkey) {
+    return (StringUtils.isEmpty(key) || StringUtils.isEmpty(subkey) ? null : load(key + subkey));
   }
 
   private Object load(final String key) {
@@ -618,7 +731,6 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
     if (!StringUtils.isEmpty(key)) {
       value = this.knowledge.get(key);
     }
-    LOGGER.trace("load: key = {}\nvalue = {}", key, value);
     return value;
   }
 }

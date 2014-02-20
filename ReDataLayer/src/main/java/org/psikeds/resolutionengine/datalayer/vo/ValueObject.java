@@ -50,8 +50,8 @@ public class ValueObject implements Serializable, Comparable<Object> {
     return this.id;
   }
 
-  public void setId(final String value) {
-    this.id = value;
+  public void setId(final String... ids) {
+    this.id = composeId(ids);
   }
 
   // ------------------------------------------------------
@@ -108,7 +108,7 @@ public class ValueObject implements Serializable, Comparable<Object> {
 
   // ------------------------------------------------------
 
-  private static String composeId(final ValueObject... vos) {
+  protected static String composeId(final ValueObject... vos) {
     final StringBuilder sb = new StringBuilder();
     for (final ValueObject v : vos) {
       final String vid = (v == null ? null : v.getId());
@@ -122,7 +122,7 @@ public class ValueObject implements Serializable, Comparable<Object> {
     return sb.toString();
   }
 
-  private static String composeId(final String... ids) {
+  protected static String composeId(final String... ids) {
     final StringBuilder sb = new StringBuilder();
     for (final String vid : ids) {
       if (!StringUtils.isEmpty(vid)) {

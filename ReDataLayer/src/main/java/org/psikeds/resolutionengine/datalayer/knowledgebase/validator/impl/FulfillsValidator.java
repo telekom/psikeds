@@ -60,28 +60,41 @@ public class FulfillsValidator implements Validator {
           final Purpose p = kb.getPurpose(pid);
           if ((p == null) || !pid.equals(p.getId())) {
             valid = false;
-            LOGGER.warn("Unknown PurposeID: " + pid);
+            LOGGER.warn("Unknown PurposeID: {}", pid);
+          }
+          else if (StringUtils.isEmpty(p.getLabel())) {
+            valid = false;
+            LOGGER.warn("Purpose {} has no Label!", pid);
           }
         }
         final List<String> varids = f.getVariantID();
         if ((varids == null) || varids.isEmpty()) {
           valid = false;
-          LOGGER.warn("No fulfilling Variants for PurposeID: " + pid);
+          LOGGER.warn("No fulfilling Variants for PurposeID: {}", pid);
         }
         else {
           for (final String vid : varids) {
             if (StringUtils.isEmpty(vid)) {
               valid = false;
-              LOGGER.warn("Empty VariantID for PurposeID: " + pid);
+              LOGGER.warn("Empty VariantID for PurposeID: {}", pid);
             }
             else {
               final Variant v = kb.getVariant(vid);
               if ((v == null) || !vid.equals(v.getId())) {
                 valid = false;
-                LOGGER.warn("Unknown VariantID: " + vid);
+                LOGGER.warn("Unknown VariantID: {}", vid);
+              }
+              else if (StringUtils.isEmpty(v.getLabel())) {
+                valid = false;
+                LOGGER.warn("Variant {} has no Label!", vid);
               }
             }
           }
+        }
+        final long qty = f.getQuantity();
+        if (qty < Fulfills.MINIMUM_QUANTITY) {
+          valid = false;
+          LOGGER.warn("Illegal Quantity: " + qty);
         }
       }
       if (!valid) {

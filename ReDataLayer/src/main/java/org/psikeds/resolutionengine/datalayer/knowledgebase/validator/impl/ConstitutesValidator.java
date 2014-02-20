@@ -60,25 +60,33 @@ public class ConstitutesValidator implements Validator {
           final Variant v = kb.getVariant(vid);
           if ((v == null) || !vid.equals(v.getId())) {
             valid = false;
-            LOGGER.warn("Unknown VariantID: " + vid);
+            LOGGER.warn("Unknown VariantID: {}", vid);
+          }
+          else if (StringUtils.isEmpty(v.getLabel())) {
+            valid = false;
+            LOGGER.warn("Variant {} has no Label!", vid);
           }
         }
         final List<String> purpids = c.getPurposeID();
         if ((purpids == null) || purpids.isEmpty()) {
           valid = false;
-          LOGGER.warn("No constituting Purposes of VariantID: " + vid);
+          LOGGER.warn("No constituting Purposes of VariantID: {}", vid);
         }
         else {
           for (final String pid : purpids) {
             if (StringUtils.isEmpty(pid)) {
               valid = false;
-              LOGGER.warn("Empty PurposeID for VariantID: " + vid);
+              LOGGER.warn("Empty PurposeID for VariantID: {}", vid);
             }
             else {
               final Purpose p = kb.getPurpose(pid);
               if ((p == null) || !pid.equals(p.getId())) {
                 valid = false;
-                LOGGER.warn("Unknown PurposeID: " + pid);
+                LOGGER.warn("Unknown PurposeID: {}", pid);
+              }
+              else if (StringUtils.isEmpty(p.getLabel())) {
+                valid = false;
+                LOGGER.warn("Purpose {} has no Label!", pid);
               }
             }
           }

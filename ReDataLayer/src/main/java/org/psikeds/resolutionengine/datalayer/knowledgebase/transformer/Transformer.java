@@ -17,10 +17,10 @@ package org.psikeds.resolutionengine.datalayer.knowledgebase.transformer;
 /**
  * Helper for transforming a JAXB XML Object from the Knowledgebase into a
  * Value Object for the Datalayer.<br>
- *
+ * 
  * The Knowledgebase is read-only, therefore only transformations XML to VO
  * are supported / implemented.<br>
- *
+ * 
  * @author marco@juliano.de
  */
 public interface Transformer {
@@ -31,7 +31,7 @@ public interface Transformer {
 
   org.psikeds.resolutionengine.datalayer.vo.Constitutes xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Constitutes xml);
 
-  org.psikeds.resolutionengine.datalayer.vo.ContextPath xml2ValueObject(final org.psikeds.knowledgebase.jaxb.ContextPath xml);
+  org.psikeds.resolutionengine.datalayer.vo.Context xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Context xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Data xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Data xml);
 
@@ -39,7 +39,7 @@ public interface Transformer {
 
   org.psikeds.resolutionengine.datalayer.vo.Events xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Events xml);
 
-  org.psikeds.resolutionengine.datalayer.vo.Feature xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Feature xml);
+  org.psikeds.resolutionengine.datalayer.vo.Feature<?> xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Feature xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Features xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Features xml);
 
@@ -52,6 +52,10 @@ public interface Transformer {
   org.psikeds.resolutionengine.datalayer.vo.Purpose xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Purpose xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Purposes xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Purposes xml);
+
+  org.psikeds.resolutionengine.datalayer.vo.Relation xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Relation xml);
+
+  org.psikeds.resolutionengine.datalayer.vo.Relations xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Relations xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Rule xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Rule xml);
 

@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A Context-Path is an ordered List of Object-IDs describing a Path along
+ * A Context is an ordered List of Object-IDs describing a Path along
  * the Graph of our Knowledge Base, i.e. Variant->Purpose->Variant->...)
  * 
  * Note: The Object-IDs within the List of a Context-Path must reference
@@ -28,20 +28,20 @@ import java.util.List;
  * @author marco@juliano.de
  * 
  */
-public class ContextPath extends ValueObject implements Serializable {
+public class Context extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
   private static final char PATH_SEPARATOR = '/';
 
   private List<String> pathIDs;
 
-  public ContextPath() {
+  public Context() {
     this(null);
   }
 
-  public ContextPath(final List<String> pathIDs) {
-    super(pathAsString(pathIDs));
-    this.pathIDs = pathIDs;
+  public Context(final List<String> pathIDs) {
+    super();
+    setPathIDs(pathIDs);
   }
 
   public List<String> getPathIDs() {
@@ -53,30 +53,38 @@ public class ContextPath extends ValueObject implements Serializable {
 
   public void setPathIDs(final List<String> pathIDs) {
     this.pathIDs = pathIDs;
+    setId(pathAsString(pathIDs));
   }
 
   public void addPathID(final String id) {
-    getPathIDs().add(id);
+    if (id != null) {
+      getPathIDs().add(id);
+      setId(pathAsString(getPathIDs()));
+    }
   }
 
   // ------------------------------------------------------
 
   public String pathAsString() {
-    return pathAsString(this);
+    return Context.pathAsString(this);
   }
 
-  public static String pathAsString(final ContextPath cp) {
-    return pathAsString(cp.getPathIDs());
+  public static String pathAsString(final Context cp) {
+    return (cp == null ? null : Context.pathAsString(cp.getPathIDs()));
   }
 
   public static String pathAsString(final List<String> pathIDs) {
-    final StringBuilder sb = new StringBuilder();
-    for (final String id : pathIDs) {
-      if (sb.length() > 0) {
-        sb.append(PATH_SEPARATOR);
+    String path = null;
+    if (pathIDs != null) {
+      final StringBuilder sb = new StringBuilder();
+      for (final String id : pathIDs) {
+        if (sb.length() > 0) {
+          sb.append(PATH_SEPARATOR);
+        }
+        sb.append(id);
       }
-      sb.append(id);
+      path = sb.toString();
     }
-    return sb.toString();
+    return path;
   }
 }

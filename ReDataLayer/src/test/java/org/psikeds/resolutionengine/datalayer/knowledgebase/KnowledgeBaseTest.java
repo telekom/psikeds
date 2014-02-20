@@ -35,9 +35,11 @@ import org.psikeds.knowledgebase.xml.impl.XMLParser;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.impl.XmlKnowledgeBaseFactory;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.Validator;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.ConstitutesValidator;
+import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.EventValidator;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.FeatureValidator;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.FulfillsValidator;
-import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.RulesValidator;
+import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.RelationValidator;
+import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.RuleValidator;
 import org.psikeds.resolutionengine.datalayer.vo.Alternatives;
 import org.psikeds.resolutionengine.datalayer.vo.Constituents;
 import org.psikeds.resolutionengine.datalayer.vo.Constitutes;
@@ -79,8 +81,10 @@ public class KnowledgeBaseTest {
       validators.add(new FeatureValidator());
       validators.add(new FulfillsValidator());
       validators.add(new ConstitutesValidator());
-      validators.add(new RulesValidator());
-      final KnowledgeBaseFactory factory = new XmlKnowledgeBaseFactory(parser, null, validators);
+      validators.add(new EventValidator());
+      validators.add(new RuleValidator());
+      validators.add(new RelationValidator());
+      final KnowledgeBaseFactory factory = new XmlKnowledgeBaseFactory(parser, validators);
       final KnowledgeBase kb = factory.create();
       assertNotNull("Failed to load KB from File " + XML, kb);
       assertTrue("KB is not valid!", kb.isValid());
@@ -89,7 +93,7 @@ public class KnowledgeBaseTest {
       Features feats = kb.getFeatures();
       LOGGER.trace("All Features = {}", feats);
       assertNotNull("No Features!", feats);
-      final List<Feature> flst = feats.getFeature();
+      final List<Feature<?>> flst = feats.getFeature();
       assertNotNull("No List of Features!", flst);
       int result = flst.size();
       int expected = 4;
@@ -122,7 +126,7 @@ public class KnowledgeBaseTest {
       final List<Event> elst = evts.getEvent();
       assertNotNull("No List of Events!", elst);
       result = elst.size();
-      expected = 3;
+      expected = 6;
       assertEquals("KB has " + result + " Events total, not expected " + expected, expected, result);
 
       LOGGER.info("... checking Rules ...");
@@ -132,7 +136,7 @@ public class KnowledgeBaseTest {
       final List<Rule> rlst = rules.getRule();
       assertNotNull("No List of Rules!", rlst);
       result = rlst.size();
-      expected = 1;
+      expected = 3;
       assertEquals("KB has " + result + " Rules total, not expected " + expected, expected, result);
 
       LOGGER.info("... checking Root-Purposes ...");
@@ -157,8 +161,8 @@ public class KnowledgeBaseTest {
 
       LOGGER.info("... checking fulfilling Variants ...");
       for (final Purpose p : plst) {
-        final Variants ffvs = kb.getFulfillingVariants(p);
         final String purposeId = p.getId();
+        final Variants ffvs = kb.getFulfillingVariants(purposeId);
         LOGGER.trace("Fulfilling Variants of {} are\n{}", purposeId, ffvs);
         assertNotNull("No fulfilling Variants!", ffvs);
         final List<Variant> ffvlst = ffvs.getVariant();
@@ -184,7 +188,7 @@ public class KnowledgeBaseTest {
         LOGGER.trace("Events attached to Variant {} are\n{}", v.getId(), evts);
         rules = kb.getAttachedRules(v.getId());
         LOGGER.trace("Rules attached to Variant {} are\n{}", v.getId(), rules);
-        purps = kb.getConstitutingPurposes(v);
+        purps = kb.getConstitutingPurposes(v.getId());
         LOGGER.trace("Purposes constituting Variant {} are\n{}", v.getId(), purps);
       }
 

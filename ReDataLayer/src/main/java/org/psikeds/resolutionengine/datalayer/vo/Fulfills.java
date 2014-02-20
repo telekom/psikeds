@@ -20,22 +20,22 @@ import java.util.List;
 
 /**
  * A purpose is fulfilled by one or several variant(s).
- *
+ * 
  * Optionally a Quantity can be specified, meaning that the purpose
  * is not fullfilled by 1 Variant (default) but by that number of
- * Variants. 
- *
+ * Variants.
+ * 
  * Note: PurposeID and VariantID(s) must reference existing Objects!
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
 public class Fulfills extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private static final long MINIMUM_QUANTITY = 1L;
-  private static final long DEFAULT_QUANTITY = MINIMUM_QUANTITY;
+  public static final long MINIMUM_QUANTITY = 1L;
+  public static final long DEFAULT_QUANTITY = MINIMUM_QUANTITY;
 
   private String description;
   private String purposeID;

@@ -19,38 +19,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * List of all Features.
+ * List of all Relations.
  * 
  * @author marco@juliano.de
  * 
  */
-public class Features extends ValueObject implements Serializable {
+public class Relations extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private List<Feature<?>> feature;
+  private List<Relation> relation;
 
-  public Features() {
+  public Relations() {
     this(null);
   }
 
-  public Features(final List<Feature<?>> lst) {
+  public Relations(final List<Relation> relation) {
     super();
-    setFeature(lst);
+    setRelation(relation);
   }
 
-  public List<Feature<?>> getFeature() {
-    if (this.feature == null) {
-      this.feature = new ArrayList<Feature<?>>();
+  public List<Relation> getRelation() {
+    if (this.relation == null) {
+      this.relation = new ArrayList<Relation>();
     }
-    return this.feature;
+    return this.relation;
   }
 
-  public boolean addFeature(final Feature<?> value) {
-    return getFeature().add(value);
+  public boolean addRelation(final Relation value) {
+    return getRelation().add(value);
   }
 
-  public void setFeature(final List<Feature<?>> lst) {
-    this.feature = lst;
+  public void setRelation(final List<Relation> relation) {
+    this.relation = relation;
   }
 }

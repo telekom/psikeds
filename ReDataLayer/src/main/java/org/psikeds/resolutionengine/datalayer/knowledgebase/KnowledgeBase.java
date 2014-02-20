@@ -25,6 +25,8 @@ import org.psikeds.resolutionengine.datalayer.vo.Fulfills;
 import org.psikeds.resolutionengine.datalayer.vo.Meta;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
 import org.psikeds.resolutionengine.datalayer.vo.Purposes;
+import org.psikeds.resolutionengine.datalayer.vo.Relation;
+import org.psikeds.resolutionengine.datalayer.vo.Relations;
 import org.psikeds.resolutionengine.datalayer.vo.Rule;
 import org.psikeds.resolutionengine.datalayer.vo.Rules;
 import org.psikeds.resolutionengine.datalayer.vo.Variant;
@@ -35,6 +37,8 @@ public interface KnowledgeBase {
   // -------------------------------
   // global Access to all Objects
   // -------------------------------
+
+  Meta getMetadata();
 
   Features getFeatures();
 
@@ -50,11 +54,13 @@ public interface KnowledgeBase {
 
   Rules getRules();
 
+  Relations getRelations();
+
   // -------------------------------
   // get Objects by ID
   // -------------------------------
 
-  Feature getFeature(String featureId);
+  Feature<?> getFeature(String featureId);
 
   Purpose getPurpose(String purposeId);
 
@@ -64,13 +70,23 @@ public interface KnowledgeBase {
 
   Rule getRule(String ruleId);
 
+  Relation getRelation(String relationId);
+
+  // -------------------------------
+  // get Objects by referencing Object
+  // -------------------------------
+
   Fulfills getFulfills(String purposeId);
 
   Constitutes getConstitutes(String variantId);
 
+  Features getFeatures(String variantId);
+
   Events getAttachedEvents(String variantId);
 
   Rules getAttachedRules(String variantId);
+
+  Relations getAttachedRelations(String variantId);
 
   // -------------------------------
   // specialized Methods
@@ -80,21 +96,13 @@ public interface KnowledgeBase {
 
   Variants getFulfillingVariants(String purposeId);
 
-  Variants getFulfillingVariants(Purpose purpose);
+  boolean isFulfilledBy(String purposeId, String variantId);
 
   Purposes getConstitutingPurposes(String variantId);
 
-  Purposes getConstitutingPurposes(Variant variant);
+  boolean isConstitutedBy(String variantId, String purposeId);
 
-  Features getFeatures(String variantId);
-
-  Features getFeatures(Variant variant);
-
-  // -------------------------------
-  // other helpers
-  // -------------------------------
+  boolean hasFeature(String variantId, String featureId);
 
   boolean isValid();
-
-  Meta getMetadata();
 }

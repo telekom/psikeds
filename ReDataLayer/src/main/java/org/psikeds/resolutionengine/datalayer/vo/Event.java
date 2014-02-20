@@ -17,62 +17,70 @@ package org.psikeds.resolutionengine.datalayer.vo;
 import java.io.Serializable;
 
 /**
- * An Event is defined by its Context Path (Variant->Purpose->Variant->...)
- * and the ID of the Variant it is attached to.
+ * An Event is defined by the ID of the Variant it is attached to,
+ * its Context (= Path: Variant->Purpose->Variant->...) and the
+ * triggering Entity, i.e. a Variant or Feature.
  * 
- * Note 1: ID must be globally unique.
+ * Note 1: Event-ID must be globally unique.
  * 
- * Note 2: VariantId must reference an existing Object!
+ * Note 2: Variant-ID must reference an existing Object!
  * 
- * Note 3: Context Path of an Event must point to an Entity that is located
- * within the Subtree under the Variant this Event is attached to.
+ * Note 3: Context and Trigger of an Event must point to an Entity that
+ * is located within the Subtree under the Variant this Event is
+ * attached to.
  * 
  * @author marco@juliano.de
  * 
  */
 public class Event extends ValueObject implements Serializable {
 
+  public static final boolean DEFAULT_FEATURE_EVENT = false;
+  public static final boolean DEFAULT_NOT_EVENT = false;
+
   private static final long serialVersionUID = 1L;
 
   private String label;
   private String description;
-  private ContextPath ctx;
   private String variantId;
+  private Context context;
+  private String trigger;
+  private boolean featureEvent;
+  private boolean notEvent;
 
   public Event() {
-    this(null, null, null, null, null);
+    this(null, null, null, null, null, null);
   }
 
-  public Event(final String label, final String description, final String id, final ContextPath ctx, final String variantId) {
-    super(id);
+  public Event(final String label, final String description, final String eventID, final String variantId, final Context context, final String trigger) {
+    this(label, description, eventID, variantId, context, trigger, DEFAULT_FEATURE_EVENT, DEFAULT_NOT_EVENT);
+  }
+
+  public Event(final String label, final String description, final String eventID, final String variantId, final Context context, final String trigger,
+      final boolean featureEvent, final boolean notEvent) {
+    super(eventID);
     this.label = label;
     this.description = description;
-    this.ctx = ctx;
     this.variantId = variantId;
+    this.context = context;
+    this.trigger = trigger;
+    this.featureEvent = featureEvent;
+    this.notEvent = notEvent;
   }
 
   public String getLabel() {
     return this.label;
   }
 
-  public void setLabel(final String value) {
-    this.label = value;
+  public void setLabel(final String label) {
+    this.label = label;
   }
 
   public String getDescription() {
     return this.description;
   }
 
-  public void setDescription(final String value) {
-    this.description = value;
-  }
-
-  public ContextPath getContextPath() {
-    return this.ctx;
-  }
-
-  public void setContextPath(final ContextPath ctx) {
-    this.ctx = ctx;
+  public void setDescription(final String description) {
+    this.description = description;
   }
 
   public String getVariantId() {
@@ -81,5 +89,37 @@ public class Event extends ValueObject implements Serializable {
 
   public void setVariantId(final String variantId) {
     this.variantId = variantId;
+  }
+
+  public Context getContext() {
+    return this.context;
+  }
+
+  public void setContext(final Context context) {
+    this.context = context;
+  }
+
+  public String getTrigger() {
+    return this.trigger;
+  }
+
+  public void setTrigger(final String trigger) {
+    this.trigger = trigger;
+  }
+
+  public boolean isFeatureEvent() {
+    return this.featureEvent;
+  }
+
+  public void setFeatureEvent(final boolean featureEvent) {
+    this.featureEvent = featureEvent;
+  }
+
+  public boolean isNotEvent() {
+    return this.notEvent;
+  }
+
+  public void setNotEvent(final boolean notEvent) {
+    this.notEvent = notEvent;
   }
 }
