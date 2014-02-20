@@ -25,8 +25,7 @@ import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.ValidationException;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.Validator;
 import org.psikeds.resolutionengine.datalayer.vo.Feature;
-import org.psikeds.resolutionengine.datalayer.vo.Variant;
-import org.psikeds.resolutionengine.datalayer.vo.Variants;
+import org.psikeds.resolutionengine.datalayer.vo.Features;
 
 /**
  * Basic Validator checking that all referenced Features are existing and reasonable.
@@ -46,38 +45,37 @@ public class FeatureValidator implements Validator {
     try {
       LOGGER.debug("Validating KnowledgeBase regarding Features ...");
       boolean valid = true;
-      final Variants vars = (kb == null ? null : kb.getVariants());
-      final List<Variant> vlst = (vars == null ? null : vars.getVariant());
-      if ((vlst != null) && !vlst.isEmpty()) {
-        for (final Variant v : vlst) {
-          final List<String> flst = (v == null ? null : v.getFeatureIds());
-          if ((flst != null) && !flst.isEmpty()) {
-            for (final String fid : flst) {
-              if (StringUtils.isEmpty(fid)) {
-                valid = false;
-                LOGGER.warn("Emptry FeatureID!");
-                continue;
-              }
-              final Feature<?> f = kb.getFeature(fid);
-              if ((f == null) || !fid.equals(f.getId())) {
-                valid = false;
-                LOGGER.warn("Unknown FeatureID: {}", fid);
-                continue;
-              }
-              if (StringUtils.isEmpty(f.getLabel())) {
-                valid = false;
-                LOGGER.warn("Feature {} has no Label!", fid);
-              }
-              if (f.getValues().isEmpty()) {
-                valid = false;
-                LOGGER.warn("Feature {} has no Values!", fid);
-              }
-              final Class<?> ftype = f.getValueType();
-              if (!String.class.equals(ftype) && !Integer.class.equals(ftype) && !Float.class.equals(ftype)) {
-                valid = false;
-                LOGGER.warn("Feature {} has unsupported Value Type: {}", fid, ftype);
-              }
-            }
+      // Note: Features are optional, i.e. this Node can be null!
+      final Features feats = kb.getFeatures();
+      final List<Feature<?>> flst = (feats == null ? null : feats.getFeature());
+      if ((flst != null) && !flst.isEmpty()) {
+        for (final Feature<?> f1 : flst) {
+          final String fid = (f1 == null ? null : f1.getId());
+          if (StringUtils.isEmpty(fid)) {
+            valid = false;
+            LOGGER.warn("No FeatureID: {}", f1);
+            continue;
+          }
+          // double check: get feature by id and compare!
+          final Feature<?> f2 = kb.getFeature(fid);
+          if ((f2 == null) || !f1.equals(f2)) {
+            valid = false;
+            LOGGER.warn("Feature not found: {}", f1);
+            continue;
+          }
+          // check basic properties
+          if (StringUtils.isEmpty(f2.getLabel())) {
+            valid = false;
+            LOGGER.warn("Feature {} has no Label!", fid);
+          }
+          if (f2.getValues().isEmpty()) {
+            valid = false;
+            LOGGER.warn("Feature {} has no Values!", fid);
+          }
+          final Class<?> ftype = f2.getValueType();
+          if (!String.class.equals(ftype) && !Integer.class.equals(ftype) && !Float.class.equals(ftype)) {
+            valid = false;
+            LOGGER.warn("Feature {} has unsupported Value Type: {}", fid, ftype);
           }
         }
       }
