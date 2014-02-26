@@ -15,8 +15,6 @@
 package org.psikeds.resolutionengine.interfaces.pojos;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -49,21 +47,21 @@ public class ResolutionRequest extends BaseResolutionContext implements Serializ
 
   private static final long serialVersionUID = 1L;
 
-  private List<Decission> decissions;
+  private Decissions decissions;
 
   public ResolutionRequest() {
     this((String) null);
   }
 
   public ResolutionRequest(final String sessionID) {
-    this(sessionID, null, null);
+    this(sessionID, null, null, (Decissions) null);
   }
 
   public ResolutionRequest(final Decission decission) {
     this(null, null, null, decission);
   }
 
-  public ResolutionRequest(final List<Decission> decissions) {
+  public ResolutionRequest(final Decissions decissions) {
     this(null, null, null, decissions);
   }
 
@@ -71,7 +69,7 @@ public class ResolutionRequest extends BaseResolutionContext implements Serializ
     this(sessionID, null, null, decission);
   }
 
-  public ResolutionRequest(final String sessionID, final List<Decission> decissions) {
+  public ResolutionRequest(final String sessionID, final Decissions decissions) {
     this(sessionID, null, null, decissions);
   }
 
@@ -79,38 +77,42 @@ public class ResolutionRequest extends BaseResolutionContext implements Serializ
     this(null, null, knowledge, decission);
   }
 
-  public ResolutionRequest(final Knowledge knowledge, final List<Decission> decissions) {
+  public ResolutionRequest(final Knowledge knowledge, final Decissions decissions) {
     this(null, null, knowledge, decissions);
   }
 
-  public ResolutionRequest(final String sessionID, final Metadata metadata, final Knowledge knowledge) {
-    this(sessionID, metadata, knowledge, (List<Decission>) null);
+  public ResolutionRequest(final String sessionID, final Metadata metadata, final Decission decission) {
+    this(sessionID, metadata, null, decission);
+  }
+
+  public ResolutionRequest(final String sessionID, final Metadata metadata, final Decissions decissions) {
+    this(sessionID, metadata, null, decissions);
   }
 
   public ResolutionRequest(final String sessionID, final Metadata metadata, final Knowledge knowledge, final Decission decission) {
-    this(sessionID, metadata, knowledge);
-    addMadeDecission(decission);
+    this(sessionID, metadata, knowledge, (Decissions) null);
+    addDecission(decission);
   }
 
-  public ResolutionRequest(final String sessionID, final Metadata metadata, final Knowledge knowledge, final List<Decission> decissions) {
+  public ResolutionRequest(final String sessionID, final Metadata metadata, final Knowledge knowledge, final Decissions decissions) {
     super(sessionID, metadata, knowledge);
-    setMadeDecissions(decissions);
+    setDecissions(decissions);
   }
 
-  public List<Decission> getMadeDecissions() {
+  public Decissions getDecissions() {
     if (this.decissions == null) {
-      this.decissions = new ArrayList<Decission>();
+      this.decissions = new Decissions();
     }
     return this.decissions;
   }
 
-  public void setMadeDecissions(final List<Decission> decissions) {
+  public void setDecissions(final Decissions decissions) {
     this.decissions = decissions;
   }
 
-  public void addMadeDecission(final Decission decission) {
+  public void addDecission(final Decission decission) {
     if (decission != null) {
-      getMadeDecissions().add(decission);
+      getDecissions().add(decission);
     }
   }
 }

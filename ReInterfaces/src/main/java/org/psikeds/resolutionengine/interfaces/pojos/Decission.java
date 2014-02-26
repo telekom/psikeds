@@ -14,66 +14,18 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.interfaces.pojos;
 
-import java.io.Serializable;
-
-import javax.xml.bind.annotation.XmlRootElement;
+import org.codehaus.jackson.annotate.JsonSubTypes;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
- * A decission made, i.e. which Variant was selected for which Purpose?
- * 
- * Note 1: PurposeID and VariantID(s) must reference existing Objects!
- * 
- * Note 2: Reading from and writing to JSON works out of the box.
- * However for XML the XmlRootElement annotation is required.
+ * A general Decission, either VariantDecission and FeatureDecission
  * 
  * @author marco@juliano.de
  * 
  */
-@XmlRootElement(name = "Decission")
-public class Decission extends POJO implements Serializable {
-
-  private static final long serialVersionUID = 1L;
-
-  private String purposeID;
-  private String variantID;
-
-  public Decission() {
-    this((Purpose) null, (Variant) null);
-  }
-
-  public Decission(final String purposeID, final String variantID) {
-    super(purposeID, variantID);
-    setPurposeID(purposeID);
-    setVariantID(variantID);
-  }
-
-  public Decission(final Purpose purpose, final Variant variant) {
-    super(purpose, variant);
-    setPurpose(purpose);
-    setVariant(variant);
-  }
-
-  public String getPurposeID() {
-    return this.purposeID;
-  }
-
-  public void setPurposeID(final String purposeID) {
-    this.purposeID = purposeID;
-  }
-
-  public void setPurpose(final Purpose purpose) {
-    this.purposeID = purpose == null ? null : purpose.getId();
-  }
-
-  public String getVariantID() {
-    return this.variantID;
-  }
-
-  public void setVariantID(final String variantID) {
-    this.variantID = variantID;
-  }
-
-  public void setVariant(final Variant variant) {
-    this.variantID = variant == null ? null : variant.getId();
-  }
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
+@JsonSubTypes({ @JsonSubTypes.Type(value = FeatureDecission.class, name = "FeatureDecission"), @JsonSubTypes.Type(value = VariantDecission.class, name = "VariantDecission"), })
+public interface Decission {
+  // the purpose of this interface is to mark an object as a decission
+  // and to control its JSON-representation
 }

@@ -15,8 +15,6 @@
 package org.psikeds.resolutionengine.interfaces.pojos;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -26,9 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * 
  * Note 1: ID must be globally unique.
  * 
- * Note 2: FeatureIDs must reference existing Objects!
- * 
- * Note 3: Reading from and writing to JSON works out of the box.
+ * Note 2: Reading from and writing to JSON works out of the box.
  * However for XML the XmlRootElement annotation is required.
  * 
  * @author marco@juliano.de
@@ -41,18 +37,18 @@ public class Variant extends POJO implements Serializable {
 
   private String label;
   private String description;
-  private List<Feature> features;
+  private Features features;
 
   public Variant() {
     this(null, null, null);
   }
 
-  public Variant(final String label, final String description, final String id) {
-    this(label, description, id, null);
+  public Variant(final String label, final String description, final String variantID) {
+    this(label, description, variantID, null);
   }
 
-  public Variant(final String label, final String description, final String id, final List<Feature> features) {
-    super(id);
+  public Variant(final String label, final String description, final String variantID, final Features features) {
+    super(variantID);
     this.label = label;
     this.description = description;
     this.features = features;
@@ -74,18 +70,44 @@ public class Variant extends POJO implements Serializable {
     this.description = value;
   }
 
-  public List<Feature> getFeatures() {
+  // ----------------------------------------------------------------
+
+  public Features getFeatures() {
     if (this.features == null) {
-      this.features = new ArrayList<Feature>();
+      this.features = new Features();
     }
     return this.features;
   }
 
-  public void setFeatures(final List<Feature> features) {
+  public void setFeatures(final Features features) {
+    clearFeatures();
     this.features = features;
   }
 
-  public void addFeature(final Feature feature) {
-    getFeatures().add(feature);
+  public void addFeature(final FeatureDescription feature) {
+    if (feature != null) {
+      getFeatures().add(feature);
+    }
+  }
+
+  public void addAllFeature(final Features features) {
+    if ((features != null) && !features.isEmpty()) {
+      getFeatures().addAll(features);
+    }
+  }
+
+  public void clearFeatures() {
+    if (this.features != null) {
+      this.features.clear();
+      this.features = null;
+    }
+  }
+
+  public String getVariantID() {
+    return getId();
+  }
+
+  public void setVariantID(final String variantID) {
+    setId(variantID);
   }
 }

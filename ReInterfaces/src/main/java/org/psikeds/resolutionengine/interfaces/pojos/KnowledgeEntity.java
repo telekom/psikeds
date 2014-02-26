@@ -15,10 +15,10 @@
 package org.psikeds.resolutionengine.interfaces.pojos;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  * Interface object representing a Knowledge-Entity, "one piece" of Knowledge.
@@ -37,42 +37,40 @@ public class KnowledgeEntity extends POJO implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
+  public static final long MINIMUM_QUANTITY = 0L; // nothing selected yet ==> quantity = 0
+  public static final long DEFAULT_QUANTITY = 1L; // default: just one variant for fulfilling the purpose
+
+  private long quantity;
   private Purpose purpose;
   private Variant variant;
-  private List<KnowledgeEntity> siblings;
-  private List<Choice> choices;
+  private FeatureValues features;
+  private KnowledgeEntities children;
+  private Choices choices;
 
   public KnowledgeEntity() {
-    this(null, null);
+    this(MINIMUM_QUANTITY, null, null, null, null, null);
   }
 
-  /**
-   * Leaf-KnowledgeEntity, only Purpose and Variant, no Siblings or Choices.
-   * 
-   * @param purpose
-   * @param variant
-   */
   public KnowledgeEntity(final Purpose purpose, final Variant variant) {
-    this(purpose, variant, null, null);
+    this(purpose, variant, null);
   }
 
-  /**
-   * New KnowledgeEntity, not resolved, only Choices no Siblings yet
-   * 
-   * @param purpose
-   * @param variant
-   * @param choices
-   */
-  public KnowledgeEntity(final Purpose purpose, final Variant variant, final List<Choice> choices) {
-    this(purpose, variant, null, choices);
+  public KnowledgeEntity(final Purpose purpose, final Variant variant, final Choices choices) {
+    this(DEFAULT_QUANTITY, purpose, variant, choices);
   }
 
-  public KnowledgeEntity(final Purpose purpose, final Variant variant, final List<KnowledgeEntity> siblings, final List<Choice> choices) {
+  public KnowledgeEntity(final long qty, final Purpose purpose, final Variant variant, final Choices choices) {
+    this(qty, purpose, variant, null, null, choices);
+  }
+
+  public KnowledgeEntity(final long qty, final Purpose purpose, final Variant variant, final FeatureValues features, final KnowledgeEntities children, final Choices choices) {
     super(purpose, variant);
-    this.purpose = purpose;
-    this.variant = variant;
-    this.siblings = siblings;
-    this.choices = choices;
+    setPurpose(purpose);
+    setVariant(variant);
+    setQuantity(qty);
+    setFeatures(features);
+    setChildren(children);
+    setChoices(choices);
   }
 
   public Purpose getPurpose() {
@@ -91,37 +89,101 @@ public class KnowledgeEntity extends POJO implements Serializable {
     this.variant = variant;
   }
 
-  public List<KnowledgeEntity> getSiblings() {
-    if (this.siblings == null) {
-      this.siblings = new ArrayList<KnowledgeEntity>();
+  public long getQuantity() {
+    return (this.variant == null ? MINIMUM_QUANTITY : this.quantity); // no variant, no quantity
+  }
+
+  public void setQuantity(final long qty) {
+    this.quantity = (qty < MINIMUM_QUANTITY ? MINIMUM_QUANTITY : qty);
+  }
+
+  public KnowledgeEntities getChildren() {
+    if (this.children == null) {
+      this.children = new KnowledgeEntities();
     }
-    return this.siblings;
+    return this.children;
   }
 
-  public void setSiblings(final List<KnowledgeEntity> siblings) {
-    this.siblings = siblings;
+  public void setChildren(final KnowledgeEntities children) {
+    this.children = children;
   }
 
-  public void addSibling(final KnowledgeEntity ke) {
-    if (ke != null) {
-      getSiblings().add(ke);
+  public void addChild(final KnowledgeEntity child) {
+    if (child != null) {
+      getChildren().add(child);
     }
   }
 
-  public List<Choice> getChoices() {
+  // ----------------------------------------------------------------
+
+  public FeatureValues getFeatures() {
+    if (this.features == null) {
+      this.features = new FeatureValues();
+    }
+    return this.features;
+  }
+
+  public void setFeatures(final FeatureValues features) {
+    clearFeatures();
+    this.features = features;
+  }
+
+  public void addFeature(final FeatureValue feature) {
+    if (feature != null) {
+      getFeatures().add(feature);
+    }
+  }
+
+  public void addAllFeature(final FeatureValues features) {
+    if ((features != null) && !features.isEmpty()) {
+      getFeatures().addAll(features);
+    }
+  }
+
+  public void clearFeatures() {
+    if (this.features != null) {
+      this.features.clear();
+      this.features = null;
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  public Choices getChoices() {
     if (this.choices == null) {
-      this.choices = new ArrayList<Choice>();
+      this.choices = new Choices();
     }
     return this.choices;
   }
 
-  public void setChoices(final List<Choice> choices) {
+  public void setChoices(final Choices choices) {
+    clearChoices();
     this.choices = choices;
   }
 
-  public void addChoice(final Choice chc) {
-    if (chc != null) {
-      getChoices().add(chc);
+  public void addChoice(final Choice choice) {
+    if (choice != null) {
+      getChoices().add(choice);
     }
+  }
+
+  public void addAllChoices(final Choices choices) {
+    if ((choices != null) && !choices.isEmpty()) {
+      getChoices().addAll(choices);
+    }
+  }
+
+  public void clearChoices() {
+    if (this.choices != null) {
+      this.choices.clear();
+      this.choices = null;
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  @JsonIgnore
+  public boolean isResolved() {
+    return ((this.purpose != null) && (this.variant != null) && ((this.choices == null) || this.choices.isEmpty()));
   }
 }

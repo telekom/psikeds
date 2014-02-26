@@ -18,12 +18,15 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Metadata-Infos regarding the current Resolution and Knowledge-Base.
  * 
  * @author marco@juliano.de
  * 
  */
+@XmlRootElement(name = "Metadata")
 public class Metadata extends POJO implements Serializable {
 
   public static final String SESSION_ID = "SESSION_ID";

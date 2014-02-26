@@ -16,6 +16,9 @@ package org.psikeds.resolutionengine.interfaces.pojos;
 
 import java.io.Serializable;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
+
 import org.springframework.util.StringUtils;
 
 import org.psikeds.common.util.ObjectDumper;
@@ -23,19 +26,30 @@ import org.psikeds.common.util.ObjectDumper;
 /**
  * Base of all POJOs in this Package.
  * 
+ * JSON-TypeInfo-Settings will be inherited by all derived Classes.
+ * 
+ * By default the ID of a POJO is for internal Usage only. If you want to make
+ * it visible within JSON- or XML-Data, you have to expose it via public setters
+ * and getters, e.g. see Variant-ID, Purpose-ID or Feature-ID.
+ * 
  * @author marco@juliano.de
  * 
  */
-public class POJO implements Serializable, Comparable<Object> {
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type")
+public abstract class POJO implements Serializable, Comparable<Object> {
 
   private static final long serialVersionUID = 1L;
   private static final char COMPOSE_ID_SEPARATOR = '/';
 
   // unique id of this pojo
-  protected String id;
+  private String id;
 
   protected POJO() {
     this.id = null;
+  }
+
+  protected POJO(final String id) {
+    this.id = id;
   }
 
   protected POJO(final POJO... pojos) {
@@ -46,12 +60,14 @@ public class POJO implements Serializable, Comparable<Object> {
     this.id = composeId(ids);
   }
 
-  public String getId() {
+  @JsonIgnore
+  protected String getId() {
     return this.id;
   }
 
-  public void setId(final String value) {
-    this.id = value;
+  @JsonIgnore
+  protected void setId(final String id) {
+    this.id = id;
   }
 
   // ------------------------------------------------------
@@ -106,7 +122,7 @@ public class POJO implements Serializable, Comparable<Object> {
 
   // ------------------------------------------------------
 
-  private static String composeId(final POJO... pojos) {
+  protected static String composeId(final POJO... pojos) {
     final StringBuilder sb = new StringBuilder();
     for (final POJO p : pojos) {
       final String pid = (p == null ? null : p.getId());
@@ -120,7 +136,7 @@ public class POJO implements Serializable, Comparable<Object> {
     return sb.toString();
   }
 
-  private static String composeId(final String... ids) {
+  protected static String composeId(final String... ids) {
     final StringBuilder sb = new StringBuilder();
     for (final String pid : ids) {
       if (!StringUtils.isEmpty(pid)) {

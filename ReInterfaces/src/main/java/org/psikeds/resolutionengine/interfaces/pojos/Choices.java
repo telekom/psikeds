@@ -14,27 +14,34 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.interfaces.pojos;
 
-import org.codehaus.jackson.annotate.JsonSubTypes;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
- * A general Choice, either VariantChoice and FeatureChoice
+ * A List of Choices ... unfortunately we have to create a Sub-Class of
+ * ArrayList<Choice> because a simple List will loose its Type-Information
+ * due to Java-Type-Erasure resulting in errors during JSON-Deserialization!
  * 
  * @author marco@juliano.de
  * 
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
-@JsonSubTypes({ @JsonSubTypes.Type(value = FeatureChoice.class, name = "FeatureChoice"), @JsonSubTypes.Type(value = VariantChoice.class, name = "VariantChoice"), })
-public interface Choice {
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type")
+public class Choices extends ArrayList<Choice> implements Serializable {
 
-  // the purpose of this interface is to mark an object as a choice
-  // and to control its JSON-representation
+  private static final long serialVersionUID = 1L;
 
-  /**
-   * Check whether a made Decission matches to this Choice
-   * 
-   * @param decission
-   * @return POJO if matching, null else
-   */
-  POJO matches(final Decission decission);
+  public Choices() {
+    super();
+  }
+
+  public Choices(final Collection<? extends Choice> c) {
+    super(c);
+  }
+
+  public Choices(final int initialCapacity) {
+    super(initialCapacity);
+  }
 }

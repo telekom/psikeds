@@ -14,27 +14,35 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.interfaces.pojos;
 
-import org.codehaus.jackson.annotate.JsonSubTypes;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
- * A general Choice, either VariantChoice and FeatureChoice
+ * A List of ErrorMessages ... unfortunately we have to create a Sub-Class of
+ * ArrayList<ErrorMessage> because a simple List will loose all of its
+ * Type-Information due to Java-Type-Erasure resulting in ugly errors during
+ * JSON-Deserialization!
  * 
  * @author marco@juliano.de
  * 
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
-@JsonSubTypes({ @JsonSubTypes.Type(value = FeatureChoice.class, name = "FeatureChoice"), @JsonSubTypes.Type(value = VariantChoice.class, name = "VariantChoice"), })
-public interface Choice {
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type")
+public class Errors extends ArrayList<ErrorMessage> implements Serializable {
 
-  // the purpose of this interface is to mark an object as a choice
-  // and to control its JSON-representation
+  private static final long serialVersionUID = 1L;
 
-  /**
-   * Check whether a made Decission matches to this Choice
-   * 
-   * @param decission
-   * @return POJO if matching, null else
-   */
-  POJO matches(final Decission decission);
+  public Errors() {
+    super();
+  }
+
+  public Errors(final Collection<? extends ErrorMessage> c) {
+    super(c);
+  }
+
+  public Errors(final int initialCapacity) {
+    super(initialCapacity);
+  }
 }

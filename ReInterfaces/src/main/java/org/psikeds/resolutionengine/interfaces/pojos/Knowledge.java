@@ -15,8 +15,6 @@
 package org.psikeds.resolutionengine.interfaces.pojos;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -41,19 +39,19 @@ public class Knowledge extends POJO implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private List<KnowledgeEntity> entities;
-  private List<Choice> choices;
+  private KnowledgeEntities entities;
+  private Choices choices;
   private boolean stable;
 
   public Knowledge() {
     this(null);
   }
 
-  public Knowledge(final List<Choice> choices) {
+  public Knowledge(final Choices choices) {
     this(null, choices);
   }
 
-  public Knowledge(final List<KnowledgeEntity> entities, final List<Choice> choices) {
+  public Knowledge(final KnowledgeEntities entities, final Choices choices) {
     super();
     this.entities = entities;
     this.choices = choices;
@@ -62,14 +60,14 @@ public class Knowledge extends POJO implements Serializable {
     this.stable = true;
   }
 
-  public List<KnowledgeEntity> getEntities() {
+  public KnowledgeEntities getEntities() {
     if (this.entities == null) {
-      this.entities = new ArrayList<KnowledgeEntity>();
+      this.entities = new KnowledgeEntities();
     }
     return this.entities;
   }
 
-  public void setEntities(final List<KnowledgeEntity> entities) {
+  public void setEntities(final KnowledgeEntities entities) {
     this.entities = entities;
   }
 
@@ -79,14 +77,14 @@ public class Knowledge extends POJO implements Serializable {
     }
   }
 
-  public List<Choice> getChoices() {
+  public Choices getChoices() {
     if (this.choices == null) {
-      this.choices = new ArrayList<Choice>();
+      this.choices = new Choices();
     }
     return this.choices;
   }
 
-  public void setChoices(final List<Choice> choices) {
+  public void setChoices(final Choices choices) {
     this.choices = choices;
   }
 
