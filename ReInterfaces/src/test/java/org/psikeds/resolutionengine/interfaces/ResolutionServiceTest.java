@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -88,6 +89,17 @@ public class ResolutionServiceTest {
   public static void setUpBeforeClass() {
     BasicConfigurator.configure();
     DOMConfigurator.configure(LOG4J);
+  }
+
+  @AfterClass
+  public static void teardownAfterClass() {
+    // keep static knowledge but delete requests and responses after each run
+    INIT_RESPONSE.deleteOnExit();
+    CURRENT_RESPONSE.deleteOnExit();
+    SELECT_VARIANT_REQUEST.deleteOnExit();
+    SELECT_VARIANT_RESPONSE.deleteOnExit();
+    SELECT_FEATURE_REQUEST.deleteOnExit();
+    SELECT_FEATURE_RESPONSE.deleteOnExit();
   }
 
   @Before
