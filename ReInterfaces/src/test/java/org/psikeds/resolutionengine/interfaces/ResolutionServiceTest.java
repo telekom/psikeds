@@ -21,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -92,7 +93,7 @@ public class ResolutionServiceTest {
   }
 
   @AfterClass
-  public static void teardownAfterClass() {
+  public static void tearDownAfterClass() {
     // keep static knowledge but delete requests and responses after each run
     INIT_RESPONSE.deleteOnExit();
     CURRENT_RESPONSE.deleteOnExit();
@@ -107,8 +108,10 @@ public class ResolutionServiceTest {
     final Knowledge initialKnowledge = readObjectFromJsonFile(INIT_KNOWLEDGE, Knowledge.class);
     final Knowledge selectVariantKnowledge = readObjectFromJsonFile(SELECT_VARIANT_KNOWLEDGE, Knowledge.class);
     final Knowledge selectFeatureKnowledge = readObjectFromJsonFile(SELECT_FEATURE_KNOWLEDGE, Knowledge.class);
+    final Calendar now = Calendar.getInstance();
+    final String started = DateFormat.getDateTimeInstance().format(now.getTime());
     final Metadata metadata = new Metadata();
-    metadata.saveInfo(Metadata.KB_TIMESTAMP, String.valueOf(Calendar.getInstance()));
+    metadata.saveInfo(Metadata.KB_TIMESTAMP, started);
     this.srvc = new ResolutionServiceMock(initialKnowledge, selectVariantKnowledge, selectFeatureKnowledge, metadata);
   }
 
