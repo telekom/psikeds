@@ -126,11 +126,11 @@ public class RelationValidator implements Validator {
           // Note: Validity of Features is checked by FeatureValidator, here we only avoid NPEs!
           final String leftFeatureId = (le == null ? null : le.getTrigger());
           final Feature<?> leftFeature = (StringUtils.isEmpty(leftFeatureId) ? null : kb.getFeature(leftFeatureId));
-          final Class<?> leftValueType = (leftFeature == null ? null : leftFeature.getValueType());
+          final String leftValueType = (leftFeature == null ? null : leftFeature.getValueType());
           final String rightFeatureId = (re == null ? null : re.getTrigger());
           final Feature<?> rightFeature = (StringUtils.isEmpty(rightFeatureId) ? null : kb.getFeature(rightFeatureId));
-          final Class<?> rightValueType = (rightFeature == null ? null : rightFeature.getValueType());
-          if ((leftValueType == null) || (rightValueType == null) || !rightValueType.equals(leftValueType)) {
+          final String rightValueType = (rightFeature == null ? null : rightFeature.getValueType());
+          if (StringUtils.isEmpty(leftValueType) || StringUtils.isEmpty(rightValueType) || !rightValueType.equals(leftValueType)) {
             valid = false;
             LOGGER.warn("Left and right side of Relation {} have incompatible Types: {} vs. {}", rid, leftValueType, rightValueType);
           }

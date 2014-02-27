@@ -28,7 +28,7 @@ import org.psikeds.resolutionengine.datalayer.vo.Feature;
 import org.psikeds.resolutionengine.datalayer.vo.Features;
 
 /**
- * Basic Validator checking that all referenced Features are existing and reasonable.
+ * Validator checking that all referenced Features are existing and reasonable.
  * 
  * @author marco@juliano.de
  * 
@@ -71,11 +71,6 @@ public class FeatureValidator implements Validator {
           if (f2.getValues().isEmpty()) {
             valid = false;
             LOGGER.warn("Feature {} has no Values!", fid);
-          }
-          final Class<?> ftype = f2.getValueType();
-          if (!String.class.equals(ftype) && !Integer.class.equals(ftype) && !Float.class.equals(ftype)) {
-            valid = false;
-            LOGGER.warn("Feature {} has unsupported Value Type: {}", fid, ftype);
           }
         }
       }

@@ -32,6 +32,10 @@ public abstract class Feature extends POJO {
 
   private static final long serialVersionUID = 1L;
 
+  public static final String VALUE_TYPE_STRING = "string";
+  public static final String VALUE_TYPE_INTEGER = "integer";
+  public static final String VALUE_TYPE_FLOAT = "float";
+
   private String label;
   private String description;
   private String valueType;
@@ -46,9 +50,9 @@ public abstract class Feature extends POJO {
 
   public Feature(final String label, final String description, final String featureID, final String valueType) {
     super(featureID);
-    this.label = label;
-    this.description = description;
-    this.valueType = valueType;
+    setLabel(label);
+    setDescription(description);
+    setValueType(valueType);
   }
 
   public String getLabel() {
@@ -72,7 +76,15 @@ public abstract class Feature extends POJO {
   }
 
   public void setValueType(final String valueType) {
-    this.valueType = valueType;
+    if (VALUE_TYPE_INTEGER.equalsIgnoreCase(valueType)) {
+      this.valueType = VALUE_TYPE_INTEGER;
+    }
+    else if (VALUE_TYPE_FLOAT.equalsIgnoreCase(valueType)) {
+      this.valueType = VALUE_TYPE_FLOAT;
+    }
+    else {
+      this.valueType = VALUE_TYPE_STRING;
+    }
   }
 
   public String getFeatureID() {
