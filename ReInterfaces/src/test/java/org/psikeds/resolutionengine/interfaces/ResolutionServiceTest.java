@@ -111,7 +111,8 @@ public class ResolutionServiceTest {
     final Calendar now = Calendar.getInstance();
     final String started = DateFormat.getDateTimeInstance().format(now.getTime());
     final Metadata metadata = new Metadata();
-    metadata.saveInfo(Metadata.KB_TIMESTAMP, started);
+    metadata.addInfo(Metadata.KB_CREATED, started);
+    metadata.addInfo(Metadata.KB_LOADED, started);
     this.srvc = new ResolutionServiceMock(initialKnowledge, selectVariantKnowledge, selectFeatureKnowledge, metadata);
   }
 

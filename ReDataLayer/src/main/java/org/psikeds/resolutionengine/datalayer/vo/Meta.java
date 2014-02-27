@@ -38,7 +38,7 @@ public class Meta extends ValueObject implements Serializable {
   private String version;
   private List<String> creator;
   private List<String> description;
-  private Map<String, Object> additionalInfo;
+  private Map<String, Serializable> additionalInfo;
 
   public Meta() {
     this(null, null, null, null, null, null);
@@ -53,7 +53,7 @@ public class Meta extends ValueObject implements Serializable {
   public Meta(final Calendar created, final Calendar lastmodified, final Calendar loaded,
       final String language, final String version,
       final List<String> creator, final List<String> description,
-      final Map<String, Object> additionalInfo) {
+      final Map<String, Serializable> additionalInfo) {
     super();
     setCreated(created);
     setLastmodified(lastmodified);
@@ -141,18 +141,18 @@ public class Meta extends ValueObject implements Serializable {
     this.description = lst;
   }
 
-  public Map<String, Object> getAdditionalInfo() {
+  public Map<String, Serializable> getAdditionalInfo() {
     if (this.additionalInfo == null) {
-      this.additionalInfo = new ConcurrentHashMap<String, Object>();
+      this.additionalInfo = new ConcurrentHashMap<String, Serializable>();
     }
     return this.additionalInfo;
   }
 
-  public void setAdditionalInfo(final Map<String, Object> additionalInfo) {
+  public void setAdditionalInfo(final Map<String, Serializable> additionalInfo) {
     this.additionalInfo = additionalInfo;
   }
 
-  public void addAdditionalInfo(final String key, final Object value) {
+  public void addAdditionalInfo(final String key, final Serializable value) {
     if ((key != null) && (value != null)) {
       getAdditionalInfo().put(key, value);
     }
