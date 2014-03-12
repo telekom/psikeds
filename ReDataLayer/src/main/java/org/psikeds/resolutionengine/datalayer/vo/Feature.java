@@ -17,19 +17,24 @@ package org.psikeds.resolutionengine.datalayer.vo;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonSubTypes;
+
 /**
- * This Object defines a Feature, i.e. Type and possible Values of an Attribute
- * that can be assigned to a Variant.
+ * This is a Feature-Definition/Declaration, i.e. Type and possible Values of an
+ * Attribute that can be assigned to a Variant.
  * 
- * Assumption is that we have a discrete number of values with an reasonable size,
+ * Assumption is that we have a discrete number of values within a reasonable size,
  * i.e. a quite small number of values. Might need a second thought and refactoring
- * if large value ranges and mathematical funtions must be supported!
+ * if large value ranges and mathematical funtions must be supported in the future!
  * 
  * Note: Feature-ID must be globally unique!
  * 
  * @author marco@juliano.de
  * 
  */
+@JsonSubTypes({ @JsonSubTypes.Type(value = StringFeature.class, name = "StringFeature"),
+    @JsonSubTypes.Type(value = IntegerFeature.class, name = "IntegerFeature"),
+    @JsonSubTypes.Type(value = FloatFeature.class, name = "FloatFeature"), })
 public abstract class Feature<T> extends ValueObject {
 
   private static final long serialVersionUID = 1L;
@@ -67,6 +72,14 @@ public abstract class Feature<T> extends ValueObject {
 
   public void setDescription(final String description) {
     this.description = description;
+  }
+
+  public String getFeatureID() {
+    return getId();
+  }
+
+  public void setFeatureID(final String featureID) {
+    setId(featureID);
   }
 
   public List<T> getValues() {
@@ -254,7 +267,7 @@ public abstract class Feature<T> extends ValueObject {
       throw new IllegalArgumentException("maxExclusive must not be smaller than minInclusive!");
     }
     if (MINIMUM_RANGE_STEP >= step) {
-      throw new IllegalArgumentException("step must be at least: " + MINIMUM_RANGE_STEP);
+      throw new IllegalArgumentException("step must be larger than: " + MINIMUM_RANGE_STEP);
     }
     final IntegerFeature intfeat = new IntegerFeature(label, description, featureID);
     int count = 0;
@@ -276,7 +289,7 @@ public abstract class Feature<T> extends ValueObject {
       throw new IllegalArgumentException("maxExclusive must not be smaller than minInclusive!");
     }
     if (MINIMUM_RANGE_STEP >= step) {
-      throw new IllegalArgumentException("step must be at least: " + MINIMUM_RANGE_STEP);
+      throw new IllegalArgumentException("step must be larger than: " + MINIMUM_RANGE_STEP);
     }
     final FloatFeature floatfeat = new FloatFeature(label, description, featureID);
     int count = 0;

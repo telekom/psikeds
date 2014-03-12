@@ -16,6 +16,9 @@ package org.psikeds.resolutionengine.datalayer.vo;
 
 import java.io.Serializable;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
+
 import org.springframework.util.StringUtils;
 
 import org.psikeds.common.util.ObjectDumper;
@@ -23,35 +26,58 @@ import org.psikeds.common.util.ObjectDumper;
 /**
  * Base of all Value-Objects in this Package.
  * 
+ * JSON-TypeInfo-Settings will be inherited by all derived Classes.
+ * 
+ * By default the ID of a ValueObject is for internal Usage only. If you want to
+ * make it visible within JSON- or XML-Data, you have to expose it via public
+ * setters and getters. For Examples see Rule, Event, Purpose, etc.
+ * 
  * @author marco@juliano.de
  * 
  */
-public class ValueObject implements Serializable, Comparable<Object> {
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type")
+public abstract class ValueObject implements Serializable, Comparable<Object> {
 
   private static final long serialVersionUID = 1L;
   private static final char COMPOSE_ID_SEPARATOR = '/';
 
-  // unique id of this value object
-  protected String id;
+  // unique id of this Value Object
+  private String id;
 
   protected ValueObject() {
     this.id = null;
   }
 
-  protected ValueObject(final ValueObject... vos) {
-    this.id = composeId(vos);
+  protected ValueObject(final String id) {
+    setId(id);
   }
 
   protected ValueObject(final String... ids) {
-    this.id = composeId(ids);
+    setId(ids);
   }
 
-  public String getId() {
+  protected ValueObject(final ValueObject... vos) {
+    setId(vos);
+  }
+
+  @JsonIgnore
+  protected String getId() {
     return this.id;
   }
 
-  public void setId(final String... ids) {
+  @JsonIgnore
+  protected void setId(final String id) {
+    this.id = id;
+  }
+
+  @JsonIgnore
+  protected void setId(final String... ids) {
     this.id = composeId(ids);
+  }
+
+  @JsonIgnore
+  protected void setId(final ValueObject... vos) {
+    this.id = composeId(vos);
   }
 
   // ------------------------------------------------------

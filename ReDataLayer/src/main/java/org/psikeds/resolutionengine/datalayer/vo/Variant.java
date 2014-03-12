@@ -18,6 +18,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * A single Variant. Variants can optionally have certain Features,
  * i.e. hold a List of IDs of the referenced Features.
@@ -29,6 +31,7 @@ import java.util.List;
  * @author marco@juliano.de
  * 
  */
+@XmlRootElement(name = "Variant")
 public class Variant extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -38,15 +41,19 @@ public class Variant extends ValueObject implements Serializable {
   private List<String> featureIds;
 
   public Variant() {
-    this(null, null, null);
+    this(null);
   }
 
-  public Variant(final String label, final String description, final String id) {
-    this(label, description, id, null);
+  public Variant(final String variantID) {
+    this(variantID, variantID, variantID);
   }
 
-  public Variant(final String label, final String description, final String id, final List<String> featureIds) {
-    super(id);
+  public Variant(final String label, final String description, final String variantID) {
+    this(label, description, variantID, null);
+  }
+
+  public Variant(final String label, final String description, final String variantID, final List<String> featureIds) {
+    super(variantID);
     this.label = label;
     this.description = description;
     this.featureIds = featureIds;
@@ -66,6 +73,14 @@ public class Variant extends ValueObject implements Serializable {
 
   public void setDescription(final String value) {
     this.description = value;
+  }
+
+  public String getVariantID() {
+    return getId();
+  }
+
+  public void setVariantID(final String variantID) {
+    setId(variantID);
   }
 
   public List<String> getFeatureIds() {

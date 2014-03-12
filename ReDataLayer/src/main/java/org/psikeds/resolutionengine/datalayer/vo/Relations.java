@@ -18,12 +18,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
- * List of all Relations.
+ * List of Relations.
  * 
  * @author marco@juliano.de
  * 
  */
+@XmlRootElement(name = "Relations")
 public class Relations extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;

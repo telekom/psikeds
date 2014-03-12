@@ -17,18 +17,27 @@ package org.psikeds.resolutionengine.datalayer.vo;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  * Feature holding String-Values.
  * 
  * @author marco@juliano.de
  * 
  */
+@XmlRootElement(name = "StringFeature")
 public class StringFeature extends Feature<String> implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
   public StringFeature() {
-    this(null, null, null);
+    this(null);
+  }
+
+  public StringFeature(final String featureID) {
+    this(featureID, featureID, featureID);
   }
 
   public StringFeature(final String label, final String description, final String featureID) {
@@ -39,6 +48,7 @@ public class StringFeature extends Feature<String> implements Serializable {
     super(label, description, featureID, values);
   }
 
+  @JsonIgnore
   @Override
   public String getValueType() {
     return VALUE_TYPE_STRING;

@@ -16,18 +16,21 @@ package org.psikeds.resolutionengine.datalayer.vo;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * A Rule is always attached to a Variant and defined by a Premise (premiseEventID)
  * and a Conclusion (conclusionEventID).
  * 
  * Note 1: Rule-ID must be globally unique.
  * 
- * Note 2: Variant-Id, Premise-Event-ID and Conclusion-Event-ID must point to
+ * Note 2: Variant-ID, Premise-Event-ID and Conclusion-Event-ID must point to
  * existing Objects!
  * 
  * @author marco@juliano.de
  * 
  */
+@XmlRootElement(name = "Rule")
 public class Rule extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -40,6 +43,10 @@ public class Rule extends ValueObject implements Serializable {
 
   public Rule() {
     this(null, null, null, null, null, null);
+  }
+
+  public Rule(final String ruleID, final String variantID, final String premiseEventID, final String conclusionEventID) {
+    this(ruleID, ruleID, ruleID, variantID, premiseEventID, conclusionEventID);
   }
 
   public Rule(final String label, final String description, final String ruleID, final String variantID, final String premiseEventID, final String conclusionEventID) {
@@ -65,6 +72,14 @@ public class Rule extends ValueObject implements Serializable {
 
   public void setDescription(final String desc) {
     this.description = desc;
+  }
+
+  public String getRuleID() {
+    return getId();
+  }
+
+  public void setRuleID(final String ruleID) {
+    setId(ruleID);
   }
 
   public String getVariantID() {

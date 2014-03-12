@@ -19,27 +19,29 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.psikeds.knowledgebase.jaxb.FeatureValueTrigger;
+import org.psikeds.knowledgebase.jaxb.VariantTrigger;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer;
 import org.psikeds.resolutionengine.datalayer.vo.Alternatives;
 import org.psikeds.resolutionengine.datalayer.vo.Constituents;
 import org.psikeds.resolutionengine.datalayer.vo.Constitutes;
-import org.psikeds.resolutionengine.datalayer.vo.Context;
-import org.psikeds.resolutionengine.datalayer.vo.Data;
 import org.psikeds.resolutionengine.datalayer.vo.Event;
 import org.psikeds.resolutionengine.datalayer.vo.Events;
 import org.psikeds.resolutionengine.datalayer.vo.Feature;
+import org.psikeds.resolutionengine.datalayer.vo.FeatureEvent;
 import org.psikeds.resolutionengine.datalayer.vo.Features;
 import org.psikeds.resolutionengine.datalayer.vo.Fulfills;
-import org.psikeds.resolutionengine.datalayer.vo.Knowledgebase;
-import org.psikeds.resolutionengine.datalayer.vo.Meta;
+import org.psikeds.resolutionengine.datalayer.vo.MetaData;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
 import org.psikeds.resolutionengine.datalayer.vo.Purposes;
 import org.psikeds.resolutionengine.datalayer.vo.Relation;
 import org.psikeds.resolutionengine.datalayer.vo.RelationOperator;
+import org.psikeds.resolutionengine.datalayer.vo.RelationPartner;
 import org.psikeds.resolutionengine.datalayer.vo.Relations;
 import org.psikeds.resolutionengine.datalayer.vo.Rule;
 import org.psikeds.resolutionengine.datalayer.vo.Rules;
 import org.psikeds.resolutionengine.datalayer.vo.Variant;
+import org.psikeds.resolutionengine.datalayer.vo.VariantEvent;
 import org.psikeds.resolutionengine.datalayer.vo.Variants;
 
 /**
@@ -47,7 +49,7 @@ import org.psikeds.resolutionengine.datalayer.vo.Variants;
  * Value Object for the Datalayer.<br>
  * 
  * The Knowledgebase is read-only, therefore only transformations XML to VO
- * are supported / implemented.<br>
+ * are supported / allowed.<br>
  * 
  * @author marco@juliano.de
  */
@@ -104,39 +106,6 @@ public class Xml2VoTransformer implements Transformer {
   /**
    * @param xml
    * @return vo
-   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer#xml2ValueObject(org.psikeds.knowledgebase.jaxb.Context)
-   */
-  @Override
-  public Context xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Context xml) {
-    return xml == null ? null : new Context(xml.getPathIDs());
-  }
-
-  /**
-   * @param xml
-   * @return vo
-   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer#xml2ValueObject(org.psikeds.knowledgebase.jaxb.Data)
-   */
-  @Override
-  public Data xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Data xml) {
-    Data vo = null;
-    if (xml != null) {
-      final Features features = xml2ValueObject(xml.getFeatures());
-      final Purposes purposes = xml2ValueObject(xml.getPurposes());
-      final Variants variants = xml2ValueObject(xml.getVariants());
-      final Alternatives alternatives = xml2ValueObject(xml.getAlternatives());
-      final Constituents constituents = xml2ValueObject(xml.getConstituents());
-      final Events events = xml2ValueObject(xml.getEvents());
-      final Rules rules = xml2ValueObject(xml.getRules());
-      final Relations relations = xml2ValueObject(xml.getRelations());
-      vo = new Data(features, purposes, variants, alternatives, constituents, events, rules, relations);
-      LOGGER.trace("xml2ValueObject: xml = {}\n--> vo = {}", xml, vo);
-    }
-    return vo;
-  }
-
-  /**
-   * @param xml
-   * @return vo
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer#xml2ValueObject(org.psikeds.knowledgebase.jaxb.Event)
    */
   @Override
@@ -147,17 +116,19 @@ public class Xml2VoTransformer implements Transformer {
       final String label = xml.getLabel();
       final String description = xml.getDescription();
       final String variantId = xml.getVariantID();
-      final Context context = xml2ValueObject(xml.getContext());
-      final boolean featureEvent = xml.isFeatureEvent();
-      final org.psikeds.knowledgebase.jaxb.Trigger xmlTrigger = xml.getTrigger();
-      String trigger = null;
-      boolean notEvent = Event.DEFAULT_NOT_EVENT;
-      if (xmlTrigger != null) {
-        trigger = xmlTrigger.getEntityID();
-        final Boolean notFlag = xmlTrigger.isNotEvent();
-        notEvent = (notFlag == null ? Event.DEFAULT_NOT_EVENT : notFlag.booleanValue());
+      final List<String> context = xml.getContext();
+      final VariantTrigger vt = xml.getVariantTrigger();
+      final FeatureValueTrigger fvt = xml.getFeatureValueTrigger();
+      if ((vt != null) && (fvt == null)) {
+        vo = new VariantEvent(label, description, eventId, variantId, context, vt.getVariantID(), vt.isNotEvent());
       }
-      vo = new Event(label, description, eventId, variantId, context, trigger, featureEvent, notEvent);
+      else if ((vt == null) && (fvt != null)) {
+        vo = new FeatureEvent(label, description, eventId, variantId, context, fvt.getFeatureID(), fvt.getValue(), fvt.isNotEvent());
+      }
+      else {
+        // xml-schema-choice, so this should never happen
+        throw new IllegalArgumentException("Illegal Event " + eventId + ", must be either Variant-Event or Feature-Event!");
+      }
       LOGGER.trace("xml2ValueObject: xml = {}\n--> vo = {}", xml, vo);
     }
     return vo;
@@ -254,21 +225,11 @@ public class Xml2VoTransformer implements Transformer {
   /**
    * @param xml
    * @return vo
-   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer#xml2ValueObject(org.psikeds.knowledgebase.jaxb.Knowledgebase)
-   */
-  @Override
-  public Knowledgebase xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Knowledgebase xml) {
-    return (xml == null ? null : new Knowledgebase(xml2ValueObject(xml.getMeta()), xml2ValueObject(xml.getData())));
-  }
-
-  /**
-   * @param xml
-   * @return vo
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer#xml2ValueObject(org.psikeds.knowledgebase.jaxb.Meta)
    */
   @Override
-  public Meta xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Meta xml) {
-    return (xml == null ? null : new Meta(xml.getCreated(), xml.getLastmodified(), xml.getLanguage(), xml.getVersion(), xml.getCreator(), xml.getDescription()));
+  public MetaData xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Meta xml) {
+    return (xml == null ? null : new MetaData(xml.getCreated(), xml.getLastmodified(), xml.getLanguage(), xml.getVersion(), xml.getCreator(), xml.getDescription()));
   }
 
   /**
@@ -318,11 +279,31 @@ public class Xml2VoTransformer implements Transformer {
   public Relation xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Relation xml) {
     Relation vo = null;
     if (xml != null) {
-      final RelationOperator operator = RelationOperator.fromValue(xml.getRelationOperator());
-      vo = new Relation(xml.getLabel(), xml.getDescription(), xml.getId(), xml.getVariantID(), operator, xml.getLeftPartnerEventID(), xml.getRightPartnerEventID());
+      vo = new Relation(xml.getLabel(), xml.getDescription(), xml.getId(), xml.getVariantID(),
+          xml2ValueObject(xml.getLeft()), xml2ValueObject(xml.getRight()), xml2ValueObject(xml.getOperator()));
       LOGGER.trace("xml2ValueObject: xml = {}\n--> vo = {}", xml, vo);
     }
     return vo;
+  }
+
+  /**
+   * @param xml
+   * @return vo
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer#xml2ValueObject(org.psikeds.knowledgebase.jaxb.RelationOperator)
+   */
+  @Override
+  public RelationOperator xml2ValueObject(final org.psikeds.knowledgebase.jaxb.RelationOperator xml) {
+    return RelationOperator.fromValue(xml == null ? null : xml.value());
+  }
+
+  /**
+   * @param xml
+   * @return vo
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer#xml2ValueObject(org.psikeds.knowledgebase.jaxb.RelationPartner)
+   */
+  @Override
+  public RelationPartner xml2ValueObject(final org.psikeds.knowledgebase.jaxb.RelationPartner xml) {
+    return (xml == null ? null : new RelationPartner(xml.getContext(), xml.getFeatureID()));
   }
 
   /**

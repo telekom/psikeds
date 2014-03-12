@@ -14,56 +14,50 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.datalayer.vo;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
  * An Event is defined by the ID of the Variant it is attached to,
  * its Context (= Path: Variant->Purpose->Variant->...) and the
- * triggering Entity, i.e. a Variant or Feature.
+ * triggering Entity, i.e. a Variant or a Feature-Value.
  * 
  * Note 1: Event-ID must be globally unique.
  * 
  * Note 2: Variant-ID must reference an existing Object!
  * 
- * Note 3: Context and Trigger of an Event must point to an Entity that
- * is located within the Subtree under the Variant this Event is
- * attached to.
- * 
  * @author marco@juliano.de
  * 
  */
-public class Event extends ValueObject implements Serializable {
-
-  public static final boolean DEFAULT_FEATURE_EVENT = false;
-  public static final boolean DEFAULT_NOT_EVENT = false;
+@JsonSubTypes({ @JsonSubTypes.Type(value = VariantEvent.class, name = "VariantEvent"), @JsonSubTypes.Type(value = FeatureEvent.class, name = "FeatureEvent"), })
+public abstract class Event extends ValueObject {
 
   private static final long serialVersionUID = 1L;
 
-  private String label;
-  private String description;
-  private String variantId;
-  private Context context;
-  private String trigger;
-  private boolean featureEvent;
-  private boolean notEvent;
+  protected static final boolean DEFAULT_NOT_EVENT = false;
 
-  public Event() {
-    this(null, null, null, null, null, null);
+  protected String label;
+  protected String description;
+  protected String variantID;
+  protected List<String> context;
+  protected boolean notEvent;
+
+  protected Event() {
+    this(null, null, null, null, null);
   }
 
-  public Event(final String label, final String description, final String eventID, final String variantId, final Context context, final String trigger) {
-    this(label, description, eventID, variantId, context, trigger, DEFAULT_FEATURE_EVENT, DEFAULT_NOT_EVENT);
+  protected Event(final String label, final String description, final String eventID, final String variantID, final List<String> context) {
+    this(label, description, eventID, variantID, context, DEFAULT_NOT_EVENT);
   }
 
-  public Event(final String label, final String description, final String eventID, final String variantId, final Context context, final String trigger,
-      final boolean featureEvent, final boolean notEvent) {
+  protected Event(final String label, final String description, final String eventID, final String variantID, final List<String> context, final boolean notEvent) {
     super(eventID);
     this.label = label;
     this.description = description;
-    this.variantId = variantId;
+    this.variantID = variantID;
     this.context = context;
-    this.trigger = trigger;
-    this.featureEvent = featureEvent;
     this.notEvent = notEvent;
   }
 
@@ -83,36 +77,37 @@ public class Event extends ValueObject implements Serializable {
     this.description = description;
   }
 
-  public String getVariantId() {
-    return this.variantId;
+  public String getEventID() {
+    return getId();
   }
 
-  public void setVariantId(final String variantId) {
-    this.variantId = variantId;
+  public void setEventID(final String eventID) {
+    setId(eventID);
   }
 
-  public Context getContext() {
+  public String getVariantID() {
+    return this.variantID;
+  }
+
+  public void setVariantID(final String variantID) {
+    this.variantID = variantID;
+  }
+
+  public List<String> getContext() {
+    if (this.context == null) {
+      this.context = new ArrayList<String>();
+    }
     return this.context;
   }
 
-  public void setContext(final Context context) {
+  public void setContext(final List<String> context) {
     this.context = context;
   }
 
-  public String getTrigger() {
-    return this.trigger;
-  }
-
-  public void setTrigger(final String trigger) {
-    this.trigger = trigger;
-  }
-
-  public boolean isFeatureEvent() {
-    return this.featureEvent;
-  }
-
-  public void setFeatureEvent(final boolean featureEvent) {
-    this.featureEvent = featureEvent;
+  public void addContextPathID(final String id) {
+    if (id != null) {
+      getContext().add(id);
+    }
   }
 
   public boolean isNotEvent() {

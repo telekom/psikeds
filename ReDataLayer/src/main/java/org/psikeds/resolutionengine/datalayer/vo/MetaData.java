@@ -21,13 +21,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Meta-Infos regarding the Knowledge-Base.
  * 
  * @author marco@juliano.de
  * 
  */
-public class Meta extends ValueObject implements Serializable {
+@XmlRootElement(name = "MetaData")
+public class MetaData extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -40,17 +43,17 @@ public class Meta extends ValueObject implements Serializable {
   private List<String> description;
   private Map<String, Serializable> additionalInfo;
 
-  public Meta() {
+  public MetaData() {
     this(null, null, null, null, null, null);
   }
 
-  public Meta(final Calendar created, final Calendar lastmodified,
+  public MetaData(final Calendar created, final Calendar lastmodified,
       final String language, final String version,
       final List<String> creator, final List<String> description) {
     this(created, lastmodified, null, language, version, creator, description, null);
   }
 
-  public Meta(final Calendar created, final Calendar lastmodified, final Calendar loaded,
+  public MetaData(final Calendar created, final Calendar lastmodified, final Calendar loaded,
       final String language, final String version,
       final List<String> creator, final List<String> description,
       final Map<String, Serializable> additionalInfo) {
@@ -74,7 +77,7 @@ public class Meta extends ValueObject implements Serializable {
   }
 
   public Calendar getLastmodified() {
-    return this.lastmodified;
+    return (this.lastmodified == null ? this.created : this.lastmodified);
   }
 
   public void setLastmodified(final Calendar value) {

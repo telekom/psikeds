@@ -18,12 +18,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
- * List of all Features.
+ * List of Features.
  * 
  * @author marco@juliano.de
  * 
  */
+@XmlRootElement(name = "Features")
 public class Features extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;

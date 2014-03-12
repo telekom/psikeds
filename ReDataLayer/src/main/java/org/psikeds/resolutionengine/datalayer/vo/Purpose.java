@@ -16,6 +16,8 @@ package org.psikeds.resolutionengine.datalayer.vo;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * A single Purpose. Purposes marked with the root-flag are used for the
  * initial context of a resolution.
@@ -25,6 +27,7 @@ import java.io.Serializable;
  * @author marco@juliano.de
  * 
  */
+@XmlRootElement(name = "Purpose")
 public class Purpose extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -34,15 +37,19 @@ public class Purpose extends ValueObject implements Serializable {
   private boolean root;
 
   public Purpose() {
-    this(null, null, null);
+    this(null);
   }
 
-  public Purpose(final String label, final String description, final String id) {
-    this(label, description, id, false);
+  public Purpose(final String purposeID) {
+    this(purposeID, purposeID, purposeID);
   }
 
-  public Purpose(final String label, final String description, final String id, final boolean root) {
-    super(id);
+  public Purpose(final String label, final String description, final String purposeID) {
+    this(label, description, purposeID, false);
+  }
+
+  public Purpose(final String label, final String description, final String purposeID, final boolean root) {
+    super(purposeID);
     this.label = label;
     this.description = description;
     this.root = root;
@@ -62,6 +69,14 @@ public class Purpose extends ValueObject implements Serializable {
 
   public void setDescription(final String value) {
     this.description = value;
+  }
+
+  public String getPurposeID() {
+    return getId();
+  }
+
+  public void setPurposeID(final String purposeID) {
+    setId(purposeID);
   }
 
   public boolean isRoot() {

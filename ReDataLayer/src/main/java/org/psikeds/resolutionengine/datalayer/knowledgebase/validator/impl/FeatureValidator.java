@@ -46,11 +46,11 @@ public class FeatureValidator implements Validator {
       LOGGER.debug("Validating KnowledgeBase regarding Features ...");
       boolean valid = true;
       // Note: Features are optional, i.e. this Node can be null!
-      final Features feats = kb.getFeatures();
+      final Features feats = (kb == null ? null : kb.getFeatures());
       final List<Feature<?>> flst = (feats == null ? null : feats.getFeature());
       if ((flst != null) && !flst.isEmpty()) {
         for (final Feature<?> f1 : flst) {
-          final String fid = (f1 == null ? null : f1.getId());
+          final String fid = (f1 == null ? null : f1.getFeatureID());
           if (StringUtils.isEmpty(fid)) {
             valid = false;
             LOGGER.warn("No FeatureID: {}", f1);
@@ -67,6 +67,10 @@ public class FeatureValidator implements Validator {
           if (StringUtils.isEmpty(f2.getLabel())) {
             valid = false;
             LOGGER.warn("Feature {} has no Label!", fid);
+          }
+          if (StringUtils.isEmpty(f2.getValueType())) {
+            valid = false;
+            LOGGER.warn("Feature {} has no Value-Type!", fid);
           }
           if (f2.getValues().isEmpty()) {
             valid = false;

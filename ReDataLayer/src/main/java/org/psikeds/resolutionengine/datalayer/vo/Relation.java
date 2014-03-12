@@ -16,53 +16,55 @@ package org.psikeds.resolutionengine.datalayer.vo;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * A Relation is always attached to a Variant and defined as some logical
  * Operation/Dependency between two Features, defined by the corresponding
- * Feature-Events.
+ * Relation-Partners.
  * 
- * Example: Feature-Event1 greaterThan Feature-Event2
- * Semantic: The Value of Feature1 in the Context defined by Feature-Event1
- * must always be greater than the Value of Feature2 in the Context
- * defined by Feature-Event2.
+ * Example: Left greaterThan Right
+ * Semantic: The Value of the "Left" Feature must always be greater than
+ * the Value of the "Right" Feature.
  * 
- * Note 1: A Feature is a Definition of possible Values that can be referenced
- * at several places within the Knowledge-Base. Only the Feature-Event
- * points to a certain application of this Feature and its Value within
- * this Context.
+ * Note 1: Relation-ID must be globally unique.
  * 
- * Note 2: Relation-ID must be globally unique.
- * 
- * Note 3: Variant-Id, Left-Partner-Event-ID Right-Partner-Event-ID
- * must point to existing Objects!
+ * Note 2: Variant-ID must point to an existing Object!
  * 
  * @author marco@juliano.de
  * 
  */
+@XmlRootElement(name = "Relation")
 public class Relation extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
+  public static final RelationOperator DEFAULT_OPERATOR = RelationOperator.DEFAULT_OPERATOR;
+
   private String label;
   private String description;
-  private String variantID;
+  private String variantId;
+  private RelationPartner leftSide;
+  private RelationPartner rightSide;
   private RelationOperator operator;
-  private String leftPartnerEventID;
-  private String rightPartnerEventID;
 
   public Relation() {
     this(null, null, null, null, null, null, null);
   }
 
-  public Relation(final String label, final String description, final String relationID, final String variantID,
-      final RelationOperator operator, final String leftPartnerEventID, final String rightPartnerEventID) {
+  public Relation(final String label, final String description, final String relationID, final String variantId, final RelationPartner leftSide, final RelationPartner rightSide) {
+    this(label, description, relationID, variantId, leftSide, rightSide, DEFAULT_OPERATOR);
+  }
+
+  public Relation(final String label, final String description, final String relationID, final String variantId,
+      final RelationPartner leftSide, final RelationPartner rightSide, final RelationOperator operator) {
     super(relationID);
     setLabel(label);
     setDescription(description);
-    setVariantID(variantID);
+    setVariantID(variantId);
+    setLeftSide(leftSide);
+    setRightSide(rightSide);
     setOperator(operator);
-    setLeftPartnerEventID(leftPartnerEventID);
-    setRightPartnerEventID(rightPartnerEventID);
   }
 
   public String getLabel() {
@@ -81,12 +83,20 @@ public class Relation extends ValueObject implements Serializable {
     this.description = description;
   }
 
-  public String getVariantID() {
-    return this.variantID;
+  public String getRelationID() {
+    return getId();
   }
 
-  public void setVariantID(final String variantID) {
-    this.variantID = variantID;
+  public void setRelationID(final String relationID) {
+    setId(relationID);
+  }
+
+  public String getVariantID() {
+    return this.variantId;
+  }
+
+  public void setVariantID(final String variantId) {
+    this.variantId = variantId;
   }
 
   public RelationOperator getOperator() {
@@ -94,22 +104,22 @@ public class Relation extends ValueObject implements Serializable {
   }
 
   public void setOperator(final RelationOperator operator) {
-    this.operator = (operator != null ? operator : RelationOperator.EQUAL);
+    this.operator = (operator != null ? operator : DEFAULT_OPERATOR);
   }
 
-  public String getLeftPartnerEventID() {
-    return this.leftPartnerEventID;
+  public RelationPartner getLeftSide() {
+    return this.leftSide;
   }
 
-  public void setLeftPartnerEventID(final String leftPartnerEventID) {
-    this.leftPartnerEventID = leftPartnerEventID;
+  public void setLeftSide(final RelationPartner leftSide) {
+    this.leftSide = leftSide;
   }
 
-  public String getRightPartnerEventID() {
-    return this.rightPartnerEventID;
+  public RelationPartner getRightSide() {
+    return this.rightSide;
   }
 
-  public void setRightPartnerEventID(final String rightPartnerEventID) {
-    this.rightPartnerEventID = rightPartnerEventID;
+  public void setRightSide(final RelationPartner rightSide) {
+    this.rightSide = rightSide;
   }
 }

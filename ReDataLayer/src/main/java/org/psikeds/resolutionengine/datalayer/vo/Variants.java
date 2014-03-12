@@ -18,12 +18,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
- * List of all variants.
- *
+ * List of Variants.
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
+@XmlRootElement(name = "Variants")
 public class Variants extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;

@@ -19,7 +19,7 @@ package org.psikeds.resolutionengine.datalayer.knowledgebase.transformer;
  * Value Object for the Datalayer.<br>
  * 
  * The Knowledgebase is read-only, therefore only transformations XML to VO
- * are supported / implemented.<br>
+ * are supported / allowed.<br>
  * 
  * @author marco@juliano.de
  */
@@ -31,10 +31,6 @@ public interface Transformer {
 
   org.psikeds.resolutionengine.datalayer.vo.Constitutes xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Constitutes xml);
 
-  org.psikeds.resolutionengine.datalayer.vo.Context xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Context xml);
-
-  org.psikeds.resolutionengine.datalayer.vo.Data xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Data xml);
-
   org.psikeds.resolutionengine.datalayer.vo.Event xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Event xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Events xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Events xml);
@@ -45,15 +41,17 @@ public interface Transformer {
 
   org.psikeds.resolutionengine.datalayer.vo.Fulfills xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Fulfills xml);
 
-  org.psikeds.resolutionengine.datalayer.vo.Knowledgebase xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Knowledgebase xml);
-
-  org.psikeds.resolutionengine.datalayer.vo.Meta xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Meta xml);
+  org.psikeds.resolutionengine.datalayer.vo.MetaData xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Meta xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Purpose xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Purpose xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Purposes xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Purposes xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Relation xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Relation xml);
+
+  org.psikeds.resolutionengine.datalayer.vo.RelationOperator xml2ValueObject(final org.psikeds.knowledgebase.jaxb.RelationOperator xml);
+
+  org.psikeds.resolutionengine.datalayer.vo.RelationPartner xml2ValueObject(final org.psikeds.knowledgebase.jaxb.RelationPartner xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Relations xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Relations xml);
 

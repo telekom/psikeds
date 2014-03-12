@@ -22,7 +22,7 @@ import org.psikeds.resolutionengine.datalayer.vo.Events;
 import org.psikeds.resolutionengine.datalayer.vo.Feature;
 import org.psikeds.resolutionengine.datalayer.vo.Features;
 import org.psikeds.resolutionengine.datalayer.vo.Fulfills;
-import org.psikeds.resolutionengine.datalayer.vo.Meta;
+import org.psikeds.resolutionengine.datalayer.vo.MetaData;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
 import org.psikeds.resolutionengine.datalayer.vo.Purposes;
 import org.psikeds.resolutionengine.datalayer.vo.Relation;
@@ -38,7 +38,7 @@ public interface KnowledgeBase {
   // global Access to all Objects
   // -------------------------------
 
-  Meta getMetadata();
+  MetaData getMetaData();
 
   Features getFeatures();
 
@@ -77,6 +77,8 @@ public interface KnowledgeBase {
   // -------------------------------
 
   Fulfills getFulfills(String purposeId);
+
+  long getQuantity(String purposeId, String variantId);
 
   Constitutes getConstitutes(String variantId);
 

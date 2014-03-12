@@ -50,27 +50,35 @@ public class XmlKnowledgeBaseFactory implements InitializingBean, KnowledgeBaseF
 
   private boolean validate;
   private List<Validator> validatorChain; // list of semantic validators
-  private KBValidator validator; // syntactic validator (xml against xsd)
-  private KBParser parser;
+  private KBValidator xsdValidator; // syntactic validator
+  private KBParser xmlParser;
   private final XmlKnowledgeBase kb;
 
   public XmlKnowledgeBaseFactory() {
     this(null);
   }
 
-  public XmlKnowledgeBaseFactory(final KBParser parser) {
-    this(parser, null);
+  public XmlKnowledgeBaseFactory(final KBParser xmlParser) {
+    this(xmlParser, null, null, null);
   }
 
-  public XmlKnowledgeBaseFactory(final KBParser parser, final List<Validator> validatorChain) {
-    this(parser, null, ((validatorChain != null) && !validatorChain.isEmpty()), null, validatorChain); // validate if there are validators
+  public XmlKnowledgeBaseFactory(final KBParser xmlParser, final KBValidator xsdValidator) {
+    this(xmlParser, null, xsdValidator, null);
   }
 
-  public XmlKnowledgeBaseFactory(final KBParser parser, final Transformer trans, final boolean validate, final KBValidator validator, final List<Validator> validatorChain) {
+  public XmlKnowledgeBaseFactory(final KBParser xmlParser, final List<Validator> validatorChain) {
+    this(xmlParser, null, null, validatorChain);
+  }
+
+  public XmlKnowledgeBaseFactory(final KBParser xmlParser, final Transformer trans, final KBValidator xsdValidator, final List<Validator> validatorChain) {
+    this(xmlParser, trans, xsdValidator, validatorChain, ((xsdValidator != null) || ((validatorChain != null) && !validatorChain.isEmpty()))); // validate if there are any validators
+  }
+
+  public XmlKnowledgeBaseFactory(final KBParser xmlParser, final Transformer trans, final KBValidator xsdValidator, final List<Validator> validatorChain, final boolean validate) {
     this.validate = validate;
     this.validatorChain = validatorChain;
-    this.validator = validator;
-    this.parser = parser;
+    this.xsdValidator = xsdValidator;
+    this.xmlParser = xmlParser;
     this.kb = new XmlKnowledgeBase(trans);
   }
 
@@ -84,9 +92,12 @@ public class XmlKnowledgeBaseFactory implements InitializingBean, KnowledgeBaseF
    */
   @Override
   public void afterPropertiesSet() throws Exception {
-    Validate.notNull(this.parser, "No XML-Parser!");
+    Validate.notNull(this.xmlParser, "No XML-Parser!");
     Validate.notNull(this.kb, "No Knowledge-Base!");
     Validate.notNull(this.kb.getTransformer(), "No XML-Transformer!");
+    if (!this.validate) {
+      LOGGER.info("Knowledge-Base is NOT validated!");
+    }
   }
 
   // ----------------------------------------------------------------
@@ -114,20 +125,20 @@ public class XmlKnowledgeBaseFactory implements InitializingBean, KnowledgeBaseF
     getValidators().add(val);
   }
 
-  public KBValidator getValidator() {
-    return this.validator;
+  public KBValidator getXsdValidator() {
+    return this.xsdValidator;
   }
 
-  public void setValidator(final KBValidator validator) {
-    this.validator = validator;
+  public void setXsdValidator(final KBValidator xsdValidator) {
+    this.xsdValidator = xsdValidator;
   }
 
-  public KBParser getParser() {
-    return this.parser;
+  public KBParser getXmlParser() {
+    return this.xmlParser;
   }
 
-  public void setParser(final KBParser parser) {
-    this.parser = parser;
+  public void setXmlParser(final KBParser xmlParser) {
+    this.xmlParser = xmlParser;
   }
 
   public Transformer getTransformer() {
@@ -156,19 +167,19 @@ public class XmlKnowledgeBaseFactory implements InitializingBean, KnowledgeBaseF
       this.kb.setValid(false);
 
       // Step 1: Validate syntactical structure of XML against XSD (if specified)
-      if (this.validate && (this.validator != null)) {
-        LOGGER.debug("Syntactical validation XML against XSD.");
-        this.validator.validate();
+      if (this.validate && (this.xsdValidator != null)) {
+        LOGGER.debug("Syntax-Validation of XML against XSD.");
+        this.xsdValidator.validate();
       }
 
       // Step 2: Parse XML and create data structure of Knowledge-Base
       LOGGER.debug("Parsing XML and creating data structures.");
-      this.parser.setCallbackHandler(this.kb);
-      this.parser.parseXmlElements();
+      this.xmlParser.setCallbackHandler(this.kb);
+      this.xmlParser.parseXmlElements();
 
       // Step 3: Validate data structure of Knowledge-Base regarding logical consistency
       if (this.validate && (this.validatorChain != null) && !this.validatorChain.isEmpty()) {
-        LOGGER.debug("Validating XML data structures regarding logical Consistency.");
+        LOGGER.debug("Semantic-Validation of Data Structures regarding logical Consistency.");
         for (final Validator val : getValidators()) {
           if (val != null) {
             if (LOGGER.isTraceEnabled()) {

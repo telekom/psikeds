@@ -18,18 +18,22 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
- * A purpose is fulfilled by one or several variant(s).
+ * A Purpose is fulfilled by one or several Variant(s).
  * 
- * Optionally a Quantity can be specified, meaning that the purpose
- * is not fullfilled by 1 Variant (default) but by that number of
- * Variants.
+ * Optionally a Quantity can be specified, meaning that the Purpose
+ * is not fullfilled by 1 Variant (default) but by that Number of
+ * Variants. Only several of the same Variant are allowed, different
+ * Variants for the same Purpose are not supported!
  * 
  * Note: PurposeID and VariantID(s) must reference existing Objects!
  * 
  * @author marco@juliano.de
  * 
  */
+@XmlRootElement(name = "Fulfills")
 public class Fulfills extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;

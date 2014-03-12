@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -18,14 +18,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
- * A variant is constituted by one or several purposes(s).
- *
+ * A Variant is constituted by one or several Purposes(s).
+ * 
  * Note: VariantID and PurposeID(s) must reference existing Objects!
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
+@XmlRootElement(name = "Constitutes")
 public class Constitutes extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;

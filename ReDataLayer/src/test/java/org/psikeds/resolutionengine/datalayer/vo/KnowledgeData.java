@@ -16,16 +16,21 @@ package org.psikeds.resolutionengine.datalayer.vo;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
- * Wrapper for all Knowledge-Data.
+ * Wrapper for all Knowledge-Base-Data. Used for testing (De-)Serialization
+ * of Value-Objects.
  * 
  * @author marco@juliano.de
  * 
  */
-public class Data extends ValueObject implements Serializable {
+@XmlRootElement(name = "KnowledgeData")
+public class KnowledgeData extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
+  private MetaData metadata;
   private Features features;
   private Purposes purposes;
   private Variants variants;
@@ -35,14 +40,14 @@ public class Data extends ValueObject implements Serializable {
   private Rules rules;
   private Relations relations;
 
-  public Data() {
-    this(null, null, null, null, null, null, null, null);
+  public KnowledgeData() {
+    this(null, null, null, null, null, null, null, null, null);
   }
 
-  public Data(final Features features, final Purposes purposes, final Variants variants,
-      final Alternatives alternatives, final Constituents constituents,
+  public KnowledgeData(final MetaData metadata, final Features features, final Purposes purposes, final Variants variants, final Alternatives alternatives, final Constituents constituents,
       final Events events, final Rules rules, final Relations relations) {
     super();
+    this.metadata = metadata;
     this.features = features;
     this.purposes = purposes;
     this.variants = variants;
@@ -53,60 +58,68 @@ public class Data extends ValueObject implements Serializable {
     this.relations = relations;
   }
 
+  public MetaData getMetadata() {
+    return this.metadata;
+  }
+
+  public void setMetadata(final MetaData metadata) {
+    this.metadata = metadata;
+  }
+
   public Features getFeatures() {
     return this.features;
   }
 
-  public void setFeatures(final Features value) {
-    this.features = value;
+  public void setFeatures(final Features features) {
+    this.features = features;
   }
 
   public Purposes getPurposes() {
     return this.purposes;
   }
 
-  public void setPurposes(final Purposes value) {
-    this.purposes = value;
+  public void setPurposes(final Purposes purposes) {
+    this.purposes = purposes;
   }
 
   public Variants getVariants() {
     return this.variants;
   }
 
-  public void setVariants(final Variants value) {
-    this.variants = value;
+  public void setVariants(final Variants variants) {
+    this.variants = variants;
   }
 
   public Alternatives getAlternatives() {
     return this.alternatives;
   }
 
-  public void setAlternatives(final Alternatives value) {
-    this.alternatives = value;
+  public void setAlternatives(final Alternatives alternatives) {
+    this.alternatives = alternatives;
   }
 
   public Constituents getConstituents() {
     return this.constituents;
   }
 
-  public void setConstituents(final Constituents value) {
-    this.constituents = value;
+  public void setConstituents(final Constituents constituents) {
+    this.constituents = constituents;
   }
 
   public Events getEvents() {
     return this.events;
   }
 
-  public void setEvents(final Events value) {
-    this.events = value;
+  public void setEvents(final Events events) {
+    this.events = events;
   }
 
   public Rules getRules() {
     return this.rules;
   }
 
-  public void setRules(final Rules value) {
-    this.rules = value;
+  public void setRules(final Rules rules) {
+    this.rules = rules;
   }
 
   public Relations getRelations() {

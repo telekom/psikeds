@@ -17,18 +17,27 @@ package org.psikeds.resolutionengine.datalayer.vo;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  * Feature holding Float-Values.
  * 
  * @author marco@juliano.de
  * 
  */
+@XmlRootElement(name = "FloatFeature")
 public class FloatFeature extends Feature<Float> implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
   public FloatFeature() {
-    this(null, null, null);
+    this(null);
+  }
+
+  public FloatFeature(final String featureID) {
+    this(featureID, featureID, featureID);
   }
 
   public FloatFeature(final String label, final String description, final String featureID) {
@@ -39,6 +48,7 @@ public class FloatFeature extends Feature<Float> implements Serializable {
     super(label, description, featureID, values);
   }
 
+  @JsonIgnore
   @Override
   public String getValueType() {
     return VALUE_TYPE_FLOAT;

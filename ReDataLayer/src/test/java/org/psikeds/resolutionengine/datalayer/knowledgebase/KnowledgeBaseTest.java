@@ -20,9 +20,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -48,8 +53,12 @@ import org.psikeds.resolutionengine.datalayer.vo.Events;
 import org.psikeds.resolutionengine.datalayer.vo.Feature;
 import org.psikeds.resolutionengine.datalayer.vo.Features;
 import org.psikeds.resolutionengine.datalayer.vo.Fulfills;
+import org.psikeds.resolutionengine.datalayer.vo.KnowledgeData;
+import org.psikeds.resolutionengine.datalayer.vo.MetaData;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
 import org.psikeds.resolutionengine.datalayer.vo.Purposes;
+import org.psikeds.resolutionengine.datalayer.vo.Relation;
+import org.psikeds.resolutionengine.datalayer.vo.Relations;
 import org.psikeds.resolutionengine.datalayer.vo.Rule;
 import org.psikeds.resolutionengine.datalayer.vo.Rules;
 import org.psikeds.resolutionengine.datalayer.vo.Variant;
@@ -57,9 +66,14 @@ import org.psikeds.resolutionengine.datalayer.vo.Variants;
 
 public class KnowledgeBaseTest {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeBaseTest.class);
   private static final String LOG4J = System.getProperty("org.psikeds.test.log4j.xml", "../ResolutionEngine/src/main/resources/log4j.xml");
+  private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeBaseTest.class);
+
   private static final String XML = System.getProperty("org.psikeds.test.kb.xml", "../KnowledgeBase/src/main/resources/kb.xml");
+
+  private static final String TEST_DATA_DIR = System.getProperty("org.psikeds.test.data.dir", "./src/test/resources/");
+  private static final File JSON = new File(TEST_DATA_DIR, "KnowledgeData.json");
+  private static final ObjectMapper MAPPER = new ObjectMapper();
 
   @BeforeClass
   public static void setUpBeforeClass() {
@@ -67,12 +81,17 @@ public class KnowledgeBaseTest {
     DOMConfigurator.configure(LOG4J);
   }
 
+  @AfterClass
+  public static void tearDownAfterClass() {
+    JSON.deleteOnExit();
+  }
+
   /**
    * Test method for KnowledgeBase and KnowledgeBaseFactory.
    */
   @Test
   public void testKnowledgeBase() throws Exception {
-    boolean ok = true;
+    boolean ok = false;
     LOGGER.info("Starting test of KnowledgeBase ...");
     try {
       LOGGER.info(" ... parsing XML " + XML + " ...");
@@ -90,70 +109,80 @@ public class KnowledgeBaseTest {
       assertTrue("KB is not valid!", kb.isValid());
 
       LOGGER.info("... checking Features ...");
-      Features feats = kb.getFeatures();
-      LOGGER.trace("All Features = {}", feats);
-      assertNotNull("No Features!", feats);
-      final List<Feature<?>> flst = feats.getFeature();
+      final Features allFeatures = kb.getFeatures();
+      LOGGER.trace("All Features = {}", allFeatures);
+      assertNotNull("No Features!", allFeatures);
+      final List<Feature<?>> flst = allFeatures.getFeature();
       assertNotNull("No List of Features!", flst);
       int result = flst.size();
       int expected = 4;
       assertEquals("KB has " + result + " Features total, not expected " + expected, expected, result);
 
       LOGGER.info("... checking Alternatives ...");
-      final Alternatives alts = kb.getAlternatives();
-      LOGGER.trace("All Alternatives = {}", alts);
-      assertNotNull("No Alternatives!", alts);
-      final List<Fulfills> fflst = alts.getFulfills();
+      final Alternatives allAlternatives = kb.getAlternatives();
+      LOGGER.trace("All Alternatives = {}", allAlternatives);
+      assertNotNull("No Alternatives!", allAlternatives);
+      final List<Fulfills> fflst = allAlternatives.getFulfills();
       assertNotNull("No List of Fulfills!", fflst);
       result = fflst.size();
       expected = 5;
       assertEquals("KB has " + result + " Alternatives / Fulfills total, not expected " + expected, expected, result);
 
       LOGGER.info("... checking Constituents ...");
-      final Constituents cons = kb.getConstituents();
-      LOGGER.trace("All Constituents = {}", cons);
-      assertNotNull("No Constituents!", cons);
-      final List<Constitutes> clst = cons.getConstitutes();
+      final Constituents allConstituents = kb.getConstituents();
+      LOGGER.trace("All Constituents = {}", allConstituents);
+      assertNotNull("No Constituents!", allConstituents);
+      final List<Constitutes> clst = allConstituents.getConstitutes();
       assertNotNull("No List of Constitutes!", clst);
       result = clst.size();
       expected = 3;
       assertEquals("KB has " + result + " Constituents / Constitutes total, not expected " + expected, expected, result);
 
       LOGGER.info("... checking Events ...");
-      Events evts = kb.getEvents();
-      LOGGER.trace("All Events = {}", evts);
-      assertNotNull("No Events!", evts);
-      final List<Event> elst = evts.getEvent();
+      final Events allEvents = kb.getEvents();
+      LOGGER.trace("All Events = {}", allEvents);
+      assertNotNull("No Events!", allEvents);
+      final List<Event> elst = allEvents.getEvent();
       assertNotNull("No List of Events!", elst);
       result = elst.size();
       expected = 6;
       assertEquals("KB has " + result + " Events total, not expected " + expected, expected, result);
 
       LOGGER.info("... checking Rules ...");
-      Rules rules = kb.getRules();
-      LOGGER.trace("All Rules = {}", rules);
-      assertNotNull("No Rules!", rules);
-      final List<Rule> rlst = rules.getRule();
+      final Rules allRules = kb.getRules();
+      LOGGER.trace("All Rules = {}", allRules);
+      assertNotNull("No Rules!", allRules);
+      final List<Rule> rlst = allRules.getRule();
       assertNotNull("No List of Rules!", rlst);
       result = rlst.size();
       expected = 3;
       assertEquals("KB has " + result + " Rules total, not expected " + expected, expected, result);
 
+      LOGGER.info("... checking Relations ...");
+      final Relations allRelations = kb.getRelations();
+      LOGGER.trace("All Relations = {}", allRelations);
+      assertNotNull("No Relations!", allRelations);
+      final List<Relation> rels = allRelations.getRelation();
+      assertNotNull("No List of Relations!", rels);
+      result = rels.size();
+      expected = 1;
+      assertEquals("KB has " + result + " Relations total, not expected " + expected, expected, result);
+
       LOGGER.info("... checking Root-Purposes ...");
-      Purposes purps = kb.getRootPurposes();
-      LOGGER.trace("Root-Purposes = {}", purps);
-      assertNotNull("No Root-Purposes!", purps);
-      List<Purpose> plst = purps.getPurpose();
+      final Purposes rootPurposes = kb.getRootPurposes();
+      LOGGER.trace("Root-Purposes = {}", rootPurposes);
+      assertNotNull("No Root-Purposes!", rootPurposes);
+      List<Purpose> plst = rootPurposes.getPurpose();
       assertNotNull("No List of Root-Purposes!", plst);
       result = plst.size();
       expected = 3;
       assertEquals("KB has " + result + " Root-Purposes, not expected " + expected, expected, result);
 
       LOGGER.info("... checking all Purposes ...");
-      purps = kb.getPurposes();
-      LOGGER.trace("All Purposes = {}", purps);
-      assertNotNull("No Purposes!", purps);
-      plst = purps.getPurpose();
+      final Purposes allPurposes = kb.getPurposes();
+      LOGGER.trace("All Purposes = {}", allPurposes);
+      assertNotNull("No Purposes!", allPurposes);
+      plst = allPurposes.getPurpose();
       assertNotNull("No List of all Purposes!", plst);
       result = plst.size();
       expected = 5;
@@ -161,7 +190,7 @@ public class KnowledgeBaseTest {
 
       LOGGER.info("... checking fulfilling Variants ...");
       for (final Purpose p : plst) {
-        final String purposeId = p.getId();
+        final String purposeId = p.getPurposeID();
         final Variants ffvs = kb.getFulfillingVariants(purposeId);
         LOGGER.trace("Fulfilling Variants of {} are\n{}", purposeId, ffvs);
         assertNotNull("No fulfilling Variants!", ffvs);
@@ -171,10 +200,10 @@ public class KnowledgeBaseTest {
       }
 
       LOGGER.info("... checking all Variants ...");
-      final Variants vars = kb.getVariants();
-      LOGGER.trace("All Variants = {}", vars);
-      assertNotNull("No Variants!", vars);
-      final List<Variant> vlst = vars.getVariant();
+      final Variants allVariants = kb.getVariants();
+      LOGGER.trace("All Variants = {}", allVariants);
+      assertNotNull("No Variants!", allVariants);
+      final List<Variant> vlst = allVariants.getVariant();
       assertNotNull("No List of all Variants!", vlst);
       result = vlst.size();
       expected = 22;
@@ -182,15 +211,25 @@ public class KnowledgeBaseTest {
 
       LOGGER.info("... Features, Rules and Events of each Variant ...");
       for (final Variant v : vlst) {
-        feats = kb.getFeatures(v.getId());
-        LOGGER.trace("Features of Variant {} are\n{}", v.getId(), feats);
-        evts = kb.getAttachedEvents(v.getId());
-        LOGGER.trace("Events attached to Variant {} are\n{}", v.getId(), evts);
-        rules = kb.getAttachedRules(v.getId());
-        LOGGER.trace("Rules attached to Variant {} are\n{}", v.getId(), rules);
-        purps = kb.getConstitutingPurposes(v.getId());
-        LOGGER.trace("Purposes constituting Variant {} are\n{}", v.getId(), purps);
+        final Features features = kb.getFeatures(v.getVariantID());
+        LOGGER.trace("Features of Variant {} are\n{}", v.getVariantID(), features);
+        final Events events = kb.getAttachedEvents(v.getVariantID());
+        LOGGER.trace("Events attached to Variant {} are\n{}", v.getVariantID(), events);
+        final Rules rules = kb.getAttachedRules(v.getVariantID());
+        LOGGER.trace("Rules attached to Variant {} are\n{}", v.getVariantID(), rules);
+        final Relations relations = kb.getAttachedRelations(v.getVariantID());
+        LOGGER.trace("Relations attached to Variant {} are\n{}", v.getVariantID(), relations);
+        final Purposes purposes = kb.getConstitutingPurposes(v.getVariantID());
+        LOGGER.trace("Purposes constituting Variant {} are\n{}", v.getVariantID(), purposes);
       }
+
+      LOGGER.info("... testing Serialization and writing all Knowledge-Base-Data to JSON-File ...");
+      final MetaData metadata = kb.getMetaData();
+      KnowledgeData kd = new KnowledgeData(metadata, allFeatures, allPurposes, allVariants, allAlternatives, allConstituents, allEvents, allRules, allRelations);
+      writeObjectToJsonFile(JSON, kd);
+
+      LOGGER.info("... testing Deserialization and reading all Knowledge-Base-Data back from JSON-File ...");
+      kd = readObjectFromJsonFile(JSON, KnowledgeData.class);
 
       ok = true;
     }
@@ -206,6 +245,23 @@ public class KnowledgeBaseTest {
     }
     finally {
       LOGGER.info("... test of KnowledgeBase finished " + (ok ? "without problems." : "with Errors!"));
+    }
+  }
+
+  private <T> T readObjectFromJsonFile(final File f, final Class<T> type) throws JsonProcessingException, IOException {
+    T obj = null;
+    if ((type != null) && (f != null) && f.isFile() && f.exists() && f.canRead()) {
+      obj = MAPPER.readValue(f, type);
+      LOGGER.trace("Read Object from File {}\n{}", f, obj);
+    }
+    return obj;
+  }
+
+  private void writeObjectToJsonFile(final File f, final Object obj) throws JsonProcessingException, IOException {
+    if ((f != null) && (obj != null)) {
+      LOGGER.trace("Writing Object to File {}\n{}", f, obj);
+      MAPPER.writeValue(f, obj);
+      assertTrue("Could not write Object(s) to File!", ((f != null) && f.exists()));
     }
   }
 }

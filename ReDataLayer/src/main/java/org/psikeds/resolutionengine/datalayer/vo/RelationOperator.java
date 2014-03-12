@@ -14,12 +14,15 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.datalayer.vo;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Enum of all supported Operators for Relations on Features.
  ** 
  * @author marco@juliano.de
  * 
  */
+@XmlRootElement(name = "RelationOperator")
 public enum RelationOperator {
 
   EQUAL("equal"),
@@ -28,6 +31,8 @@ public enum RelationOperator {
   LESS_OR_EQUAL("lessOrEqual"),
   GREATER_THAN("greaterThan"),
   GREATER_OR_EQUAL("greaterOrEqual");
+
+  public static final RelationOperator DEFAULT_OPERATOR = EQUAL;
 
   private String operator;
 
@@ -72,6 +77,6 @@ public enum RelationOperator {
     catch (final Exception ex) {
       op = null;
     }
-    return op == null ? EQUAL : op; // default is equal-operator
+    return op == null ? DEFAULT_OPERATOR : op; // default is equal-operator
   }
 }

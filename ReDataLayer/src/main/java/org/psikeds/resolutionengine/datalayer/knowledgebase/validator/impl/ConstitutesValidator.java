@@ -30,7 +30,7 @@ import org.psikeds.resolutionengine.datalayer.vo.Purpose;
 import org.psikeds.resolutionengine.datalayer.vo.Variant;
 
 /**
- * Basic Validator checking that all Constituents / Constitutes are valid.
+ * Validator checking that all Constituents / Constitutes are valid.
  * 
  * @author marco@juliano.de
  * 
@@ -58,7 +58,7 @@ public class ConstitutesValidator implements Validator {
         }
         else {
           final Variant v = kb.getVariant(vid);
-          if ((v == null) || !vid.equals(v.getId())) {
+          if ((v == null) || !vid.equals(v.getVariantID())) {
             valid = false;
             LOGGER.warn("Unknown VariantID: {}", vid);
           }
@@ -80,7 +80,7 @@ public class ConstitutesValidator implements Validator {
             }
             else {
               final Purpose p = kb.getPurpose(pid);
-              if ((p == null) || !pid.equals(p.getId())) {
+              if ((p == null) || !pid.equals(p.getPurposeID())) {
                 valid = false;
                 LOGGER.warn("Unknown PurposeID: {}", pid);
               }
