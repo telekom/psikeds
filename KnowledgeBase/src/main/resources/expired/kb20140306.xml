@@ -19,9 +19,9 @@ For details see file LICENSING in the top project directory
   xsi:schemaLocation="http://org.psikeds.knowledgebase kb.xsd">
 
   <kb:meta>
-    <kb:created>2014-03-06T14:16:49</kb:created>
-    <kb:lastmodified>2014-03-06T14:16:49</kb:lastmodified>
-    <kb:language>en_US</kb:language>
+    <kb:created>2014-02-10T09:53:17</kb:created>
+    <kb:lastmodified>2014-02-12T18:02:43</kb:lastmodified>
+    <kb:language>EN</kb:language>
     <kb:version>V0.8</kb:version>
     <kb:creator>marco@juliano.de</kb:creator>
     <kb:description>An example of a Knowledge Base with Features and Relations</kb:description>
@@ -192,29 +192,35 @@ For details see file LICENSING in the top project directory
     Context-Paths always must be the ID of that Variant!
     -->
     <kb:events>
-      <kb:event variantID="v11" id="e0001" context="v11 p111">
+      <kb:event variantID="v11" id="e0001" featureEvent="false">
         <kb:label>Premise Event 1</kb:label>
-        <kb:variantTrigger variantID="v1111" notEvent="false"/>
+        <kb:context pathIDs="v11 p111" />
+        <kb:trigger entityID="v1111" notEvent="false"/>
       </kb:event>
-      <kb:event variantID="v11" id="e0002" context="v11 p111">
+      <kb:event variantID="v11" id="e0002" featureEvent="false">
         <kb:label>Premise Event 2</kb:label>
-        <kb:variantTrigger variantID="v1112" notEvent="false"/>
+        <kb:context pathIDs="v11 p111" />
+        <kb:trigger entityID="v1112" notEvent="false"/>
       </kb:event>
-      <kb:event variantID="v11" id="e0003" context="v11 p111">
+      <kb:event variantID="v11" id="e0003" featureEvent="false">
         <kb:label>Premise Event 3</kb:label>
-        <kb:variantTrigger variantID="v1113" notEvent="false"/>
+        <kb:context pathIDs="v11 p111" />
+        <kb:trigger entityID="v1113" notEvent="false"/>
       </kb:event>
-      <kb:event variantID="v11" id="e0004" context="v11 p112">
+      <kb:event variantID="v11" id="e0004" featureEvent="false">
         <kb:label>Conclusion Event 1</kb:label>
-        <kb:variantTrigger variantID="v1121" notEvent="false"/>
+        <kb:context pathIDs="v11 p112" />
+        <kb:trigger entityID="v1121" notEvent="false"/>
       </kb:event>
-      <kb:event variantID="v11" id="e0005" context="v11 p112">
+      <kb:event variantID="v11" id="e0005" featureEvent="false">
         <kb:label>Conclusion Event 2</kb:label>
-        <kb:variantTrigger variantID="v1122" notEvent="false"/>
+        <kb:context pathIDs="v11 p112" />
+        <kb:trigger entityID="v1122" notEvent="false"/>
       </kb:event>
-      <kb:event variantID="v11" id="e0006" context="v11 p112">
+      <kb:event variantID="v11" id="e0006" featureEvent="false">
         <kb:label>Conclusion Event 3</kb:label>
-        <kb:variantTrigger variantID="v1123" notEvent="false"/>
+        <kb:context pathIDs="v11 p112" />
+        <kb:trigger entityID="v1123" notEvent="false"/>
       </kb:event>
     </kb:events>
 
