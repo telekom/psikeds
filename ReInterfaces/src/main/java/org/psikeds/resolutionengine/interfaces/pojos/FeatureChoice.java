@@ -20,6 +20,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  * A possible Choice: Which Values can be choosen for a certain Feature?
  * 
@@ -35,7 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * 
  */
 @XmlRootElement(name = "FeatureChoice")
-public class FeatureChoice extends POJO implements Choice, Serializable {
+public class FeatureChoice extends Choice implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -45,6 +47,11 @@ public class FeatureChoice extends POJO implements Choice, Serializable {
 
   public FeatureChoice() {
     this(null, null, null);
+  }
+
+  public FeatureChoice(final Variant parentVariant, final FeatureValue value) {
+    this(parentVariant, value, null);
+    addValue(value.getValue());
   }
 
   public FeatureChoice(final Variant parentVariant, final Feature feature, final List<String> values) {
@@ -92,6 +99,16 @@ public class FeatureChoice extends POJO implements Choice, Serializable {
     addValue(value);
   }
 
+  @JsonIgnore
+  public void setFeatureValue(final FeatureValue fv) {
+    if (fv != null) {
+      setFeature(fv);
+      setValue(fv.getValue());
+      // update internal id of this pojo
+      setId(composeId(this.getParentVariant(), this.getFeature()));
+    }
+  }
+
   /**
    * Check whether a made Decission matches to this Choice, i.e. whether
    * the Client selected one of the allowed Values for the Feature.
@@ -110,7 +127,14 @@ public class FeatureChoice extends POJO implements Choice, Serializable {
           for (final String v : getValues()) {
             final String val = fd.getFeatureValue();
             if (val.equals(v)) {
-              return new FeatureValue(this.feature, val);
+              if (this.feature instanceof FeatureValue) {
+                final FeatureValue fv = (FeatureValue) this.feature;
+                fv.setValue(val);
+                return fv;
+              }
+              else {
+                return new FeatureValue(this.feature, val);
+              }
             }
           }
         }

@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * 
  */
 @XmlRootElement(name = "VariantDecission")
-public class VariantDecission extends POJO implements Decission, Serializable {
+public class VariantDecission extends Decission implements Serializable {
 
   private static final long serialVersionUID = 1L;
 

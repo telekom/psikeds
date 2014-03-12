@@ -15,7 +15,6 @@
 package org.psikeds.resolutionengine.interfaces.pojos;
 
 import org.codehaus.jackson.annotate.JsonSubTypes;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
  * A general Choice, either VariantChoice and FeatureChoice
@@ -23,12 +22,26 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
  * @author marco@juliano.de
  * 
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
 @JsonSubTypes({ @JsonSubTypes.Type(value = FeatureChoice.class, name = "FeatureChoice"), @JsonSubTypes.Type(value = VariantChoice.class, name = "VariantChoice"), })
-public interface Choice {
+public abstract class Choice extends POJO {
 
-  // the purpose of this interface is to mark an object as a choice
-  // and to control its JSON-representation
+  private static final long serialVersionUID = 1L;
+
+  public Choice() {
+    super();
+  }
+
+  public Choice(final POJO... pojos) {
+    super(pojos);
+  }
+
+  public Choice(final String... ids) {
+    super(ids);
+  }
+
+  public Choice(final String id) {
+    super(id);
+  }
 
   /**
    * Check whether a made Decission matches to this Choice
@@ -36,5 +49,5 @@ public interface Choice {
    * @param decission
    * @return POJO if matching, null else
    */
-  POJO matches(final Decission decission);
+  public abstract POJO matches(final Decission decission);
 }

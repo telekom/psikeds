@@ -49,15 +49,15 @@ public abstract class POJO implements Serializable, Comparable<Object> {
   }
 
   protected POJO(final String id) {
-    this.id = id;
-  }
-
-  protected POJO(final POJO... pojos) {
-    this.id = composeId(pojos);
+    setId(id);
   }
 
   protected POJO(final String... ids) {
-    this.id = composeId(ids);
+    setId(ids);
+  }
+
+  protected POJO(final POJO... pojos) {
+    setId(pojos);
   }
 
   @JsonIgnore
@@ -68,6 +68,16 @@ public abstract class POJO implements Serializable, Comparable<Object> {
   @JsonIgnore
   protected void setId(final String id) {
     this.id = id;
+  }
+
+  @JsonIgnore
+  protected void setId(final String... ids) {
+    this.id = composeId(ids);
+  }
+
+  @JsonIgnore
+  protected void setId(final POJO... pojos) {
+    this.id = composeId(pojos);
   }
 
   // ------------------------------------------------------

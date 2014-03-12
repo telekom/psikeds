@@ -15,7 +15,6 @@
 package org.psikeds.resolutionengine.interfaces.pojos;
 
 import org.codehaus.jackson.annotate.JsonSubTypes;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
  * A general Decission, either VariantDecission and FeatureDecission
@@ -23,9 +22,24 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
  * @author marco@juliano.de
  * 
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
 @JsonSubTypes({ @JsonSubTypes.Type(value = FeatureDecission.class, name = "FeatureDecission"), @JsonSubTypes.Type(value = VariantDecission.class, name = "VariantDecission"), })
-public interface Decission {
-  // the purpose of this interface is to mark an object as a decission
-  // and to control its JSON-representation
+public abstract class Decission extends POJO {
+
+  private static final long serialVersionUID = 1L;
+
+  public Decission() {
+    super();
+  }
+
+  public Decission(final POJO... pojos) {
+    super(pojos);
+  }
+
+  public Decission(final String... ids) {
+    super(ids);
+  }
+
+  public Decission(final String id) {
+    super(id);
+  }
 }
