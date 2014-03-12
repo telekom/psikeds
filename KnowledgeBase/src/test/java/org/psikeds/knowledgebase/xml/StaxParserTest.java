@@ -198,7 +198,7 @@ public class StaxParserTest {
   public void testXmlParserWithFileAndSkippingElements() {
     final TestCallbackHandler tcbh = new TestCallbackHandler();
     final int numSkipped = 10; // skip all metadata and data-element
-    final long expected = 7; // count elements within data, i.e. features, purposes, variants, ...
+    final long expected = 8; // count elements within data, i.e. features, purposes, variants, ...
     long numElems = 0;
     try {
       LOGGER.info("Parsing XML " + XML + " skipping " + numSkipped + " Elements ...");

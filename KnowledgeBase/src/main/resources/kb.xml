@@ -20,7 +20,7 @@ For details see file LICENSING in the top project directory
 
   <kb:meta>
     <kb:created>2014-03-06T14:16:49</kb:created>
-    <kb:lastmodified>2014-03-06T14:16:49</kb:lastmodified>
+    <kb:lastmodified>2014-03-12T15:24:27</kb:lastmodified>
     <kb:language>en_US</kb:language>
     <kb:version>V0.8</kb:version>
     <kb:creator>marco@juliano.de</kb:creator>
@@ -236,6 +236,14 @@ For details see file LICENSING in the top project directory
       </kb:rule>
     </kb:rules>
 
-  </kb:data>
+    <kb:relations>
+      <kb:relation variantID="v11" id="rel0815">
+        <kb:label>A simple Equality-Relation</kb:label>
+        <kb:left context="v11 p111 v1111" featureID="f0003" />
+        <kb:right context="v11 p112 v1122" featureID="f0003" />
+        <kb:operator>equal</kb:operator>
+      </kb:relation>
+    </kb:relations>
 
+  </kb:data>
 </kb:knowledgebase>
