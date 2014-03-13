@@ -15,34 +15,34 @@
 package org.psikeds.resolutionengine.interfaces.pojos;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 
-import javax.ws.rs.core.Response.Status;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
- * A single Error containing a Message and a Code.
+ * A List of Warnings ... unfortunately we have to create a Sub-Class of
+ * ArrayList<Warning> because a simple List will loose all of its
+ * Type-Information due to Java-Type-Erasure resulting in ugly errors during
+ * JSON-Deserialization!
  * 
  * @author marco@juliano.de
  * 
  */
-@XmlRootElement(name = "ErrorMessage")
-public class ErrorMessage extends ResolutionMessage implements Serializable {
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type")
+public class Warnings extends ArrayList<Warning> implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  public ErrorMessage() {
+  public Warnings() {
     super();
   }
 
-  public ErrorMessage(final int code, final String message) {
-    super(code, message);
+  public Warnings(final Collection<? extends Warning> c) {
+    super(c);
   }
 
-  public ErrorMessage(final Status status) {
-    this(status.getStatusCode(), status.getReasonPhrase());
-  }
-
-  public ErrorMessage(final Throwable t) {
-    this(Status.INTERNAL_SERVER_ERROR.getStatusCode(), t.getMessage());
+  public Warnings(final int initialCapacity) {
+    super(initialCapacity);
   }
 }

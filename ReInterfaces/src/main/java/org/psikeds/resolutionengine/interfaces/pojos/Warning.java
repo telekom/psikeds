@@ -16,33 +16,25 @@ package org.psikeds.resolutionengine.interfaces.pojos;
 
 import java.io.Serializable;
 
-import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * A single Error containing a Message and a Code.
+ * A Warning for the Client, i.e. this is no severe Error but nevertheless
+ * some important information.
  * 
  * @author marco@juliano.de
  * 
  */
-@XmlRootElement(name = "ErrorMessage")
-public class ErrorMessage extends ResolutionMessage implements Serializable {
+@XmlRootElement(name = "Warning")
+public class Warning extends ResolutionMessage implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  public ErrorMessage() {
+  public Warning() {
     super();
   }
 
-  public ErrorMessage(final int code, final String message) {
-    super(code, message);
-  }
-
-  public ErrorMessage(final Status status) {
-    this(status.getStatusCode(), status.getReasonPhrase());
-  }
-
-  public ErrorMessage(final Throwable t) {
-    this(Status.INTERNAL_SERVER_ERROR.getStatusCode(), t.getMessage());
+  public Warning(final String message) {
+    super(OK_CODE, message);
   }
 }

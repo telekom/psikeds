@@ -16,17 +16,22 @@ package org.psikeds.resolutionengine.interfaces;
 
 import java.util.List;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.commons.lang.StringUtils;
 
 import org.psikeds.common.idgen.IdGenerator;
 import org.psikeds.common.idgen.impl.SessionIdGenerator;
 import org.psikeds.resolutionengine.interfaces.pojos.Decission;
+import org.psikeds.resolutionengine.interfaces.pojos.ErrorMessage;
+import org.psikeds.resolutionengine.interfaces.pojos.Errors;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureDecission;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
 import org.psikeds.resolutionengine.interfaces.pojos.Metadata;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse;
 import org.psikeds.resolutionengine.interfaces.pojos.VariantDecission;
+import org.psikeds.resolutionengine.interfaces.pojos.Warning;
 import org.psikeds.resolutionengine.interfaces.services.ResolutionService;
 
 /**
@@ -128,12 +133,15 @@ public class ResolutionServiceMock implements ResolutionService {
    */
   @Override
   public ResolutionResponse current(final String sessionID) {
+    ResolutionResponse resp;
     if ((this.lastReturnedKnowledge == null) || StringUtils.isEmpty(sessionID)) {
-      return init();
+      resp = init();
+      resp.addWarning(new Warning("Cannot get current State. Fallback to initial Knowledge!"));
     }
     else {
-      return new ResolutionResponse(sessionID, this.metadata, this.lastReturnedKnowledge);
+      resp = new ResolutionResponse(sessionID, this.metadata, this.lastReturnedKnowledge);
     }
+    return resp;
   }
 
   /**
@@ -143,27 +151,38 @@ public class ResolutionServiceMock implements ResolutionService {
    */
   @Override
   public ResolutionResponse select(final ResolutionRequest req) {
+    ResolutionResponse resp;
     final String sessionID = (req == null ? null : req.getSessionID());
     if (StringUtils.isEmpty(sessionID)) {
-      return init();
+      resp = init();
+      resp.addWarning(new Warning("No Session-ID! Fallback to initial Knowledge!"));
     }
-    final List<Decission> lst = req.getDecissions();
-    if ((lst == null) || lst.isEmpty()) {
-      return current(sessionID);
+    else {
+      final List<Decission> lst = req.getDecissions();
+      if ((lst == null) || lst.isEmpty()) {
+        resp = current(sessionID);
+        resp.addWarning(new Warning("No Decission! Returning current State of Resolution."));
+      }
+      else {
+        // we only support single decissions in this mock
+        final Decission decission = lst.get(0);
+        // very simple: depending on the type of decission always return one of the knowledges
+        if (decission instanceof VariantDecission) {
+          this.lastReturnedKnowledge = this.selectVariantKnowledge;
+          resp = new ResolutionResponse(sessionID, this.metadata, this.selectVariantKnowledge);
+        }
+        else if (decission instanceof FeatureDecission) {
+          this.lastReturnedKnowledge = this.selectFeatureKnowledge;
+          resp = new ResolutionResponse(sessionID, this.metadata, this.selectFeatureKnowledge);
+        }
+        else {
+          // decission is null
+          final Errors error = new Errors();
+          error.add(new ErrorMessage(Status.BAD_REQUEST.getStatusCode(), "Request does not contain a valid Decission!"));
+          resp = new ResolutionResponse(sessionID, this.metadata, error);
+        }
+      }
     }
-    // we only support single decissions in this mock
-    final Decission decission = lst.get(0);
-    // very simple: depending on the type of decission always return one of the knowledges
-    if (decission instanceof VariantDecission) {
-      this.lastReturnedKnowledge = this.selectVariantKnowledge;
-      return new ResolutionResponse(sessionID, this.metadata, this.selectVariantKnowledge);
-    }
-    else if (decission instanceof FeatureDecission) {
-      this.lastReturnedKnowledge = this.selectFeatureKnowledge;
-      return new ResolutionResponse(sessionID, this.metadata, this.selectFeatureKnowledge);
-    }
-    else { // decission is null
-      return current(sessionID);
-    }
+    return resp;
   }
 }
