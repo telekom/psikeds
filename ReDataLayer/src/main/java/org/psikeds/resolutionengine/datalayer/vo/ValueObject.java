@@ -95,23 +95,29 @@ public abstract class ValueObject implements Serializable, Comparable<Object> {
   }
 
   /**
+   * @param obj
+   *          a ValueObject
    * @return the value 0 if argument Object is a ValueObject of same Class and its ID is equal to
-   *         the ID of
-   *         this Object;
-   *         a value greater than 0 if the specified Object is null, not a ValueObject of the same
-   *         Class or
-   *         its ID is lexicographically less than the ID of this Object;
+   *         the ID of this Object;
+   *         a value greater than 0 if the specified Object is a ValueObject but has no ID
+   *         or its ID is lexicographically less than the ID of this Object;
    *         a value less 0 else
    * @see java.lang.Object#equals(Object obj)
    * @see java.lang.String#equals(String str)
+   * @throws IllegalArgumentException
+   *           if argument Object is null or not a ValueObject
    */
   @Override
   public int compareTo(final Object obj) {
-    // check that obj is not null and a value object of the same class
-    if (!(obj instanceof ValueObject) || !obj.getClass().equals(this.getClass())) {
-      return 1;
+    // check that obj is not null and a value object
+    if (!(obj instanceof ValueObject)) {
+      throw new IllegalArgumentException("Not a ValueObject: " + String.valueOf(obj));
     }
     final ValueObject vo = (ValueObject) obj;
+    // check that this is the same type of value object
+    if (!vo.getClass().equals(this.getClass())) {
+      return vo.getClass().getName().compareTo(this.getClass().getName());
+    }
     // value objects without IDs can never be compared
     if (StringUtils.isEmpty(vo.getId())) {
       return 1;
@@ -129,7 +135,14 @@ public abstract class ValueObject implements Serializable, Comparable<Object> {
    */
   @Override
   public boolean equals(final Object obj) {
-    return (this.compareTo(obj) == 0);
+    boolean ret;
+    try {
+      ret = (this.compareTo(obj) == 0);
+    }
+    catch (final Exception ex) {
+      ret = false;
+    }
+    return ret;
   }
 
   // ------------------------------------------------------
