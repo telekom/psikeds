@@ -38,19 +38,17 @@ public class VariantDecission extends Decission implements Serializable {
   private String variantID;
 
   public VariantDecission() {
-    this((Purpose) null, (Variant) null);
+    this((String) null, (String) null);
+  }
+
+  public VariantDecission(final Purpose purpose, final Variant variant) {
+    this(purpose.getPurposeID(), variant.getVariantID());
   }
 
   public VariantDecission(final String purposeID, final String variantID) {
     super(purposeID, variantID);
     setPurposeID(purposeID);
     setVariantID(variantID);
-  }
-
-  public VariantDecission(final Purpose purpose, final Variant variant) {
-    super(purpose, variant);
-    setPurpose(purpose);
-    setVariant(variant);
   }
 
   public String getPurposeID() {
@@ -61,19 +59,11 @@ public class VariantDecission extends Decission implements Serializable {
     this.purposeID = purposeID;
   }
 
-  public void setPurpose(final Purpose purpose) {
-    this.purposeID = (purpose == null ? null : purpose.getId());
-  }
-
   public String getVariantID() {
     return this.variantID;
   }
 
   public void setVariantID(final String variantID) {
     this.variantID = variantID;
-  }
-
-  public void setVariant(final Variant variant) {
-    this.variantID = (variant == null ? null : variant.getId());
   }
 }

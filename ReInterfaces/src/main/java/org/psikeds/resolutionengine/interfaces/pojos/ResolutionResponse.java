@@ -15,7 +15,7 @@
 package org.psikeds.resolutionengine.interfaces.pojos;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Collection;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -25,11 +25,12 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  * Response-Object representing the current Context of a Resolution
  * sent by the Server back to the Client.
  * 
- * A Response contains either the current Knowledge and or Errors,
- * but not both!
+ * A Response contains either the current Knowledge or one or more Errors,
+ * but never both! In both cases some Warnings could be present.
  * 
- * Note: Reading from and writing to JSON works out of the box.
- * However for XML the XmlRootElement annotation is required.
+ * Note: The Choices in this Response-Object is a summary of all still open
+ * Choices for both Variants and Features spread over the Knowledge-Tree.
+ * This is for convenience of the Client only.
  * 
  * @author marco@juliano.de
  * 
@@ -39,11 +40,12 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
 
   private static final long serialVersionUID = 1L;
 
+  private Warnings warnings;
   private Errors errors;
-  private Choices choices;  // summary of all choices spread over the knowledge tree, will be calculated!
+  private Choices choices;
 
   public ResolutionResponse() {
-    this(null, null, null, null);
+    this(null, null, null, null, null);
   }
 
   public ResolutionResponse(final String sessionID, final Knowledge knowledge) {
@@ -55,18 +57,51 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
   }
 
   public ResolutionResponse(final String sessionID, final Metadata metadata, final Knowledge knowledge) {
-    this(sessionID, metadata, knowledge, null);
+    this(sessionID, metadata, knowledge, null, null);
   }
 
   public ResolutionResponse(final String sessionID, final Metadata metadata, final Errors errors) {
-    this(sessionID, metadata, null, errors);
+    this(sessionID, metadata, null, errors, null);
   }
 
-  // there are either errors or knowledge ... use one of the constructors above
-  private ResolutionResponse(final String sessionID, final Metadata metadata, final Knowledge knowledge, final Errors errors) {
+  public ResolutionResponse(final String sessionID, final Metadata metadata, final Knowledge knowledge, final Errors errors, final Warnings warnings) {
     super(sessionID, metadata, knowledge);
     setErrors(errors);
+    setWarnings(warnings);
     calculateChoices();
+  }
+
+  // ----------------------------------------------------------------
+
+  public Warnings getWarnings() {
+    if (this.warnings == null) {
+      this.warnings = new Warnings();
+    }
+    return this.warnings;
+  }
+
+  public void setWarnings(final Warnings warnings) {
+    clearWarnings();
+    this.warnings = warnings;
+  }
+
+  public void addWarning(final Warning warning) {
+    if (warning != null) {
+      getWarnings().add(warning);
+    }
+  }
+
+  public void addAllWarnings(final Collection<? extends Warning> c) {
+    if ((c != null) && !c.isEmpty()) {
+      getWarnings().addAll(c);
+    }
+  }
+
+  public void clearWarnings() {
+    if (this.warnings != null) {
+      this.warnings.clear();
+      this.warnings = null;
+    }
   }
 
   // ----------------------------------------------------------------
@@ -89,9 +124,9 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
     }
   }
 
-  public void addAllErrors(final Errors errors) {
-    if ((errors != null) && !errors.isEmpty()) {
-      getErrors().addAll(errors);
+  public void addAllErrors(final Collection<? extends ErrorMessage> c) {
+    if ((c != null) && !c.isEmpty()) {
+      getErrors().addAll(c);
     }
   }
 
@@ -111,9 +146,9 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
     return this.choices;
   }
 
-  public void setChoices(final Choices choices) {
+  public void setChoices(final Collection<? extends Choice> c) {
     clearChoices();
-    this.choices = choices;
+    addAllChoices(c);
   }
 
   public void addChoice(final Choice choice) {
@@ -122,9 +157,9 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
     }
   }
 
-  public void addAllChoices(final Choices choices) {
-    if ((choices != null) && !choices.isEmpty()) {
-      getChoices().addAll(choices);
+  public void addAllChoices(final Collection<? extends Choice> c) {
+    if ((c != null) && !c.isEmpty()) {
+      getChoices().addAll(c);
     }
   }
 
@@ -137,6 +172,7 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
 
   // ----------------------------------------------------------------
 
+  @JsonIgnore
   public void calculateChoices() {
     clearChoices();
     if (this.knowledge != null) {
@@ -145,7 +181,7 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
     }
   }
 
-  private void addChoices(final List<KnowledgeEntity> entities) {
+  private void addChoices(final KnowledgeEntities entities) {
     if ((entities != null) && !entities.isEmpty()) {
       for (final KnowledgeEntity ke : entities) {
         addChoices(ke);
@@ -155,7 +191,8 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
 
   private void addChoices(final KnowledgeEntity ke) {
     if (ke != null) {
-      addAllChoices(ke.getChoices());
+      addAllChoices(ke.getPossibleVariants());
+      addAllChoices(ke.getPossibleFeatures());
       addChoices(ke.getChildren());
     }
   }
@@ -168,7 +205,12 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
   }
 
   @JsonIgnore
-  public boolean hasError() {
+  public boolean hasErrors() {
     return ((this.errors != null) && !this.errors.isEmpty());
+  }
+
+  @JsonIgnore
+  public boolean hasWarnings() {
+    return ((this.warnings != null) && !this.warnings.isEmpty());
   }
 }

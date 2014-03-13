@@ -15,17 +15,15 @@
 package org.psikeds.resolutionengine.interfaces.pojos;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Interface object representing a single Variant. Variants can optionally
- * have certain Features, i.e. hold a List of IDs of the referenced Features.
+ * have Features, i.e. Descriptions of Attributes of this Variant.
  * 
- * Note 1: ID must be globally unique.
- * 
- * Note 2: Reading from and writing to JSON works out of the box.
- * However for XML the XmlRootElement annotation is required.
+ * Note: Variant-ID must be globally unique.
  * 
  * @author marco@juliano.de
  * 
@@ -40,7 +38,11 @@ public class Variant extends POJO implements Serializable {
   private Features features;
 
   public Variant() {
-    this(null, null, null);
+    this(null);
+  }
+
+  public Variant(final String variantID) {
+    this(variantID, null, variantID);
   }
 
   public Variant(final String label, final String description, final String variantID) {
@@ -49,9 +51,9 @@ public class Variant extends POJO implements Serializable {
 
   public Variant(final String label, final String description, final String variantID, final Features features) {
     super(variantID);
-    this.label = label;
-    this.description = description;
-    this.features = features;
+    setLabel(label);
+    setDescription(description);
+    setFeatures(features);
   }
 
   public String getLabel() {
@@ -68,6 +70,14 @@ public class Variant extends POJO implements Serializable {
 
   public void setDescription(final String value) {
     this.description = value;
+  }
+
+  public String getVariantID() {
+    return getId();
+  }
+
+  public void setVariantID(final String variantID) {
+    setId(variantID);
   }
 
   // ----------------------------------------------------------------
@@ -90,9 +100,9 @@ public class Variant extends POJO implements Serializable {
     }
   }
 
-  public void addAllFeature(final Features features) {
-    if ((features != null) && !features.isEmpty()) {
-      getFeatures().addAll(features);
+  public void addAllFeatures(final Collection<? extends FeatureDescription> c) {
+    if ((c != null) && !c.isEmpty()) {
+      getFeatures().addAll(c);
     }
   }
 
@@ -101,13 +111,5 @@ public class Variant extends POJO implements Serializable {
       this.features.clear();
       this.features = null;
     }
-  }
-
-  public String getVariantID() {
-    return getId();
-  }
-
-  public void setVariantID(final String variantID) {
-    setId(variantID);
   }
 }

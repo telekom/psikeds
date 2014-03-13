@@ -22,16 +22,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 
+import org.apache.cxf.common.util.StringUtils;
+
 /**
- * A possible Choice: Which Values can be choosen for a certain Feature?
+ * A possible Choice: Which Values can be choosen for a Feature
+ * of some (Parent-)Variant?
  * 
- * Note 1: PurposeIDs and VariantIDs must reference existing Objects!
+ * Note 1: A detailed Description of the Feature is "attached" to
+ * the Variant-Object specified by the Parent-Variant-ID.
  * 
- * Note 2: If the Purpose is a Root-Purpose, there is no Parent-Variant,
- * i.e. Parent-Variant is null.
- * 
- * Note 3: Reading from and writing to JSON works out of the box.
- * However for XML the XmlRootElement annotation is required.
+ * Note 2: Feature-ID and Variant-ID must point to existing Objects!
  * 
  * @author marco@juliano.de
  * 
@@ -41,71 +41,74 @@ public class FeatureChoice extends Choice implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private Variant parentVariant;
-  private Feature feature;
-  private List<String> values;
+  private String featureID;
+  private List<String> possibleValues;
 
   public FeatureChoice() {
-    this(null, null, null);
+    this((String) null, (String) null);
   }
 
-  public FeatureChoice(final Variant parentVariant, final FeatureValue value) {
-    this(parentVariant, value, null);
-    addValue(value.getValue());
+  public FeatureChoice(final Variant parentVariant, final FeatureDescription featureDescription) {
+    this(parentVariant, featureDescription, null);
   }
 
-  public FeatureChoice(final Variant parentVariant, final Feature feature, final List<String> values) {
-    super(parentVariant, feature);
-    this.parentVariant = parentVariant;
-    this.feature = feature;
-    this.values = values;
+  public FeatureChoice(final Variant parentVariant, final FeatureDescription featureDescription, final List<String> possibleValues) {
+    this((parentVariant == null ? null : parentVariant.getVariantID()), (featureDescription == null ? null : featureDescription.getFeatureID()), possibleValues);
   }
 
-  public Variant getParentVariant() {
-    return this.parentVariant;
+  public FeatureChoice(final String parentVariantID, final String featureID) {
+    this(parentVariantID, featureID, null);
   }
 
-  public void setParentVariant(final Variant parentVariant) {
-    this.parentVariant = parentVariant;
+  public FeatureChoice(final String parentVariantID, final String featureID, final List<String> possibleValues) {
+    super(parentVariantID);
+    this.featureID = featureID;
+    this.possibleValues = possibleValues;
   }
 
-  public Feature getFeature() {
-    return this.feature;
+  public String getFeatureID() {
+    return this.featureID;
   }
 
-  public void setFeature(final Feature feature) {
-    this.feature = feature;
+  public void setFeatureID(final String featureID) {
+    this.featureID = featureID;
   }
 
-  public List<String> getValues() {
-    if (this.values == null) {
-      this.values = new ArrayList<String>();
+  public List<String> getPossibleValues() {
+    if (this.possibleValues == null) {
+      this.possibleValues = new ArrayList<String>();
     }
-    return this.values;
+    return this.possibleValues;
   }
 
-  public void setValues(final List<String> values) {
-    this.values = values;
+  public void setPossibleValues(final List<String> possibleValues) {
+    this.possibleValues = possibleValues;
   }
 
-  public void addValue(final String value) {
-    if (value != null) {
-      getValues().add(value);
+  public void addPossibleValue(final String value) {
+    if (!StringUtils.isEmpty(value)) {
+      getPossibleValues().add(value);
     }
   }
 
-  public void setValue(final String value) {
-    getValues().clear();
-    addValue(value);
+  public void clearPossibleValues() {
+    if (this.possibleValues != null) {
+      this.possibleValues.clear();
+      this.possibleValues = null;
+    }
   }
 
   @JsonIgnore
-  public void setFeatureValue(final FeatureValue fv) {
+  public void setValue(final String value) {
+    clearPossibleValues();
+    addPossibleValue(value);
+  }
+
+  @JsonIgnore
+  public void setValue(final FeatureValue fv) {
     if (fv != null) {
-      setFeature(fv);
+      setFeatureID(fv.getFeatureID());
       setValue(fv.getValue());
-      // update internal id of this pojo
-      setId(composeId(this.getParentVariant(), this.getFeature()));
     }
   }
 
@@ -114,35 +117,19 @@ public class FeatureChoice extends Choice implements Serializable {
    * the Client selected one of the allowed Values for the Feature.
    * 
    * @param decission
-   * @return feature an value if matching, null else
+   * @return true if matching, false else
    */
   @Override
-  public FeatureValue matches(final Decission decission) {
+  public boolean matches(final Decission decission) {
+    boolean ret;
     try {
       final FeatureDecission fd = (FeatureDecission) decission;
-      final String vid = this.parentVariant.getId();
-      if (vid.equals(fd.getVariantID())) {
-        final String fid = this.feature.getId();
-        if (fid.equals(fd.getFeatureID())) {
-          for (final String v : getValues()) {
-            final String val = fd.getFeatureValue();
-            if (val.equals(v)) {
-              if (this.feature instanceof FeatureValue) {
-                final FeatureValue fv = (FeatureValue) this.feature;
-                fv.setValue(val);
-                return fv;
-              }
-              else {
-                return new FeatureValue(this.feature, val);
-              }
-            }
-          }
-        }
-      }
+      ret = (this.parentVariantID.equals(fd.getVariantID()) && this.featureID.equals(fd.getFeatureID()) && this.possibleValues.contains(fd.getFeatureValue()));
     }
     catch (final Exception ex) {
       // Either not a FeatureDecission or one of the Objects was NULL
+      ret = false;
     }
-    return null;
+    return ret;
   }
 }

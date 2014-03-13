@@ -28,10 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Note 1: PurposeIDs and VariantIDs must reference existing Objects!
  * 
  * Note 2: If the Purpose is a Root-Purpose, there is no Parent-Variant,
- * i.e. Parent-Variant is null.
- * 
- * Note 3: Reading from and writing to JSON works out of the box.
- * However for XML the XmlRootElement annotation is required.
+ * i.e. Parent-Variant-ID is null.
  * 
  * @author marco@juliano.de
  * 
@@ -44,7 +41,6 @@ public class VariantChoice extends Choice implements Serializable {
   public static final long MINIMUM_QUANTITY = 1L;
   public static final long DEFAULT_QUANTITY = MINIMUM_QUANTITY;
 
-  private Variant parentVariant;
   private Purpose purpose;
   private List<Variant> variants;
   private long quantity;
@@ -58,23 +54,18 @@ public class VariantChoice extends Choice implements Serializable {
   }
 
   public VariantChoice(final Purpose purpose, final List<Variant> variants) {
-    this(null, purpose, variants, DEFAULT_QUANTITY);
+    this(purpose, variants, DEFAULT_QUANTITY);
   }
 
-  public VariantChoice(final Variant parentVariant, final Purpose purpose, final List<Variant> variants, final long qty) {
-    super(parentVariant, purpose);
-    setParentVariant(parentVariant);
+  public VariantChoice(final Purpose purpose, final List<Variant> variants, final long qty) {
+    this(null, purpose, variants, qty);
+  }
+
+  public VariantChoice(final String parentVariantID, final Purpose purpose, final List<Variant> variants, final long qty) {
+    super(parentVariantID);
     setPurpose(purpose);
     setVariants(variants);
     setQuantity(qty);
-  }
-
-  public Variant getParentVariant() {
-    return this.parentVariant;
-  }
-
-  public void setParentVariant(final Variant parentVariant) {
-    this.parentVariant = parentVariant;
   }
 
   public Purpose getPurpose() {
@@ -120,10 +111,10 @@ public class VariantChoice extends Choice implements Serializable {
    * whether the Client selected one of the Variants for the Purpose.
    * 
    * @param decission
-   * @return variant if matching, null else
+   * @return true if matching, false else
    */
   @Override
-  public Variant matches(final Decission decission) {
+  public boolean matches(final Decission decission) {
     try {
       final VariantDecission vd = (VariantDecission) decission;
       final String pid = this.purpose.getId();
@@ -131,7 +122,7 @@ public class VariantChoice extends Choice implements Serializable {
         for (final Variant v : getVariants()) {
           final String vid = v.getId();
           if (vid.equals(vd.getVariantID())) {
-            return v;
+            return true;
           }
         }
       }
@@ -139,6 +130,6 @@ public class VariantChoice extends Choice implements Serializable {
     catch (final Exception ex) {
       // Either not a VariantDecission or one of the Objects was NULL
     }
-    return null;
+    return false;
   }
 }

@@ -25,9 +25,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  * A Request usually contains either a SessionID or the current Knowledge
  * and a List of 0 to n Decissions.
  * 
- * If there is a SessionID, the Knowledged cached on Server-side is used.
+ * If there is a SessionID, the Knowledge cached on Server-side is used.
  * The Knowledge passed by the Client can/will be used if Resolution-State
- * is not cached on the Server (any more) and mustr be (re)created.
+ * is not cached on the Server (any more) and must be (re)created.
  * 
  * If there is neither a SessionID nor Knowledge specified a new Resolution
  * is started and the initial Knowledge is created from the Knowledge-Base.
@@ -107,12 +107,26 @@ public class ResolutionRequest extends BaseResolutionContext implements Serializ
   }
 
   public void setDecissions(final Decissions decissions) {
+    clearDecissions();
     this.decissions = decissions;
   }
 
   public void addDecission(final Decission decission) {
     if (decission != null) {
       getDecissions().add(decission);
+    }
+  }
+
+  public void addAllDecissions(final Decissions decissions) {
+    if ((decissions != null) && !decissions.isEmpty()) {
+      getDecissions().addAll(decissions);
+    }
+  }
+
+  public void clearDecissions() {
+    if (this.decissions != null) {
+      this.decissions.clear();
+      this.decissions = null;
     }
   }
 }

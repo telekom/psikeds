@@ -37,7 +37,15 @@ public class Purpose extends POJO implements Serializable {
   private boolean root;
 
   public Purpose() {
-    this(null, null, null);
+    this(null);
+  }
+
+  public Purpose(final String purposeID) {
+    this(purposeID, false);
+  }
+
+  public Purpose(final String purposeID, final boolean root) {
+    this(purposeID, null, purposeID, root);
   }
 
   public Purpose(final String label, final String description, final String purposeID) {

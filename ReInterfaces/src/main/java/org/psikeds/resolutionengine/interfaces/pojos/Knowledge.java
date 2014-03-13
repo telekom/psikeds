@@ -28,9 +28,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * created. In the End there is a Tree of Knowledge-Entities and no Choices
  * left, then our Resolution-Process is finished.
  * 
- * Note: Reading from and writing to JSON works out of the box.
- * However for XML the XmlRootElement annotation is required.
- * 
  * @author marco@juliano.de
  * 
  */
@@ -40,18 +37,18 @@ public class Knowledge extends POJO implements Serializable {
   private static final long serialVersionUID = 1L;
 
   private KnowledgeEntities entities;
-  private Choices choices;
+  private VariantChoices choices;
   private boolean stable;
 
   public Knowledge() {
     this(null);
   }
 
-  public Knowledge(final Choices choices) {
+  public Knowledge(final VariantChoices choices) {
     this(null, choices);
   }
 
-  public Knowledge(final KnowledgeEntities entities, final Choices choices) {
+  public Knowledge(final KnowledgeEntities entities, final VariantChoices choices) {
     super();
     this.entities = entities;
     this.choices = choices;
@@ -59,6 +56,16 @@ public class Knowledge extends POJO implements Serializable {
     // the Process of logical Resolution as needed.
     this.stable = true;
   }
+
+  public boolean isStable() {
+    return this.stable;
+  }
+
+  public void setStable(final boolean stable) {
+    this.stable = stable;
+  }
+
+  // ----------------------------------------------------------------
 
   public KnowledgeEntities getEntities() {
     if (this.entities == null) {
@@ -68,6 +75,7 @@ public class Knowledge extends POJO implements Serializable {
   }
 
   public void setEntities(final KnowledgeEntities entities) {
+    clearEntities();
     this.entities = entities;
   }
 
@@ -77,28 +85,49 @@ public class Knowledge extends POJO implements Serializable {
     }
   }
 
-  public Choices getChoices() {
+  public void addAllEntities(final KnowledgeEntities entities) {
+    if ((entities != null) && !entities.isEmpty()) {
+      getEntities().addAll(entities);
+    }
+  }
+
+  public void clearEntities() {
+    if (this.entities != null) {
+      this.entities.clear();
+      this.entities = null;
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  public VariantChoices getChoices() {
     if (this.choices == null) {
-      this.choices = new Choices();
+      this.choices = new VariantChoices();
     }
     return this.choices;
   }
 
-  public void setChoices(final Choices choices) {
+  public void setChoices(final VariantChoices choices) {
+    clearChoices();
     this.choices = choices;
   }
 
-  public void addChoice(final Choice chc) {
-    if (chc != null) {
-      getChoices().add(chc);
+  public void addChoice(final VariantChoice choice) {
+    if (choice != null) {
+      getChoices().add(choice);
     }
   }
 
-  public boolean isStable() {
-    return this.stable;
+  public void addAllChoices(final VariantChoices choices) {
+    if ((choices != null) && !choices.isEmpty()) {
+      getChoices().addAll(choices);
+    }
   }
 
-  public void setStable(final boolean stable) {
-    this.stable = stable;
+  public void clearChoices() {
+    if (this.choices != null) {
+      this.choices.clear();
+      this.choices = null;
+    }
   }
 }

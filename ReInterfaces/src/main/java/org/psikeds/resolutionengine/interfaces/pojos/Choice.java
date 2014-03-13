@@ -27,27 +27,26 @@ public abstract class Choice extends POJO {
 
   private static final long serialVersionUID = 1L;
 
-  public Choice() {
+  protected String parentVariantID;
+
+  protected Choice(final String parentVariantID) {
     super();
+    this.parentVariantID = parentVariantID;
   }
 
-  public Choice(final POJO... pojos) {
-    super(pojos);
+  public String getParentVariantID() {
+    return this.parentVariantID;
   }
 
-  public Choice(final String... ids) {
-    super(ids);
-  }
-
-  public Choice(final String id) {
-    super(id);
+  public void setParentVariantID(final String parentVariantID) {
+    this.parentVariantID = parentVariantID;
   }
 
   /**
    * Check whether a made Decission matches to this Choice
    * 
    * @param decission
-   * @return POJO if matching, null else
+   * @return true if matching, false else
    */
-  public abstract POJO matches(final Decission decission);
+  public abstract boolean matches(final Decission decission);
 }

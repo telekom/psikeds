@@ -23,8 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * 
  * Note 1: VariantID and FeatureID must reference existing Objects!
  * 
- * Note 2: Reading from and writing to JSON works out of the box.
- * However for XML the XmlRootElement annotation is required.
+ * Note 2: Value must be a allowed one matching the Type of Feature.
  * 
  * @author marco@juliano.de
  * 
@@ -39,28 +38,25 @@ public class FeatureDecission extends Decission implements Serializable {
   private String featureValue;
 
   public FeatureDecission() {
-    this((Variant) null, (Feature) null, null);
+    this((String) null, (String) null, (String) null);
   }
 
   public FeatureDecission(final FeatureChoice choice, final int index) {
-    this(choice, choice.getValues().get(index));
+    this(choice, choice.getPossibleValues().get(index));
   }
 
   public FeatureDecission(final FeatureChoice choice, final String featureValue) {
-    this(choice.getParentVariant().getId(), choice.getFeature().getId(), featureValue);
+    this(choice.getParentVariantID(), choice.getFeatureID(), featureValue);
+  }
+
+  public FeatureDecission(final Variant variant, final Feature feature, final String featureValue) {
+    this(variant.getVariantID(), feature.getFeatureID(), featureValue);
   }
 
   public FeatureDecission(final String variantID, final String featureID, final String featureValue) {
     super(variantID, featureID);
     setVariantID(variantID);
     setFeatureID(featureID);
-    setFeatureValue(featureValue);
-  }
-
-  public FeatureDecission(final Variant variant, final Feature feature, final String featureValue) {
-    super(variant, feature);
-    setVariant(variant);
-    setFeature(feature);
     setFeatureValue(featureValue);
   }
 
@@ -72,20 +68,12 @@ public class FeatureDecission extends Decission implements Serializable {
     this.variantID = variantID;
   }
 
-  public void setVariant(final Variant variant) {
-    this.variantID = (variant == null ? null : variant.getId());
-  }
-
   public String getFeatureID() {
     return this.featureID;
   }
 
   public void setFeatureID(final String featureID) {
     this.featureID = featureID;
-  }
-
-  public void setFeature(final Feature feature) {
-    this.variantID = (feature == null ? null : feature.getId());
   }
 
   public String getFeatureValue() {

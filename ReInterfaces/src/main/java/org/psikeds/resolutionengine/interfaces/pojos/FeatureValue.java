@@ -18,14 +18,15 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  * Interface object representing a resolved Feature, i.e.
  * ID, Label, Description ... and also an assigned Value!
  * 
  * Note 1: Feature-ID must be globally unique!
  * 
- * Note 2: Reading from and writing to JSON works out of the box.
- * However for XML the XmlRootElement annotation is required.
+ * Note 2: Value must be a allowed one matching the Type.
  * 
  * @author marco@juliano.de
  * 
@@ -40,6 +41,10 @@ public class FeatureValue extends Feature implements Serializable {
   public FeatureValue() {
     super();
     this.value = null;
+  }
+
+  public FeatureValue(final String featureID, final String valueType, final String value) {
+    this(featureID, null, featureID, valueType, value);
   }
 
   public FeatureValue(final String label, final String description, final String featureID, final String valueType, final String value) {
@@ -65,5 +70,10 @@ public class FeatureValue extends Feature implements Serializable {
 
   public void setValue(final String value) {
     this.value = value;
+  }
+
+  @JsonIgnore
+  public FeatureDescription toFeatureDescription() {
+    return new FeatureDescription(this);
   }
 }

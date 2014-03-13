@@ -18,14 +18,13 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  * Interface object representing a Description of a Feature, i.e.
- * ID, Label, Description ... but not a Value!
+ * ID, Label, Description ... but no Values!!
  * 
- * Note 1: Feature-ID must be globally unique!
- * 
- * Note 2: Reading from and writing to JSON works out of the box.
- * However for XML the XmlRootElement annotation is required.
+ * Note: Feature-ID must be globally unique!
  * 
  * @author marco@juliano.de
  * 
@@ -39,11 +38,20 @@ public class FeatureDescription extends Feature implements Serializable {
     super();
   }
 
+  public FeatureDescription(final String featureID, final String valueType) {
+    this(featureID, null, featureID, valueType);
+  }
+
   public FeatureDescription(final String label, final String description, final String featureID, final String valueType) {
     super(label, description, featureID, valueType);
   }
 
   public FeatureDescription(final Feature feature) {
     super(feature);
+  }
+
+  @JsonIgnore
+  public FeatureValue toFeatureValue(final String value) {
+    return new FeatureValue(this, value);
   }
 }
