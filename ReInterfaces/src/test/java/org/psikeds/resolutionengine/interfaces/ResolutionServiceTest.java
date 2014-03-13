@@ -39,7 +39,7 @@ import org.apache.cxf.common.util.StringUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 
-import org.psikeds.resolutionengine.interfaces.pojos.Choice;
+import org.psikeds.resolutionengine.interfaces.pojos.Feature;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureDecission;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureDescription;
@@ -52,6 +52,7 @@ import org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse;
 import org.psikeds.resolutionengine.interfaces.pojos.Variant;
 import org.psikeds.resolutionengine.interfaces.pojos.VariantChoice;
+import org.psikeds.resolutionengine.interfaces.pojos.VariantChoices;
 import org.psikeds.resolutionengine.interfaces.pojos.VariantDecission;
 import org.psikeds.resolutionengine.interfaces.services.ResolutionService;
 
@@ -130,13 +131,16 @@ public class ResolutionServiceTest {
       writeObjectToJsonFile(INIT_RESPONSE, ires);
 
       assertNotNull("No initial Resolution-Response!", ires);
+      assertFalse("Resolution-Response contains Errors!", ires.hasErrors());
       final String sessionID1 = ires.getSessionID();
       assertFalse("No initial SessionID!", StringUtils.isEmpty(sessionID1));
       final Knowledge ike = ires.getKnowledge();
       assertNotNull("No initial Knowledge!", ike);
-      final List<Choice> choices1 = ike.getChoices();
-      assertNotNull("No initial Choices!", choices1);
-      assertFalse("No initial Choices!", choices1.isEmpty());
+      final VariantChoices choices1 = ike.getChoices();
+      assertNotNull("No initial Variant-Choices!", choices1);
+      int expected = 2;
+      int size = choices1.size();
+      assertEquals("Expected " + expected + " initial Variant-Choices but got " + size, expected, size);
       assertFalse("Initial Knowledge is already resolved!?!?", ires.isResolved());
       final Metadata metadata = ires.getMetadata();
       assertNotNull("No initial Metadata!", metadata);
@@ -146,6 +150,7 @@ public class ResolutionServiceTest {
       writeObjectToJsonFile(CURRENT_RESPONSE, cres1);
 
       assertNotNull("No Response for current Knowledge!", cres1);
+      assertFalse("Resolution-Response contains Errors!", cres1.hasErrors());
       final String sessionID2 = cres1.getSessionID();
       assertFalse("No SessionID in Resolution-Response!", StringUtils.isEmpty(sessionID2));
       assertEquals("SessionIDs are not matching!", sessionID1, sessionID2);
@@ -160,11 +165,18 @@ public class ResolutionServiceTest {
       writeObjectToJsonFile(SELECT_VARIANT_RESPONSE, svres);
 
       assertNotNull("No Resolution-Response!", svres);
+      assertFalse("Resolution-Response contains Errors!", svres.hasErrors());
       final String sessionID3 = svres.getSessionID();
       assertFalse("No SessionID in Resolution-Response!", StringUtils.isEmpty(sessionID3));
       assertEquals("SessionIDs are not matching!", sessionID1, sessionID3);
       final Knowledge svke = svres.getKnowledge();
       assertNotNull("No Knowledge in Resolution-Response!", svke);
+      final VariantChoices choices2 = svke.getChoices();
+      assertNotNull("No Variant-Choices after Decission!", choices2);
+      expected = 1;
+      size = choices2.size();
+      assertEquals("Expected " + expected + " Variant-Choices after Decission but got " + size, expected, size);
+      assertFalse("Knowledge is already resolved!?!?", svres.isResolved());
 
       LOGGER.info("... making a Feature-Decission and asking for Resolution ...");
       final FeatureDecission fd = readObjectFromJsonFile(FEATURE_DECISSION, FeatureDecission.class);
@@ -174,6 +186,7 @@ public class ResolutionServiceTest {
       writeObjectToJsonFile(SELECT_FEATURE_RESPONSE, sfres);
 
       assertNotNull("No Resolution-Response!", sfres);
+      assertFalse("Resolution-Response contains Errors!", sfres.hasErrors());
       final String sessionID4 = sfres.getSessionID();
       assertFalse("No SessionID in Resolution-Response!", StringUtils.isEmpty(sessionID4));
       assertEquals("SessionIDs are not matching!", sessionID1, sessionID4);
@@ -185,14 +198,15 @@ public class ResolutionServiceTest {
       writeObjectToJsonFile(CURRENT_RESPONSE, cres2);
 
       assertNotNull("No Response for current Knowledge!", cres2);
+      assertFalse("Resolution-Response contains Errors!", cres2.hasErrors());
       final String sessionID5 = cres2.getSessionID();
       assertFalse("No SessionID in Resolution-Response!", StringUtils.isEmpty(sessionID5));
       assertEquals("SessionIDs are not matching!", sessionID1, sessionID5);
       final Knowledge c2ke = cres2.getKnowledge();
       assertNotNull("No current Knowledge!", c2ke);
-      final List<Choice> choices2 = c2ke.getChoices();
-      assertNotNull("No current Choices!", choices2);
-      assertFalse("No current Choices!", choices2.isEmpty());
+      final VariantChoices choices3 = c2ke.getChoices();
+      assertNotNull("No current Choices!", choices3);
+      assertFalse("No current Choices!", choices3.isEmpty());
       assertFalse("Current Knowledge is already resolved!?!?", cres2.isResolved());
 
       LOGGER.info("... done. Handling of POJOs for Resolution worked as expected.");
@@ -223,27 +237,28 @@ public class ResolutionServiceTest {
   private static void generateTestData(final boolean force) throws JsonProcessingException, IOException {
     LOGGER.info("Start generating Test-Data ... ");
 
-    final FeatureDescription f1 = new FeatureDescription("F1", null, "F1", "integer");
-    final FeatureDescription f2 = new FeatureDescription("F2", null, "F2", "float");
-    final FeatureDescription f3 = new FeatureDescription("F3", null, "F3", "string");
+    final FeatureDescription f1 = new FeatureDescription("F1", Feature.VALUE_TYPE_INTEGER);
+    final FeatureDescription f2 = new FeatureDescription("F2", Feature.VALUE_TYPE_FLOAT);
+    final FeatureDescription f3 = new FeatureDescription("F3", Feature.VALUE_TYPE_STRING);
 
-    final Purpose p1 = new Purpose("P1", null, "P1", true);
-    final Purpose p2 = new Purpose("P2", null, "P2", true);
-    final Purpose p3 = new Purpose("P3", null, "P3", true);
+    final Purpose p1 = new Purpose("P1", true);
+    final Purpose p2 = new Purpose("P2", true);
+    final Purpose p3 = new Purpose("P3", true);
 
-    final Variant v11 = new Variant("V11", null, "V11");
+    final Variant v11 = new Variant("V11");
     v11.addFeature(f1);
-    final Variant v21 = new Variant("V21", null, "V21");
-    final Variant v22 = new Variant("V22", null, "V22");
+    final Variant v21 = new Variant("V21");
+    final Variant v22 = new Variant("V22");
     v22.addFeature(f2);
-    final Variant v23 = new Variant("V23", null, "V23");
-    final Variant v31 = new Variant("V31", null, "V31");
-    final Variant v32 = new Variant("V32", null, "V32");
-    final Variant v33 = new Variant("V33", null, "V33");
+    final Variant v23 = new Variant("V23");
+    final Variant v31 = new Variant("V31");
+    final Variant v32 = new Variant("V32");
+    final Variant v33 = new Variant("V33");
     v33.addFeature(f3);
 
-    final KnowledgeEntity ke1 = new KnowledgeEntity(p1, v11);
     final FeatureValue fv1 = new FeatureValue(f1, "42");
+
+    final KnowledgeEntity ke1 = new KnowledgeEntity(p1, v11);
     ke1.addFeature(fv1);
 
     final Knowledge initialKnowledge = new Knowledge();
@@ -272,25 +287,26 @@ public class ResolutionServiceTest {
       writeObjectToJsonFile(VARIANT_DECISSION, vd);
     }
 
+    final List<String> floatValues = new ArrayList<String>();
+    floatValues.add("1.0");
+    floatValues.add("2.0");
+    floatValues.add("3.0");
+    final FeatureChoice fc2 = new FeatureChoice(v22, f2, floatValues);
+
+    final KnowledgeEntity ke2 = new KnowledgeEntity(p2, v22);
+    ke2.addPossibleFeature(fc2);
+
     final Knowledge selectVariantKnowledge = new Knowledge();
     selectVariantKnowledge.addKnowledgeEntity(ke1);
-    final KnowledgeEntity ke2 = new KnowledgeEntity(p2, v22);
     selectVariantKnowledge.addKnowledgeEntity(ke2);
     selectVariantKnowledge.addChoice(vc2);
-
-    final List<String> f2vals = new ArrayList<String>();
-    f2vals.add("1.0");
-    f2vals.add("2.0");
-    f2vals.add("3.0");
-    final FeatureChoice fc = new FeatureChoice(v22, f2, f2vals);
-    ke1.addChoice(fc);
 
     LOGGER.info("... created Selected-Variant-Knowledge:\n{}", selectVariantKnowledge);
     if (force || !SELECT_VARIANT_KNOWLEDGE.exists()) {
       writeObjectToJsonFile(SELECT_VARIANT_KNOWLEDGE, selectVariantKnowledge);
     }
 
-    final FeatureDecission fd = new FeatureDecission(fc, 1);
+    final FeatureDecission fd = new FeatureDecission(fc2, 1);
     LOGGER.info("... created Feature-Decission:\n{}", fd);
     if (force || !FEATURE_DECISSION.exists()) {
       writeObjectToJsonFile(FEATURE_DECISSION, fd);
@@ -299,7 +315,7 @@ public class ResolutionServiceTest {
     final Knowledge selectFeatureKnowledge = new Knowledge();
     selectFeatureKnowledge.addKnowledgeEntity(ke1);
     final FeatureValue fv2 = new FeatureValue(f2, fd);
-    ke2.clearChoices();
+    ke2.clearPossibleFeatures();
     ke2.addFeature(fv2);
     selectFeatureKnowledge.addKnowledgeEntity(ke2);
     selectFeatureKnowledge.addChoice(vc2);
