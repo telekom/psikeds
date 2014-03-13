@@ -95,21 +95,29 @@ public abstract class POJO implements Serializable, Comparable<Object> {
   }
 
   /**
-   * @return the value 0 if argument Object is a POJO of same Class and its ID is equal to the ID of
-   *         this Object;
-   *         a value greater than 0 if the specified Object is null, not a POJO of the same Class or
-   *         its ID is lexicographically less than the ID of this Object;
+   * @param obj
+   *          a POJO
+   * @return the value 0 if argument Object is a POJO of same Class and its ID is equal to
+   *         the ID of this Object;
+   *         a value greater than 0 if the specified Object is a POJO but has no ID
+   *         or its ID is lexicographically less than the ID of this POJO;
    *         a value less 0 else
    * @see java.lang.Object#equals(Object obj)
    * @see java.lang.String#equals(String str)
+   * @throws IllegalArgumentException
+   *           if argument Object is null or not a POJO
    */
   @Override
   public int compareTo(final Object obj) {
-    // check that obj is not null and a pojo of the same class
-    if (!(obj instanceof POJO) || !obj.getClass().equals(this.getClass())) {
-      return 1;
+    // check that obj is not null and a pojo
+    if (!(obj instanceof POJO)) {
+      throw new IllegalArgumentException("Not a POJO: " + String.valueOf(obj));
     }
     final POJO pojo = (POJO) obj;
+    // check that this is the same type of pojo
+    if (!pojo.getClass().equals(this.getClass())) {
+      return pojo.getClass().getName().compareTo(this.getClass().getName());
+    }
     // pojos without IDs can never be compared
     if (StringUtils.isEmpty(pojo.getId())) {
       return 1;
@@ -122,12 +130,19 @@ public abstract class POJO implements Serializable, Comparable<Object> {
   }
 
   /**
-   * @return true if obj not null, pojo and equal; false else
+   * @return true if Object is not null, a POJO and has equal ID; false else
    * @see java.lang.Object#equals(Object obj)
    */
   @Override
   public boolean equals(final Object obj) {
-    return (this.compareTo(obj) == 0);
+    boolean ret;
+    try {
+      ret = (this.compareTo(obj) == 0);
+    }
+    catch (final Exception ex) {
+      ret = false;
+    }
+    return ret;
   }
 
   // ------------------------------------------------------
