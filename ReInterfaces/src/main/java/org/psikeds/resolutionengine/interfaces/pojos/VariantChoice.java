@@ -50,15 +50,19 @@ public class VariantChoice extends Choice implements Serializable {
   }
 
   public VariantChoice(final Purpose purpose) {
-    this(purpose, null);
+    this(null, purpose);
   }
 
-  public VariantChoice(final Purpose purpose, final List<Variant> variants) {
-    this(purpose, variants, DEFAULT_QUANTITY);
+  public VariantChoice(final String parentVariantID, final Purpose purpose) {
+    this(parentVariantID, purpose, DEFAULT_QUANTITY);
   }
 
-  public VariantChoice(final Purpose purpose, final List<Variant> variants, final long qty) {
-    this(null, purpose, variants, qty);
+  public VariantChoice(final Purpose purpose, final long qty) {
+    this(null, purpose, qty);
+  }
+
+  public VariantChoice(final String parentVariantID, final Purpose purpose, final long qty) {
+    this(parentVariantID, purpose, null, qty);
   }
 
   public VariantChoice(final String parentVariantID, final Purpose purpose, final List<Variant> variants, final long qty) {
