@@ -114,6 +114,8 @@ public abstract class Feature<T> extends ValueObject {
 
   public abstract String getValueType();
 
+  public abstract List<String> getValuesAsStrings();
+
   // ----------------------------------------------------------------
 
   /**

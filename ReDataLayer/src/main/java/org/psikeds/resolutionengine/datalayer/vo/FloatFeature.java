@@ -15,6 +15,7 @@
 package org.psikeds.resolutionengine.datalayer.vo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -52,5 +53,15 @@ public class FloatFeature extends Feature<Float> implements Serializable {
   @Override
   public String getValueType() {
     return VALUE_TYPE_FLOAT;
+  }
+
+  @JsonIgnore
+  @Override
+  public List<String> getValuesAsStrings() {
+    final List<String> lst = new ArrayList<String>();
+    for (final Float f : getValues()) {
+      lst.add(String.valueOf(f));
+    }
+    return lst;
   }
 }

@@ -15,6 +15,7 @@
 package org.psikeds.resolutionengine.datalayer.vo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -52,5 +53,15 @@ public class IntegerFeature extends Feature<Integer> implements Serializable {
   @Override
   public String getValueType() {
     return VALUE_TYPE_INTEGER;
+  }
+
+  @JsonIgnore
+  @Override
+  public List<String> getValuesAsStrings() {
+    final List<String> lst = new ArrayList<String>();
+    for (final Integer i : getValues()) {
+      lst.add(String.valueOf(i));
+    }
+    return lst;
   }
 }

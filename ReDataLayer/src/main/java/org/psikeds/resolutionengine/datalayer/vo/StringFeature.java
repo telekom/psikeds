@@ -15,6 +15,7 @@
 package org.psikeds.resolutionengine.datalayer.vo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -52,5 +53,11 @@ public class StringFeature extends Feature<String> implements Serializable {
   @Override
   public String getValueType() {
     return VALUE_TYPE_STRING;
+  }
+
+  @JsonIgnore
+  @Override
+  public List<String> getValuesAsStrings() {
+    return new ArrayList<String>(getValues());
   }
 }
