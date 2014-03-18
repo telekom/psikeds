@@ -106,19 +106,18 @@ public class FeatureChoice extends Choice implements Serializable {
 
   @JsonIgnore
   public void setValue(final FeatureValue fv) {
-    if (fv != null) {
-      setFeatureID(fv.getFeatureID());
-      setValue(fv.getValue());
-    }
+    final String value = (fv == null ? null : fv.getValue());
+    setValue(value);
   }
 
   /**
-   * Check whether a made Decission matches to this Choice, i.e. whether
-   * the Client selected one of the allowed Values for the Feature.
+   * Check whether some made Decission matches to this Choice, i.e. whether
+   * the Client selected one of the allowed Values for this Feature.
    * 
    * @param decission
    * @return true if matching, false else
    */
+  @JsonIgnore
   @Override
   public boolean matches(final Decission decission) {
     boolean ret;
@@ -127,7 +126,7 @@ public class FeatureChoice extends Choice implements Serializable {
       ret = (this.parentVariantID.equals(fd.getVariantID()) && this.featureID.equals(fd.getFeatureID()) && this.possibleValues.contains(fd.getFeatureValue()));
     }
     catch (final Exception ex) {
-      // Either not a FeatureDecission or one of the Objects was NULL
+      // Probably not a FeatureDecission or one of the Objects was NULL
       ret = false;
     }
     return ret;

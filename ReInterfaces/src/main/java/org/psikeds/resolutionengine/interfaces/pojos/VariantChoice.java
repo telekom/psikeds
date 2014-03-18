@@ -20,6 +20,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  * A possible Choice: Which Variants can be choosen for a certain Purpose?
  * Optionally a Quantity might be specified, meaning that not one but
@@ -111,29 +113,50 @@ public class VariantChoice extends Choice implements Serializable {
   }
 
   /**
-   * Check whether a made Decission matches to this Choice, i.e.
+   * Check whether some made Decission matches to this Choice, i.e.
    * whether the Client selected one of the Variants for the Purpose.
    * 
    * @param decission
    * @return true if matching, false else
    */
+  @JsonIgnore
   @Override
   public boolean matches(final Decission decission) {
+    Variant v;
     try {
       final VariantDecission vd = (VariantDecission) decission;
+      v = matches(vd);
+    }
+    catch (final Exception ex) {
+      // Probably not a VariantDecission
+      v = null;
+    }
+    return (v != null);
+  }
+
+  /**
+   * Check whether a made VariantDecission matches to this Choice, i.e.
+   * whether the Client selected one of the Variants for the Purpose.
+   * 
+   * @param vd
+   * @return Variant if matching, null else
+   */
+  @JsonIgnore
+  public Variant matches(final VariantDecission vd) {
+    try {
       final String pid = this.purpose.getId();
       if (pid.equals(vd.getPurposeID())) {
         for (final Variant v : getVariants()) {
           final String vid = v.getId();
           if (vid.equals(vd.getVariantID())) {
-            return true;
+            return v;
           }
         }
       }
     }
     catch (final Exception ex) {
-      // Either not a VariantDecission or one of the Objects was NULL
+      // one of the Objects was NULL
     }
-    return false;
+    return null;
   }
 }
