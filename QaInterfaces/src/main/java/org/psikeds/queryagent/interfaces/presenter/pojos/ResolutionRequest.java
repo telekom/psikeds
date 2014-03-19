@@ -15,21 +15,19 @@
 package org.psikeds.queryagent.interfaces.presenter.pojos;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Request-Object representing the current Context of a Resolution
- * sent by the Client to the Server.
+ * sent by the Client/Browser to the Server/Query-Agent.
  * 
  * A Request usually contains either a SessionID or the current Knowledge
  * and a List of 0 to n Decissions.
  * 
- * If there is a SessionID, the Knowledged cached on Server-side is used.
+ * If there is a SessionID, the Knowledge cached on Server-side is used.
  * The Knowledge passed by the Client can/will be used if Resolution-State
- * is not cached on the Server (any more) and mustr be (re)created.
+ * is not cached on the Server (any more) and must be (re)created.
  * 
  * If there is neither a SessionID nor Knowledge specified a new Resolution
  * is started and the initial Knowledge is created from the Knowledge-Base.
@@ -37,9 +35,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Optionally additional Metadata can be added. Metadate could contain
  * Information regarding Language-Settings or special Features desired
  * by the Client.
- * 
- * Note: Reading from and writing to JSON works out of the box.
- * However for XML the XmlRootElement annotation is required.
  * 
  * @author marco@juliano.de
  * 
@@ -49,21 +44,21 @@ public class ResolutionRequest extends BaseResolutionContext implements Serializ
 
   private static final long serialVersionUID = 1L;
 
-  private List<Decission> decissions;
+  private Decissions decissions;
 
   public ResolutionRequest() {
     this((String) null);
   }
 
   public ResolutionRequest(final String sessionID) {
-    this(sessionID, null, null);
+    this(sessionID, null, null, (Decissions) null);
   }
 
   public ResolutionRequest(final Decission decission) {
     this(null, null, null, decission);
   }
 
-  public ResolutionRequest(final List<Decission> decissions) {
+  public ResolutionRequest(final Decissions decissions) {
     this(null, null, null, decissions);
   }
 
@@ -71,7 +66,7 @@ public class ResolutionRequest extends BaseResolutionContext implements Serializ
     this(sessionID, null, null, decission);
   }
 
-  public ResolutionRequest(final String sessionID, final List<Decission> decissions) {
+  public ResolutionRequest(final String sessionID, final Decissions decissions) {
     this(sessionID, null, null, decissions);
   }
 
@@ -79,38 +74,56 @@ public class ResolutionRequest extends BaseResolutionContext implements Serializ
     this(null, null, knowledge, decission);
   }
 
-  public ResolutionRequest(final Knowledge knowledge, final List<Decission> decissions) {
+  public ResolutionRequest(final Knowledge knowledge, final Decissions decissions) {
     this(null, null, knowledge, decissions);
   }
 
-  public ResolutionRequest(final String sessionID, final Metadata metadata, final Knowledge knowledge) {
-    this(sessionID, metadata, knowledge, (List<Decission>) null);
+  public ResolutionRequest(final String sessionID, final Metadata metadata, final Decission decission) {
+    this(sessionID, metadata, null, decission);
+  }
+
+  public ResolutionRequest(final String sessionID, final Metadata metadata, final Decissions decissions) {
+    this(sessionID, metadata, null, decissions);
   }
 
   public ResolutionRequest(final String sessionID, final Metadata metadata, final Knowledge knowledge, final Decission decission) {
-    this(sessionID, metadata, knowledge);
-    addMadeDecission(decission);
+    this(sessionID, metadata, knowledge, (Decissions) null);
+    addDecission(decission);
   }
 
-  public ResolutionRequest(final String sessionID, final Metadata metadata, final Knowledge knowledge, final List<Decission> decissions) {
+  public ResolutionRequest(final String sessionID, final Metadata metadata, final Knowledge knowledge, final Decissions decissions) {
     super(sessionID, metadata, knowledge);
-    setMadeDecissions(decissions);
+    setDecissions(decissions);
   }
 
-  public List<Decission> getMadeDecissions() {
+  public Decissions getDecissions() {
     if (this.decissions == null) {
-      this.decissions = new ArrayList<Decission>();
+      this.decissions = new Decissions();
     }
     return this.decissions;
   }
 
-  public void setMadeDecissions(final List<Decission> decissions) {
+  public void setDecissions(final Decissions decissions) {
+    clearDecissions();
     this.decissions = decissions;
   }
 
-  public void addMadeDecission(final Decission decission) {
+  public void addDecission(final Decission decission) {
     if (decission != null) {
-      getMadeDecissions().add(decission);
+      getDecissions().add(decission);
+    }
+  }
+
+  public void addAllDecissions(final Decissions decissions) {
+    if ((decissions != null) && !decissions.isEmpty()) {
+      getDecissions().addAll(decissions);
+    }
+  }
+
+  public void clearDecissions() {
+    if (this.decissions != null) {
+      this.decissions.clear();
+      this.decissions = null;
     }
   }
 }

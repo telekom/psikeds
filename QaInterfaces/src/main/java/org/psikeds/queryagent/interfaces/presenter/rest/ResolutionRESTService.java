@@ -34,7 +34,7 @@ import org.psikeds.queryagent.interfaces.presenter.services.ResolutionService;
 /**
  * REST Service "implementing" the ResolutionService. It does not really
  * implement this Interface but invokes a delegate implementation the Interface
- * {@link org.psikeds.queryagent.interfaces.presenter.services.ResolutionService}
+ * {@link org.psikeds.resolutionengine.interfaces.services.ResolutionService}
  * 
  * @author marco@juliano.de
  */
@@ -81,7 +81,7 @@ public class ResolutionRESTService extends AbstractRESTService {
       if ((resp != null) && (resp.getKnowledge() != null) && (resp.getSessionID() != null)) {
         return buildResponse(Status.OK, resp);
       }
-      return buildResponse(Status.SERVICE_UNAVAILABLE, "Failed to create Session and to initialize Resolution!");
+      return buildResponse(Status.SERVICE_UNAVAILABLE, "Failed to create Session and to initialize Knowledge!");
     }
     catch (final Exception ex) {
       return buildResponse(ex);

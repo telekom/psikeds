@@ -18,43 +18,61 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
- * Metadata-Infos regarding the current Resolution and Knowledge-Base.
+ * Meta-Infos regarding the current Resolution and Knowledge-Base.
  * 
  * @author marco@juliano.de
  * 
  */
+@XmlRootElement(name = "Metadata")
 public class Metadata extends POJO implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private Map<String, Object> infomap;
+  private Map<String, Serializable> infomap;
 
   public Metadata() {
     this(null);
   }
 
-  public Metadata(final Map<String, Object> infomap) {
+  public Metadata(final Map<String, Serializable> infomap) {
     super();
     this.infomap = infomap;
   }
 
-  public Map<String, Object> getInfomap() {
+  public Map<String, Serializable> getInfoMap() {
     if (this.infomap == null) {
-      this.infomap = new ConcurrentHashMap<String, Object>();
+      this.infomap = new ConcurrentHashMap<String, Serializable>();
     }
     return this.infomap;
   }
 
-  public void setInfomap(final Map<String, Object> infomap) {
+  public void setInfoMap(final Map<String, Serializable> infomap) {
     this.infomap = infomap;
   }
 
-  public Object loadInfo(final String key) {
-    return getInfomap().get(key);
+  public void addInfo(final Map<String, Serializable> infos) {
+    if ((infos != null) && !infos.isEmpty()) {
+      getInfoMap().putAll(infos);
+    }
   }
 
-  public void saveInfo(final String key, final Object value) {
-    getInfomap().put(key, value);
+  public void addInfo(final String key, final Serializable value) {
+    if ((key != null) && (value != null)) {
+      getInfoMap().put(key, value);
+    }
+  }
+
+  public Serializable getInfo(final String key) {
+    return (key == null ? null : getInfoMap().get(key));
+  }
+
+  public void clearInfoMap() {
+    if (this.infomap != null) {
+      this.infomap.clear();
+      this.infomap = null;
+    }
   }
 }

@@ -20,10 +20,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Interface object representing a single Purpose. Purposes marked with the
- * root-flag are used for the initial context of a resolution, i.e. this is
- * where a GUI-dialog/wizard should start.
+ * root-flag are toplevel entry points into the Knowledge und used for the
+ * initial Context of a Resolution.
  * 
- * Note: ID must be globally unique.
+ * Note: Purpose-ID must be globally unique.
  * 
  * @author marco@juliano.de
  * 
@@ -38,15 +38,23 @@ public class Purpose extends POJO implements Serializable {
   private boolean root;
 
   public Purpose() {
-    this(null, null, null);
+    this(null);
   }
 
-  public Purpose(final String label, final String description, final String id) {
-    this(label, description, id, false);
+  public Purpose(final String purposeID) {
+    this(purposeID, false);
   }
 
-  public Purpose(final String label, final String description, final String id, final boolean root) {
-    super(id);
+  public Purpose(final String purposeID, final boolean root) {
+    this(purposeID, null, purposeID, root);
+  }
+
+  public Purpose(final String label, final String description, final String purposeID) {
+    this(label, description, purposeID, false);
+  }
+
+  public Purpose(final String label, final String description, final String purposeID, final boolean root) {
+    super(purposeID);
     this.label = label;
     this.description = description;
     this.root = root;
@@ -74,5 +82,13 @@ public class Purpose extends POJO implements Serializable {
 
   public void setRoot(final boolean root) {
     this.root = root;
+  }
+
+  public String getPurposeID() {
+    return getId();
+  }
+
+  public void setPurposeID(final String purposeID) {
+    setId(purposeID);
   }
 }

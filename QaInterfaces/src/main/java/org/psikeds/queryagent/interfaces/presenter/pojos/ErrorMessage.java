@@ -14,32 +14,35 @@
  *******************************************************************************/
 package org.psikeds.queryagent.interfaces.presenter.pojos;
 
-import org.codehaus.jackson.annotate.JsonSubTypes;
+import java.io.Serializable;
+
+import javax.ws.rs.core.Response.Status;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * A general Decission, either VariantDecission and FeatureDecission
+ * A single Error containing a Message and a Code.
  * 
  * @author marco@juliano.de
  * 
  */
-@JsonSubTypes({ @JsonSubTypes.Type(value = FeatureDecission.class, name = "FeatureDecission"), @JsonSubTypes.Type(value = VariantDecission.class, name = "VariantDecission"), })
-public abstract class Decission extends POJO {
+@XmlRootElement(name = "ErrorMessage")
+public class ErrorMessage extends ResolutionMessage implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  public Decission() {
+  public ErrorMessage() {
     super();
   }
 
-  public Decission(final POJO... pojos) {
-    super(pojos);
+  public ErrorMessage(final int code, final String message) {
+    super(code, message);
   }
 
-  public Decission(final String... ids) {
-    super(ids);
+  public ErrorMessage(final Status status) {
+    this(status.getStatusCode(), status.getReasonPhrase());
   }
 
-  public Decission(final String id) {
-    super(id);
+  public ErrorMessage(final Throwable t) {
+    this(Status.INTERNAL_SERVER_ERROR.getStatusCode(), t.getMessage());
   }
 }

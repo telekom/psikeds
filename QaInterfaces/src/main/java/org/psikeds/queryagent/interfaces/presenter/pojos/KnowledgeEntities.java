@@ -14,32 +14,35 @@
  *******************************************************************************/
 package org.psikeds.queryagent.interfaces.presenter.pojos;
 
-import org.codehaus.jackson.annotate.JsonSubTypes;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
- * A general Decission, either VariantDecission and FeatureDecission
+ * A List of KnowledgeEntities ... unfortunately we have to create a Sub-Class
+ * of ArrayList<KnowledgeEntity> because a simple List will loose all its
+ * Type-Information due to Java-Type-Erasure resulting in errors during JSON-
+ * Deserialization!
  * 
  * @author marco@juliano.de
  * 
  */
-@JsonSubTypes({ @JsonSubTypes.Type(value = FeatureDecission.class, name = "FeatureDecission"), @JsonSubTypes.Type(value = VariantDecission.class, name = "VariantDecission"), })
-public abstract class Decission extends POJO {
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type")
+public class KnowledgeEntities extends ArrayList<KnowledgeEntity> implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  public Decission() {
+  public KnowledgeEntities() {
     super();
   }
 
-  public Decission(final POJO... pojos) {
-    super(pojos);
+  public KnowledgeEntities(final Collection<? extends KnowledgeEntity> c) {
+    super(c);
   }
 
-  public Decission(final String... ids) {
-    super(ids);
-  }
-
-  public Decission(final String id) {
-    super(id);
+  public KnowledgeEntities(final int initialCapacity) {
+    super(initialCapacity);
   }
 }

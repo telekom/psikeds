@@ -74,15 +74,19 @@ For details see file LICENSING in the top project directory
     </dependency>
 
     <!--
-      The following Libs are not required for the Interface-JAR but only 
-      for running the Unit-Tests
+      The Jackson-Core-ASL is required for compiling the Json-Annotations
     -->
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-core-asl</artifactId>
       <version>${jackson.version}</version>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
+
+    <!--
+      The following Libs are not required for the Interface-JAR but only 
+      for running the Unit-Tests
+    -->
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>

@@ -14,14 +14,12 @@
  *******************************************************************************/
 package org.psikeds.queryagent.interfaces.presenter.pojos;
 
-import java.io.Serializable;
-
-import javax.xml.bind.annotation.XmlRootElement;
+import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
- * Interface object representing a single Feature / Attribute of a Variant.
+ * Base-Object representing a Feature, either FeatureDescription or FeatureValue.
  * 
- * Note 1: ID must be globally unique!
+ * Note 1: Feature-ID must be globally unique!
  * 
  * Note 2: Reading from and writing to JSON works out of the box.
  * However for XML the XmlRootElement annotation is required.
@@ -29,135 +27,71 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author marco@juliano.de
  * 
  */
-@XmlRootElement(name = "Feature")
-public class Feature extends POJO implements Serializable {
+@JsonSubTypes({ @JsonSubTypes.Type(value = FeatureValue.class, name = "FeatureValue"), @JsonSubTypes.Type(value = FeatureDescription.class, name = "FeatureDescription"), })
+public abstract class Feature extends POJO {
 
   private static final long serialVersionUID = 1L;
 
+  public static final String VALUE_TYPE_STRING = "string";
+  public static final String VALUE_TYPE_INTEGER = "integer";
+  public static final String VALUE_TYPE_FLOAT = "float";
+
   private String label;
   private String description;
-  private String minValue;
-  private String maxValue;
-  private FeatureValueType valueType;
-  private boolean range;
+  private String valueType;
 
-  /**
-   * Default constructor: use Setters for Initialization
-   * 
-   */
   public Feature() {
-    this(null, null, null, null, null, null, false);
+    this(null, null, null, null);
   }
 
-  /**
-   * Constructor for a Feature with a discrete Value
-   * 
-   * @param label
-   * @param description
-   * @param id
-   * @param value
-   * @param fvt
-   * 
-   */
-  public Feature(final String label, final String description, final String id, final String value, final FeatureValueType fvt) {
-    this(label, description, id, value, null, fvt, false);
+  public Feature(final Feature feature) {
+    this(feature.getLabel(), feature.getDescription(), feature.getFeatureID(), feature.getValueType());
   }
 
-  /**
-   * Constructor for a Feature with a Range from minValue to maxValue
-   * 
-   * @param label
-   * @param description
-   * @param id
-   * @param minValue
-   * @param maxValue
-   * @param fvt
-   * 
-   */
-  public Feature(final String label, final String description, final String id, final String minValue, final String maxValue, final FeatureValueType fvt) {
-    this(label, description, id, minValue, maxValue, fvt, true);
-  }
-
-  /**
-   * Internal constructor (used by Transformer)
-   * 
-   * @param label
-   * @param description
-   * @param id
-   * @param minValue
-   * @param maxValue
-   * @param fvt
-   * @param range
-   */
-  public Feature(final String label, final String description, final String id, final String minValue, final String maxValue, final FeatureValueType fvt, final boolean range) {
-    super(id);
-    this.label = label;
-    this.description = description;
-    this.minValue = minValue;
-    this.maxValue = maxValue;
-    this.valueType = fvt == null ? FeatureValueType.STRING : fvt;
-    this.range = range;
+  public Feature(final String label, final String description, final String featureID, final String valueType) {
+    super(featureID);
+    setLabel(label);
+    setDescription(description);
+    setValueType(valueType);
   }
 
   public String getLabel() {
     return this.label;
   }
 
-  public void setLabel(final String value) {
-    this.label = value;
+  public void setLabel(final String label) {
+    this.label = label;
   }
 
   public String getDescription() {
     return this.description;
   }
 
-  public void setDescription(final String value) {
-    this.description = value;
+  public void setDescription(final String description) {
+    this.description = description;
   }
 
-  public String getMinValue() {
-    return this.minValue;
-  }
-
-  public String getValue() {
-    return this.minValue;
-  }
-
-  public void setMinValue(final String minValue) {
-    this.minValue = minValue;
-    this.range = true;
-  }
-
-  public void setValue(final String value) {
-    this.minValue = value;
-    this.range = false;
-  }
-
-  public String getMaxValue() {
-    return this.maxValue;
-  }
-
-  public void setMaxValue(final String maxValue) {
-    this.maxValue = maxValue;
-    this.range = true;
-  }
-
-  public FeatureValueType getValueType() {
+  public String getValueType() {
     return this.valueType;
   }
 
-  public void setValueType(final FeatureValueType valueType) {
-    this.valueType = valueType;
-  }
-
-  public boolean isRange() {
-    return this.range;
-  }
-
-  public void setRange(final boolean range) {
-    this.range = range;
-    if (!this.range) {
-      this.maxValue = null;
+  public void setValueType(final String valueType) {
+    if (VALUE_TYPE_INTEGER.equalsIgnoreCase(valueType)) {
+      this.valueType = VALUE_TYPE_INTEGER;
     }
+    else if (VALUE_TYPE_FLOAT.equalsIgnoreCase(valueType)) {
+      this.valueType = VALUE_TYPE_FLOAT;
+    }
+    else {
+      this.valueType = VALUE_TYPE_STRING;
+    }
+  }
+
+  public String getFeatureID() {
+    return getId();
+  }
+
+  public void setFeatureID(final String featureID) {
+    setId(featureID);
   }
 }
