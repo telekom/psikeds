@@ -21,7 +21,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 import org.springframework.util.StringUtils;
 
-import org.psikeds.common.util.ObjectDumper;
+import org.psikeds.common.util.JSONHelper;
 
 /**
  * Base of all Value-Objects in this Package.
@@ -90,7 +90,7 @@ public abstract class ValueObject implements Serializable, Comparable<Object> {
   public String toString() {
     final StringBuilder sb = new StringBuilder(super.toString());
     sb.append('\n');
-    sb.append(new ObjectDumper().dump(this));
+    sb.append(JSONHelper.dump(this));
     return sb.toString();
   }
 

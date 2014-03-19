@@ -17,7 +17,6 @@ package org.psikeds.resolutionengine.interfaces;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +26,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -39,6 +37,7 @@ import org.apache.cxf.common.util.StringUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 
+import org.psikeds.common.util.JSONHelper;
 import org.psikeds.resolutionengine.interfaces.pojos.Feature;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureDecission;
@@ -66,31 +65,46 @@ import org.psikeds.resolutionengine.interfaces.services.ResolutionService;
  */
 public class ResolutionServiceTest {
 
-  private static final String LOG4J = System.getProperty("org.psikeds.test.log4j.xml", "../ResolutionEngine/src/main/resources/log4j.xml");
   private static final Logger LOGGER = LoggerFactory.getLogger(ResolutionServiceTest.class);
 
-  private static final String TEST_DATA_DIR = System.getProperty("org.psikeds.test.data.dir", "./src/test/resources/");
+  private static String LOG4J;
+  private static File TEST_DATA_DIR;
 
-  private static final File INIT_KNOWLEDGE = new File(TEST_DATA_DIR, "InitialKnowledge.json");
-  private static final File VARIANT_DECISSION = new File(TEST_DATA_DIR, "VariantDecission.json");
-  private static final File SELECT_VARIANT_KNOWLEDGE = new File(TEST_DATA_DIR, "SelectedVariantKnowledge.json");
-  private static final File FEATURE_DECISSION = new File(TEST_DATA_DIR, "FeatureDecission.json");
-  private static final File SELECT_FEATURE_KNOWLEDGE = new File(TEST_DATA_DIR, "SelectedFeatureKnowledge.json");
+  private static File INIT_KNOWLEDGE;
+  private static File VARIANT_DECISSION;
+  private static File SELECT_VARIANT_KNOWLEDGE;
+  private static File FEATURE_DECISSION;
+  private static File SELECT_FEATURE_KNOWLEDGE;
 
-  private static final File INIT_RESPONSE = new File(TEST_DATA_DIR, "InitResponse.json");
-  private static final File CURRENT_RESPONSE = new File(TEST_DATA_DIR, "CurrentResponse.json");
-  private static final File SELECT_VARIANT_REQUEST = new File(TEST_DATA_DIR, "SelectVariantRequest.json");
-  private static final File SELECT_VARIANT_RESPONSE = new File(TEST_DATA_DIR, "SelectVariantResponse.json");
-  private static final File SELECT_FEATURE_REQUEST = new File(TEST_DATA_DIR, "SelectFeatureRequest.json");
-  private static final File SELECT_FEATURE_RESPONSE = new File(TEST_DATA_DIR, "SelectFeatureResponse.json");
+  private static File INIT_RESPONSE;
+  private static File CURRENT_RESPONSE;
+  private static File SELECT_VARIANT_REQUEST;
+  private static File SELECT_VARIANT_RESPONSE;
+  private static File SELECT_FEATURE_REQUEST;
+  private static File SELECT_FEATURE_RESPONSE;
 
-  private static final ObjectMapper MAPPER = new ObjectMapper();
-  private ResolutionService srvc = null;
+  private ResolutionService srvc;
 
   @BeforeClass
   public static void setUpBeforeClass() {
     BasicConfigurator.configure();
+    LOG4J = System.getProperty("org.psikeds.test.log4j.xml", "../ResolutionEngine/src/main/resources/log4j.xml");
     DOMConfigurator.configure(LOG4J);
+    TEST_DATA_DIR = new File(System.getProperty("org.psikeds.test.data.dir", "./src/test/resources/"));
+    if (!TEST_DATA_DIR.exists()) {
+      TEST_DATA_DIR.mkdir();
+    }
+    INIT_KNOWLEDGE = new File(TEST_DATA_DIR, "InitialKnowledge.json");
+    VARIANT_DECISSION = new File(TEST_DATA_DIR, "VariantDecission.json");
+    SELECT_VARIANT_KNOWLEDGE = new File(TEST_DATA_DIR, "SelectedVariantKnowledge.json");
+    FEATURE_DECISSION = new File(TEST_DATA_DIR, "FeatureDecission.json");
+    SELECT_FEATURE_KNOWLEDGE = new File(TEST_DATA_DIR, "SelectedFeatureKnowledge.json");
+    INIT_RESPONSE = new File(TEST_DATA_DIR, "InitResponse.json");
+    CURRENT_RESPONSE = new File(TEST_DATA_DIR, "CurrentResponse.json");
+    SELECT_VARIANT_REQUEST = new File(TEST_DATA_DIR, "SelectVariantRequest.json");
+    SELECT_VARIANT_RESPONSE = new File(TEST_DATA_DIR, "SelectVariantResponse.json");
+    SELECT_FEATURE_REQUEST = new File(TEST_DATA_DIR, "SelectFeatureRequest.json");
+    SELECT_FEATURE_RESPONSE = new File(TEST_DATA_DIR, "SelectFeatureResponse.json");
   }
 
   @AfterClass
@@ -106,9 +120,9 @@ public class ResolutionServiceTest {
 
   @Before
   public void setUp() throws Exception {
-    final Knowledge initialKnowledge = readObjectFromJsonFile(INIT_KNOWLEDGE, Knowledge.class);
-    final Knowledge selectVariantKnowledge = readObjectFromJsonFile(SELECT_VARIANT_KNOWLEDGE, Knowledge.class);
-    final Knowledge selectFeatureKnowledge = readObjectFromJsonFile(SELECT_FEATURE_KNOWLEDGE, Knowledge.class);
+    final Knowledge initialKnowledge = JSONHelper.readObjectFromJsonFile(INIT_KNOWLEDGE, Knowledge.class);
+    final Knowledge selectVariantKnowledge = JSONHelper.readObjectFromJsonFile(SELECT_VARIANT_KNOWLEDGE, Knowledge.class);
+    final Knowledge selectFeatureKnowledge = JSONHelper.readObjectFromJsonFile(SELECT_FEATURE_KNOWLEDGE, Knowledge.class);
     final Calendar now = Calendar.getInstance();
     final String started = DateFormat.getDateTimeInstance().format(now.getTime());
     final Metadata metadata = new Metadata();
@@ -128,7 +142,7 @@ public class ResolutionServiceTest {
 
       LOGGER.info("... getting initial Knowledge ...");
       final ResolutionResponse ires = this.srvc.init();
-      writeObjectToJsonFile(INIT_RESPONSE, ires);
+      JSONHelper.writeObjectToJsonFile(INIT_RESPONSE, ires);
 
       assertNotNull("No initial Resolution-Response!", ires);
       assertFalse("Resolution-Response contains Errors!", ires.hasErrors());
@@ -147,7 +161,7 @@ public class ResolutionServiceTest {
 
       LOGGER.info("... getting current Knowledge ...");
       final ResolutionResponse cres1 = this.srvc.current(sessionID1);
-      writeObjectToJsonFile(CURRENT_RESPONSE, cres1);
+      JSONHelper.writeObjectToJsonFile(CURRENT_RESPONSE, cres1);
 
       assertNotNull("No Response for current Knowledge!", cres1);
       assertFalse("Resolution-Response contains Errors!", cres1.hasErrors());
@@ -158,11 +172,11 @@ public class ResolutionServiceTest {
       assertNotNull("No current Knowledge!", c1ke);
 
       LOGGER.info("... making a Variant-Decission and asking for Resolution ...");
-      final VariantDecission vd = readObjectFromJsonFile(VARIANT_DECISSION, VariantDecission.class);
+      final VariantDecission vd = JSONHelper.readObjectFromJsonFile(VARIANT_DECISSION, VariantDecission.class);
       final ResolutionRequest svreq = new ResolutionRequest(sessionID1, metadata, vd);
-      writeObjectToJsonFile(SELECT_VARIANT_REQUEST, svreq);
+      JSONHelper.writeObjectToJsonFile(SELECT_VARIANT_REQUEST, svreq);
       final ResolutionResponse svres = this.srvc.select(svreq);
-      writeObjectToJsonFile(SELECT_VARIANT_RESPONSE, svres);
+      JSONHelper.writeObjectToJsonFile(SELECT_VARIANT_RESPONSE, svres);
 
       assertNotNull("No Resolution-Response!", svres);
       assertFalse("Resolution-Response contains Errors!", svres.hasErrors());
@@ -179,11 +193,11 @@ public class ResolutionServiceTest {
       assertFalse("Knowledge is already resolved!?!?", svres.isResolved());
 
       LOGGER.info("... making a Feature-Decission and asking for Resolution ...");
-      final FeatureDecission fd = readObjectFromJsonFile(FEATURE_DECISSION, FeatureDecission.class);
+      final FeatureDecission fd = JSONHelper.readObjectFromJsonFile(FEATURE_DECISSION, FeatureDecission.class);
       final ResolutionRequest sfreq = new ResolutionRequest(sessionID1, metadata, fd);
-      writeObjectToJsonFile(SELECT_FEATURE_REQUEST, sfreq);
+      JSONHelper.writeObjectToJsonFile(SELECT_FEATURE_REQUEST, sfreq);
       final ResolutionResponse sfres = this.srvc.select(sfreq);
-      writeObjectToJsonFile(SELECT_FEATURE_RESPONSE, sfres);
+      JSONHelper.writeObjectToJsonFile(SELECT_FEATURE_RESPONSE, sfres);
 
       assertNotNull("No Resolution-Response!", sfres);
       assertFalse("Resolution-Response contains Errors!", sfres.hasErrors());
@@ -195,7 +209,7 @@ public class ResolutionServiceTest {
 
       LOGGER.info("... checking current Knowledge again ...");
       final ResolutionResponse cres2 = this.srvc.current(sessionID1);
-      writeObjectToJsonFile(CURRENT_RESPONSE, cres2);
+      JSONHelper.writeObjectToJsonFile(CURRENT_RESPONSE, cres2);
 
       assertNotNull("No Response for current Knowledge!", cres2);
       assertFalse("Resolution-Response contains Errors!", cres2.hasErrors());
@@ -214,23 +228,6 @@ public class ResolutionServiceTest {
     catch (final Exception ex) {
       LOGGER.error("Test failed!", ex);
       throw ex;
-    }
-  }
-
-  private static <T> T readObjectFromJsonFile(final File f, final Class<T> type) throws JsonProcessingException, IOException {
-    T obj = null;
-    if ((type != null) && (f != null) && f.isFile() && f.exists() && f.canRead()) {
-      obj = MAPPER.readValue(f, type);
-      LOGGER.trace("Read Object from File {}\n{}", f, obj);
-    }
-    return obj;
-  }
-
-  private static void writeObjectToJsonFile(final File f, final Object obj) throws JsonProcessingException, IOException {
-    if ((f != null) && (obj != null)) {
-      LOGGER.trace("Writing Object to File {}\n{}", f, obj);
-      MAPPER.writeValue(f, obj);
-      assertTrue("Could not write Object(s) to File!", ((f != null) && f.exists()));
     }
   }
 
@@ -278,13 +275,13 @@ public class ResolutionServiceTest {
 
     LOGGER.info("... created initial Knowledge:\n{}", initialKnowledge);
     if (force || !INIT_KNOWLEDGE.exists()) {
-      writeObjectToJsonFile(INIT_KNOWLEDGE, initialKnowledge);
+      JSONHelper.writeObjectToJsonFile(INIT_KNOWLEDGE, initialKnowledge);
     }
 
     final VariantDecission vd = new VariantDecission(p2, v22);
     LOGGER.info("... created Variant-Decission:\n{}", vd);
     if (force || !VARIANT_DECISSION.exists()) {
-      writeObjectToJsonFile(VARIANT_DECISSION, vd);
+      JSONHelper.writeObjectToJsonFile(VARIANT_DECISSION, vd);
     }
 
     final List<String> floatValues = new ArrayList<String>();
@@ -303,13 +300,13 @@ public class ResolutionServiceTest {
 
     LOGGER.info("... created Selected-Variant-Knowledge:\n{}", selectVariantKnowledge);
     if (force || !SELECT_VARIANT_KNOWLEDGE.exists()) {
-      writeObjectToJsonFile(SELECT_VARIANT_KNOWLEDGE, selectVariantKnowledge);
+      JSONHelper.writeObjectToJsonFile(SELECT_VARIANT_KNOWLEDGE, selectVariantKnowledge);
     }
 
     final FeatureDecission fd = new FeatureDecission(fc2, 1);
     LOGGER.info("... created Feature-Decission:\n{}", fd);
     if (force || !FEATURE_DECISSION.exists()) {
-      writeObjectToJsonFile(FEATURE_DECISSION, fd);
+      JSONHelper.writeObjectToJsonFile(FEATURE_DECISSION, fd);
     }
 
     final Knowledge selectFeatureKnowledge = new Knowledge();
@@ -322,7 +319,7 @@ public class ResolutionServiceTest {
 
     LOGGER.info("... created Selected-Feature-Knowledge:\n{}", selectFeatureKnowledge);
     if (force || !SELECT_FEATURE_KNOWLEDGE.exists()) {
-      writeObjectToJsonFile(SELECT_FEATURE_KNOWLEDGE, selectFeatureKnowledge);
+      JSONHelper.writeObjectToJsonFile(SELECT_FEATURE_KNOWLEDGE, selectFeatureKnowledge);
     }
 
     LOGGER.info("... finished generating Test-Data. ");

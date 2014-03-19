@@ -17,7 +17,7 @@ package org.psikeds.knowledgebase.xml;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.psikeds.common.util.ObjectDumper;
+import org.psikeds.common.util.JSONHelper;
 
 /**
  * Simple callback handler counting XML-Elements and printing them to the Log. Used by
@@ -29,8 +29,6 @@ import org.psikeds.common.util.ObjectDumper;
 public class TestCallbackHandler implements KBParserCallback {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TestCallbackHandler.class);
-
-  private final ObjectDumper dumper = new ObjectDumper();
 
   public long counter = 0;
 
@@ -47,7 +45,7 @@ public class TestCallbackHandler implements KBParserCallback {
     sb.append(this.counter);
     sb.append(".: ");
     if (LOGGER.isDebugEnabled()) {
-      sb.append(this.dumper.dump(element));
+      sb.append(JSONHelper.dump(element));
     }
     else {
       LOGGER.info(String.valueOf(element));

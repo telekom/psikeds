@@ -21,12 +21,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 
+import org.psikeds.common.util.JSONHelper;
 import org.psikeds.knowledgebase.xml.impl.XMLParser;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.impl.XmlKnowledgeBaseFactory;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.Validator;
@@ -66,19 +64,24 @@ import org.psikeds.resolutionengine.datalayer.vo.Variants;
 
 public class KnowledgeBaseTest {
 
-  private static final String LOG4J = System.getProperty("org.psikeds.test.log4j.xml", "../ResolutionEngine/src/main/resources/log4j.xml");
   private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeBaseTest.class);
 
-  private static final String XML = System.getProperty("org.psikeds.test.kb.xml", "../KnowledgeBase/src/main/resources/kb.xml");
-
-  private static final String TEST_DATA_DIR = System.getProperty("org.psikeds.test.data.dir", "./src/test/resources/");
-  private static final File JSON = new File(TEST_DATA_DIR, "KnowledgeData.json");
-  private static final ObjectMapper MAPPER = new ObjectMapper();
+  private static String LOG4J;
+  private static String XML;
+  private static File TEST_DATA_DIR;
+  private static File JSON;
 
   @BeforeClass
   public static void setUpBeforeClass() {
     BasicConfigurator.configure();
+    LOG4J = System.getProperty("org.psikeds.test.log4j.xml", "../ResolutionEngine/src/main/resources/log4j.xml");
     DOMConfigurator.configure(LOG4J);
+    XML = System.getProperty("org.psikeds.test.kb.xml", "../KnowledgeBase/src/main/resources/kb.xml");
+    TEST_DATA_DIR = new File(System.getProperty("org.psikeds.test.data.dir", "./src/test/resources/"));
+    if (!TEST_DATA_DIR.exists()) {
+      TEST_DATA_DIR.mkdir();
+    }
+    JSON = new File(TEST_DATA_DIR, "KnowledgeData.json");
   }
 
   @AfterClass
@@ -226,10 +229,10 @@ public class KnowledgeBaseTest {
       LOGGER.info("... testing Serialization and writing all Knowledge-Base-Data to JSON-File ...");
       final MetaData metadata = kb.getMetaData();
       KnowledgeData kd = new KnowledgeData(metadata, allFeatures, allPurposes, allVariants, allAlternatives, allConstituents, allEvents, allRules, allRelations);
-      writeObjectToJsonFile(JSON, kd);
+      JSONHelper.writeObjectToJsonFile(JSON, kd);
 
       LOGGER.info("... testing Deserialization and reading all Knowledge-Base-Data back from JSON-File ...");
-      kd = readObjectFromJsonFile(JSON, KnowledgeData.class);
+      kd = JSONHelper.readObjectFromJsonFile(JSON, KnowledgeData.class);
 
       ok = true;
     }
@@ -245,23 +248,6 @@ public class KnowledgeBaseTest {
     }
     finally {
       LOGGER.info("... test of KnowledgeBase finished " + (ok ? "without problems." : "with Errors!"));
-    }
-  }
-
-  private <T> T readObjectFromJsonFile(final File f, final Class<T> type) throws JsonProcessingException, IOException {
-    T obj = null;
-    if ((type != null) && (f != null) && f.isFile() && f.exists() && f.canRead()) {
-      obj = MAPPER.readValue(f, type);
-      LOGGER.trace("Read Object from File {}\n{}", f, obj);
-    }
-    return obj;
-  }
-
-  private void writeObjectToJsonFile(final File f, final Object obj) throws JsonProcessingException, IOException {
-    if ((f != null) && (obj != null)) {
-      LOGGER.trace("Writing Object to File {}\n{}", f, obj);
-      MAPPER.writeValue(f, obj);
-      assertTrue("Could not write Object(s) to File!", ((f != null) && f.exists()));
     }
   }
 }
