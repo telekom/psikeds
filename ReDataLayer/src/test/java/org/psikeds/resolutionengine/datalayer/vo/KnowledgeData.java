@@ -59,6 +59,9 @@ public class KnowledgeData extends ValueObject implements Serializable {
   }
 
   public MetaData getMetadata() {
+    if (this.metadata == null) {
+      this.metadata = new MetaData();
+    }
     return this.metadata;
   }
 
@@ -67,6 +70,9 @@ public class KnowledgeData extends ValueObject implements Serializable {
   }
 
   public Features getFeatures() {
+    if (this.features == null) {
+      this.features = new Features();
+    }
     return this.features;
   }
 
@@ -75,6 +81,9 @@ public class KnowledgeData extends ValueObject implements Serializable {
   }
 
   public Purposes getPurposes() {
+    if (this.purposes == null) {
+      this.purposes = new Purposes();
+    }
     return this.purposes;
   }
 
@@ -83,6 +92,9 @@ public class KnowledgeData extends ValueObject implements Serializable {
   }
 
   public Variants getVariants() {
+    if (this.variants == null) {
+      this.variants = new Variants();
+    }
     return this.variants;
   }
 
@@ -91,6 +103,9 @@ public class KnowledgeData extends ValueObject implements Serializable {
   }
 
   public Alternatives getAlternatives() {
+    if (this.alternatives == null) {
+      this.alternatives = new Alternatives();
+    }
     return this.alternatives;
   }
 
@@ -99,6 +114,9 @@ public class KnowledgeData extends ValueObject implements Serializable {
   }
 
   public Constituents getConstituents() {
+    if (this.constituents == null) {
+      this.constituents = new Constituents();
+    }
     return this.constituents;
   }
 
@@ -107,6 +125,9 @@ public class KnowledgeData extends ValueObject implements Serializable {
   }
 
   public Events getEvents() {
+    if (this.events == null) {
+      this.events = new Events();
+    }
     return this.events;
   }
 
@@ -115,6 +136,9 @@ public class KnowledgeData extends ValueObject implements Serializable {
   }
 
   public Rules getRules() {
+    if (this.rules == null) {
+      this.rules = new Rules();
+    }
     return this.rules;
   }
 
@@ -123,6 +147,9 @@ public class KnowledgeData extends ValueObject implements Serializable {
   }
 
   public Relations getRelations() {
+    if (this.relations == null) {
+      this.relations = new Relations();
+    }
     return this.relations;
   }
 
