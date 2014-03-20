@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.cxf.common.util.StringUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 
@@ -36,33 +38,40 @@ import org.psikeds.common.idgen.impl.SessionIdGenerator;
 import org.psikeds.resolutionengine.cache.ResolutionCache;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.interfaces.pojos.Choice;
+import org.psikeds.resolutionengine.interfaces.pojos.Choices;
 import org.psikeds.resolutionengine.interfaces.pojos.Decission;
+import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice;
+import org.psikeds.resolutionengine.interfaces.pojos.FeatureDecission;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
 import org.psikeds.resolutionengine.interfaces.pojos.Purpose;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse;
 import org.psikeds.resolutionengine.interfaces.pojos.Variant;
+import org.psikeds.resolutionengine.interfaces.pojos.VariantChoice;
+import org.psikeds.resolutionengine.interfaces.pojos.VariantDecission;
 import org.psikeds.resolutionengine.interfaces.services.ResolutionService;
 import org.psikeds.resolutionengine.resolver.Resolver;
 import org.psikeds.resolutionengine.resolver.impl.AutoCompletion;
-import org.psikeds.resolutionengine.resolver.impl.DecissionEvaluator;
+import org.psikeds.resolutionengine.resolver.impl.FeatureDecissionEvaluator;
 import org.psikeds.resolutionengine.resolver.impl.RulesEvaluator;
+import org.psikeds.resolutionengine.resolver.impl.VariantDecissionEvaluator;
 import org.psikeds.resolutionengine.transformer.Transformer;
 import org.psikeds.resolutionengine.transformer.impl.Vo2PojoTransformer;
 
 /**
- * Unit-Tests for {@link org.psikeds.resolutionengine.services.ResolutionBusinessService}.
+ * Unit-Tests for {@link org.psikeds.resolutionengine.services.ResolutionBusinessService} and
+ * Resolvers ({@link org.psikeds.resolutionengine.resolver.Resolver}).
  * 
- * Note: Anything called *Test.java is a Unit-Test executed offline by Surefire.
- * Everythinf called *IT.java is an Integration-Test executed online by Failsafe.
+ * Note: Any Test called *Test.java is a Unit-Test executed offline by Surefire.
+ * Everything called *IT.java is an Integration-Test executed online by Failsafe.
  * 
  * @author marco@juliano.de
  * 
  */
 public class ResolutionBusinessServiceTest {
 
-  private static final String LOG4J = System.getProperty("org.psikeds.test.log4j.xml", "./src/main/resources/log4j.xml");
   private static final Logger LOGGER = LoggerFactory.getLogger(ResolutionBusinessServiceTest.class);
+  private static String LOG4J;
 
   private KnowledgeBase kb;
   private Transformer trans;
@@ -73,6 +82,7 @@ public class ResolutionBusinessServiceTest {
   @BeforeClass
   public static void setUpBeforeClass() {
     BasicConfigurator.configure();
+    LOG4J = System.getProperty("org.psikeds.test.log4j.xml", "./src/main/resources/log4j.xml");
     DOMConfigurator.configure(LOG4J);
   }
 
@@ -81,7 +91,8 @@ public class ResolutionBusinessServiceTest {
     this.kb = new KnowledgeBaseMock();
     this.trans = new Vo2PojoTransformer();
     this.resolvers = new ArrayList<Resolver>();
-    this.resolvers.add(new DecissionEvaluator());
+    this.resolvers.add(new VariantDecissionEvaluator());
+    this.resolvers.add(new FeatureDecissionEvaluator());
     this.resolvers.add(new AutoCompletion(this.kb, this.trans));
     this.resolvers.add(new RulesEvaluator(this.kb, this.trans));
     this.cache = new ResolutionCache();
@@ -102,57 +113,121 @@ public class ResolutionBusinessServiceTest {
 
   /**
    * Test method for {@link org.psikeds.resolutionengine.services.ResolutionBusinessService}.
+   * 
+   * This Test will request the initial Knowledge, make a Decission based on the first Choice
+   * and afterwards ask for the current/last Resolution-State.
+   * 
    */
   @Test
   public void testResolutionService() throws Exception {
-    assertNotNull("ResolutionCache is null!", this.cache);
-    assertNotNull("ResolutionService is null!", this.srvc);
+    try {
+      LOGGER.info("Testing Resolution-Business-Service ...");
+      assertNotNull("ResolutionCache is null!", this.cache);
+      assertNotNull("ResolutionService is null!", this.srvc);
 
-    final ResolutionResponse ires = this.srvc.init();
-    LOGGER.debug("Received:\n{}", ires);
-    assertNotNull("No Init-ResolutionResponse!", ires);
+      LOGGER.info("Getting initial Knowledge ...");
+      final ResolutionResponse ires = this.srvc.init();
+      assertNotNull("No Init-Response!", ires);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("... received:\n{}", ires);
+      }
+      else {
+        LOGGER.info("... Init-Response received.");
+      }
 
-    assertFalse("Initial Knowledge is already fully resolved! Check Testdata!", ires.isResolved());
+      assertFalse("Resolution failed! Init-Response contains Error-Messages!", ires.hasErrors());
+      assertFalse("Initial Knowledge is already fully resolved! Check Testdata!", ires.isResolved());
+      final String sessionID1 = ires.getSessionID();
+      assertFalse("No initial SessionID!", StringUtils.isEmpty(sessionID1));
+      final Knowledge k1 = ires.getKnowledge();
+      assertNotNull("No initial Knowledge!", k1);
+      final Choices choices = ires.getChoices();
+      assertNotNull("No choices!", choices);
+      assertFalse("No choices!", choices.isEmpty());
 
-    final String sessionID1 = ires.getSessionID();
-    assertNotNull("No initial SessionID!", sessionID1);
+      Decission decission = null;
+      for (final Choice c : choices) {
+        assertNotNull("Choice is null!", c);
+        if (c instanceof VariantChoice) {
+          final VariantChoice vc = (VariantChoice) c;
+          final Purpose p = vc.getPurpose();
+          assertNotNull("No Purpose in Choice!", p);
+          assertTrue("Initial choice contains a Purpose which is not a Root-Purpose: " + p, p.isRoot());
+          final List<Variant> vars = vc.getVariants();
+          assertNotNull("No Variants in Choice!", vars);
+          assertFalse("No Variants in Choice!", vars.isEmpty());
+          final Variant v = vars.get(0);
+          assertNotNull("Variant of first Choice is null!", v);
+          decission = new VariantDecission(p, v);
+        }
+        else if (c instanceof FeatureChoice) {
+          final FeatureChoice fc = (FeatureChoice) c;
+          final String fid = fc.getFeatureID();
+          assertFalse("No Feature in Choice!", StringUtils.isEmpty(fid));
+          final String vid = fc.getParentVariantID();
+          assertFalse("No Parent-Variant in Choice!", StringUtils.isEmpty(vid));
+          final List<String> lst = fc.getPossibleValues();
+          assertNotNull("No possible Values in Choice!", lst);
+          assertFalse("No possible Values in Choice!", lst.isEmpty());
+          final String val = lst.get(0);
+          assertFalse("First Value of Choice is empty!", StringUtils.isEmpty(val));
+          decission = new FeatureDecission(vid, fid, val);
+        }
+        else {
+          fail("Unexpected Object: " + c.getClass().getName());
+        }
+      }
+      assertNotNull("No Decission possible!", decission);
 
-    final Knowledge k1 = ires.getKnowledge();
-    assertNotNull("No initial Knowledge!", k1);
+      final ResolutionRequest sreq = new ResolutionRequest(sessionID1, decission);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Sending Select-Request:\n{}", sreq);
+      }
+      else {
+        LOGGER.info("Sending Select-Request ...");
+      }
+      final ResolutionResponse sres = this.srvc.select(sreq);
+      assertNotNull("No Select-Response!", sres);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("... received:\n{}", sres);
+      }
+      else {
+        LOGGER.info("... Select-Response received.");
+      }
 
-    final List<Choice> choices = ires.getPossibleChoices();
-    assertNotNull("No choices!", choices);
-    assertFalse("No choices!", choices.isEmpty());
+      assertFalse("Resolution failed! Select-Response contains Error-Messages!", sres.hasErrors());
+      final String sessionID2 = sres.getSessionID();
+      assertFalse("No SessionID in Select-Response!", StringUtils.isEmpty(sessionID2));
+      assertEquals("SessionIDs are not matching!", sessionID1, sessionID2);
+      final Knowledge k2 = sres.getKnowledge();
+      assertNotNull("No new Knowledge in Select-Response!", k2);
 
-    for (final Choice c : choices) {
-      assertNotNull("Choice is null!", c);
-      final Purpose p = c.getPurpose();
-      assertNotNull("No Purpose in Choice!", p);
-      assertTrue("Initial choice contains a Purpose which is not a Root-Purpose: " + p, p.isRoot());
-      final List<Variant> vars = c.getVariants();
-      assertNotNull("No Variants in Choice!", vars);
-      assertFalse("No Variants in Choice!", vars.isEmpty());
+      assertFalse("Knowledge is fully resolved but still contains Choices!", sres.isResolved() && (sres.getChoices() != null) && (sres.getChoices().size() > 0));
+      assertFalse("Knowledge is not resolved yet but does not contain any Choices!", !sres.isResolved() && ((sres.getChoices() == null) || sres.getChoices().isEmpty()));
+
+      LOGGER.info("Requesting current Resolution-State for existing SessionID ...");
+      final ResolutionResponse cres = this.srvc.current(sessionID1);
+      assertNotNull("No Current-Response!", cres);
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("... received:\n{}", cres);
+      }
+      else {
+        LOGGER.info("... Current-Response received.");
+      }
+
+      final String sessionID3 = cres.getSessionID();
+      assertFalse("No SessionID in Current-Response!", StringUtils.isEmpty(sessionID3));
+      assertEquals("SessionIDs are not matching!", sessionID1, sessionID3);
+      final Knowledge k3 = cres.getKnowledge();
+      assertNotNull("No Knowledge in Current-Response!", k3);
+
+      // TODO: additional tests here
+
+      LOGGER.info("... done. Resolution-Business-Service worked as expected.");
     }
-
-    final Choice c = choices.get(0);
-    final Purpose p = c.getPurpose();
-    final Variant v = c.getVariants().get(0);
-    final Decission decission = new Decission(p, v);
-    final ResolutionRequest sreq = new ResolutionRequest(sessionID1, decission);
-    LOGGER.debug("Sending:\n{}", sreq);
-
-    final ResolutionResponse sres = this.srvc.select(sreq);
-    LOGGER.debug("Received:\n{}", sres);
-    assertNotNull("No Select-ResolutionResponse!", sres);
-
-    final String sessionID2 = sres.getSessionID();
-    assertNotNull("No SessionID in SelectResponse!", sessionID2);
-    assertEquals("SessionIDs are not matching!", sessionID1, sessionID2);
-
-    final Knowledge k2 = sres.getKnowledge();
-    assertNotNull("No new Knowledge in Select-ResolutionResponse!", k2);
-
-    assertFalse("Knowledge is fully resolved but still contains Choices!", sres.isResolved() && (sres.getPossibleChoices() != null) && (sres.getPossibleChoices().size() > 0));
-    assertFalse("Knowledge is not resolved yet but does not contain any Choices!", !sres.isResolved() && ((sres.getPossibleChoices() == null) || sres.getPossibleChoices().isEmpty()));
+    catch (final Exception ex) {
+      LOGGER.error("Test failed!", ex);
+      throw ex;
+    }
   }
 }

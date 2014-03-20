@@ -14,10 +14,9 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.services;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -28,7 +27,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,28 +34,36 @@ import org.apache.cxf.common.util.StringUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 
+import org.psikeds.common.util.JSONHelper;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.datalayer.vo.Alternatives;
 import org.psikeds.resolutionengine.datalayer.vo.Constituents;
 import org.psikeds.resolutionengine.datalayer.vo.Constitutes;
-import org.psikeds.resolutionengine.datalayer.vo.Data;
 import org.psikeds.resolutionengine.datalayer.vo.Event;
 import org.psikeds.resolutionengine.datalayer.vo.Events;
 import org.psikeds.resolutionengine.datalayer.vo.Feature;
-import org.psikeds.resolutionengine.datalayer.vo.FeatureValueType;
 import org.psikeds.resolutionengine.datalayer.vo.Features;
 import org.psikeds.resolutionengine.datalayer.vo.Fulfills;
-import org.psikeds.resolutionengine.datalayer.vo.Knowledgebase;
-import org.psikeds.resolutionengine.datalayer.vo.Meta;
+import org.psikeds.resolutionengine.datalayer.vo.KnowledgeData;
+import org.psikeds.resolutionengine.datalayer.vo.MetaData;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
 import org.psikeds.resolutionengine.datalayer.vo.Purposes;
+import org.psikeds.resolutionengine.datalayer.vo.Relation;
+import org.psikeds.resolutionengine.datalayer.vo.Relations;
 import org.psikeds.resolutionengine.datalayer.vo.Rule;
 import org.psikeds.resolutionengine.datalayer.vo.Rules;
+import org.psikeds.resolutionengine.datalayer.vo.StringFeature;
 import org.psikeds.resolutionengine.datalayer.vo.Variant;
+import org.psikeds.resolutionengine.datalayer.vo.VariantEvent;
 import org.psikeds.resolutionengine.datalayer.vo.Variants;
 
 /**
- * Mock-Implementation of KnowledgeBase for testing purposes.
+ * Mock-Implementation of KnowledgeBase for Testing.
+ * 
+ * Reads a pre-created KnowledgeBase from a JSON-File or otherwise simply
+ * returns Dummy-Value.
+ * 
+ * When run as a standalone Java-Application, Test-Data will be created.
  * 
  * @author marco@juliano.de
  * 
@@ -68,20 +74,20 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeBaseMock.class);
 
   private static final String TEST_DATA_DIR = System.getProperty("org.psikeds.test.data.dir", "./src/test/resources/");
-  private static final File KNOWLEDGEBASE = new File(TEST_DATA_DIR, "KnowledgeBase.json");
+  private static final File KNOWLEDGEDATA = new File(TEST_DATA_DIR, "KnowledgeData.json");
 
-  private static final ObjectMapper MAPPER = new ObjectMapper();
-
-  private Knowledgebase kb;
+  private KnowledgeData knowledge;
 
   public KnowledgeBaseMock() {
     this(null);
   }
 
-  public KnowledgeBaseMock(final Knowledgebase kb) {
-    this.kb = kb;
+  public KnowledgeBaseMock(final KnowledgeData knowledge) {
+    this.knowledge = knowledge;
   }
 
+  // ----------------------------------------------------------------
+  // Methods of Interface KnowledgeBase
   // ----------------------------------------------------------------
 
   /**
@@ -90,7 +96,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public Features getFeatures() {
-    return getData().getFeatures();
+    return getKnowledgeData().getFeatures();
   }
 
   /**
@@ -99,7 +105,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public Purposes getPurposes() {
-    return getData().getPurposes();
+    return getKnowledgeData().getPurposes();
   }
 
   /**
@@ -108,7 +114,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public Variants getVariants() {
-    return getData().getVariants();
+    return getKnowledgeData().getVariants();
   }
 
   /**
@@ -117,7 +123,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public Alternatives getAlternatives() {
-    return getData().getAlternatives();
+    return getKnowledgeData().getAlternatives();
   }
 
   /**
@@ -126,7 +132,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public Constituents getConstituents() {
-    return getData().getConstituents();
+    return getKnowledgeData().getConstituents();
   }
 
   /**
@@ -135,7 +141,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public Events getEvents() {
-    return getData().getEvents();
+    return getKnowledgeData().getEvents();
   }
 
   /**
@@ -144,22 +150,36 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public Rules getRules() {
-    return getData().getRules();
+    return getKnowledgeData().getRules();
+  }
+
+  /**
+   * @return Relations
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getRelations()
+   */
+  @Override
+  public Relations getRelations() {
+    return getKnowledgeData().getRelations();
   }
 
   /**
    * @param featureId
-   * @return Feature
+   * @return Feature<?>
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFeature(java.lang.String)
    */
   @Override
-  public Feature getFeature(final String featureId) {
-    for (final Feature f : getFeatures().getFeature()) {
-      if ((f != null) && featureId.equals(f.getId())) {
+  public Feature<?> getFeature(final String featureId) {
+    for (final Feature<?> f : getFeatures().getFeature()) {
+      if ((f != null) && featureId.equals(f.getFeatureID())) {
         return f;
       }
     }
-    return new Feature(featureId, featureId, featureId, featureId, null);
+    final StringFeature f = new StringFeature(featureId, featureId, featureId);
+    if (!StringUtils.isEmpty(featureId)) {
+      f.addValue(featureId.toLowerCase());
+      f.addValue(featureId.toUpperCase());
+    }
+    return f;
   }
 
   /**
@@ -170,7 +190,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   @Override
   public Purpose getPurpose(final String purposeId) {
     for (final Purpose p : getPurposes().getPurpose()) {
-      if ((p != null) && purposeId.equals(p.getId())) {
+      if ((p != null) && purposeId.equals(p.getPurposeID())) {
         return p;
       }
     }
@@ -185,7 +205,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   @Override
   public Variant getVariant(final String variantId) {
     for (final Variant v : getVariants().getVariant()) {
-      if ((v != null) && variantId.equals(v.getId())) {
+      if ((v != null) && variantId.equals(v.getVariantID())) {
         return v;
       }
     }
@@ -200,11 +220,11 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   @Override
   public Event getEvent(final String eventId) {
     for (final Event e : getEvents().getEvent()) {
-      if ((e != null) && eventId.equals(e.getId())) {
+      if ((e != null) && eventId.equals(e.getEventID())) {
         return e;
       }
     }
-    return new Event(eventId, eventId, eventId, null, null);
+    return new VariantEvent(eventId, eventId, eventId, null, null, null);
   }
 
   /**
@@ -215,11 +235,25 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   @Override
   public Rule getRule(final String ruleId) {
     for (final Rule r : getRules().getRule()) {
-      if ((r != null) && ruleId.equals(r.getId())) {
+      if ((r != null) && ruleId.equals(r.getRuleID())) {
         return r;
       }
     }
-    return new Rule(ruleId, ruleId, ruleId, null, null, null, null);
+    return new Rule(ruleId, ruleId, ruleId, null, null, null);
+  }
+
+  /**
+   * @return Relation
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getRelation(java.lang.String)
+   */
+  @Override
+  public Relation getRelation(final String relationId) {
+    for (final Relation r : getRelations().getRelation()) {
+      if ((r != null) && relationId.equals(r.getRelationID())) {
+        return r;
+      }
+    }
+    return new Relation(relationId, relationId, relationId, null, null, null, null);
   }
 
   /**
@@ -235,6 +269,28 @@ public class KnowledgeBaseMock implements KnowledgeBase {
       }
     }
     return new Fulfills(purposeId, purposeId, null);
+  }
+
+  /**
+   * @param purposeId
+   * @param variantId
+   * @return long quantity
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getQuantity(java.lang.String,
+   *      java.lang.String)
+   */
+  @Override
+  public long getQuantity(final String purposeId, final String variantId) {
+    if (!StringUtils.isEmpty(purposeId) && !StringUtils.isEmpty(variantId)) {
+      final Fulfills ff = getFulfills(purposeId);
+      if (ff != null) {
+        for (final String vid : ff.getVariantID()) {
+          if (variantId.equals(vid)) {
+            return ff.getQuantity();
+          }
+        }
+      }
+    }
+    return Fulfills.DEFAULT_QUANTITY;
   }
 
   /**
@@ -270,6 +326,73 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   @Override
   public Rules getAttachedRules(final String variantId) {
     return getRules();
+  }
+
+  /**
+   * @param variantId
+   * @return Relations
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getAttachedRelations(java.lang.String)
+   */
+  @Override
+  public Relations getAttachedRelations(final String variantId) {
+    return getRelations();
+  }
+
+  /**
+   * @param purposeId
+   * @param variantId
+   * @return true if fulfilled
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#isFulfilledBy(java.lang.String,
+   *      java.lang.String)
+   */
+  @Override
+  public boolean isFulfilledBy(final String purposeId, final String variantId) {
+    final Variants vars = getFulfillingVariants(purposeId);
+    final List<Variant> lst = vars.getVariant();
+    for (final Variant idx : lst) {
+      if ((idx != null) && variantId.equals(idx.getVariantID())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * @param variantId
+   * @param purposeId
+   * @return true if constituted
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#isConstitutedBy(java.lang.String,
+   *      java.lang.String)
+   */
+  @Override
+  public boolean isConstitutedBy(final String variantId, final String purposeId) {
+    final Purposes purps = getConstitutingPurposes(variantId);
+    final List<Purpose> lst = purps.getPurpose();
+    for (final Purpose idx : lst) {
+      if ((idx != null) && purposeId.equals(idx.getPurposeID())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * @param variantId
+   * @param featureId
+   * @return true if having feature
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#hasFeature(java.lang.String,
+   *      java.lang.String)
+   */
+  @Override
+  public boolean hasFeature(final String variantId, final String featureId) {
+    final Features feats = getFeatures(variantId);
+    final List<Feature<?>> lst = feats.getFeature();
+    for (final Feature<?> idx : lst) {
+      if ((idx != null) && featureId.equals(idx.getFeatureID())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -309,16 +432,6 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   }
 
   /**
-   * @param purpose
-   * @return Variants
-   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFulfillingVariants(org.psikeds.resolutionengine.datalayer.vo.Purpose)
-   */
-  @Override
-  public Variants getFulfillingVariants(final Purpose purpose) {
-    return getFulfillingVariants(purpose.getId());
-  }
-
-  /**
    * @param variantId
    * @return Purposes
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getConstitutingPurposes(java.lang.String)
@@ -335,16 +448,6 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   }
 
   /**
-   * @param variant
-   * @return Purposes
-   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getConstitutingPurposes(org.psikeds.resolutionengine.datalayer.vo.Variant)
-   */
-  @Override
-  public Purposes getConstitutingPurposes(final Variant variant) {
-    return getConstitutingPurposes(variant.getId());
-  }
-
-  /**
    * @param variantId
    * @return Features
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFeatures(java.lang.String)
@@ -354,20 +457,10 @@ public class KnowledgeBaseMock implements KnowledgeBase {
     final Features feats = new Features();
     final Variant v = getVariant(variantId);
     for (final String featureId : v.getFeatureIds()) {
-      final Feature f = getFeature(featureId);
+      final Feature<?> f = getFeature(featureId);
       feats.addFeature(f);
     }
     return feats;
-  }
-
-  /**
-   * @param variant
-   * @return Features
-   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFeatures(org.psikeds.resolutionengine.datalayer.vo.Variant)
-   */
-  @Override
-  public Features getFeatures(final Variant variant) {
-    return getFeatures(variant.getId());
   }
 
   /**
@@ -376,61 +469,42 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public boolean isValid() {
-    return (getData() != null) && (getMetadata() != null);
+    return (getKnowledgeData() != null) && (getMetaData() != null);
   }
 
   /**
-   * @return Meta
-   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getMetadata()
+   * @return MetaData
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getMetaData()
    */
   @Override
-  public Meta getMetadata() {
-    return getKnowledgebase().getMeta();
+  public MetaData getMetaData() {
+    return getKnowledgeData().getMetadata();
   }
 
   // ----------------------------------------------------------------
+  // Internal Helpers
+  // ----------------------------------------------------------------
 
-  private Data getData() {
-    return getKnowledgebase().getData();
-  }
-
-  private synchronized Knowledgebase getKnowledgebase() {
-    if (this.kb == null) {
+  private synchronized KnowledgeData getKnowledgeData() {
+    if (this.knowledge == null) {
       try {
         // Load Knowledgebase from JSON
-        this.kb = readObjectFromJsonFile(KNOWLEDGEBASE, Knowledgebase.class);
+        this.knowledge = JSONHelper.readObjectFromJsonFile(KNOWLEDGEDATA, KnowledgeData.class);
       }
       catch (final Exception ex) {
-        LOGGER.error("Could not load Knowledgebase " + KNOWLEDGEBASE.getPath(), ex);
-        this.kb = null;
+        LOGGER.error("Could not load KnowledgeData " + KNOWLEDGEDATA.getPath(), ex);
+        this.knowledge = null;
       }
-      if (this.kb == null) {
-        // Fallback: empty Knowledgebase
-        this.kb = new Knowledgebase();
+      if (this.knowledge == null) {
+        // Fallback: empty Knowledgebase, i.e. return always dummies
+        this.knowledge = new KnowledgeData();
       }
     }
-    return this.kb;
+    return this.knowledge;
   }
 
   // ----------------------------------------------------------------
-
-  private static <T> T readObjectFromJsonFile(final File f, final Class<T> type) throws JsonProcessingException, IOException {
-    T obj = null;
-    if ((type != null) && (f != null) && f.isFile() && f.exists() && f.canRead()) {
-      obj = MAPPER.readValue(f, type);
-      LOGGER.debug("Read Object from File {}\n{}", f, obj);
-    }
-    return obj;
-  }
-
-  private static void writeObjectToJsonFile(final File f, final Object obj) throws JsonProcessingException, IOException {
-    if ((f != null) && (obj != null)) {
-      LOGGER.info("Writing Object to File {}\n{}", f, obj);
-      MAPPER.writeValue(f, obj);
-      assertTrue("Could not write Object(s) to File " + f.getPath(), f.exists());
-    }
-  }
-
+  // Methods for creating Test-Data
   // ----------------------------------------------------------------
 
   private static String getCurrentUser() {
@@ -467,46 +541,54 @@ public class KnowledgeBaseMock implements KnowledgeBase {
     return StringUtils.isEmpty(lang) ? "en_EN" : lang;
   }
 
-  private static Meta createMeta() {
+  private static MetaData createMetaData() {
     final Calendar created = Calendar.getInstance();
     final Calendar lastmodified = created;
+    final Calendar loaded = created;
     final String now = DateFormat.getDateTimeInstance().format(created.getTime());
     final String user = getCurrentUser();
     final String host = getHostName();
-    final String lang = getLanguage();
+    final String language = getLanguage();
+    final String version = "V1.0";
     final List<String> creator = new ArrayList<String>();
     creator.add(user);
     final List<String> description = new ArrayList<String>();
-    description.add("Mock Knowledgebase for Testing Purposes");
+    description.add("Mock Knowledgebase " + version + " for Testing Purposes");
     description.add("Created by " + user + " on " + host + " at " + now);
-    final Map<String, Object> optionalInfo = new ConcurrentHashMap<String, Object>();
-    optionalInfo.put("language", lang);
-    optionalInfo.put("creator", user);
-    return new Meta(created, lastmodified, creator, description, optionalInfo);
+    final Map<String, Serializable> additionalInfo = new ConcurrentHashMap<String, Serializable>();
+    additionalInfo.put("KB_CREATOR", user);
+    additionalInfo.put("KB_SERVER", host);
+    return new MetaData(created, lastmodified, loaded, language, version, creator, description, additionalInfo);
   }
 
-  // ----------------------------------------------------------------
-
-  private static Data createData() {
-
-    final Feature f1 = new Feature("F1", "F1", "F1", "1", FeatureValueType.INTEGER);
-    final Feature f2 = new Feature("F2", "F2", "F2", "2.0", FeatureValueType.FLOAT);
-    final Feature f3 = new Feature("F3", "F3", "F3", "3,0", FeatureValueType.STRING);
-    final Feature f4 = new Feature("F4", "F4", "F4", "4", FeatureValueType.INTEGER);
+  private static KnowledgeData createKnowledgeData() {
+    // create features and feature-lists
+    final Feature<?> f1 = Feature.getFeature("F1", "F1", "F1", "integer", "1", "5");
+    final Feature<?> f2 = Feature.getFeature("F2", "F2", "F2", "float", "2.000", "3.500", "0.200");
+    final List<String> values = new ArrayList<String>();
+    values.add("F3");
+    values.add("lala");
+    values.add("lele");
+    values.add("lulu");
+    final Feature<?> f3 = Feature.getFeature("F3", "F3", "F3", "string", values);
+    final Feature<?> f4 = Feature.getFeature("F4", "F4", "F4", "integer", "4", "15", "3");
+    final Feature<?> f5 = Feature.getFeature("F5", "F5", "F5", "float", "5.0000", "8.0000", "0.6543");
     final List<String> intFeats = new ArrayList<String>();
-    intFeats.add(f1.getId());
-    intFeats.add(f4.getId());
+    intFeats.add(f1.getFeatureID());
+    intFeats.add(f4.getFeatureID());
     final List<String> floatFeats = new ArrayList<String>();
-    floatFeats.add(f2.getId());
+    floatFeats.add(f2.getFeatureID());
+    floatFeats.add(f5.getFeatureID());
     final List<String> textFeats = new ArrayList<String>();
-    textFeats.add(f3.getId());
-    final List<Feature> allFeats = new ArrayList<Feature>();
+    textFeats.add(f3.getFeatureID());
+    final List<Feature<?>> allFeats = new ArrayList<Feature<?>>();
     allFeats.add(f1);
     allFeats.add(f2);
     allFeats.add(f3);
     allFeats.add(f4);
+    allFeats.add(f5);
     final Features features = new Features(allFeats);
-
+    // create purposes and purpose-lists
     final Purpose p1 = new Purpose("P1", "P1", "P1", true);
     final Purpose p2 = new Purpose("P2", "P2", "P2", true);
     final Purpose p111 = new Purpose("P111", "P111", "P111", false);
@@ -516,13 +598,13 @@ public class KnowledgeBaseMock implements KnowledgeBase {
     final Purpose p222 = new Purpose("P222", "P222", "P222", false);
     final Purpose p223 = new Purpose("P223", "P223", "P223", false);
     final List<String> v11ps = new ArrayList<String>();
-    v11ps.add(p111.getId());
-    v11ps.add(p112.getId());
-    v11ps.add(p113.getId());
+    v11ps.add(p111.getPurposeID());
+    v11ps.add(p112.getPurposeID());
+    v11ps.add(p113.getPurposeID());
     final List<String> v22ps = new ArrayList<String>();
-    v22ps.add(p221.getId());
-    v22ps.add(p222.getId());
-    v22ps.add(p223.getId());
+    v22ps.add(p221.getPurposeID());
+    v22ps.add(p222.getPurposeID());
+    v22ps.add(p223.getPurposeID());
     final List<Purpose> allpurps = new ArrayList<Purpose>();
     allpurps.add(p1);
     allpurps.add(p2);
@@ -533,7 +615,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
     allpurps.add(p222);
     allpurps.add(p223);
     final Purposes purposes = new Purposes(allpurps);
-
+    // create variants and variant-lists
     final Variant v11 = new Variant("V11", "V11", "V11", intFeats);
     final Variant v12 = new Variant("V12", "V12", "V12", floatFeats);
     final Variant v13 = new Variant("V13", "V13", "V13", textFeats);
@@ -547,21 +629,21 @@ public class KnowledgeBaseMock implements KnowledgeBase {
     final Variant v2232 = new Variant("V2232", "V2232", "V2232", floatFeats);
     final Variant v2233 = new Variant("V2233", "V2233", "V2233", textFeats);
     final List<String> p1vs = new ArrayList<String>();
-    p1vs.add(v11.getId());
-    p1vs.add(v12.getId());
-    p1vs.add(v13.getId());
+    p1vs.add(v11.getVariantID());
+    p1vs.add(v12.getVariantID());
+    p1vs.add(v13.getVariantID());
     final List<String> p2vs = new ArrayList<String>();
-    p2vs.add(v21.getId());
-    p2vs.add(v22.getId());
-    p2vs.add(v23.getId());
+    p2vs.add(v21.getVariantID());
+    p2vs.add(v22.getVariantID());
+    p2vs.add(v23.getVariantID());
     final List<String> p112vs = new ArrayList<String>();
-    p112vs.add(v1121.getId());
-    p112vs.add(v1122.getId());
-    p112vs.add(v1123.getId());
+    p112vs.add(v1121.getVariantID());
+    p112vs.add(v1122.getVariantID());
+    p112vs.add(v1123.getVariantID());
     final List<String> p223vs = new ArrayList<String>();
-    p223vs.add(v2231.getId());
-    p223vs.add(v2232.getId());
-    p223vs.add(v2233.getId());
+    p223vs.add(v2231.getVariantID());
+    p223vs.add(v2232.getVariantID());
+    p223vs.add(v2233.getVariantID());
     final List<Variant> allvars = new ArrayList<Variant>();
     allvars.add(v11);
     allvars.add(v12);
@@ -576,32 +658,29 @@ public class KnowledgeBaseMock implements KnowledgeBase {
     allvars.add(v2232);
     allvars.add(v2233);
     final Variants variants = new Variants(allvars);
-
+    // create alternatives, i.e. links from purposes to variants
     final Alternatives alternatives = new Alternatives();
-    alternatives.addFulfills(new Fulfills("p1vs", p1.getId(), p1vs));
-    alternatives.addFulfills(new Fulfills("p2vs", p2.getId(), p2vs));
-    alternatives.addFulfills(new Fulfills("p112vs", p112.getId(), p112vs));
-    alternatives.addFulfills(new Fulfills("p223vs", p223.getId(), p223vs));
-
+    alternatives.addFulfills(new Fulfills("p1vs", p1.getPurposeID(), p1vs));
+    alternatives.addFulfills(new Fulfills("p2vs", p2.getPurposeID(), p2vs));
+    alternatives.addFulfills(new Fulfills("p112vs", p112.getPurposeID(), p112vs));
+    alternatives.addFulfills(new Fulfills("p223vs", p223.getPurposeID(), p223vs));
+    // create constituents, i.e. links from variants to purposes
     final Constituents constituents = new Constituents();
-    constituents.addConstitutes(new Constitutes("v11ps", v11.getId(), v11ps));
-    constituents.addConstitutes(new Constitutes("v22ps", v22.getId(), v22ps));
-
+    constituents.addConstitutes(new Constitutes("v11ps", v11.getVariantID(), v11ps));
+    constituents.addConstitutes(new Constitutes("v22ps", v22.getVariantID(), v22ps));
+    // keep it simple no need for events or rules in a mock
     final Events events = new Events();
     final Rules rules = new Rules();
-
-    return new Data(features, purposes, variants, alternatives, constituents, events, rules);
+    final Relations relations = new Relations();
+    final MetaData metadata = createMetaData();
+    return new KnowledgeData(metadata, features, purposes, variants, alternatives, constituents, events, rules, relations);
   }
-
-  // ----------------------------------------------------------------
 
   private static void generateTestData(final boolean force) throws JsonProcessingException, IOException {
     LOGGER.info("Start generating Test-Data ... ");
-    final Meta m = createMeta();
-    final Data d = createData();
-    final Knowledgebase kb = new Knowledgebase(m, d);
-    if (force || !KNOWLEDGEBASE.exists()) {
-      writeObjectToJsonFile(KNOWLEDGEBASE, kb);
+    final KnowledgeData data = createKnowledgeData();
+    if (force || !KNOWLEDGEDATA.exists()) {
+      JSONHelper.writeObjectToJsonFile(KNOWLEDGEDATA, data);
     }
     LOGGER.info("... finished generating Test-Data.");
   }

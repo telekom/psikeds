@@ -1,0 +1,233 @@
+{
+  "@type" : "KnowledgeData",
+  "features" : {
+    "@type" : "Features",
+    "feature" : [ {
+      "@type" : "IntegerFeature",
+      "featureID" : "F1",
+      "label" : "F1",
+      "description" : "F1",
+      "values" : [ 1, 2, 3, 4 ]
+    }, {
+      "@type" : "FloatFeature",
+      "featureID" : "F2",
+      "label" : "F2",
+      "description" : "F2",
+      "values" : [ 2.0, 2.2, 2.4, 2.6000001, 2.8000002, 3.0000002, 3.2000003, 3.4000003 ]
+    }, {
+      "@type" : "StringFeature",
+      "featureID" : "F3",
+      "label" : "F3",
+      "description" : "F3",
+      "values" : [ "F3", "lala", "lele", "lulu" ]
+    }, {
+      "@type" : "IntegerFeature",
+      "featureID" : "F4",
+      "label" : "F4",
+      "description" : "F4",
+      "values" : [ 4, 7, 10, 13 ]
+    }, {
+      "@type" : "FloatFeature",
+      "featureID" : "F5",
+      "label" : "F5",
+      "description" : "F5",
+      "values" : [ 5.0, 5.6542997, 6.3085995, 6.962899, 7.617199 ]
+    } ]
+  },
+  "purposes" : {
+    "@type" : "Purposes",
+    "purpose" : [ {
+      "@type" : "Purpose",
+      "purposeID" : "P1",
+      "root" : true,
+      "label" : "P1",
+      "description" : "P1"
+    }, {
+      "@type" : "Purpose",
+      "purposeID" : "P2",
+      "root" : true,
+      "label" : "P2",
+      "description" : "P2"
+    }, {
+      "@type" : "Purpose",
+      "purposeID" : "P111",
+      "root" : false,
+      "label" : "P111",
+      "description" : "P111"
+    }, {
+      "@type" : "Purpose",
+      "purposeID" : "P112",
+      "root" : false,
+      "label" : "P112",
+      "description" : "P112"
+    }, {
+      "@type" : "Purpose",
+      "purposeID" : "P113",
+      "root" : false,
+      "label" : "P113",
+      "description" : "P113"
+    }, {
+      "@type" : "Purpose",
+      "purposeID" : "P221",
+      "root" : false,
+      "label" : "P221",
+      "description" : "P221"
+    }, {
+      "@type" : "Purpose",
+      "purposeID" : "P222",
+      "root" : false,
+      "label" : "P222",
+      "description" : "P222"
+    }, {
+      "@type" : "Purpose",
+      "purposeID" : "P223",
+      "root" : false,
+      "label" : "P223",
+      "description" : "P223"
+    } ]
+  },
+  "variants" : {
+    "@type" : "Variants",
+    "variant" : [ {
+      "@type" : "Variant",
+      "variantID" : "V11",
+      "featureIds" : [ "F1", "F4" ],
+      "label" : "V11",
+      "description" : "V11"
+    }, {
+      "@type" : "Variant",
+      "variantID" : "V12",
+      "featureIds" : [ "F2", "F5" ],
+      "label" : "V12",
+      "description" : "V12"
+    }, {
+      "@type" : "Variant",
+      "variantID" : "V13",
+      "featureIds" : [ "F3" ],
+      "label" : "V13",
+      "description" : "V13"
+    }, {
+      "@type" : "Variant",
+      "variantID" : "V21",
+      "featureIds" : [ "F1", "F4" ],
+      "label" : "V21",
+      "description" : "V21"
+    }, {
+      "@type" : "Variant",
+      "variantID" : "V22",
+      "featureIds" : [ "F2", "F5" ],
+      "label" : "V22",
+      "description" : "V22"
+    }, {
+      "@type" : "Variant",
+      "variantID" : "V23",
+      "featureIds" : [ "F3" ],
+      "label" : "V23",
+      "description" : "V23"
+    }, {
+      "@type" : "Variant",
+      "variantID" : "V1121",
+      "featureIds" : [ "F1", "F4" ],
+      "label" : "V1121",
+      "description" : "V1121"
+    }, {
+      "@type" : "Variant",
+      "variantID" : "V1122",
+      "featureIds" : [ "F2", "F5" ],
+      "label" : "V1122",
+      "description" : "V1122"
+    }, {
+      "@type" : "Variant",
+      "variantID" : "V1123",
+      "featureIds" : [ "F3" ],
+      "label" : "V1123",
+      "description" : "V1123"
+    }, {
+      "@type" : "Variant",
+      "variantID" : "V2231",
+      "featureIds" : [ "F1", "F4" ],
+      "label" : "V2231",
+      "description" : "V2231"
+    }, {
+      "@type" : "Variant",
+      "variantID" : "V2232",
+      "featureIds" : [ "F2", "F5" ],
+      "label" : "V2232",
+      "description" : "V2232"
+    }, {
+      "@type" : "Variant",
+      "variantID" : "V2233",
+      "featureIds" : [ "F3" ],
+      "label" : "V2233",
+      "description" : "V2233"
+    } ]
+  },
+  "alternatives" : {
+    "@type" : "Alternatives",
+    "fulfills" : [ {
+      "@type" : "Fulfills",
+      "purposeID" : "P1",
+      "variantID" : [ "V11", "V12", "V13" ],
+      "quantity" : 1,
+      "description" : "p1vs"
+    }, {
+      "@type" : "Fulfills",
+      "purposeID" : "P2",
+      "variantID" : [ "V21", "V22", "V23" ],
+      "quantity" : 1,
+      "description" : "p2vs"
+    }, {
+      "@type" : "Fulfills",
+      "purposeID" : "P112",
+      "variantID" : [ "V1121", "V1122", "V1123" ],
+      "quantity" : 1,
+      "description" : "p112vs"
+    }, {
+      "@type" : "Fulfills",
+      "purposeID" : "P223",
+      "variantID" : [ "V2231", "V2232", "V2233" ],
+      "quantity" : 1,
+      "description" : "p223vs"
+    } ]
+  },
+  "constituents" : {
+    "@type" : "Constituents",
+    "constitutes" : [ {
+      "@type" : "Constitutes",
+      "purposeID" : [ "P111", "P112", "P113" ],
+      "variantID" : "V11",
+      "description" : "v11ps"
+    }, {
+      "@type" : "Constitutes",
+      "purposeID" : [ "P221", "P222", "P223" ],
+      "variantID" : "V22",
+      "description" : "v22ps"
+    } ]
+  },
+  "events" : {
+    "@type" : "Events",
+    "event" : [ ]
+  },
+  "rules" : {
+    "@type" : "Rules",
+    "rule" : [ ]
+  },
+  "relations" : {
+    "@type" : "Relations",
+    "relation" : [ ]
+  },
+  "metadata" : {
+    "@type" : "MetaData",
+    "language" : "de_DE",
+    "description" : [ "Mock Knowledgebase V1.0 for Testing Purposes", "Created by Marco on MJSW-Zenbook at 20.03.2014 14:41:44" ],
+    "version" : "V1.0",
+    "created" : 1395322904919,
+    "lastmodified" : 1395322904919,
+    "loaded" : 1395322904919,
+    "creator" : [ "Marco" ],
+    "additionalInfo" : {
+      "KB_CREATOR" : "Marco",
+      "KB_SERVER" : "MJSW-Zenbook"
+    }
+  }
+}
