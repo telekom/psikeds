@@ -15,14 +15,15 @@
 package org.psikeds.queryagent.presenter.jsf.model;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import org.psikeds.queryagent.interfaces.presenter.pojos.Choice;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Choices;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Errors;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Knowledge;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Metadata;
 import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionResponse;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Warnings;
 
 /**
  * The Frontend Representation/Model of our current Knowledge;
@@ -52,6 +53,8 @@ public class KnowledgeRepresentation implements Serializable {
     this.lastResponse = lastResponse;
   }
 
+  // ----------------------------------------------------------------
+
   public Metadata getMetadata() {
     return getLastResponse().getMetadata();
   }
@@ -60,12 +63,30 @@ public class KnowledgeRepresentation implements Serializable {
     return getLastResponse().getKnowledge();
   }
 
-  public List<Choice> getPossibleChoices() {
-    return getLastResponse().getPossibleChoices();
+  public Warnings getWarnings() {
+    return getLastResponse().getWarnings();
   }
+
+  public Errors getErrors() {
+    return getLastResponse().getErrors();
+  }
+
+  public Choices getChoices() {
+    return getLastResponse().getChoices();
+  }
+
+  // ----------------------------------------------------------------
 
   public boolean isResolved() {
     return (this.lastResponse != null) && this.lastResponse.isResolved();
+  }
+
+  public boolean hasErrors() {
+    return (this.lastResponse == null) || this.lastResponse.hasErrors();
+  }
+
+  public boolean hasWarnings() {
+    return (this.lastResponse != null) && this.lastResponse.hasWarnings();
   }
 
   public String getSessionID() {

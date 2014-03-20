@@ -37,10 +37,6 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
   public static final String DEFAULT_CURRENT_SERVICE_SUB_CTX = "resolution/current";
   public static final String DEFAULT_SELECT_SERVICE_SUB_CTX = "resolution/select";
 
-//  public static final String DEFAULT_INIT_SERVICE_REST_URL = DEFAULT_RESOLUTION_ENGINE_BASE_REST_URL + DEFAULT_INIT_SERVICE_SUB_CTX;
-//  public static final String DEFAULT_CURRENT_SERVICE_REST_URL = DEFAULT_RESOLUTION_ENGINE_BASE_REST_URL + DEFAULT_CURRENT_SERVICE_SUB_CTX;
-//  public static final String DEFAULT_SELECT_SERVICE_REST_URL = DEFAULT_RESOLUTION_ENGINE_BASE_REST_URL + DEFAULT_SELECT_SERVICE_SUB_CTX;
-
   public static final String DEFAULT_INIT_SERVICE_METHOD = "GET";
   public static final String DEFAULT_CURRENT_SERVICE_METHOD = "GET";
   public static final String DEFAULT_SELECT_SERVICE_METHOD = "POST";

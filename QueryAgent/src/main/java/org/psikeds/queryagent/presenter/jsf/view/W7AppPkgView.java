@@ -118,8 +118,8 @@ public class W7AppPkgView extends BaseView {
       if (v != null) {
         add2map(map, v.getLabel(), v.getDescription());
       }
-      for (final KnowledgeEntity sib : ke.getSiblings()) {
-        add2map(map, sib);
+      for (final KnowledgeEntity child : ke.getChildren()) {
+        add2map(map, child);
       }
     }
   }

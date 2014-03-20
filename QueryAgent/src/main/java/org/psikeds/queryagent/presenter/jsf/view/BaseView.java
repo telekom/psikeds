@@ -23,11 +23,11 @@ import org.psikeds.queryagent.presenter.jsf.model.KnowledgeRepresentation;
  * 
  * @author marco@juliano.de
  */
-public class BaseView {
+public abstract class BaseView {
 
   protected KnowledgeRepresentation model;
 
-  protected BaseView(final KnowledgeRepresentation model) {
+  public BaseView(final KnowledgeRepresentation model) {
     this.model = model;
   }
 
@@ -39,15 +39,23 @@ public class BaseView {
     this.model = model;
   }
 
-  public boolean isNotInitialized() {
-    return ((this.model == null) || this.model.isNotInitialized());
+  public boolean isResolved() {
+    return ((this.model != null) && this.model.isResolved());
+  }
+
+  public boolean hasErrors() {
+    return ((this.model == null) || this.model.hasErrors());
+  }
+
+  public boolean hasWarnings() {
+    return ((this.model != null) && this.model.hasWarnings());
   }
 
   public String getSessionID() {
     return (this.model == null ? null : this.model.getSessionID());
   }
 
-  public boolean isResolved() {
-    return ((this.model != null) && this.model.isResolved());
+  public boolean isNotInitialized() {
+    return ((this.model == null) || this.model.isNotInitialized());
   }
 }
