@@ -31,9 +31,11 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 
   <bean id="SessionIdGenerator" class="org.psikeds.common.idgen.impl.SessionIdGenerator" />
 
-  <bean id="DecissionEvaluator" class="org.psikeds.resolutionengine.resolver.impl.DecissionEvaluator">
+  <bean id="VariantDecissionEvaluator" class="org.psikeds.resolutionengine.resolver.impl.VariantDecissionEvaluator">
     <constructor-arg index="0" value="${resolutionengine.resolver.decission.optional.root.purposes}" />
   </bean>
+
+  <bean id="FeatureDecissionEvaluator" class="org.psikeds.resolutionengine.resolver.impl.VariantDecissionEvaluator" />
 
   <bean id="AutoCompletionResolver" class="org.psikeds.resolutionengine.resolver.impl.AutoCompletion">
     <constructor-arg index="0" type="org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase" ref="knowledgeBase" />  <!-- defined in knowledgebase-context.xml -->
@@ -51,7 +53,8 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
   </bean>
 
   <util:list id="ResolverChain">
-    <ref bean="DecissionEvaluator" />
+    <ref bean="VariantDecissionEvaluator" />
+    <ref bean="FeatureDecissionEvaluator" />
     <ref bean="AutoCompletionResolver" />
     <ref bean="RulesEvaluator" />
   </util:list>

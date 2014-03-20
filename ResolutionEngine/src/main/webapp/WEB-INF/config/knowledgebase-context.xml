@@ -44,6 +44,8 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <ref bean="RelationValidator" />
   </util:list>
 
+  <!-- TODO: enable XSD validation -->
+
   <bean id="knowledgeBaseFactory"
     class="org.psikeds.resolutionengine.datalayer.knowledgebase.impl.XmlKnowledgeBaseFactory">
     <constructor-arg index="0" type="org.psikeds.knowledgebase.xml.KBParser" ref="XMLParser" />
