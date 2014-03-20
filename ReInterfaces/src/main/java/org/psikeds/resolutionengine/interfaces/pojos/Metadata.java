@@ -47,9 +47,9 @@ public class Metadata extends POJO implements Serializable {
     this(null);
   }
 
-  public Metadata(final Map<String, Serializable> infomap) {
+  public Metadata(final Map<String, Serializable> infos) {
     super();
-    this.infomap = infomap;
+    addInfo(infos);
   }
 
   public Map<String, Serializable> getInfoMap() {
