@@ -27,16 +27,22 @@ import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.InitializingBean;
 
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
-import org.psikeds.resolutionengine.datalayer.vo.ContextPath;
 import org.psikeds.resolutionengine.datalayer.vo.Event;
 import org.psikeds.resolutionengine.datalayer.vo.Rule;
 import org.psikeds.resolutionengine.interfaces.pojos.Choice;
 import org.psikeds.resolutionengine.interfaces.pojos.Decission;
+import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice;
+import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoices;
+import org.psikeds.resolutionengine.interfaces.pojos.FeatureValue;
+import org.psikeds.resolutionengine.interfaces.pojos.FeatureValues;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
+import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntities;
 import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity;
 import org.psikeds.resolutionengine.interfaces.pojos.Metadata;
 import org.psikeds.resolutionengine.interfaces.pojos.Purpose;
 import org.psikeds.resolutionengine.interfaces.pojos.Variant;
+import org.psikeds.resolutionengine.interfaces.pojos.VariantChoice;
+import org.psikeds.resolutionengine.interfaces.pojos.VariantChoices;
 import org.psikeds.resolutionengine.resolver.ResolutionException;
 import org.psikeds.resolutionengine.resolver.Resolver;
 import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
@@ -48,6 +54,8 @@ import org.psikeds.resolutionengine.transformer.impl.Vo2PojoTransformer;
  * that were triggered. Decission will be ignored, Metadata is optional
  * and will be used for Information about Changes to the State of Events
  * and Rules, if present.
+ * 
+ * WARNING: This Resolver is currently NOT WORKING!!!
  * 
  * @author marco@juliano.de
  */
@@ -162,50 +170,53 @@ public class RulesEvaluator implements InitializingBean, Resolver {
 
   /**
    * @param knowledge
-   *          current old Knowledge (mandatory)
+   *          current Knowledge
    * @param decission
    *          Decission (ignored!)
    * @param raeh
-   *          all Rules and Events currently relevant, i.e. still possible
-   *          and not triggered yet. (mandatory)
+   *          all Rules and Events currently relevant (mandatory!)
    * @param metadata
    *          Metadata (optional, can be null)
-   * @return Knowledge resulting new Knowledge
+   * @return Knowledge
+   *         resulting new Knowledge
    * @throws ResolutionException
    *           if any error occurs
    */
   @Override
   public Knowledge resolve(final Knowledge knowledge, final Decission decission, final RulesAndEventsHandler raeh, final Metadata metadata) throws ResolutionException {
-    boolean ok = false;
-    boolean stable = true;
+    final boolean ok = false;
+    final boolean stable = true;
     try {
       LOGGER.debug("Evaluating Events and Rules ...");
       if ((knowledge == null) || (raeh == null)) {
-        final String errmsg = "LOGICAL ERROR: Cannot evaluate Events and Rules: Required object(s) missing!";
+        final String errmsg = "Knowledge or RulesAndEventsHandler missing!";
         LOGGER.warn(errmsg);
         throw new ResolutionException(errmsg);
       }
-      // knowledge is clean so far
-      raeh.setKnowledgeDirty(false);
-      // Part 1: Check Events, i.e. check whether an Event is still possible, triggered or already obsolete
-      checkAllPossibleEvents(knowledge, raeh, metadata);
-      // Part 2: Check Rules, i.e. apply or expire Rules depending on their Events (Premise, Trigger or Conclusion)
-      stable = checkRules(knowledge, raeh, metadata);
-      if (!stable) {
-        // A rule was applied and it is neccessary to execute the full Resolver-Chain once again
-        LOGGER.debug("Knowledge is not stable, need another Iteration of all Resolvers!");
-        knowledge.setStable(false);
-      }
-      ok = true;
-      if (this.repeatAfterRulesApplied && raeh.isKnowledgeDirty()) {
-        // A rule was applied and we need to check Events and apply remaining Rules once again!
-        LOGGER.debug("Rule applied, repeating checks of Events and Rules.");
-        return resolve(knowledge, decission, raeh, metadata);
-      }
-      else {
-        // done
-        return knowledge;
-      }
+
+      // TODO: enable when fixed!!!
+      LOGGER.warn("DISABLED!!!");
+      return knowledge;
+
+//      // knowledge is clean so far
+//      raeh.setKnowledgeDirty(false);
+//      // Part 1: Check Events, i.e. check whether an Event is still relevant, triggered or already obsolete
+//      checkAllRelevantEvents(knowledge, raeh, metadata);
+//      // Part 2: Check Rules, i.e. apply or expire Rules depending on their Context, Premise or Conclusion
+//      stable = checkRules(knowledge, raeh, metadata);
+//      if (!stable) {
+//        // A rule was applied and it is neccessary to execute the full Resolver-Chain once again
+//        LOGGER.debug("Knowledge is not stable, need another Iteration of all Resolvers!");
+//        knowledge.setStable(false);
+//      }
+//      ok = true;
+//      if (this.repeatAfterRulesApplied && raeh.isKnowledgeDirty()) {
+//        // A rule was applied and we need to check Events and apply remaining Rules once again!
+//        LOGGER.debug("Rule applied, repeating checks of Events and Rules.");
+//        return resolve(knowledge, decission, raeh, metadata);
+//      }
+//      // done
+//      return knowledge;
     }
     finally {
       RulesAndEventsHandler.logContents(raeh);
@@ -215,23 +226,23 @@ public class RulesEvaluator implements InitializingBean, Resolver {
 
   // ------------------------------------------------------
 
-  // We only check Events that are still possible, i.e. obsolete Events or
+  // We only check Events that are still relevant, i.e. obsolete Events or
   // Events that were already triggered will be ignored.
   // Also note, that all check...() Methods are fail fast, i.e. as soon as
   // an Event is not possible any more, the Check will abort.
   // ==> Performance
 
-  private void checkAllPossibleEvents(final Knowledge knowledge, final RulesAndEventsHandler raeh, final Metadata metadata) {
+  private void checkAllRelevantEvents(final Knowledge knowledge, final RulesAndEventsHandler raeh, final Metadata metadata) {
     try {
-      LOGGER.trace("--> checkAllPossibleEvents()");
-      final List<Event> events = raeh.getPossibleEvents();
+      LOGGER.trace("--> checkAllRelevantEvents()");
+      final List<Event> events = raeh.getRelevantEvents();
       for (final Event e : events) {
         // Check every possible Event
         checkEvent(e, knowledge, raeh, metadata);
       }
     }
     finally {
-      LOGGER.trace("<-- checkAllPossibleEvents()");
+      LOGGER.trace("<-- checkAllRelevantEvents()");
     }
   }
 
@@ -239,31 +250,41 @@ public class RulesEvaluator implements InitializingBean, Resolver {
     boolean stillPossible = false;
     try {
       LOGGER.trace("--> checkEvent(); Event = {}", e);
-      final ContextPath cp = (e == null ? null : e.getContextPath());
-      final List<String> path = (cp == null ? null : cp.getPathIDs());
-      if ((path == null) || path.isEmpty()) {
-        final String errmsg = "LOGICAL ERROR: Event or ContextPath missing!";
+      final List<String> ctx = (e == null ? null : e.getContext());
+      if ((ctx == null) || ctx.isEmpty()) {
+        final String errmsg = "Event or Context missing!";
         LOGGER.warn(errmsg);
-        markEventObsolete(e, raeh, metadata);
+        // markEventObsolete(e, raeh, metadata);
+        throw new ResolutionException(errmsg);
+      }
+      // TODO: check type of event and get trigger
+      final String triggerId = null;
+      if (StringUtils.isEmpty(triggerId)) {
+        final String errmsg = "Trigger missing!";
+        LOGGER.warn(errmsg);
+        // markEventObsolete(e, raeh, metadata);
         throw new ResolutionException(errmsg);
       }
       // Part 1 - Step 1:
       // Check whether we find the Root-Variant of the Event within our current Knowledge
       final List<KnowledgeEntity> root = findRoot(e, knowledge);
       if ((root == null) || root.isEmpty()) {
-        LOGGER.debug("Nothing to do. Event {} is attached to Variant {} which is not (yet) included in the current Knowledge.", e.getId(), e.getVariantId());
+        LOGGER.debug("Nothing to do. Event {} is attached to Variant {} which is not (yet) included in the current Knowledge.", e.getEventID(), e.getVariantID());
         stillPossible = true;
         return stillPossible;
       }
       // Part 1 - Step 2:
-      // Analyze the Context Path of the Event starting from the Root(s).
-      // This reduces overhead, because we do not need to traverse the full graph.
-      stillPossible = checkListOfEntities(e, path, root, true, raeh, metadata);
-      if (!stillPossible && raeh.isPossible(e)) {
-        // If an Event can be marked as obsolete can only be decided on the
-        // highest Level, i.e. when none of the Knowledge-Entities and its
-        // Child-Entities signaled that this Event was still possible!
-        LOGGER.debug("Event is not possible any more: {}", e.getId());
+      // Analyze the Context Path (including Trigger!) of the Event starting from
+      // the Root(s). This reduces overhead, because we do not need to traverse
+      // the full graph.
+      ctx.add(triggerId);
+      // TODO: check trigger separately to support not-events!
+      stillPossible = checkListOfEntities(e, ctx, root, true, raeh, metadata);
+      if (!stillPossible && raeh.isRelevant(e)) {
+        // Whether an Event is obsolete can only be decided on the highest Level,
+        // i.e. when none of the Knowledge-Entities and its Child-Entities signaled
+        // that this Event could still be possible!
+        LOGGER.debug("Event is not possible any more: {}", e.getEventID());
         markEventObsolete(e, raeh, metadata);
       }
       return stillPossible;
@@ -276,9 +297,10 @@ public class RulesEvaluator implements InitializingBean, Resolver {
   private boolean checkListOfEntities(final Event e, final List<String> path, final List<KnowledgeEntity> entities, final boolean isVariant, final RulesAndEventsHandler raeh, final Metadata metadata) {
     boolean stillPossible = false;
     try {
-      LOGGER.trace("--> checkListOfEntities(); E = {}, Path = {}", e.getId(), path);
+      LOGGER.trace("--> checkListOfEntities(); E = {}, Path = {}", e.getEventID(), path);
+      // Check each Knowledge Entity
       for (final KnowledgeEntity ke : entities) {
-        if (!raeh.isPossible(e)) {
+        if (!raeh.isRelevant(e)) {
           // Fail fast: Event was already triggered or made obsolete
           stillPossible = false;
           return stillPossible;
@@ -299,7 +321,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       return stillPossible;
     }
     finally {
-      LOGGER.trace("<-- checkListOfEntities(); E = {}, Path = {}; Still possible = {}", e.getId(), path, stillPossible);
+      LOGGER.trace("<-- checkListOfEntities(); E = {}, Path = {}; Still possible = {}", e.getEventID(), path, stillPossible);
     }
   }
 
@@ -307,7 +329,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
     boolean stillPossible = false;
     boolean matching = false;
     try {
-      LOGGER.trace("--> checkKnowledgeEntity(); E = {}; Path = {}\nKE = {}", e.getId(), path, ke);
+      LOGGER.trace("--> checkKnowledgeEntity(); E = {}; Path = {}\nKE = {}", e.getEventID(), path, ke);
       final int len = (path == null ? 0 : path.size());
       if (len <= 0) {
         // We walked the complete path ==> Event is fulfilled/triggered
@@ -322,30 +344,30 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       if (!matching) {
         // Current Path Element was not matching, but
         // let's see whether there is a matching Choice
-        stillPossible = checkChoices(e, currentPathElement, ke.getChoices(), isVariant, raeh, metadata);
+        // TODO handle possible Features!
+        stillPossible = checkChoices(e, currentPathElement, ke.getPossibleVariants(), isVariant, raeh, metadata);
         if (stillPossible) {
           if ((len == 1) && !isVariant) {
-            // This is a special Event. It is triggered by the Availability
-            // of a Purpose. Therefore this is a Match!
-            LOGGER.debug("Path {} of Event {} ends with Purpose available as a Choice of this KE --> Trigger!", path, e.getId());
+            // Match: This Event is triggered by a matching Feature (or Purpose).
+            LOGGER.debug("Path {} of Event {} ends with Feature or Purpose available as a Choice of this KE --> Trigger!", path, e.getEventID());
             triggerEvent(e, raeh, metadata);
             matching = true;
             stillPossible = false;
             return stillPossible;
           }
           else {
-            LOGGER.debug("Current PE {} of Event {} is matching to Choice of this KE.", currentPathElement, e.getId());
+            LOGGER.debug("Current PE {} of Event {} is matching to Choice of this KE.", currentPathElement, e.getEventID());
           }
         }
         else {
-          LOGGER.debug("Event {} is matching neither KE nor any Choice.", e.getId());
+          LOGGER.debug("Event {} is matching neither KE nor any Choice.", e.getEventID());
         }
       }
       else { // matching
         // Current Element was matching, Event is still possible ...
         if (len == 1) {
           // ... and this was the last Element. Gotcha!
-          LOGGER.debug("Path {} of Event {} ends at this KE --> Trigger!", path, e.getId());
+          LOGGER.debug("Path {} of Event {} ends at this KE --> Trigger!", path, e.getEventID());
           triggerEvent(e, raeh, metadata);
           stillPossible = false;
           return stillPossible;
@@ -356,10 +378,9 @@ public class RulesEvaluator implements InitializingBean, Resolver {
           stillPossible = checkChoices(e, path.subList(1, len), ke, !isVariant, raeh, metadata);
           if (stillPossible) {
             if ((len == 2) && isVariant) {
-              // This is a special Event. It is triggered by the Availability
-              // of a Purpose. Note: We checked the next PE, so this PE must be
-              // a Variant!
-              LOGGER.debug("Path {} of Event {} ends with Purpose available as a Choice of this KE --> Trigger!", path, e.getId());
+              // Match: This Event is triggered by a matching Feature (or Purpose).
+              // Note: We checked the next PE, so current PE must be a Variant!
+              LOGGER.debug("Path {} of Event {} ends with Feature or Purpose available as a Choice of this KE --> Trigger!", path, e.getEventID());
               triggerEvent(e, raeh, metadata);
               matching = true;
               stillPossible = false;
@@ -368,7 +389,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
             else {
               // Path > 2 or Events is not ending with a Purpose
               // --> Event is still possible but not matching/triggered.
-              LOGGER.debug("Next PE of Event {} is also matching to Choice of this KE --> not matching but still possible.", e.getId());
+              LOGGER.debug("Next PE of Event {} is also matching to Choice of this KE --> not matching but still possible.", e.getEventID());
               matching = false;
             }
           }
@@ -378,12 +399,12 @@ public class RulesEvaluator implements InitializingBean, Resolver {
             stillPossible = checkKnowledgeEntity(e, path.subList(1, len), ke, !isVariant, raeh, metadata);
             if (stillPossible) {
               if (len > 2) {
-                LOGGER.debug("Next PE of Event {} is also matching to this KE --> Recursion!", e.getId());
+                LOGGER.debug("Next PE of Event {} is also matching to this KE --> Recursion!", e.getEventID());
                 matching = false;
-                stillPossible = checkListOfEntities(e, path.subList(2, len), ke.getSiblings(), isVariant, raeh, metadata);
+                stillPossible = checkListOfEntities(e, path.subList(2, len), ke.getChildren(), isVariant, raeh, metadata);
               }
               else {
-                LOGGER.debug("Path {} of Event {} ends at this KE --> Trigger!", path, e.getId());
+                LOGGER.debug("Path {} of Event {} ends at this KE --> Trigger!", path, e.getEventID());
                 triggerEvent(e, raeh, metadata);
                 matching = true;
                 stillPossible = false;
@@ -392,9 +413,9 @@ public class RulesEvaluator implements InitializingBean, Resolver {
             }
             else {
               // Let's do some Recursion ;-)
-              LOGGER.debug("PE of Event {} matching to this KE --> Recursion!", e.getId());
+              LOGGER.debug("PE of Event {} matching to this KE --> Recursion!", e.getEventID());
               matching = false;
-              stillPossible = checkListOfEntities(e, path.subList(1, len), ke.getSiblings(), !isVariant, raeh, metadata);
+              stillPossible = checkListOfEntities(e, path.subList(1, len), ke.getChildren(), !isVariant, raeh, metadata);
             }
           }
         }
@@ -402,42 +423,58 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       return stillPossible;
     }
     finally {
-      LOGGER.trace("<-- checkKnowledgeEntity(); E = {}; Path = {}; matching = {}; stillPossible = {}", e.getId(), path, matching, stillPossible);
+      LOGGER.trace("<-- checkKnowledgeEntity(); E = {}; Path = {}; matching = {}; stillPossible = {}", e.getEventID(), path, matching, stillPossible);
     }
   }
 
   private boolean checkCurrentPathElement(final Event e, final String currentPathElement, final KnowledgeEntity ke, final boolean isVariant, final RulesAndEventsHandler raeh, final Metadata metadata) {
     boolean matching = false;
     try {
-      LOGGER.trace("--> checkCurrentPathElement(); E = {}; PE = {}; isVariant = {}", e.getId(), currentPathElement, isVariant);
+      LOGGER.trace("--> checkCurrentPathElement(); E = {}; PE = {}; isVariant = {}", e.getEventID(), currentPathElement, isVariant);
       if (StringUtils.isEmpty(currentPathElement)) {
-        final String errmsg = "LOGICAL ERROR: Current Path Element is empty!";
+        final String errmsg = "Current Path Element is empty!";
         LOGGER.warn(errmsg);
         markEventObsolete(e, raeh, metadata);
         throw new ResolutionException(errmsg);
       }
+      // we are expecting a variant
       if (isVariant) {
         LOGGER.trace("Checking whether {} is matching to Variant.", currentPathElement);
         final Variant v = ke == null ? null : ke.getVariant();
-        final String vid = v == null ? null : v.getId();
+        final String vid = v == null ? null : v.getVariantID();
         if (currentPathElement.equals(vid)) {
           LOGGER.debug("Current PE is matching to Variant-ID: {}", vid);
           matching = true;
         }
       }
+      // we are expecting either a purpose or a feature
       else {
+        // check purpose first ... it's more probable
         LOGGER.trace("Checking whether {} is matching to Purpose.", currentPathElement);
         final Purpose p = ke == null ? null : ke.getPurpose();
-        final String pid = p == null ? null : p.getId();
+        final String pid = p == null ? null : p.getPurposeID();
         if (currentPathElement.equals(pid)) {
           LOGGER.debug("Current PE is matching to Purpose-ID: {}", pid);
           matching = true;
         }
+        // if this is a feature-event also check for feature
+//        else if (e.isFeatureEvent()) {
+        LOGGER.trace("Checking whether {} is matching to Feature of this KE.", currentPathElement);
+        final FeatureValues feats = ke.getFeatures();
+        for (final FeatureValue fv : feats) {
+          final String fid = fv == null ? null : fv.getFeatureID();
+          if (currentPathElement.equals(fid)) {
+            LOGGER.debug("Current PE is matching to Feature-ID: {}", fid);
+            matching = true;
+            break;
+          }
+        }
+//        }
       }
       return matching;
     }
     finally {
-      LOGGER.trace("<-- checkCurrentPathElement(); E = {}; PE = {}; isVariant = {}; matching = {}", e.getId(), currentPathElement, isVariant, matching);
+      LOGGER.trace("<-- checkCurrentPathElement(); E = {}; PE = {}; isVariant = {}; matching = {}", e.getEventID(), currentPathElement, isVariant, matching);
     }
   }
 
@@ -445,14 +482,16 @@ public class RulesEvaluator implements InitializingBean, Resolver {
 
   private boolean checkChoices(final Event e, final List<String> path, final KnowledgeEntity ke, final boolean isVariant, final RulesAndEventsHandler raeh, final Metadata metadata) {
     final String currentPathElement = path.get(0);
-    final List<Choice> choices = ke.getChoices();
+    final VariantChoices choices = ke.getPossibleVariants();
     return checkChoices(e, currentPathElement, choices, isVariant, raeh, metadata);
   }
 
-  private boolean checkChoices(final Event e, final String currentPathElement, final List<Choice> choices, final boolean isVariant, final RulesAndEventsHandler raeh, final Metadata metadata) {
+  // TODO handle VariantChoices and FeatureChoices correctly
+
+  private boolean checkChoices(final Event e, final String currentPathElement, final VariantChoices choices, final boolean isVariant, final RulesAndEventsHandler raeh, final Metadata metadata) {
     boolean matchingChoice = false;
     try {
-      LOGGER.trace("--> checkChoices(); E = {}; PE = {}; isVariant = {}", e.getId(), currentPathElement, isVariant);
+      LOGGER.trace("--> checkChoices(); E = {}; PE = {}; isVariant = {}", e.getEventID(), currentPathElement, isVariant);
       for (final Choice c : choices) {
         // Loop over all Choices and as soon as one is matching we are finished
         matchingChoice = checkChoice(e, currentPathElement, c, isVariant, raeh, metadata);
@@ -464,7 +503,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       return matchingChoice;
     }
     finally {
-      LOGGER.trace("<-- checkChoices(); E = {}; PE = {}; matchingChoice = {}", e.getId(), currentPathElement, matchingChoice);
+      LOGGER.trace("<-- checkChoices(); E = {}; PE = {}; matchingChoice = {}", e.getEventID(), currentPathElement, matchingChoice);
     }
   }
 
@@ -472,31 +511,54 @@ public class RulesEvaluator implements InitializingBean, Resolver {
     boolean matchingChoice = false;
     try {
       LOGGER.trace("--> checkChoice(); PE = {}; isVariant = {}\nChoice = {}", currentPathElement, isVariant, c);
-      if (isVariant) {
-        // Is Path Element matching any selectable Variant of this Choice?
-        final List<Variant> lst = c == null ? null : c.getVariants();
-        if (lst != null) {
-          for (final Variant v : lst) {
-            final String vid = (v == null ? null : v.getId());
-            matchingChoice = currentPathElement.equals(vid);
-            if (matchingChoice) {
-              LOGGER.debug("PE {} is matching Variant of Choice {}", currentPathElement, c);
-              return matchingChoice;
+      if (c instanceof VariantChoice) {
+        final VariantChoice vc = (VariantChoice) c;
+        if (isVariant) {
+          // Is Path Element matching any selectable Variant of this Choice?
+          final List<Variant> lst = vc.getVariants();
+          if (lst != null) {
+            for (final Variant v : lst) {
+              final String vid = (v == null ? null : v.getVariantID());
+              matchingChoice = currentPathElement.equals(vid);
+              if (matchingChoice) {
+                LOGGER.debug("PE {} is matching Variant of Choice {}", currentPathElement, c);
+                return matchingChoice;
+              }
             }
           }
         }
-      }
-      else {
-        // Is Path Element matching Purpose of this Choice?
-        final Purpose p = (c == null ? null : c.getPurpose());
-        final String pid = (p == null ? null : p.getId());
-        matchingChoice = currentPathElement.equals(pid);
-        if (matchingChoice) {
-          LOGGER.debug("PE {} is matching Purpose of Choice {}", currentPathElement, c);
-          return matchingChoice;
+        else {
+          // Is Path Element matching Purpose of this Choice?
+          final Purpose p = vc.getPurpose();
+          final String pid = (p == null ? null : p.getPurposeID());
+          matchingChoice = currentPathElement.equals(pid);
+          if (matchingChoice) {
+            LOGGER.debug("PE {} is matching Purpose of Choice {}", currentPathElement, c);
+            return matchingChoice;
+          }
         }
+        return matchingChoice;
       }
-      return matchingChoice;
+      if (c instanceof FeatureChoice) {
+        if (isVariant) {
+          // A Variant is expected next, therefore Path Element cannot point to a Feature
+          LOGGER.trace("Variant expected, skipping check for Feature.");
+        }
+        else {
+          // Is Path Element matching Feature of this Choice?
+          final FeatureChoice fc = (FeatureChoice) c;
+          final String fid = fc.getFeatureID();
+          matchingChoice = currentPathElement.equals(fid);
+          if (matchingChoice && LOGGER.isDebugEnabled()) {
+            LOGGER.debug("PE {} is matching Feature of Choice {}", currentPathElement, c);
+          }
+        }
+        return matchingChoice;
+      }
+      // if we reach this point something was really wrong!
+      final String errmsg = "Unexpected type of Choice: " + String.valueOf(c);
+      LOGGER.warn(errmsg);
+      throw new ResolutionException(errmsg);
     }
     finally {
       LOGGER.trace("<-- checkChoice(); PE = {}; isVariant = {}; matchingChoice = {}", currentPathElement, isVariant, matchingChoice);
@@ -506,35 +568,35 @@ public class RulesEvaluator implements InitializingBean, Resolver {
   // ------------------------------------------------------
 
   private void triggerEvent(final Event e, final RulesAndEventsHandler raeh, final Metadata metadata) {
-    if ((e != null) && raeh.isPossible(e)) {
+    if ((e != null) && raeh.isRelevant(e)) {
       if (LOGGER.isTraceEnabled()) {
         LOGGER.trace("TRIGGERED: {}", e);
       }
       else {
-        LOGGER.debug("TRIGGERED: {}", e.getId());
+        LOGGER.debug("TRIGGERED: {}", e.getEventID());
       }
       raeh.setTriggered(e);
       if ((metadata != null) && LOGGER.isInfoEnabled()) {
-        final String key = "E_" + e.getId() + "_triggered";
+        final String key = "E_" + e.getEventID() + "_triggered";
         final String msg = String.valueOf(e);
-        metadata.saveInfo(key, msg);
+        metadata.addInfo(key, msg);
       }
     }
   }
 
   private void markEventObsolete(final Event e, final RulesAndEventsHandler raeh, final Metadata metadata) {
-    if ((e != null) && raeh.isPossible(e)) {
+    if ((e != null) && raeh.isRelevant(e)) {
       if (LOGGER.isTraceEnabled()) {
         LOGGER.trace("OBSOLETE: {}", e);
       }
       else {
-        LOGGER.debug("OBSOLETE: {}", e.getId());
+        LOGGER.debug("OBSOLETE: {}", e.getEventID());
       }
       raeh.setObsolete(e);
       if ((metadata != null) && LOGGER.isInfoEnabled()) {
-        final String key = "E_" + e.getId() + "_obsolete";
+        final String key = "E_" + e.getEventID() + "_obsolete";
         final String msg = String.valueOf(e);
-        metadata.saveInfo(key, msg);
+        metadata.addInfo(key, msg);
       }
     }
   }
@@ -549,14 +611,14 @@ public class RulesEvaluator implements InitializingBean, Resolver {
         LOGGER.trace("TRIGGERED: {}", r);
       }
       else {
-        LOGGER.debug("TRIGGERED: {}", r.getId());
+        LOGGER.debug("TRIGGERED: {}", r.getRuleID());
       }
       raeh.setTriggered(r);
       raeh.setKnowledgeDirty(true);
       if ((metadata != null) && LOGGER.isInfoEnabled()) {
-        final String key = "R_" + r.getId() + suffix;
+        final String key = "R_" + r.getRuleID() + suffix;
         final String msg = String.valueOf(r);
-        metadata.saveInfo(key, msg);
+        metadata.addInfo(key, msg);
       }
     }
   }
@@ -567,13 +629,13 @@ public class RulesEvaluator implements InitializingBean, Resolver {
         LOGGER.trace("OBSOLETE: {}", r);
       }
       else {
-        LOGGER.debug("OBSOLETE: {}", r.getId());
+        LOGGER.debug("OBSOLETE: {}", r.getRuleID());
       }
       raeh.setObsolete(r);
       if ((metadata != null) && LOGGER.isInfoEnabled()) {
-        final String key = "R_" + r.getId() + "_obsolete";
+        final String key = "R_" + r.getRuleID() + "_obsolete";
         final String msg = String.valueOf(r);
-        metadata.saveInfo(key, msg);
+        metadata.addInfo(key, msg);
       }
     }
   }
@@ -584,46 +646,42 @@ public class RulesEvaluator implements InitializingBean, Resolver {
     boolean stable = true;
     try {
       LOGGER.trace("--> checkRules()");
-      final List<Rule> rules = raeh.getPossibleRules();
+      final List<Rule> rules = raeh.getRelevantRules();
       for (final Rule r : rules) {
-        final String ruleId = (r == null ? null : r.getId());
+        final String ruleId = (r == null ? null : r.getRuleID());
         if (!StringUtils.isEmpty(ruleId)) {
           LOGGER.trace("Checking Rule: {}", r);
 
-          // Part 2 - Step A: For each Rule check State of Premise-, Trigger- and Conclusion-Event
+          // Part 2 - Step A: For each Rule check State of Premise- and Conclusion-Event
           // premise
           final String peid = r.getPremiseEventID();
           final boolean premiseObsolete = raeh.isObsolete(peid);
           final boolean premiseTriggered = raeh.isTriggered(peid);
-          // trigger
-          final String teid = r.getTriggerEventID();
-          final boolean triggerObsolete = raeh.isObsolete(teid);
-          final boolean triggerTriggered = raeh.isTriggered(teid);
           // conclusion
           final String ceid = r.getConclusionEventID();
           final boolean conclusionObsolete = raeh.isObsolete(ceid);
           final boolean conclusionTriggered = raeh.isTriggered(ceid);
 
           // Part 2 - Step B: Analyze Rule depending on State of Events
-          if (premiseObsolete || triggerObsolete) {
-            LOGGER.debug("Premise {} or Trigger {} obsolete --> mark also Rule {} obsolete.", peid, teid, ruleId);
+          if (premiseObsolete) {
+            LOGGER.debug("Premise {} obsolete/impossible --> mark also Rule {} as obsolete.", peid, ruleId);
             markRuleObsolete(r, raeh, metadata);
           }
           else if (conclusionTriggered) {
-            LOGGER.debug("Conclusion {} already triggered --> mark also Rule {} triggered.", ceid, ruleId);
+            LOGGER.debug("Conclusion {} already triggered/selected --> mark also Rule {} as triggered.", ceid, ruleId);
             triggerRule(r, raeh, metadata);
           }
-          else if (triggerTriggered && premiseTriggered) {
-            LOGGER.debug("Both Premise {} and Trigger {} triggered --> MP: fire Rule {}.", peid, teid, ruleId);
+          else if (premiseTriggered) {
+            LOGGER.debug("Premise {} triggered/selected --> MP: fire Rule {}.", peid, ruleId);
             applyRuleModusPonens(r, knowledge, raeh, metadata);
             stable = false;
           }
-          else if (premiseTriggered && conclusionObsolete) {
-            LOGGER.debug("Premise {} triggered and Conclusion {} obsolete --> MT: fire Rule {}.", peid, ceid, ruleId);
+          else if (conclusionObsolete) {
+            LOGGER.debug("Conclusion {} obsolete/impossible --> MT: fire Rule {}.", ceid, ruleId);
             applyRuleModusTollens(r, knowledge, raeh, metadata);
             stable = false;
           }
-          else {
+          else if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("Keeping still possible Rule: {}", ruleId);
           }
         }
@@ -640,7 +698,6 @@ public class RulesEvaluator implements InitializingBean, Resolver {
   // Part 2 - Step C: Modus Ponens: trigger Conclusion
   private void applyRuleModusPonens(final Rule r, final Knowledge knowledge, final RulesAndEventsHandler raeh, final Metadata metadata) {
     LOGGER.info("MODUS PONENS - applying Conclusion-Event of Rule: {}", r);
-    // TODO: performance optimization: remember root of variant, do not search again
     final List<KnowledgeEntity> root = findRoot(r, knowledge);
     final String eventId = r.getConclusionEventID();
     if (applyConclusionEvent(root, eventId)) {
@@ -648,16 +705,24 @@ public class RulesEvaluator implements InitializingBean, Resolver {
     }
   }
 
+  // TODO: extend feature events to feature values and create feature with corresponding value!
+
   private boolean applyConclusionEvent(final List<KnowledgeEntity> root, final String eventId) {
     boolean applied = false;
     if ((root != null) && !root.isEmpty()) {
       LOGGER.trace("Triggering Event: {}", eventId);
       final Event e = this.kb.getEvent(eventId);
-      final ContextPath cp = e == null ? null : e.getContextPath();
-      final List<String> path = cp == null ? null : cp.getPathIDs();
-      for (final KnowledgeEntity ke : root) {
-        final boolean created = createPathEntries(ke, path);
-        applied = applied || created;
+      if ((e != null) && (this.autoCreateConclusionPath /* || !e.isFeatureEvent() */)) {
+        final List<String> ctx = (e == null ? null : e.getContext());
+        if (((ctx != null) && !ctx.isEmpty())) {
+          // TODO check type of event and get trigger
+          final String trigger = null;
+          ctx.add(trigger);
+          for (final KnowledgeEntity ke : root) {
+            final boolean created = createPathEntries(ke, ctx);
+            applied = applied || created;
+          }
+        }
       }
     }
     return applied;
@@ -681,13 +746,13 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       final String nextPurpId = path.get(1);
       final String nextVarId = path.get(2);
       // check whether next knowledge entity already exists
-      for (final KnowledgeEntity ke : currentKE.getSiblings()) {
+      for (final KnowledgeEntity ke : currentKE.getChildren()) {
         if (ke != null) {
           final Purpose p = ke.getPurpose();
           final Variant v = ke.getVariant();
           if ((p != null) && (v != null)) {
-            final String pid = p.getId();
-            final String vid = v.getId();
+            final String pid = p.getPurposeID();
+            final String vid = v.getVariantID();
             if (nextPurpId.equals(pid) && nextVarId.equals(vid)) {
               nextKE = ke;
             }
@@ -714,7 +779,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
           }
           else {
             created = false;
-            final String errmsg = "LOGICAL ERROR: Auto-Creation disabled but intermediate Path-Elements of Conclusion-Event missing! Check your Config and Premises in KB!";
+            final String errmsg = "Auto-Creation disabled but intermediate Path-Elements of Conclusion-Event missing! Check your Config and Premises in KB!";
             LOGGER.warn(errmsg);
             throw new ResolutionException(errmsg);
           }
@@ -737,24 +802,28 @@ public class RulesEvaluator implements InitializingBean, Resolver {
   }
 
   private void cleanupChoices(final KnowledgeEntity ke, final String purposeId, final String variantId) {
-    final List<Choice> choices = ke.getChoices();
-    final Iterator<Choice> citer = choices.iterator();
+    final VariantChoices choices = ke.getPossibleVariants();
+    final Iterator<VariantChoice> citer = choices.iterator();
+    // TODO check VariantChoices and FeatureChoices separately
     while (citer.hasNext()) {
       final Choice c = citer.next();
-      final Purpose p = c.getPurpose();
-      if ((p != null) && purposeId.equals(p.getId())) {
-        if (StringUtils.isEmpty(variantId)) {
-          LOGGER.debug("Removing all Choices for Purpose {}", purposeId);
-          citer.remove();
-        }
-        else {
-          final List<Variant> variants = c.getVariants();
-          final Iterator<Variant> viter = variants.iterator();
-          while (viter.hasNext()) {
-            final Variant v = viter.next();
-            if ((v != null) && variantId.equals(v.getId())) {
-              LOGGER.debug("Removing Variant {} from Choices for Purpose {}", variantId, purposeId);
-              viter.remove();
+      if (c instanceof VariantChoice) {
+        final VariantChoice vc = (VariantChoice) c;
+        final Purpose p = vc.getPurpose();
+        if ((p != null) && purposeId.equals(p.getPurposeID())) {
+          if (StringUtils.isEmpty(variantId)) {
+            LOGGER.debug("Removing all Choices for Purpose {}", purposeId);
+            citer.remove();
+          }
+          else {
+            final List<Variant> variants = vc.getVariants();
+            final Iterator<Variant> viter = variants.iterator();
+            while (viter.hasNext()) {
+              final Variant v = viter.next();
+              if ((v != null) && variantId.equals(v.getVariantID())) {
+                LOGGER.debug("Removing Variant {} from Choices for Purpose {}", variantId, purposeId);
+                viter.remove();
+              }
             }
           }
         }
@@ -770,15 +839,21 @@ public class RulesEvaluator implements InitializingBean, Resolver {
         // check whether parent KE has a corresponding Choice for P and V
         Purpose expectedPurp = null;
         Variant expectedVar = null;
-        for (final Choice c : parent.getChoices()) {
-          final Purpose p = c.getPurpose();
-          if ((p != null) && purposeId.equals(p.getId())) {
-            // matching purpose found
-            expectedPurp = p;
-            for (final Variant v : c.getVariants()) {
-              if ((v != null) && variantId.equals(v.getId())) {
-                // matching variant found
-                expectedVar = v;
+        long qty = 1;
+        // TODO check VariantChoices and FeatureChoices separately
+        for (final Choice c : parent.getPossibleVariants()) {
+          if (c instanceof VariantChoice) {
+            final VariantChoice vc = (VariantChoice) c;
+            qty = vc.getQuantity();
+            final Purpose p = vc.getPurpose();
+            if ((p != null) && purposeId.equals(p.getPurposeID())) {
+              // matching purpose found
+              expectedPurp = p;
+              for (final Variant v : vc.getVariants()) {
+                if ((v != null) && variantId.equals(v.getVariantID())) {
+                  // matching variant found
+                  expectedVar = v;
+                }
               }
             }
           }
@@ -786,19 +861,19 @@ public class RulesEvaluator implements InitializingBean, Resolver {
         if ((expectedPurp != null) && (expectedVar != null)) {
           // perfect, the KE we want to create is really a choosable Combination of P and V!
           LOGGER.debug("Found expected Choice for {} and {}", purposeId, variantId);
-          nextKE = regularlyCreateNewEntity(parent, expectedPurp, expectedVar);
+          nextKE = regularlyCreateNewEntity(parent, expectedPurp, expectedVar, qty);
         }
         else {
           // hmmm ... the KE we want to create is not a choosable Combination of P and V?!?!
           LOGGER.debug("Expected Choice for {} and {} not found!", purposeId, variantId);
           if (this.createNonChoosableEntities) {
             // ok, this is actually not choosable at the moment, but config says, we do it nevertheless
-            nextKE = forceCreateNextEntity(parent, purposeId, variantId);
+            nextKE = forceCreateNextEntity(parent, purposeId, variantId, qty);
           }
           else {
             // Definition of Rules and Events in KB seems to be strange
             final StringBuilder sb = new StringBuilder();
-            sb.append("LOGICAL ERROR: Not a choosable Combination! Cannot create new KE with P = ");
+            sb.append("Not a choosable Combination! Cannot create new KE with P = ");
             sb.append(purposeId);
             sb.append(" and V = ");
             sb.append(variantId);
@@ -819,17 +894,25 @@ public class RulesEvaluator implements InitializingBean, Resolver {
     }
   }
 
-  private KnowledgeEntity regularlyCreateNewEntity(final KnowledgeEntity parent, final Purpose purp, final Variant var) {
+  private KnowledgeEntity regularlyCreateNewEntity(final KnowledgeEntity parent, final Purpose purp, Variant var, final long qty) {
+    // ensure clean data, therefore lookup variant from knowledge base (again)
+    final org.psikeds.resolutionengine.datalayer.vo.Variant variant = this.kb.getVariant(var.getVariantID());
+    var = this.trans.valueObject2Pojo(variant); // TODO: get all features of variant! 
     // get next choices for new KE
-    final List<Choice> newchoices = getNewChoices(var);
+    final VariantChoices newVariantChoices = getNewVariantChoices(variant);
+    final FeatureChoices newFeatureChoices = getNewFeatureChoices(variant);
+
     // create new KE including choices
-    final KnowledgeEntity nextKE = new KnowledgeEntity(purp, var, newchoices);
+    final KnowledgeEntity nextKE = new KnowledgeEntity(qty, purp, var, newVariantChoices, newFeatureChoices);
+    // create new KE including choices
     // attach new KE to parent KE
-    addNewEntity(parent, nextKE);
+    addNewKnowledgeEntity(parent, nextKE);
     return nextKE;
   }
 
-  private KnowledgeEntity forceCreateNextEntity(final KnowledgeEntity parent, final String purposeId, final String variantId) {
+  // TODO rethink creation of entities! does this make sense?
+
+  private KnowledgeEntity forceCreateNextEntity(final KnowledgeEntity parent, final String purposeId, final String variantId, final long qty) {
     try {
       LOGGER.trace("--> forceCreateNextEntity(); P = {}, V = {}", purposeId, variantId);
       // lookup purpose in kb
@@ -841,7 +924,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       if ((p == null) || (v == null)) {
         // KB is corrupt ... where is the Validator?
         final StringBuilder sb = new StringBuilder();
-        sb.append("LOGICAL ERROR: Unknow IDs! Cannot force Creation of new KE with P = ");
+        sb.append("Unknow IDs! Cannot force Creation of new KE with P = ");
         sb.append(purposeId);
         sb.append(" and V = ");
         sb.append(variantId);
@@ -851,54 +934,85 @@ public class RulesEvaluator implements InitializingBean, Resolver {
         LOGGER.warn(errmsg);
         throw new ResolutionException(errmsg);
       }
-      return regularlyCreateNewEntity(parent, p, v);
+      return regularlyCreateNewEntity(parent, p, v, qty);
     }
     finally {
       LOGGER.trace("<-- forceCreateNextEntity(); P = {}, V = {}", purposeId, variantId);
     }
   }
 
-  private List<Choice> getNewChoices(final Variant v) {
-    final List<Choice> choices = new ArrayList<Choice>();
+  private VariantChoices getNewVariantChoices(final org.psikeds.resolutionengine.datalayer.vo.Variant parentVariant) {
+    final VariantChoices choices = new VariantChoices();
+    final String parentVariantID = (parentVariant == null ? null : parentVariant.getVariantID());
     try {
-      LOGGER.trace("--> getNewChoices: Variant = {}", v);
-      // ensure clean data, therefore lookup parent-variant from knowledge base (again)
-      final String variantId = v.getId();
-      final org.psikeds.resolutionengine.datalayer.vo.Variant parent = this.kb.getVariant(variantId);
-      // get all purposes constituting parent-variant
-      final org.psikeds.resolutionengine.datalayer.vo.Purposes newpurps = this.kb.getConstitutingPurposes(parent);
-      // get for every purpose ...
+      LOGGER.trace("--> getNewVariantChoices(); Variant = {}", parentVariantID);
+      // get all purposes constituting parent-variant ...
+      final org.psikeds.resolutionengine.datalayer.vo.Purposes newpurps = this.kb.getConstitutingPurposes(parentVariantID);
+      // ... and create for every purpose ...
       for (final org.psikeds.resolutionengine.datalayer.vo.Purpose p : newpurps.getPurpose()) {
-        // ... all fulfilling variants ...
-        final org.psikeds.resolutionengine.datalayer.vo.Variants newvars = this.kb.getFulfillingVariants(p);
-        // ... and transform parent-variant, purpose and new variant
-        //     into a Choice-POJO for the Client
-        final Choice c = this.trans.valueObject2Pojo(parent, p, newvars);
-        LOGGER.debug("Adding new Choice: {}", c);
-        choices.add(c);
+        // ... a new VariantChoice-POJO for the Client
+        final org.psikeds.resolutionengine.datalayer.vo.Fulfills ff = this.kb.getFulfills(p.getPurposeID());
+        final long qty = ff.getQuantity();
+        final List<Variant> variants = new ArrayList<Variant>();
+        for (final String vid : ff.getVariantID()) {
+          final org.psikeds.resolutionengine.datalayer.vo.Variant v = this.kb.getVariant(vid);
+          final org.psikeds.resolutionengine.datalayer.vo.Features feats = this.kb.getFeatures(vid);
+          variants.add(this.trans.valueObject2Pojo(v, feats));
+        }
+        final VariantChoice vc = this.trans.valueObject2Pojo(parentVariantID, p, variants, qty);
+        LOGGER.trace("Adding new Variant-Choice: {}", vc);
+        choices.add(vc);
       }
       // return list of all new choices
       return choices;
     }
     finally {
-      LOGGER.trace("<-- getNewChoices: Variant = {}\nChoices = {}", v, choices);
+      LOGGER.trace("<-- getNewVariantChoices(); Variant = {}\nChoices = {}", parentVariantID, choices);
     }
   }
 
-  private void addNewEntity(final KnowledgeEntity parent, final KnowledgeEntity ke) {
-    final List<KnowledgeEntity> entities = parent.getSiblings();
-    for (final KnowledgeEntity e : entities) {
-      final String pid1 = e.getPurpose().getId();
-      final String pid2 = ke.getPurpose().getId();
-      final String vid1 = e.getVariant().getId();
-      final String vid2 = ke.getVariant().getId();
-      if (pid1.equals(pid2) && vid1.equals(vid2)) {
-        LOGGER.trace("Entity-List already contains KnowledgeEntity: {}", ke);
-        return;
+  private FeatureChoices getNewFeatureChoices(final org.psikeds.resolutionengine.datalayer.vo.Variant v) {
+    final FeatureChoices choices = new FeatureChoices();
+    final String variantId = (v == null ? null : v.getVariantID());
+    try {
+      LOGGER.trace("--> getNewFeatureChoices(); Variant = {}", v);
+      // get all features of this variant ...
+      final org.psikeds.resolutionengine.datalayer.vo.Features feats = this.kb.getFeatures(variantId);
+      // ... and create for every feature ...
+      for (final org.psikeds.resolutionengine.datalayer.vo.Feature<?> f : feats.getFeature()) {
+        // ... a new FeatureChoice-POJO for the Client
+        final FeatureChoice fc = this.trans.valueObject2Pojo(variantId, f);
+        LOGGER.trace("Adding new Feature-Choice: {}", fc);
+        choices.add(fc);
       }
+      // return list of all new choices
+      return choices;
     }
-    LOGGER.trace("Adding new KnowledgeEntity: {}", ke);
-    entities.add(ke);
+    finally {
+      LOGGER.trace("<-- getNewFeatureChoices(); Variant = {}\nChoices = {}", variantId, choices);
+    }
+  }
+
+  private void addNewKnowledgeEntity(final KnowledgeEntity parent, final KnowledgeEntity newke) {
+    final KnowledgeEntities entities = (parent == null ? null : parent.getChildren());
+    addNewKnowledgeEntity(entities, newke);
+  }
+
+  private void addNewKnowledgeEntity(final KnowledgeEntities entities, final KnowledgeEntity newke) {
+    if ((entities != null) && (newke != null)) {
+      for (final KnowledgeEntity ke : entities) {
+        final String pid1 = ke.getPurpose().getPurposeID();
+        final String pid2 = newke.getPurpose().getPurposeID();
+        final String vid1 = ke.getVariant().getVariantID();
+        final String vid2 = newke.getVariant().getVariantID();
+        if (pid1.equals(pid2) && vid1.equals(vid2)) {
+          LOGGER.debug("addNewKnowledgeEntity(): Entity-List already contains KnowledgeEntity: {}", newke);
+          return;
+        }
+      }
+      LOGGER.trace("addNewKnowledgeEntity(): Adding new KnowledgeEntity: {}", newke);
+      entities.add(newke);
+    }
   }
 
   // ------------------------------------------------------
@@ -906,24 +1020,27 @@ public class RulesEvaluator implements InitializingBean, Resolver {
   // Part 2 - Step D: Modus Tollens: disable Trigger
   private void applyRuleModusTollens(final Rule r, final Knowledge knowledge, final RulesAndEventsHandler raeh, final Metadata metadata) {
     LOGGER.info("MODUS TOLLENS - disabling Trigger-Event of Rule: {}", r);
-    // TODO: performance optimization: remember root of variant, do not search again
     final List<KnowledgeEntity> root = findRoot(r, knowledge);
-    final String eventId = r.getTriggerEventID();
-    if (disableTriggerEvent(root, eventId)) {
+    final String eventId = r.getPremiseEventID();
+    if (disablePremiseEvent(root, eventId)) {
       triggerRule(r, raeh, metadata, "_modus_tollens");
     }
   }
 
-  private boolean disableTriggerEvent(final List<KnowledgeEntity> root, final String eventId) {
+  private boolean disablePremiseEvent(final List<KnowledgeEntity> root, final String eventId) {
     boolean disabled = false;
     if ((root != null) && !root.isEmpty()) {
       LOGGER.trace("Disabling Event: {}", eventId);
       final Event e = this.kb.getEvent(eventId);
-      final ContextPath cp = e == null ? null : e.getContextPath();
-      final List<String> path = cp == null ? null : cp.getPathIDs();
-      for (final KnowledgeEntity ke : root) {
-        final boolean removed = removePathFromChoices(ke, path);
-        disabled = disabled || removed;
+      final List<String> ctx = (e == null ? null : e.getContext());
+      if ((ctx != null) && !ctx.isEmpty()) {
+        // TODO: check kind of event and get trigger
+        final String trigger = null;
+        ctx.add(trigger);
+        for (final KnowledgeEntity ke : root) {
+          final boolean removed = removePathFromChoices(ke, ctx);
+          disabled = disabled || removed;
+        }
       }
     }
     return disabled;
@@ -946,7 +1063,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       }
       // Check that first Path Element is really matching to current KE
       final Variant currentVariant = currentKE.getVariant();
-      final String currentVariantId = (currentVariant == null ? null : currentVariant.getId());
+      final String currentVariantId = (currentVariant == null ? null : currentVariant.getVariantID());
       final String expectedVariantId = path.get(0);
       if (StringUtils.isEmpty(expectedVariantId) || !expectedVariantId.equals(currentVariantId)) {
         final String errmsg = "LOGICAL ERROR: Path not matching to current KE!";
@@ -973,13 +1090,13 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       // Path has more than 3 Elements: Check whether next KnowledgeEntity exists
       final String nextPurpId = path.get(1);
       final String nextVarId = path.get(2);
-      for (final KnowledgeEntity ke : currentKE.getSiblings()) {
+      for (final KnowledgeEntity ke : currentKE.getChildren()) {
         if (ke != null) {
           final Purpose p = ke.getPurpose();
           final Variant v = ke.getVariant();
           if ((p != null) && (v != null)) {
-            final String pid = p.getId();
-            final String vid = v.getId();
+            final String pid = p.getPurposeID();
+            final String vid = v.getVariantID();
             if (nextPurpId.equals(pid) && nextVarId.equals(vid)) {
               nextKE = ke;
             }
@@ -1020,17 +1137,19 @@ public class RulesEvaluator implements InitializingBean, Resolver {
   // Purposes. Therefore the following Methods do not stop after the first
   // Hit and return a List of all Entities containing the desired Variant.
 
+  //TODO: performance optimization: cache pointers to root of variant in raeh, search only once!
+
   private List<KnowledgeEntity> findRoot(final Event e, final Knowledge knowledge) {
-    final String rootVariantId = e.getVariantId();
+    final String rootVariantId = e.getVariantID();
     final List<KnowledgeEntity> root = findRoot(rootVariantId, knowledge);
-    LOGGER.trace("Root of Event {} is: {}", e.getId(), root);
+    LOGGER.trace("Root of Event {} is: {}", e.getEventID(), root);
     return root;
   }
 
   private List<KnowledgeEntity> findRoot(final Rule r, final Knowledge knowledge) {
     final String rootVariantId = r.getVariantID();
     final List<KnowledgeEntity> root = findRoot(rootVariantId, knowledge);
-    LOGGER.trace("Root of Rule {} is: {}", r.getId(), root);
+    LOGGER.trace("Root of Rule {} is: {}", r.getRuleID(), root);
     return root;
   }
 
@@ -1043,12 +1162,16 @@ public class RulesEvaluator implements InitializingBean, Resolver {
 
   private void findRoot(final List<KnowledgeEntity> result, final String rootVariantId, final List<KnowledgeEntity> entities) {
     for (final KnowledgeEntity ke : entities) {
-      if (rootVariantId.equals(ke.getVariant().getId())) {
+      if (rootVariantId.equals(ke.getVariant().getVariantID())) {
         result.add(ke);
       }
-      findRoot(result, rootVariantId, ke.getSiblings());
+      findRoot(result, rootVariantId, ke.getChildren());
     }
   }
 
-  // TODO: refactoring: this class is too large and too complex; extract some functionality to separate classes
+  // TODO: handling of choices is not correct!
+
+  // TODO: handling of triggers is not correct!
+
+  // TODO: refactoring: this class is too large and too complex; extract some functionality to separate classes; split events and rules
 }

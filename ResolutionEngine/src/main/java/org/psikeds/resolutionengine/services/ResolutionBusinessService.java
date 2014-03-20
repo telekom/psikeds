@@ -28,15 +28,18 @@ import org.springframework.beans.factory.InitializingBean;
 import org.psikeds.common.idgen.IdGenerator;
 import org.psikeds.resolutionengine.cache.ResolutionCache;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
+import org.psikeds.resolutionengine.datalayer.vo.Fulfills;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
 import org.psikeds.resolutionengine.datalayer.vo.Purposes;
-import org.psikeds.resolutionengine.datalayer.vo.Variants;
-import org.psikeds.resolutionengine.interfaces.pojos.Choice;
+import org.psikeds.resolutionengine.datalayer.vo.Variant;
 import org.psikeds.resolutionengine.interfaces.pojos.Decission;
+import org.psikeds.resolutionengine.interfaces.pojos.Decissions;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
 import org.psikeds.resolutionengine.interfaces.pojos.Metadata;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse;
+import org.psikeds.resolutionengine.interfaces.pojos.VariantChoice;
+import org.psikeds.resolutionengine.interfaces.pojos.VariantChoices;
 import org.psikeds.resolutionengine.interfaces.services.ResolutionService;
 import org.psikeds.resolutionengine.resolver.ResolutionException;
 import org.psikeds.resolutionengine.resolver.Resolver;
@@ -199,7 +202,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
   public ResolutionResponse init() {
     try {
       LOGGER.trace("--> init()");
-      return current(null);  // init is just current without session
+      return current(null);  // init is just current without session or decission
     }
     finally {
       LOGGER.trace("<-- init()");
@@ -273,7 +276,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
         LOGGER.debug("Using Knowledge supplied by Client.");
       }
       // Step 2: resolve Knowledge based on Decissions
-      final List<Decission> decissions = req.getMadeDecissions();
+      final Decissions decissions = req.getDecissions();
       if (!initialKnowledge || this.resolveInitialKnowledge) {
         // Sometimes there might be some automatic Resolutions also for
         // Initial-Knowledge right in the Beginning, e.g. some Root-Purpose
@@ -313,17 +316,14 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
   }
 
   private Metadata getMetadata() {
-    return this.trans.valueObject2Pojo(this.kb.getMetadata());
+    return this.trans.valueObject2Pojo(this.kb.getMetaData());
   }
 
   private String createSessionId(final Metadata metadata) {
     String sessionID = null;
     try {
+      // ??? Session-ID somehow depended on Metadata or vice versa ???
       sessionID = this.gen.getNextId();
-      metadata.saveInfo(
-          Metadata.SESSION_ID,
-          sessionID
-          );
       return sessionID;
     }
     finally {
@@ -335,14 +335,23 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     // initial knowledge consists of root-purposes and their
     // fulfilling variants as first choices for the client
     final Purposes purps = this.kb.getRootPurposes();
-    final List<Choice> choices = new ArrayList<Choice>();
+    final VariantChoices choices = new VariantChoices();
     final List<Purpose> plst = purps.getPurpose();
     for (final Purpose p : plst) {
-      final Variants vars = this.kb.getFulfillingVariants(p);
-      final Choice c = this.trans.valueObject2Pojo(p, vars);
-      choices.add(c);
+      final String purposeId = (p == null ? null : p.getPurposeID());
+      final Fulfills ff = (StringUtils.isEmpty(purposeId) ? null : this.kb.getFulfills(purposeId));
+      if (ff != null) {
+        final VariantChoice vc = new VariantChoice(this.trans.valueObject2Pojo(p), ff.getQuantity());
+        for (final String vid : ff.getVariantID()) {
+          final Variant v = this.kb.getVariant(vid);
+          if (v != null) {
+            vc.addVariant(this.trans.valueObject2Pojo(v));
+          }
+        }
+        choices.add(vc);
+      }
     }
-    // Initially there are no Entities, only Choice containing the Root-Purposes.
+    // Initially there are no Entities, only Variant-Choice for the Root-Purposes.
     return new Knowledge(choices);
   }
 

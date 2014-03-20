@@ -16,6 +16,7 @@ package org.psikeds.resolutionengine.rules;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.util.StringUtils;
@@ -47,8 +48,12 @@ public class EventStack extends LimitedHashMap<String, Event> implements Seriali
     return new ArrayList<Event>(this.values());
   }
 
-  public void setEvents(final List<Event> events) {
+  public void setEvents(final Collection<? extends Event> events) {
     clear();
+    addEvents(events);
+  }
+
+  public void addEvents(final Collection<? extends Event> events) {
     if (events != null) {
       for (final Event e : events) {
         addEvent(e);
@@ -57,27 +62,27 @@ public class EventStack extends LimitedHashMap<String, Event> implements Seriali
   }
 
   public Event addEvent(final Event e) {
-    final String id = (e == null ? null : e.getId());
-    return (StringUtils.isEmpty(id) ? null : this.put(id, e));
+    final String eid = (e == null ? null : e.getEventID());
+    return (StringUtils.isEmpty(eid) ? null : this.put(eid, e));
   }
 
   public Event removeEvent(final Event e) {
-    final String id = (e == null ? null : e.getId());
-    return removeEvent(id);
+    final String eid = (e == null ? null : e.getEventID());
+    return removeEvent(eid);
   }
 
-  public Event removeEvent(final String id) {
-    return (StringUtils.isEmpty(id) ? null : this.remove(id));
+  public Event removeEvent(final String eid) {
+    return (StringUtils.isEmpty(eid) ? null : this.remove(eid));
   }
 
   // ------------------------------------------------------
 
   public boolean containsEvent(final Event e) {
-    return containsEvent(e == null ? null : e.getId());
+    return containsEvent(e == null ? null : e.getEventID());
   }
 
-  public boolean containsEvent(final String id) {
-    return (StringUtils.isEmpty(id) ? false : this.containsKey(id));
+  public boolean containsEvent(final String eid) {
+    return (StringUtils.isEmpty(eid) ? false : this.containsKey(eid));
   }
 
   public Event move2stack(final Event e, final EventStack destination) {
@@ -85,8 +90,8 @@ public class EventStack extends LimitedHashMap<String, Event> implements Seriali
     return ((orig == null) || (destination == null) ? null : destination.addEvent(e));
   }
 
-  public Event move2stack(final String eventId, final EventStack destination) {
-    final Event e = removeEvent(eventId);
+  public Event move2stack(final String eid, final EventStack destination) {
+    final Event e = removeEvent(eid);
     return ((e == null) || (destination == null) ? null : destination.addEvent(e));
   }
 
@@ -102,7 +107,7 @@ public class EventStack extends LimitedHashMap<String, Event> implements Seriali
       }
       else {
         sb.append(", ");
-        sb.append(e.getId());
+        sb.append(e.getEventID());
       }
     }
     sb.append('\n');
