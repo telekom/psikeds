@@ -41,41 +41,41 @@ public class Metadata extends POJO implements Serializable {
   public static final String KB_SERVER = "KB_SERVER";
   public static final String KB_CREATOR = "KB_CREATOR";
 
-  private Map<String, Serializable> infomap;
+  private Map<String, Object> infomap;
 
   public Metadata() {
     this(null);
   }
 
-  public Metadata(final Map<String, Serializable> infos) {
+  public Metadata(final Map<String, Object> infos) {
     super();
     addInfo(infos);
   }
 
-  public Map<String, Serializable> getInfoMap() {
+  public Map<String, Object> getInfoMap() {
     if (this.infomap == null) {
-      this.infomap = new ConcurrentHashMap<String, Serializable>();
+      this.infomap = new ConcurrentHashMap<String, Object>();
     }
     return this.infomap;
   }
 
-  public void setInfoMap(final Map<String, Serializable> infomap) {
+  public void setInfoMap(final Map<String, Object> infomap) {
     this.infomap = infomap;
   }
 
-  public void addInfo(final Map<String, Serializable> infos) {
+  public void addInfo(final Map<String, Object> infos) {
     if ((infos != null) && !infos.isEmpty()) {
       getInfoMap().putAll(infos);
     }
   }
 
-  public void addInfo(final String key, final Serializable value) {
+  public void addInfo(final String key, final Object value) {
     if ((key != null) && (value != null)) {
       getInfoMap().put(key, value);
     }
   }
 
-  public Serializable getInfo(final String key) {
+  public Object getInfo(final String key) {
     return (key == null ? null : getInfoMap().get(key));
   }
 

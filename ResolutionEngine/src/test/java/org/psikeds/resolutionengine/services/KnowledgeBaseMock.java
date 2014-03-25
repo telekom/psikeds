@@ -16,7 +16,6 @@ package org.psikeds.resolutionengine.services;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.net.InetAddress;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -555,7 +554,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
     final List<String> description = new ArrayList<String>();
     description.add("Mock Knowledgebase " + version + " for Testing Purposes");
     description.add("Created by " + user + " on " + host + " at " + now);
-    final Map<String, Serializable> additionalInfo = new ConcurrentHashMap<String, Serializable>();
+    final Map<String, Object> additionalInfo = new ConcurrentHashMap<String, Object>();
     additionalInfo.put("KB_CREATOR", user);
     additionalInfo.put("KB_SERVER", host);
     return new MetaData(created, lastmodified, loaded, language, version, creator, description, additionalInfo);
