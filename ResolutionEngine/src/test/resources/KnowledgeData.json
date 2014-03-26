@@ -219,11 +219,11 @@
   "metadata" : {
     "@type" : "MetaData",
     "language" : "de_DE",
-    "description" : [ "Mock Knowledgebase V1.0 for Testing Purposes", "Created by Marco on MJSW-Zenbook at 20.03.2014 14:41:44" ],
+    "description" : [ "Mock Knowledgebase V1.0 for Testing Purposes", "Created by Marco on MJSW-Zenbook at 26.03.2014 09:10:02" ],
     "version" : "V1.0",
-    "created" : 1395322904919,
-    "lastmodified" : 1395322904919,
-    "loaded" : 1395322904919,
+    "created" : 1395821402091,
+    "lastmodified" : 1395821402091,
+    "loaded" : 1395821402091,
     "creator" : [ "Marco" ],
     "additionalInfo" : {
       "KB_CREATOR" : "Marco",

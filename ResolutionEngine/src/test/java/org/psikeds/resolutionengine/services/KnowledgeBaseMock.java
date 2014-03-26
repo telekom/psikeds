@@ -180,7 +180,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
       f.addValue(featureId.toLowerCase());
       f.addValue(featureId.toUpperCase());
     }
-    LOGGER.trace("Feature {} not found, returning Dummy!", featureId);
+    LOGGER.debug("Feature {} not found, returning Dummy!", featureId);
     return f;
   }
 
@@ -198,7 +198,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
         }
       }
     }
-    LOGGER.trace("Purpose {} not found, returning Dummy!", purposeId);
+    LOGGER.debug("Purpose {} not found, returning Dummy!", purposeId);
     return new Purpose(purposeId);
   }
 
@@ -216,7 +216,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
         }
       }
     }
-    LOGGER.trace("Variant {} not found, returning Dummy!", variantId);
+    LOGGER.debug("Variant {} not found, returning Dummy!", variantId);
     return new Variant(variantId);
   }
 
@@ -234,7 +234,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
         }
       }
     }
-    LOGGER.trace("Event {} not found, returning Dummy!", eventId);
+    LOGGER.debug("Event {} not found, returning Dummy!", eventId);
     return new VariantEvent(eventId, eventId, eventId, null, null, null);
   }
 
@@ -252,7 +252,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
         }
       }
     }
-    LOGGER.trace("Rule {} not found, returning Dummy!", ruleId);
+    LOGGER.debug("Rule {} not found, returning Dummy!", ruleId);
     return new Rule(ruleId, ruleId, ruleId, null, null, null);
   }
 
@@ -269,7 +269,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
         }
       }
     }
-    LOGGER.trace("Relation {} not found, returning Dummy!", relationId);
+    LOGGER.debug("Relation {} not found, returning Dummy!", relationId);
     return new Relation(relationId, relationId, relationId, null, null, null, null);
   }
 
@@ -287,7 +287,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
         }
       }
     }
-    LOGGER.trace("No Fulfills for Purpose {} found, returning Dummy!", purposeId);
+    LOGGER.debug("No Fulfills for Purpose {} found, returning Dummy!", purposeId);
     return new Fulfills(purposeId, purposeId, null);
   }
 
@@ -327,7 +327,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
         }
       }
     }
-    LOGGER.trace("No Constitutes for Variant {} found, returning Dummy!", variantId);
+    LOGGER.debug("No Constitutes for Variant {} found, returning Dummy!", variantId);
     return new Constitutes(variantId, variantId, (List<String>) null);
   }
 
@@ -721,6 +721,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   private static void generateTestData(final boolean force) throws JsonProcessingException, IOException {
     LOGGER.info("Start generating Test-Data ... ");
     final KnowledgeData data = createKnowledgeData();
+    LOGGER.debug("KnowledgeData = {}", data);
     if (force || !KNOWLEDGEDATA.exists()) {
       JSONHelper.writeObjectToJsonFile(KNOWLEDGEDATA, data);
     }
