@@ -168,16 +168,19 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public Feature<?> getFeature(final String featureId) {
-    for (final Feature<?> f : getFeatures().getFeature()) {
-      if ((f != null) && featureId.equals(f.getFeatureID())) {
-        return f;
+    if (!StringUtils.isEmpty(featureId)) {
+      for (final Feature<?> f : getFeatures().getFeature()) {
+        if ((f != null) && featureId.equals(f.getFeatureID())) {
+          return f;
+        }
       }
     }
-    final StringFeature f = new StringFeature(featureId, featureId, featureId);
+    final StringFeature f = new StringFeature(featureId);
     if (!StringUtils.isEmpty(featureId)) {
       f.addValue(featureId.toLowerCase());
       f.addValue(featureId.toUpperCase());
     }
+    LOGGER.trace("Feature {} not found, returning Dummy!", featureId);
     return f;
   }
 
@@ -188,12 +191,15 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public Purpose getPurpose(final String purposeId) {
-    for (final Purpose p : getPurposes().getPurpose()) {
-      if ((p != null) && purposeId.equals(p.getPurposeID())) {
-        return p;
+    if (!StringUtils.isEmpty(purposeId)) {
+      for (final Purpose p : getPurposes().getPurpose()) {
+        if ((p != null) && purposeId.equals(p.getPurposeID())) {
+          return p;
+        }
       }
     }
-    return new Purpose(purposeId, purposeId, purposeId);
+    LOGGER.trace("Purpose {} not found, returning Dummy!", purposeId);
+    return new Purpose(purposeId);
   }
 
   /**
@@ -203,12 +209,15 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public Variant getVariant(final String variantId) {
-    for (final Variant v : getVariants().getVariant()) {
-      if ((v != null) && variantId.equals(v.getVariantID())) {
-        return v;
+    if (!StringUtils.isEmpty(variantId)) {
+      for (final Variant v : getVariants().getVariant()) {
+        if ((v != null) && variantId.equals(v.getVariantID())) {
+          return v;
+        }
       }
     }
-    return new Variant(variantId, variantId, variantId);
+    LOGGER.trace("Variant {} not found, returning Dummy!", variantId);
+    return new Variant(variantId);
   }
 
   /**
@@ -218,11 +227,14 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public Event getEvent(final String eventId) {
-    for (final Event e : getEvents().getEvent()) {
-      if ((e != null) && eventId.equals(e.getEventID())) {
-        return e;
+    if (!StringUtils.isEmpty(eventId)) {
+      for (final Event e : getEvents().getEvent()) {
+        if ((e != null) && eventId.equals(e.getEventID())) {
+          return e;
+        }
       }
     }
+    LOGGER.trace("Event {} not found, returning Dummy!", eventId);
     return new VariantEvent(eventId, eventId, eventId, null, null, null);
   }
 
@@ -233,11 +245,14 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public Rule getRule(final String ruleId) {
-    for (final Rule r : getRules().getRule()) {
-      if ((r != null) && ruleId.equals(r.getRuleID())) {
-        return r;
+    if (!StringUtils.isEmpty(ruleId)) {
+      for (final Rule r : getRules().getRule()) {
+        if ((r != null) && ruleId.equals(r.getRuleID())) {
+          return r;
+        }
       }
     }
+    LOGGER.trace("Rule {} not found, returning Dummy!", ruleId);
     return new Rule(ruleId, ruleId, ruleId, null, null, null);
   }
 
@@ -247,11 +262,14 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public Relation getRelation(final String relationId) {
-    for (final Relation r : getRelations().getRelation()) {
-      if ((r != null) && relationId.equals(r.getRelationID())) {
-        return r;
+    if (!StringUtils.isEmpty(relationId)) {
+      for (final Relation r : getRelations().getRelation()) {
+        if ((r != null) && relationId.equals(r.getRelationID())) {
+          return r;
+        }
       }
     }
+    LOGGER.trace("Relation {} not found, returning Dummy!", relationId);
     return new Relation(relationId, relationId, relationId, null, null, null, null);
   }
 
@@ -262,11 +280,14 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public Fulfills getFulfills(final String purposeId) {
-    for (final Fulfills f : getAlternatives().getFulfills()) {
-      if ((f != null) && purposeId.equals(f.getPurposeID())) {
-        return f;
+    if (!StringUtils.isEmpty(purposeId)) {
+      for (final Fulfills f : getAlternatives().getFulfills()) {
+        if ((f != null) && purposeId.equals(f.getPurposeID())) {
+          return f;
+        }
       }
     }
+    LOGGER.trace("No Fulfills for Purpose {} found, returning Dummy!", purposeId);
     return new Fulfills(purposeId, purposeId, null);
   }
 
@@ -299,12 +320,15 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public Constitutes getConstitutes(final String variantId) {
-    for (final Constitutes c : getConstituents().getConstitutes()) {
-      if ((c != null) && variantId.equals(c.getVariantID())) {
-        return c;
+    if (!StringUtils.isEmpty(variantId)) {
+      for (final Constitutes c : getConstituents().getConstitutes()) {
+        if ((c != null) && variantId.equals(c.getVariantID())) {
+          return c;
+        }
       }
     }
-    return new Constitutes(variantId, variantId, (String) null);
+    LOGGER.trace("No Constitutes for Variant {} found, returning Dummy!", variantId);
+    return new Constitutes(variantId, variantId, (List<String>) null);
   }
 
   /**
@@ -346,11 +370,15 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public boolean isFulfilledBy(final String purposeId, final String variantId) {
-    final Variants vars = getFulfillingVariants(purposeId);
-    final List<Variant> lst = vars.getVariant();
-    for (final Variant idx : lst) {
-      if ((idx != null) && variantId.equals(idx.getVariantID())) {
-        return true;
+    if (!StringUtils.isEmpty(purposeId) && !StringUtils.isEmpty(variantId)) {
+      final Variants vars = getFulfillingVariants(purposeId);
+      final List<Variant> lst = (vars == null ? null : vars.getVariant());
+      if ((lst != null) && !lst.isEmpty()) {
+        for (final Variant idx : lst) {
+          if ((idx != null) && variantId.equals(idx.getVariantID())) {
+            return true;
+          }
+        }
       }
     }
     return false;
@@ -365,11 +393,13 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public boolean isConstitutedBy(final String variantId, final String purposeId) {
-    final Purposes purps = getConstitutingPurposes(variantId);
-    final List<Purpose> lst = purps.getPurpose();
-    for (final Purpose idx : lst) {
-      if ((idx != null) && purposeId.equals(idx.getPurposeID())) {
-        return true;
+    if (!StringUtils.isEmpty(purposeId) && !StringUtils.isEmpty(variantId)) {
+      final Purposes purps = getConstitutingPurposes(variantId);
+      final List<Purpose> lst = purps.getPurpose();
+      for (final Purpose idx : lst) {
+        if ((idx != null) && purposeId.equals(idx.getPurposeID())) {
+          return true;
+        }
       }
     }
     return false;
@@ -384,11 +414,13 @@ public class KnowledgeBaseMock implements KnowledgeBase {
    */
   @Override
   public boolean hasFeature(final String variantId, final String featureId) {
-    final Features feats = getFeatures(variantId);
-    final List<Feature<?>> lst = feats.getFeature();
-    for (final Feature<?> idx : lst) {
-      if ((idx != null) && featureId.equals(idx.getFeatureID())) {
-        return true;
+    if (!StringUtils.isEmpty(variantId) && !StringUtils.isEmpty(featureId)) {
+      final Features feats = getFeatures(variantId);
+      final List<Feature<?>> lst = feats.getFeature();
+      for (final Feature<?> idx : lst) {
+        if ((idx != null) && featureId.equals(idx.getFeatureID())) {
+          return true;
+        }
       }
     }
     return false;
@@ -422,10 +454,13 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   @Override
   public Variants getFulfillingVariants(final String purposeId) {
     final Variants vars = new Variants();
-    final Fulfills f = getFulfills(purposeId);
-    for (final String variantId : f.getVariantID()) {
-      final Variant v = getVariant(variantId);
-      vars.addVariant(v);
+    final Fulfills ff = (StringUtils.isEmpty(purposeId) ? null : getFulfills(purposeId));
+    final List<String> vids = (ff == null ? null : ff.getVariantID());
+    if ((vids != null) && !vids.isEmpty()) {
+      for (final String variantId : vids) {
+        final Variant v = getVariant(variantId);
+        vars.addVariant(v);
+      }
     }
     return vars;
   }
@@ -438,10 +473,13 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   @Override
   public Purposes getConstitutingPurposes(final String variantId) {
     final Purposes purps = new Purposes();
-    final Constitutes c = getConstitutes(variantId);
-    for (final String purposeId : c.getPurposeID()) {
-      final Purpose p = getPurpose(purposeId);
-      purps.addPurpose(p);
+    final Constitutes c = (StringUtils.isEmpty(variantId) ? null : getConstitutes(variantId));
+    final List<String> pids = (c == null ? null : c.getPurposeID());
+    if ((pids != null) && !pids.isEmpty()) {
+      for (final String purposeId : c.getPurposeID()) {
+        final Purpose p = getPurpose(purposeId);
+        purps.addPurpose(p);
+      }
     }
     return purps;
   }
@@ -455,9 +493,14 @@ public class KnowledgeBaseMock implements KnowledgeBase {
   public Features getFeatures(final String variantId) {
     final Features feats = new Features();
     final Variant v = getVariant(variantId);
-    for (final String featureId : v.getFeatureIds()) {
-      final Feature<?> f = getFeature(featureId);
-      feats.addFeature(f);
+    final List<String> fids = (v == null ? null : v.getFeatureIds());
+    if ((fids != null) && !fids.isEmpty()) {
+      for (final String featureId : fids) {
+        final Feature<?> f = getFeature(featureId);
+        if (f != null) {
+          feats.addFeature(f);
+        }
+      }
     }
     return feats;
   }
@@ -667,7 +710,7 @@ public class KnowledgeBaseMock implements KnowledgeBase {
     final Constituents constituents = new Constituents();
     constituents.addConstitutes(new Constitutes("v11ps", v11.getVariantID(), v11ps));
     constituents.addConstitutes(new Constitutes("v22ps", v22.getVariantID(), v22ps));
-    // keep it simple no need for events or rules in a mock
+    // keep it simple no need for events, rules or relations in a mock
     final Events events = new Events();
     final Rules rules = new Rules();
     final Relations relations = new Relations();
