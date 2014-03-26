@@ -146,7 +146,7 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
     return this.choices;
   }
 
-  public void setChoices(final Collection<? extends Choice> c) {
+  public void setChoices(final Choices c) {
     clearChoices();
     addAllChoices(c);
   }
