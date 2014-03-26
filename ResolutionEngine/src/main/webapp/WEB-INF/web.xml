@@ -2,7 +2,7 @@
 <!--
 psiKeds :- ps induced knowledge entity delivery system
 
-Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
 
 This file is free software: you can redistribute
 it and/or modify it under the terms of the
@@ -35,6 +35,8 @@ For details see file LICENSING in the top project directory
     <param-value>
       WEB-INF/config/application-context.xml
       WEB-INF/config/knowledgebase-datasource-context.xml
+      WEB-INF/config/knowledgebase-xml-xsd-context.xml
+      WEB-INF/config/knowledgebase-validators-context.xml
       WEB-INF/config/knowledgebase-context.xml
       WEB-INF/config/business-services-context.xml
       WEB-INF/config/providers-context.xml

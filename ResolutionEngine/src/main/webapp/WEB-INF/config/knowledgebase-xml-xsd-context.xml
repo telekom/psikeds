@@ -2,7 +2,7 @@
 <!--
 psiKeds :- ps induced knowledge entity delivery system
 
-Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
 
 This file is free software: you can redistribute
 it and/or modify it under the terms of the
@@ -22,21 +22,13 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-  <!--
-  Define your Datasource for the Knowledgebase here. This can be any 
-  kind of Bean as long as it is a org.springframework.core.io.Resource and 
-  the delivered data is XML valid against the kb.xsd
-  -->
-
-  <!-- This Definition will use the packaged Default-KB from within the JAR-File -->
-  <bean id="kbXmlSource" class="org.springframework.core.io.ClassPathResource">
-    <constructor-arg index="0" type="java.lang.String" value="kb.xml" />
+  <bean id="kbXsdSource" class="org.springframework.core.io.ClassPathResource">
+    <constructor-arg index="0" type="java.lang.String" value="kb.xsd" />
   </bean>
 
-  <!-- This Definition will look for a custom Demo-KB within the psiKeds-Configuration-Directory -->
-  <!--
-  <bean id="kbXmlSource" class="org.psikeds.common.config.FileSystemResource"> 
-    <constructor-arg index="0" type="java.lang.String" value="software-stack-demo-kb.xml" />
+  <bean id="XSDValidator" class="org.psikeds.knowledgebase.xml.impl.XSDValidator">
+    <constructor-arg index="0" type="org.springframework.core.io.Resource" ref="kbXsdSource" />
+    <constructor-arg index="1" type="org.springframework.core.io.Resource" ref="${resolutionengine.knowledgebase.datasource.name}" />  <!-- defined in resolutionengine.properties and knowledgebase-datasource-context.xml -->
   </bean>
-  -->
+
 </beans>
