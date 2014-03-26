@@ -132,6 +132,10 @@ public class ResolutionServiceTest {
 
   /**
    * Test method for {@link org.psikeds.queryagent.interfaces.presenter.services.ResolutionService}.
+   * 
+   * Note: All Request and Responses will be written and read again in order
+   * to test Serialization and Deserialization.
+   * 
    */
   @Test
   public void testResolutionService() throws Exception {
@@ -140,8 +144,9 @@ public class ResolutionServiceTest {
       assertNotNull("ResolutionService is null!", this.srvc);
 
       LOGGER.info("... getting initial Knowledge ...");
-      final ResolutionResponse ires = this.srvc.init();
+      ResolutionResponse ires = this.srvc.init();
       JSONHelper.writeObjectToJsonFile(INIT_RESPONSE, ires);
+      ires = JSONHelper.readObjectFromJsonFile(INIT_RESPONSE, ResolutionResponse.class);
 
       assertNotNull("No initial Resolution-Response!", ires);
       assertFalse("Resolution-Response contains Errors!", ires.hasErrors());
@@ -159,8 +164,9 @@ public class ResolutionServiceTest {
       assertNotNull("No initial Metadata!", metadata);
 
       LOGGER.info("... getting current Knowledge ...");
-      final ResolutionResponse cres1 = this.srvc.current(sessionID1);
+      ResolutionResponse cres1 = this.srvc.current(sessionID1);
       JSONHelper.writeObjectToJsonFile(CURRENT_RESPONSE, cres1);
+      cres1 = JSONHelper.readObjectFromJsonFile(CURRENT_RESPONSE, ResolutionResponse.class);
 
       assertNotNull("No Response for current Knowledge!", cres1);
       assertFalse("Resolution-Response contains Errors!", cres1.hasErrors());
@@ -172,10 +178,12 @@ public class ResolutionServiceTest {
 
       LOGGER.info("... making a Variant-Decission and asking for Resolution ...");
       final VariantDecission vd = JSONHelper.readObjectFromJsonFile(VARIANT_DECISSION, VariantDecission.class);
-      final ResolutionRequest svreq = new ResolutionRequest(sessionID1, metadata, vd);
+      ResolutionRequest svreq = new ResolutionRequest(sessionID1, metadata, vd);
       JSONHelper.writeObjectToJsonFile(SELECT_VARIANT_REQUEST, svreq);
-      final ResolutionResponse svres = this.srvc.select(svreq);
+      svreq = JSONHelper.readObjectFromJsonFile(SELECT_VARIANT_REQUEST, ResolutionRequest.class);
+      ResolutionResponse svres = this.srvc.select(svreq);
       JSONHelper.writeObjectToJsonFile(SELECT_VARIANT_RESPONSE, svres);
+      svres = JSONHelper.readObjectFromJsonFile(SELECT_VARIANT_RESPONSE, ResolutionResponse.class);
 
       assertNotNull("No Resolution-Response!", svres);
       assertFalse("Resolution-Response contains Errors!", svres.hasErrors());
@@ -193,10 +201,12 @@ public class ResolutionServiceTest {
 
       LOGGER.info("... making a Feature-Decission and asking for Resolution ...");
       final FeatureDecission fd = JSONHelper.readObjectFromJsonFile(FEATURE_DECISSION, FeatureDecission.class);
-      final ResolutionRequest sfreq = new ResolutionRequest(sessionID1, metadata, fd);
+      ResolutionRequest sfreq = new ResolutionRequest(sessionID1, metadata, fd);
       JSONHelper.writeObjectToJsonFile(SELECT_FEATURE_REQUEST, sfreq);
-      final ResolutionResponse sfres = this.srvc.select(sfreq);
+      sfreq = JSONHelper.readObjectFromJsonFile(SELECT_FEATURE_REQUEST, ResolutionRequest.class);
+      ResolutionResponse sfres = this.srvc.select(sfreq);
       JSONHelper.writeObjectToJsonFile(SELECT_FEATURE_RESPONSE, sfres);
+      sfres = JSONHelper.readObjectFromJsonFile(SELECT_FEATURE_RESPONSE, ResolutionResponse.class);
 
       assertNotNull("No Resolution-Response!", sfres);
       assertFalse("Resolution-Response contains Errors!", sfres.hasErrors());
@@ -207,8 +217,9 @@ public class ResolutionServiceTest {
       assertNotNull("No Knowledge in Resolution-Response!", sfke);
 
       LOGGER.info("... checking current Knowledge again ...");
-      final ResolutionResponse cres2 = this.srvc.current(sessionID1);
+      ResolutionResponse cres2 = this.srvc.current(sessionID1);
       JSONHelper.writeObjectToJsonFile(CURRENT_RESPONSE, cres2);
+      cres2 = JSONHelper.readObjectFromJsonFile(CURRENT_RESPONSE, ResolutionResponse.class);
 
       assertNotNull("No Response for current Knowledge!", cres2);
       assertFalse("Resolution-Response contains Errors!", cres2.hasErrors());
