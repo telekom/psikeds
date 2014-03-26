@@ -157,8 +157,7 @@ public class AutoCompletion implements InitializingBean, Resolver {
     boolean ok = false;
     try {
       LOGGER.debug("Autocompleting all Choices ...");
-      autocompleteKnowledge(knowledge, decission, metadata);
-      ok = true;
+      ok = autocompleteKnowledge(knowledge, decission, metadata);
       return knowledge;
     }
     finally {
@@ -168,17 +167,17 @@ public class AutoCompletion implements InitializingBean, Resolver {
 
   // ----------------------------------------------------------------
 
-  private void autocompleteKnowledge(final Knowledge knowledge, final Decission decission, final Metadata metadata) throws ResolutionException {
+  private boolean autocompleteKnowledge(final Knowledge knowledge, final Decission decission, final Metadata metadata) throws ResolutionException {
     try {
       LOGGER.trace("--> autocompleteKnowledge(); Knowledge = {}", knowledge);
-      autocompleteKnowledgeEntities(decission, null, knowledge.getEntities(), knowledge.getChoices(), metadata);
+      return autocompleteKnowledgeEntities(decission, null, knowledge.getEntities(), knowledge.getChoices(), metadata);
     }
     finally {
       LOGGER.trace("<-- autocompleteKnowledge(); Knowledge = {}", knowledge);
     }
   }
 
-  private void autocompleteKnowledgeEntities(
+  private boolean autocompleteKnowledgeEntities(
       final Decission decission,
       final KnowledgeEntity parentEntity,
       final KnowledgeEntities entities,
@@ -190,8 +189,8 @@ public class AutoCompletion implements InitializingBean, Resolver {
     try {
       LOGGER.trace("--> autocompleteKnowledgeEntities(); interactive = {}\nEntities = {}\nChoices = {}", interactive, entities, choices);
       // Step 1: Autocomplete current Choices
-      final Iterator<? extends Choice> iter = choices.iterator();
-      while (iter.hasNext()) {
+      final Iterator<? extends Choice> iter = (choices == null ? null : choices.iterator());
+      while ((iter != null) && iter.hasNext()) {
         final Choice c = iter.next();
         // Is this a Choice for a Variant?
         if (c instanceof VariantChoice) {
@@ -216,7 +215,7 @@ public class AutoCompletion implements InitializingBean, Resolver {
               final org.psikeds.resolutionengine.datalayer.vo.Variant variant = this.kb.getVariant(vid);
               final VariantChoices newVariantChoices = getNewVariantChoices(variant);
               final FeatureChoices newFeatureChoices = getNewFeatureChoices(variant);
-              v = this.trans.valueObject2Pojo(variant); // TODO: get all features of variant!
+              v = createNewVariantPOJO(variant);
               final long qty = this.kb.getQuantity(pid, vid);
               final KnowledgeEntity newke = new KnowledgeEntity(qty, p, v, newVariantChoices, newFeatureChoices);
               addNewKnowledgeEntity(entities, newke);
@@ -256,13 +255,16 @@ public class AutoCompletion implements InitializingBean, Resolver {
           throw new IllegalArgumentException("Unsupported kind of Choice: " + String.valueOf(c));
         }
       }
-      // Step 2: Recursively check Children and auto-complete their Choices
-      for (final KnowledgeEntity ke : entities) {
-        autocompleteKnowledgeEntities(decission, ke, ke.getChildren(), ke.getPossibleVariants(), metadata);
-        autocompleteKnowledgeEntities(decission, ke, ke.getChildren(), ke.getPossibleFeatures(), metadata);
+      // Step 2: Recursively check Children and auto-complete their Choices, too
+      if ((entities != null) && !entities.isEmpty()) {
+        for (final KnowledgeEntity ke : entities) {
+          autocompleteKnowledgeEntities(decission, ke, ke.getChildren(), ke.getPossibleVariants(), metadata);
+          autocompleteKnowledgeEntities(decission, ke, ke.getChildren(), ke.getPossibleFeatures(), metadata);
+        }
       }
       // done
       ok = true;
+      return ok;
     }
     catch (final Exception ex) {
       ok = false;
@@ -280,13 +282,17 @@ public class AutoCompletion implements InitializingBean, Resolver {
   private void addNewKnowledgeEntity(final KnowledgeEntities entities, final KnowledgeEntity newke) {
     if ((entities != null) && (newke != null)) {
       for (final KnowledgeEntity ke : entities) {
-        final String pid1 = ke.getPurpose().getPurposeID();
-        final String pid2 = newke.getPurpose().getPurposeID();
-        final String vid1 = ke.getVariant().getVariantID();
-        final String vid2 = newke.getVariant().getVariantID();
-        if (pid1.equals(pid2) && vid1.equals(vid2)) {
-          LOGGER.debug("addNewKnowledgeEntity(): Entity-List already contains KnowledgeEntity: {}", newke);
-          return;
+        final Purpose p = (ke == null ? null : ke.getPurpose());
+        final Variant v = (ke == null ? null : ke.getVariant());
+        if ((p != null) && (v != null)) {
+          final String pid1 = p.getPurposeID();
+          final String pid2 = newke.getPurpose().getPurposeID();
+          final String vid1 = v.getVariantID();
+          final String vid2 = newke.getVariant().getVariantID();
+          if (pid1.equals(pid2) && vid1.equals(vid2)) {
+            LOGGER.debug("addNewKnowledgeEntity(): Entity-List already contains KnowledgeEntity: {}", newke);
+            return;
+          }
         }
       }
       LOGGER.trace("addNewKnowledgeEntity(): Adding new KnowledgeEntity: {}", newke);
@@ -301,22 +307,25 @@ public class AutoCompletion implements InitializingBean, Resolver {
       LOGGER.trace("--> getNewVariantChoices(); Variant = {}", parentVariantID);
       // get all purposes constituting parent-variant ...
       final org.psikeds.resolutionengine.datalayer.vo.Purposes newpurps = this.kb.getConstitutingPurposes(parentVariantID);
-      // ... and create for every purpose ...
-      for (final org.psikeds.resolutionengine.datalayer.vo.Purpose p : newpurps.getPurpose()) {
-        // ... a new VariantChoice-POJO for the Client
-        final org.psikeds.resolutionengine.datalayer.vo.Fulfills ff = this.kb.getFulfills(p.getPurposeID());
-        final long qty = ff.getQuantity();
-        final List<Variant> variants = new ArrayList<Variant>();
-        for (final String vid : ff.getVariantID()) {
-          final org.psikeds.resolutionengine.datalayer.vo.Variant v = this.kb.getVariant(vid);
-          final org.psikeds.resolutionengine.datalayer.vo.Features feats = this.kb.getFeatures(vid);
-          variants.add(this.trans.valueObject2Pojo(v, feats));
+      final List<org.psikeds.resolutionengine.datalayer.vo.Purpose> purps = (newpurps == null ? null : newpurps.getPurpose());
+      if ((purps != null) && !purps.isEmpty()) {
+        // ... and create for every existing purpose ...
+        for (final org.psikeds.resolutionengine.datalayer.vo.Purpose p : newpurps.getPurpose()) {
+          // ... a new VariantChoice-POJO for the Client
+          final org.psikeds.resolutionengine.datalayer.vo.Fulfills ff = this.kb.getFulfills(p.getPurposeID());
+          final long qty = ff.getQuantity();
+          final List<Variant> variants = new ArrayList<Variant>();
+          for (final String vid : ff.getVariantID()) {
+            final org.psikeds.resolutionengine.datalayer.vo.Variant v = this.kb.getVariant(vid);
+            final org.psikeds.resolutionengine.datalayer.vo.Features feats = this.kb.getFeatures(vid);
+            variants.add(this.trans.valueObject2Pojo(v, feats));
+          }
+          final VariantChoice vc = this.trans.valueObject2Pojo(parentVariantID, p, variants, qty);
+          LOGGER.trace("Adding new Variant-Choice: {}", vc);
+          choices.add(vc);
         }
-        final VariantChoice vc = this.trans.valueObject2Pojo(parentVariantID, p, variants, qty);
-        LOGGER.trace("Adding new Variant-Choice: {}", vc);
-        choices.add(vc);
       }
-      // return list of all new choices
+      // return list of all new variant choices
       return choices;
     }
     finally {
@@ -324,40 +333,44 @@ public class AutoCompletion implements InitializingBean, Resolver {
     }
   }
 
-  private FeatureChoices getNewFeatureChoices(final org.psikeds.resolutionengine.datalayer.vo.Variant v) {
+  private FeatureChoices getNewFeatureChoices(final org.psikeds.resolutionengine.datalayer.vo.Variant parentVariant) {
     final FeatureChoices choices = new FeatureChoices();
-    final String variantId = (v == null ? null : v.getVariantID());
+    final String parentVariantID = (parentVariant == null ? null : parentVariant.getVariantID());
     try {
-      LOGGER.trace("--> getNewFeatureChoices(); Variant = {}", v);
+      LOGGER.trace("--> getNewFeatureChoices(); Variant = {}", parentVariantID);
       // get all features of this variant ...
-      final org.psikeds.resolutionengine.datalayer.vo.Features feats = this.kb.getFeatures(variantId);
-      // ... and create for every feature ...
-      for (final org.psikeds.resolutionengine.datalayer.vo.Feature<?> f : feats.getFeature()) {
-        // ... a new FeatureChoice-POJO for the Client
-        final FeatureChoice fc = this.trans.valueObject2Pojo(variantId, f);
-        LOGGER.trace("Adding new Feature-Choice: {}", fc);
-        choices.add(fc);
+      final org.psikeds.resolutionengine.datalayer.vo.Features newfeats = this.kb.getFeatures(parentVariantID);
+      final List<org.psikeds.resolutionengine.datalayer.vo.Feature<?>> feats = (newfeats == null ? null : newfeats.getFeature());
+      if ((feats != null) && !feats.isEmpty()) {
+        // ... and create for every feature ...
+        for (final org.psikeds.resolutionengine.datalayer.vo.Feature<?> f : feats) {
+          // ... a new FeatureChoice-POJO for the Client
+          final FeatureChoice fc = this.trans.valueObject2Pojo(parentVariantID, f);
+          LOGGER.trace("Adding new Feature-Choice: {}", fc);
+          choices.add(fc);
+        }
       }
-      // return list of all new choices
+      // return list of all new feature choices
       return choices;
     }
     finally {
-      LOGGER.trace("<-- getNewFeatureChoices(); Variant = {}\nChoices = {}", variantId, choices);
+      LOGGER.trace("<-- getNewFeatureChoices(); Variant = {}\nChoices = {}", parentVariantID, choices);
     }
   }
 
-  private void completionMessage(final Metadata metadata, final VariantChoice vc) {
-    if (vc != null) {
-      final String msg = String.format("Completed VariantChoice: %s", vc);
-      LOGGER.debug(msg);
-      if (metadata != null) {
-        final String key = String.format("AutoCompletion_VC_%s_%s", vc.getParentVariantID(), vc.getPurpose().getPurposeID());
-        metadata.addInfo(key, msg);
-      }
+  private Variant createNewVariantPOJO(final org.psikeds.resolutionengine.datalayer.vo.Variant variant) {
+    Variant v = null;
+    final String variantId = (variant == null ? null : variant.getVariantID());
+    try {
+      LOGGER.trace("--> createNewVariantPOJO(); Variant = {}", variantId);
+      final org.psikeds.resolutionengine.datalayer.vo.Features feats = this.kb.getFeatures(variantId);
+      v = this.trans.valueObject2Pojo(variant, feats);
+      return v;
+    }
+    finally {
+      LOGGER.trace("<-- createNewVariantPOJO(); Variant = {}", v);
     }
   }
-
-  // ----------------------------------------------------------------
 
   private void addNewFeatureValue(final KnowledgeEntity ke, final FeatureValue fv) {
     if ((ke != null) && (fv != null)) {
@@ -374,6 +387,19 @@ public class AutoCompletion implements InitializingBean, Resolver {
       }
       LOGGER.trace("addNewFeatureValue(): Adding new FeatureValue: {}", fv);
       ke.addFeature(fv);
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  private void completionMessage(final Metadata metadata, final VariantChoice vc) {
+    if (vc != null) {
+      final String msg = String.format("Completed VariantChoice: %s", vc);
+      LOGGER.debug(msg);
+      if (metadata != null) {
+        final String key = String.format("AutoCompletion_VC_%s_%s", vc.getParentVariantID(), vc.getPurpose().getPurposeID());
+        metadata.addInfo(key, msg);
+      }
     }
   }
 
