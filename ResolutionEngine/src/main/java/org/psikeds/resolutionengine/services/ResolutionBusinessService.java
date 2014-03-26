@@ -249,6 +249,9 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
         metadata = getMetadata();
         LOGGER.debug("Created new default Metadata.");
       }
+      else if (LOGGER.isTraceEnabled()) {
+        LOGGER.debug("Using Metadata supplied by Client:\n{}", metadata);
+      }
       else {
         LOGGER.debug("Using Metadata supplied by Client.");
       }
@@ -256,26 +259,45 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
       if (StringUtils.isEmpty(sessionID)) {
         sessionID = createSessionId(metadata);
         LOGGER.info("Created new SessionID: {}", sessionID);
+        this.cache.removeSession(sessionID); // just to be sure!
       }
       else {
-        LOGGER.debug("Using SessionID supplied by Client.");
+        LOGGER.info("Using SessionID supplied by Client: {}", sessionID);
       }
       Knowledge knowledge = req.getKnowledge();
       if (knowledge == null) {
         knowledge = (Knowledge) this.cache.getObject(sessionID, SESS_KEY_KNOWLEDGE);
         if (knowledge == null) {
+          this.cache.removeSession(sessionID); // new knowledge, clean state
           knowledge = getInitialKnowledge(metadata, sessionID);
           initialKnowledge = true;
-          LOGGER.info("Created new initial Knowledge: {}", knowledge);
+          if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Created new initial Knowledge for SessionID {}:\n{}", sessionID, knowledge);
+          }
+          else {
+            LOGGER.info("Created new initial Knowledge for SessionID {}.", sessionID);
+          }
         }
         else {
-          LOGGER.debug("Using existing Knowledge from Cache.");
+          if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Using existing Knowledge from Cache:\n{}", knowledge);
+          }
+          else {
+            LOGGER.debug("Using existing Knowledge from Cache.");
+          }
         }
       }
       else {
-        LOGGER.debug("Using Knowledge supplied by Client.");
+        if (LOGGER.isTraceEnabled()) {
+          LOGGER.trace("Using Knowledge supplied by Client:\n{}", knowledge);
+        }
+        else {
+          LOGGER.debug("Using Knowledge supplied by Client.");
+        }
       }
-      // Step 2: resolve Knowledge based on Decissions
+      // Step 2: whatever way we got our Knowledge, update Cache
+      this.cache.saveObject(sessionID, SESS_KEY_KNOWLEDGE, knowledge);
+      // Step 3: resolve Knowledge based on Decissions
       final Decissions decissions = req.getDecissions();
       if (!initialKnowledge || this.resolveInitialKnowledge) {
         // Sometimes there might be some automatic Resolutions also for
@@ -286,17 +308,17 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
         // Therefore this Functionality is configurable!
         knowledge = resolveDecissions(knowledge, decissions, metadata, sessionID);
       }
-      // Step 3: create Response-Object
+      // Step 4: create Response-Object
       resp = new ResolutionResponse(sessionID, metadata, knowledge);
       if (resp.isResolved()) {
-        // cleanup session
+        // done, cleanup session
         this.cache.removeSession(sessionID);
         LOGGER.info("Resolution {} finished.", sessionID);
       }
       else {
         // cache current state of resolution for next request
         this.cache.saveObject(sessionID, SESS_KEY_KNOWLEDGE, knowledge);
-        LOGGER.debug("Resolved next Step for {}", sessionID);
+        LOGGER.debug("Resolved next Step for SessionID {}.", sessionID);
       }
       return resp;
     }
@@ -358,6 +380,9 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
   // ----------------------------------------------------------------
 
   private Knowledge resolveDecissions(Knowledge knowledge, final List<Decission> decissions, final Metadata metadata, final String sessionID) {
+    if (knowledge == null) {
+      throw new ResolutionException("Cannot resolve Decissions, Knowledge is NULL!!!");
+    }
     if ((decissions == null) || decissions.isEmpty()) {
       knowledge = autoResolve(knowledge, metadata, sessionID);
     }
@@ -369,10 +394,9 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     return knowledge;
   }
 
-  private Knowledge autoResolve(Knowledge knowledge, final Metadata metadata, final String sessionID) {
+  private Knowledge autoResolve(final Knowledge knowledge, final Metadata metadata, final String sessionID) {
     LOGGER.debug("Auto-Resolution!");
-    knowledge = resolve(knowledge, (Decission) null, metadata, sessionID);
-    return knowledge;
+    return resolve(knowledge, (Decission) null, metadata, sessionID);
   }
 
   private Knowledge resolve(Knowledge knowledge, final Decission decission, final Metadata metadata, final String sessionID) {
@@ -415,19 +439,14 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
   private RulesAndEventsHandler getRulesAndEvents(final Knowledge knowledge, final Metadata metadata, final String sessionID) {
     RulesAndEventsHandler raeh = (RulesAndEventsHandler) this.cache.getObject(sessionID, SESS_KEY_RULES_AND_EVENTS);
     if (raeh == null) {
-      raeh = createInitialRulesAndEvents(knowledge, metadata, sessionID);
+      raeh = RulesAndEventsHandler.init(getKnowledgeBase(), knowledge);
       saveRulesAndEvents(sessionID, raeh);
-      LOGGER.trace("Created new REAH: {}", raeh);
+      LOGGER.trace("Created new RAEH for {}:\n{}", sessionID, raeh);
     }
-    else {
-      LOGGER.trace("Got existing REAH from Cache: {}", raeh);
+    else if (LOGGER.isTraceEnabled()) {
+      LOGGER.trace("Got existing RAEH from Cache for {}:\n{}", sessionID, raeh);
     }
     return raeh;
-  }
-
-  private RulesAndEventsHandler createInitialRulesAndEvents(final Knowledge knowledge, final Metadata metadata, final String sessionID) {
-    // TODO: performance optimization: do not start with all rules and events but with "visible" ones
-    return RulesAndEventsHandler.init(getKnowledgeBase());
   }
 
   private void saveRulesAndEvents(final String sessionID, final RulesAndEventsHandler raeh) {
