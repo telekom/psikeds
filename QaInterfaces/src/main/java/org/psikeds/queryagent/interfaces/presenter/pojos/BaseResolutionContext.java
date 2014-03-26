@@ -14,6 +14,8 @@
  *******************************************************************************/
 package org.psikeds.queryagent.interfaces.presenter.pojos;
 
+import javax.xml.bind.annotation.XmlSeeAlso;
+
 import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
@@ -25,6 +27,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
  * @author marco@juliano.de
  * 
  */
+@XmlSeeAlso({ ResolutionRequest.class, ResolutionResponse.class })
 @JsonSubTypes({ @JsonSubTypes.Type(value = ResolutionRequest.class, name = "ResolutionRequest"), @JsonSubTypes.Type(value = ResolutionResponse.class, name = "ResolutionResponse"), })
 public abstract class BaseResolutionContext extends POJO {
 

@@ -14,6 +14,8 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.interfaces.pojos;
 
+import javax.xml.bind.annotation.XmlSeeAlso;
+
 import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
@@ -27,6 +29,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
  * @author marco@juliano.de
  * 
  */
+@XmlSeeAlso({ FeatureValue.class, FeatureDescription.class })
 @JsonSubTypes({ @JsonSubTypes.Type(value = FeatureValue.class, name = "FeatureValue"), @JsonSubTypes.Type(value = FeatureDescription.class, name = "FeatureDescription"), })
 public abstract class Feature extends POJO {
 

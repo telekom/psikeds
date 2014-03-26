@@ -18,6 +18,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
@@ -29,6 +31,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
  * 
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type")
+@XmlRootElement(name = "Decissions")
 public class Decissions extends ArrayList<Decission> implements Serializable {
 
   private static final long serialVersionUID = 1L;

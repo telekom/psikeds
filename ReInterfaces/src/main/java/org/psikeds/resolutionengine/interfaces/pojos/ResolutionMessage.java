@@ -14,6 +14,8 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.interfaces.pojos;
 
+import javax.xml.bind.annotation.XmlSeeAlso;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 
@@ -23,6 +25,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
  * @author marco@juliano.de
  * 
  */
+@XmlSeeAlso({ ErrorMessage.class, Warning.class })
 @JsonSubTypes({ @JsonSubTypes.Type(value = ErrorMessage.class, name = "ErrorMessage"), @JsonSubTypes.Type(value = Warning.class, name = "Warning"), })
 public abstract class ResolutionMessage extends POJO {
 

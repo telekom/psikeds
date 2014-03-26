@@ -14,6 +14,8 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.interfaces.pojos;
 
+import javax.xml.bind.annotation.XmlSeeAlso;
+
 import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
@@ -22,6 +24,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
  * @author marco@juliano.de
  * 
  */
+@XmlSeeAlso({ FeatureDecission.class, VariantDecission.class })
 @JsonSubTypes({ @JsonSubTypes.Type(value = FeatureDecission.class, name = "FeatureDecission"), @JsonSubTypes.Type(value = VariantDecission.class, name = "VariantDecission"), })
 public abstract class Decission extends POJO {
 

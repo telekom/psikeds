@@ -14,6 +14,8 @@
  *******************************************************************************/
 package org.psikeds.queryagent.interfaces.presenter.pojos;
 
+import javax.xml.bind.annotation.XmlSeeAlso;
+
 import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
@@ -22,6 +24,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
  * @author marco@juliano.de
  * 
  */
+@XmlSeeAlso({ FeatureChoice.class, VariantChoice.class })
 @JsonSubTypes({ @JsonSubTypes.Type(value = FeatureChoice.class, name = "FeatureChoice"), @JsonSubTypes.Type(value = VariantChoice.class, name = "VariantChoice"), })
 public abstract class Choice extends POJO {
 
