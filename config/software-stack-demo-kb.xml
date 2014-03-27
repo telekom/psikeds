@@ -20,40 +20,36 @@ For details see file LICENSING in the top project directory
 
   <kb:meta>
     <kb:created>2013-11-29T08:02:37</kb:created>
-    <kb:lastmodified>2013-12-04T15:51:23</kb:lastmodified>
+    <kb:lastmodified>2014-03-27T12:10:11</kb:lastmodified>
+    <kb:language>en_US</kb:language>
+    <kb:version>V0.8</kb:version>
     <kb:creator>marco@juliano.de</kb:creator>
-    <kb:description>Knowledge Base for Presentation of W7-Scenario</kb:description>
+    <kb:description>Knowledge Base for Presentation of W7-Software-Scenario</kb:description>
     <kb:description>Status: Work in Progress</kb:description>
   </kb:meta>
 
   <kb:data>
 
     <kb:features>
-      <!-- Some simple Features. Please note: Accepted but currently not evaluated by Resolution-Engine -->
-      <kb:feature id="F1">
-        <kb:label>Java</kb:label>
-        <kb:value>true</kb:value>
-        <kb:featureValueType>boolean</kb:featureValueType>
+      <kb:feature id="Programming-Language">
+        <kb:label>Programming-Language</kb:label>
+        <kb:description>What kind of Programming-Language is supported by this Software?</kb:description>
+        <kb:valueSet>
+          <kb:valueType>string</kb:valueType>
+          <kb:value>Java</kb:value>
+          <kb:value>Python</kb:value>
+          <kb:value>PHP</kb:value>
+        </kb:valueSet>
       </kb:feature>
-      <kb:feature id="F2">
-        <kb:label>Script</kb:label>
-        <kb:value>Script</kb:value>
-        <kb:featureValueType>string</kb:featureValueType>
-      </kb:feature>
-      <kb:feature id="F3">
-        <kb:label>WebServer</kb:label>
-        <kb:value>WebServer</kb:value>
-        <kb:featureValueType>string</kb:featureValueType>
-      </kb:feature>
-      <kb:feature id="F4">
-        <kb:label>AppServer</kb:label>
-        <kb:value>AppServer</kb:value>
-        <kb:featureValueType>string</kb:featureValueType>
-      </kb:feature>
-      <kb:feature id="F5">
-        <kb:label>Database</kb:label>
-        <kb:value>true</kb:value>
-        <kb:featureValueType>boolean</kb:featureValueType>
+      <kb:feature id="Component-Type">
+        <kb:label>Component-Type</kb:label>
+        <kb:description>What type of Component is this Software?</kb:description>
+        <kb:valueSet>
+          <kb:valueType>string</kb:valueType>
+          <kb:value>WebServer</kb:value>
+          <kb:value>AppServer</kb:value>
+          <kb:value>Database</kb:value>
+        </kb:valueSet>
       </kb:feature>
     </kb:features>
 
@@ -108,68 +104,68 @@ For details see file LICENSING in the top project directory
 
     <kb:variants>
       <!-- Highlevel W7-Configuration-Variants; no Description -->
-      <kb:variant id="V1.1" hasFeatures="F2 F3">
+      <kb:variant id="V1.1">
         <kb:label>Apache Scripting Complex</kb:label>
       </kb:variant>
-      <kb:variant id="V1.2" hasFeatures="F2 F3 F5">
+      <kb:variant id="V1.2">
         <kb:label>Apache Database Scripting Complex</kb:label>
       </kb:variant>
-      <kb:variant id="V1.3" hasFeatures="F1 F4 F5">
+      <kb:variant id="V1.3">
         <kb:label>Java EJB Database Complex</kb:label>
       </kb:variant>
-      <kb:variant id="V1.4" hasFeatures="F1 F4 F5">
+      <kb:variant id="V1.4">
         <kb:label>Java WebApp Database Complex</kb:label>
       </kb:variant>
       <!-- Software Packages; Description = Name of required Installation-Package -->
-      <kb:variant id="V2.1" hasFeatures="F3">
+      <kb:variant id="V2.1" hasFeatures="Component-Type" defaultValue="WebServer">
         <kb:label>Apache HTTP Server</kb:label>
         <kb:description>apache2</kb:description>
       </kb:variant>
-      <kb:variant id="V2.2" hasFeatures="F2">
+      <kb:variant id="V2.2" hasFeatures="Programming-Language" defaultValue="PHP">
         <kb:label>PHP</kb:label>
         <kb:description>libapache2-mod-php5</kb:description>
       </kb:variant>
-      <kb:variant id="V2.3" hasFeatures="F2">
+      <kb:variant id="V2.3" hasFeatures="Programming-Language" defaultValue="Python">
         <kb:label>Python</kb:label>
         <kb:description>libapache2-mod-python</kb:description>
       </kb:variant>
-      <kb:variant id="V2.4" hasFeatures="F2 F5">
+      <kb:variant id="V2.4" hasFeatures="Programming-Language" defaultValue="PHP">
         <kb:label>MySQL Connector for PHP</kb:label>
         <kb:description>php5-mysql</kb:description>
       </kb:variant>
-      <kb:variant id="V2.5" hasFeatures="F2 F5">
+      <kb:variant id="V2.5" hasFeatures="Programming-Language" defaultValue="Python">
         <kb:label>MySQL Connector for Python</kb:label>
         <kb:description>python-mysqldb</kb:description>
       </kb:variant>
-      <kb:variant id="V2.6" hasFeatures="F1 F5">
+      <kb:variant id="V2.6" hasFeatures="Programming-Language" defaultValue="Java">
         <kb:label>MySQL Connector for Java</kb:label>
         <kb:description>mysql-connector-java-5.1.27.tar.gz</kb:description>
       </kb:variant>
-      <kb:variant id="V2.7" hasFeatures="F2 F5">
+      <kb:variant id="V2.7" hasFeatures="Programming-Language" defaultValue="PHP">
         <kb:label>Postgres Connector for PHP</kb:label>
         <kb:description>php5-pgsql</kb:description>
       </kb:variant>
-      <kb:variant id="V2.8" hasFeatures="F2 F5">
+      <kb:variant id="V2.8" hasFeatures="Programming-Language" defaultValue="Python">
         <kb:label>Postgres Connector for Python</kb:label>
         <kb:description>python-pygresql</kb:description>
       </kb:variant>
-      <kb:variant id="V2.9" hasFeatures="F1 F5">
+      <kb:variant id="V2.9" hasFeatures="Programming-Language" defaultValue="Java">
         <kb:label>Postgres Connector for Java</kb:label>
         <kb:description>postgresql-8.4-703.jdbc4.jar</kb:description>
       </kb:variant>
-      <kb:variant id="V2.10" hasFeatures="F5">
+      <kb:variant id="V2.10" hasFeatures="Component-Type" defaultValue="Database">
         <kb:label>PostgreSQL</kb:label>
         <kb:description>postgresql-8.4</kb:description>
       </kb:variant>
-      <kb:variant id="V2.11" hasFeatures="F5">
+      <kb:variant id="V2.11" hasFeatures="Component-Type" defaultValue="Database">
         <kb:label>MySQL Server</kb:label>
         <kb:description>mysql-server</kb:description>
       </kb:variant>
-      <kb:variant id="V2.12" hasFeatures="F1 F4">
+      <kb:variant id="V2.12" hasFeatures="Component-Type" defaultValue="AppServer">
         <kb:label>JBoss</kb:label>
         <kb:description>jbossas4</kb:description>
       </kb:variant>
-      <kb:variant id="V2.13" hasFeatures="F1 F4">
+      <kb:variant id="V2.13" hasFeatures="Component-Type" defaultValue="AppServer">
         <kb:label>Tomcat</kb:label>
         <kb:description>tomcat7</kb:description>
       </kb:variant>
@@ -202,156 +198,131 @@ For details see file LICENSING in the top project directory
 
     <kb:events>
       <!-- Events for DB-Connectors -->
-      <kb:event variantID="V1.2" id="E-MYSQL-PHP-CON">
+      <kb:event context="V1.2 P2.3" variantID="V1.2" id="E-MYSQL-PHP-CON">
         <kb:label>ApDbScCo#talk:db/mysql-php-connector</kb:label>
-        <kb:contextPath pathIDs="V1.2 P2.3 V2.4" />
+        <kb:variantTrigger variantID="V2.4" />
       </kb:event>
-      <kb:event variantID="V1.2" id="E-MYSQL-PY-CON">
+      <kb:event context="V1.2 P2.3" variantID="V1.2" id="E-MYSQL-PY-CON">
         <kb:label>ApDbScCo#talk:db/mysql-python-connector</kb:label>
-        <kb:contextPath pathIDs="V1.2 P2.3 V2.5" />
+        <kb:variantTrigger variantID="V2.5" />
       </kb:event>
-      <kb:event variantID="V1.2" id="E-PGSQL-PHP-CON">
+      <kb:event context="V1.2 P2.3" variantID="V1.2" id="E-PGSQL-PHP-CON">
         <kb:label>ApDbScCo#talk:db/postgres-php-connector</kb:label>
-        <kb:contextPath pathIDs="V1.2 P2.3 V2.7" />
+        <kb:variantTrigger variantID="V2.7" />
       </kb:event>
-      <kb:event variantID="V1.2" id="E-PGSQL-PY-CON">
+      <kb:event context="V1.2 P2.3" variantID="V1.2" id="E-PGSQL-PY-CON">
         <kb:label>ApDbScCo#talk:db/postgres-python-connector</kb:label>
-        <kb:contextPath pathIDs="V1.2 P2.3 V2.8" />
+        <kb:variantTrigger variantID="V2.8" />
       </kb:event>
       <!-- Events for JDBC-Drivers for EJB -->
-      <kb:event variantID="V1.3" id="E-EJB-JDBC-MYSQL">
+      <kb:event context="V1.3 P2.3" variantID="V1.3" id="E-EJB-JDBC-MYSQL">
         <kb:label>JaEjbDbCo#talk:db/mysql-java-connector</kb:label>
-        <kb:contextPath pathIDs="V1.3 P2.3 V2.6" />
+        <kb:variantTrigger variantID="V2.6" />
       </kb:event>
-      <kb:event variantID="V1.3" id="E-EJB-JDBC-PGSQL">
+      <kb:event context="V1.3 P2.3" variantID="V1.3" id="E-EJB-JDBC-PGSQL">
         <kb:label>JaEjbDbCo#talk:db/postgres-java-connector</kb:label>
-        <kb:contextPath pathIDs="V1.3 P2.3 V2.9" />
+        <kb:variantTrigger variantID="V2.9" />
       </kb:event>
       <!-- Events for JDBC-Drivers for WebApps -->
-      <kb:event variantID="V1.4" id="E-WEB-JDBC-MYSQL">
+      <kb:event context="V1.4 P2.3" variantID="V1.4" id="E-WEB-JDBC-MYSQL">
         <kb:label>JaWebDbCo#talk:db/mysql-java-connector</kb:label>
-        <kb:contextPath pathIDs="V1.4 P2.3 V2.6" />
+        <kb:variantTrigger variantID="V2.6" />
       </kb:event>
-      <kb:event variantID="V1.4" id="E-WEB-JDBC-PGSQL">
+      <kb:event context="V1.4 P2.3" variantID="V1.4" id="E-WEB-JDBC-PGSQL">
         <kb:label>JaWebDbCo#talk:db/postgres-java-connector</kb:label>
-        <kb:contextPath pathIDs="V1.4 P2.3 V2.9" />
+        <kb:variantTrigger variantID="V2.9" />
       </kb:event>
       <!-- Events for Script-Languages -->
-      <kb:event variantID="V1.2" id="E-SCRIPTS-PHP">
+      <kb:event context="V1.2 P2.2" variantID="V1.2" id="E-SCRIPTS-PHP">
         <kb:label>ApDbScCo#exec:sc/mod-php</kb:label>
-        <kb:contextPath pathIDs="V1.2 P2.2 V2.2" />
+        <kb:variantTrigger variantID="V2.2" />
       </kb:event>
-      <kb:event variantID="V1.2" id="E-SCRIPTS-PY">
+      <kb:event context="V1.2 P2.2" variantID="V1.2" id="E-SCRIPTS-PY">
         <kb:label>ApDbScCo#exec:sc/mod-python</kb:label>
-        <kb:contextPath pathIDs="V1.2 P2.2 V2.3" />
+        <kb:variantTrigger variantID="V2.3" />
       </kb:event>
       <!-- Events for Databases (Apache Context) -->
-      <kb:event variantID="V1.2" id="E-HTTP-DB-MYSQL">
+      <kb:event context="V1.2 P2.4" variantID="V1.2" id="E-HTTP-DB-MYSQL">
         <kb:label>ApDbScCo#store:data/mysql</kb:label>
-        <kb:contextPath pathIDs="V1.2 P2.4 V2.11" />
+        <kb:variantTrigger variantID="V2.11" />
       </kb:event>
-      <kb:event variantID="V1.2" id="E-HTTP-DB-PGSQL">
+      <kb:event context="V1.2 P2.4" variantID="V1.2" id="E-HTTP-DB-PGSQL">
         <kb:label>ApDbScCo#store:data/postgres</kb:label>
-        <kb:contextPath pathIDs="V1.2 P2.4 V2.10" />
+        <kb:variantTrigger variantID="V2.10" />
       </kb:event>
       <!-- Events for Databases (EJB Context) -->
-      <kb:event variantID="V1.3" id="E-EJB-DB-MYSQL">
+      <kb:event context="V1.3 P2.4" variantID="V1.3" id="E-EJB-DB-MYSQL">
         <kb:label>JaEjbDbCo#store:data/mysql</kb:label>
-        <kb:contextPath pathIDs="V1.3 P2.4 V2.11" />
+        <kb:variantTrigger variantID="V2.11" />
       </kb:event>
-      <kb:event variantID="V1.3" id="E-EJB-DB-PGSQL">
+      <kb:event context="V1.3 P2.4" variantID="V1.3" id="E-EJB-DB-PGSQL">
         <kb:label>JaEjbDbCo#store:data/postgres</kb:label>
-        <kb:contextPath pathIDs="V1.3 P2.4 V2.10" />
+        <kb:variantTrigger variantID="V2.10" />
       </kb:event>
       <!-- Events for Databases (WebApp Context) -->
-      <kb:event variantID="V1.4" id="E-WEB-DB-MYSQL">
+      <kb:event context="V1.4 P2.4" variantID="V1.4" id="E-WEB-DB-MYSQL">
         <kb:label>JaWebDbCo#store:data/mysql</kb:label>
-        <kb:contextPath pathIDs="V1.4 P2.4 V2.11" />
+        <kb:variantTrigger variantID="V2.11" />
       </kb:event>
-      <kb:event variantID="V1.4" id="E-WEB-DB-PGSQL">
+      <kb:event context="V1.4 P2.4" variantID="V1.4" id="E-WEB-DB-PGSQL">
         <kb:label>JaWebDbCo#store:data/postgres</kb:label>
-        <kb:contextPath pathIDs="V1.4 P2.4 V2.10" />
+        <kb:variantTrigger variantID="V2.10" />
       </kb:event>
       <!-- Event for Tomcat Server -->
-      <kb:event variantID="V1.4" id="E-WEB-TOMCAT">
+      <kb:event context="V1.4 P2.6" variantID="V1.4" id="E-WEB-TOMCAT">
         <kb:label>JaWebDbCo#exec:ja/Tomcat</kb:label>
-        <kb:contextPath pathIDs="V1.4 P2.6 V2.13" />
+        <kb:variantTrigger variantID="V2.13" />
       </kb:event>
       <!-- Event for a Java WebApp -->
-      <kb:event variantID="V1.4" id="E-JAVA-WEB">
+      <kb:event context="V1.4" variantID="V1.4" id="E-JAVA-WEB">
         <kb:label>JaWebDbCo</kb:label>
-        <kb:contextPath pathIDs="V1.4" />
-      </kb:event>
-      <!-- Event for executing Java WebApp -->
-      <kb:event variantID="V1.4" id="E-EXE-JAVA-WEB">
-        <kb:label>JaWebDbCo#exec:ja</kb:label>
-        <kb:contextPath pathIDs="V1.4 P2.6" />
-      </kb:event>
-      <!-- Event for executing Scripts -->
-      <kb:event variantID="V1.2" id="E-EXE-SCRIPTS">
-        <kb:label>ApDbScCo#exec:sc</kb:label>
-        <kb:contextPath pathIDs="V1.2 P2.2" />
-      </kb:event>
-      <!-- Event for store Data (Apache Context) -->
-      <kb:event variantID="V1.2" id="E-HTTP-STORE-DATA">
-        <kb:label>ApDbScCo#store:data</kb:label>
-        <kb:contextPath pathIDs="V1.2 P2.4" />
-      </kb:event>
-      <!-- Event for store Data (EJB Context) -->
-      <kb:event variantID="V1.3" id="E-EJB-STORE-DATA">
-        <kb:label>JaEjbDbCo#store:data</kb:label>
-        <kb:contextPath pathIDs="V1.3 P2.4" />
-      </kb:event>
-      <!-- Event for store Data (WebApp Context) -->
-      <kb:event variantID="V1.4" id="E-WEB-STORE-DATA">
-        <kb:label>JaWebDbCo#store:data</kb:label>
-        <kb:contextPath pathIDs="V1.4 P2.4" />
+        <kb:variantTrigger variantID="V1.4" />
       </kb:event>
     </kb:events>
 
     <kb:rules>
       <!-- Set 1: DB-Connector ==> Script-Language -->
-      <kb:rule id="R-1.1" variantID="V1.2" triggerEventID="E-MYSQL-PHP-CON" premiseEventID="E-EXE-SCRIPTS" conclusionEventID="E-SCRIPTS-PHP">
-         <kb:label>ApDbScCo#talk:db/mysql-php-con -> (ApDbScCo#exec:sc -> ApDbScCo#exec:sc/mod-php)</kb:label>
+      <kb:rule id="R-1.1" variantID="V1.2" premiseEventID="E-MYSQL-PHP-CON" conclusionEventID="E-SCRIPTS-PHP">
+        <kb:label>ApDbScCo#talk:db/mysql-php-con -> (ApDbScCo#exec:sc -> ApDbScCo#exec:sc/mod-php)</kb:label>
       </kb:rule>
-      <kb:rule id="R-1.2" variantID="V1.2" triggerEventID="E-MYSQL-PY-CON" premiseEventID="E-EXE-SCRIPTS" conclusionEventID="E-SCRIPTS-PY">
+      <kb:rule id="R-1.2" variantID="V1.2" premiseEventID="E-MYSQL-PY-CON" conclusionEventID="E-SCRIPTS-PY">
          <kb:label>ApDbScCo#talk:db/mysql-python-connector -> (ApDbScCo#exec:sc -> ApDbScCo#exec:sc/mod-python)</kb:label>
       </kb:rule>
-      <kb:rule id="R-1.3" variantID="V1.2" triggerEventID="E-PGSQL-PHP-CON" premiseEventID="E-EXE-SCRIPTS" conclusionEventID="E-SCRIPTS-PHP">
+      <kb:rule id="R-1.3" variantID="V1.2" premiseEventID="E-PGSQL-PHP-CON" conclusionEventID="E-SCRIPTS-PHP">
          <kb:label>ApDbScCo#talk:db/postgres-php-connector -> (ApDbScCo#exec:sc -> ApDbScCo#exec:sc/mod-php)</kb:label>
       </kb:rule>
-      <kb:rule id="R-1.4" variantID="V1.2" triggerEventID="E-PGSQL-PY-CON" premiseEventID="E-EXE-SCRIPTS" conclusionEventID="E-SCRIPTS-PY">
+      <kb:rule id="R-1.4" variantID="V1.2" premiseEventID="E-PGSQL-PY-CON" conclusionEventID="E-SCRIPTS-PY">
          <kb:label>ApDbScCo#talk:db/postgres-python-connector -> (ApDbScCo#exec:sc -> ApDbScCo#exec:sc/mod-python)</kb:label>
       </kb:rule>
       <!-- Set 2: DB-Connector ==> DB-Server -->
-      <kb:rule id="R-2.1" variantID="V1.2" triggerEventID="E-MYSQL-PHP-CON" premiseEventID="E-HTTP-STORE-DATA" conclusionEventID="E-HTTP-DB-MYSQL">
+      <kb:rule id="R-2.1" variantID="V1.2" premiseEventID="E-MYSQL-PHP-CON" conclusionEventID="E-HTTP-DB-MYSQL">
          <kb:label>ApDbScCo#talk:db/mysql-php-con -> (ApDbScCo#store:data -> ApDbScCo#store:data/mysql)</kb:label>
       </kb:rule>
-      <kb:rule id="R-2.2" variantID="V1.2" triggerEventID="E-MYSQL-PY-CON" premiseEventID="E-HTTP-STORE-DATA" conclusionEventID="E-HTTP-DB-MYSQL">
+      <kb:rule id="R-2.2" variantID="V1.2" premiseEventID="E-MYSQL-PY-CON" conclusionEventID="E-HTTP-DB-MYSQL">
          <kb:label>ApDbScCo#talk:db/mysql-python-connector -> (ApDbScCo#store:data -> ApDbScCo#store:data/mysql)</kb:label>
       </kb:rule>
-      <kb:rule id="R-2.3" variantID="V1.2" triggerEventID="E-PGSQL-PHP-CON" premiseEventID="E-HTTP-STORE-DATA" conclusionEventID="E-HTTP-DB-PGSQL">
+      <kb:rule id="R-2.3" variantID="V1.2" premiseEventID="E-PGSQL-PHP-CON" conclusionEventID="E-HTTP-DB-PGSQL">
          <kb:label>ApDbScCo#talk:db/postgres-php-connector -> (ApDbScCo#store:data -> ApDbScCo#store:data/postgres)</kb:label>
       </kb:rule>
-      <kb:rule id="R-2.4" variantID="V1.2" triggerEventID="E-PGSQL-PY-CON" premiseEventID="E-HTTP-STORE-DATA" conclusionEventID="E-HTTP-DB-PGSQL">
+      <kb:rule id="R-2.4" variantID="V1.2" premiseEventID="E-PGSQL-PY-CON" conclusionEventID="E-HTTP-DB-PGSQL">
          <kb:label>ApDbScCo#talk:db/postgres-python-connecto -> (ApDbScCo#store:data -> ApDbScCo#store:data/postgres)</kb:label>
       </kb:rule>
       <!-- Set 3: JDBC-Driver ==> DB-Server (EJB Context) -->
-      <kb:rule id="R-3.1" variantID="V1.3" triggerEventID="E-EJB-JDBC-MYSQL" premiseEventID="E-EJB-STORE-DATA" conclusionEventID="E-EJB-DB-MYSQL">
+      <kb:rule id="R-3.1" variantID="V1.3" premiseEventID="E-EJB-JDBC-MYSQL" conclusionEventID="E-EJB-DB-MYSQL">
          <kb:label>JaEjbDbCo#talk:db/mysql-java-connector -> (JaEjbDbCo#store:data -> JaEjbDbCo#store:data/mysql)</kb:label>
       </kb:rule>
-      <kb:rule id="R-3.2" variantID="V1.3" triggerEventID="E-EJB-JDBC-PGSQL" premiseEventID="E-EJB-STORE-DATA" conclusionEventID="E-EJB-DB-PGSQL">
+      <kb:rule id="R-3.2" variantID="V1.3" premiseEventID="E-EJB-JDBC-PGSQL" conclusionEventID="E-EJB-DB-PGSQL">
          <kb:label>JaEjbDbCo#talk:db/postgres-java-connector -> (JaEjbDbCo#store:data -> JaEjbDbCo#store:data/postgres)</kb:label>
       </kb:rule>
       <!-- Set 4: JDBC-Driver ==> DB-Server (WebApp Context) -->
-      <kb:rule id="R-4.1" variantID="V1.4" triggerEventID="E-WEB-JDBC-MYSQL" premiseEventID="E-WEB-STORE-DATA" conclusionEventID="E-WEB-DB-MYSQL">
+      <kb:rule id="R-4.1" variantID="V1.4" premiseEventID="E-WEB-JDBC-MYSQL" conclusionEventID="E-WEB-DB-MYSQL">
          <kb:label>JaWebDbCo#talk:db/mysql-java-connector -> (JaWebDbCo#store:data -> JaWebDbCo#store:data/mysql)</kb:label>
       </kb:rule>
-      <kb:rule id="R-4.2" variantID="V1.4" triggerEventID="E-WEB-JDBC-PGSQL" premiseEventID="E-WEB-STORE-DATA" conclusionEventID="E-WEB-DB-PGSQL">
+      <kb:rule id="R-4.2" variantID="V1.4" premiseEventID="E-WEB-JDBC-PGSQL" conclusionEventID="E-WEB-DB-PGSQL">
          <kb:label>JaWebDbCo#talk:db/postgres-java-connector -> (JaWebDbCo#store:data -> JaWebDbCo#store:data/postgres)</kb:label>
       </kb:rule>
       <!-- Set 5: Java WebApp ==> Tomcat (although JBoss would be possible) -->
-      <kb:rule id="R-5" variantID="V1.4" triggerEventID="E-JAVA-WEB" premiseEventID="E-EXE-JAVA-WEB" conclusionEventID="E-WEB-TOMCAT">
+      <kb:rule id="R-5" variantID="V1.4" premiseEventID="E-JAVA-WEB" conclusionEventID="E-WEB-TOMCAT">
          <kb:label>JaWebDbCo -> (JaWebDbCo#exec:ja -> JaWebDbCo#exec:ja/Tomcat)</kb:label>
       </kb:rule>
     </kb:rules>
