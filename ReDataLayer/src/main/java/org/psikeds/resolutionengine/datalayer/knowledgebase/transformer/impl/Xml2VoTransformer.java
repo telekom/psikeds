@@ -100,7 +100,7 @@ public class Xml2VoTransformer implements Transformer {
    */
   @Override
   public Constitutes xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Constitutes xml) {
-    return xml == null ? null : new Constitutes(xml.getDescription(), xml.getVariantID(), xml.getPurposeID());
+    return (xml == null ? null : new Constitutes(xml.getDescription(), xml.getVariantID(), xml.getPurposeID()));
   }
 
   /**
@@ -120,10 +120,12 @@ public class Xml2VoTransformer implements Transformer {
       final VariantTrigger vt = xml.getVariantTrigger();
       final FeatureValueTrigger fvt = xml.getFeatureValueTrigger();
       if ((vt != null) && (fvt == null)) {
-        vo = new VariantEvent(label, description, eventId, variantId, context, vt.getVariantID(), vt.isNotEvent());
+        final boolean notEvent = (vt.isNotEvent() == null ? Event.DEFAULT_NOT_EVENT : vt.isNotEvent().booleanValue());
+        vo = new VariantEvent(label, description, eventId, variantId, context, vt.getVariantID(), notEvent);
       }
       else if ((vt == null) && (fvt != null)) {
-        vo = new FeatureEvent(label, description, eventId, variantId, context, fvt.getFeatureID(), fvt.getValue(), fvt.isNotEvent());
+        final boolean notEvent = (fvt.isNotEvent() == null ? Event.DEFAULT_NOT_EVENT : fvt.isNotEvent().booleanValue());
+        vo = new FeatureEvent(label, description, eventId, variantId, context, fvt.getFeatureID(), fvt.getValue(), notEvent);
       }
       else {
         // xml-schema-choice, so this should never happen
@@ -164,7 +166,6 @@ public class Xml2VoTransformer implements Transformer {
     if (xml != null) {
       final String featureId = xml.getId();
       final String label = xml.getLabel();
-      ;
       final String description = xml.getDescription();
       final org.psikeds.knowledgebase.jaxb.ValueRange range = xml.getValueRange();
       final org.psikeds.knowledgebase.jaxb.ValueSet values = xml.getValueSet();
@@ -211,13 +212,8 @@ public class Xml2VoTransformer implements Transformer {
   public Fulfills xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Fulfills xml) {
     Fulfills vo = null;
     if (xml != null) {
-      final Long qty = xml.getQuantity();
-      if (qty != null) {
-        vo = new Fulfills(xml.getDescription(), xml.getPurposeID(), xml.getVariantID(), qty.longValue());
-      }
-      else {
-        vo = new Fulfills(xml.getDescription(), xml.getPurposeID(), xml.getVariantID());
-      }
+      final long qty = (xml.getQuantity() == null ? Fulfills.DEFAULT_QUANTITY : xml.getQuantity().longValue());
+      vo = new Fulfills(xml.getDescription(), xml.getPurposeID(), xml.getVariantID(), qty);
     }
     return vo;
   }
@@ -241,13 +237,8 @@ public class Xml2VoTransformer implements Transformer {
   public Purpose xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Purpose xml) {
     Purpose vo = null;
     if (xml != null) {
-      final Boolean root = xml.isRoot();
-      if (root != null) {
-        vo = new Purpose(xml.getLabel(), xml.getDescription(), xml.getId(), root.booleanValue());
-      }
-      else {
-        vo = new Purpose(xml.getLabel(), xml.getDescription(), xml.getId());
-      }
+      final boolean root = (xml.isRoot() == null ? Purpose.DEFAULT_IS_ROOT : xml.isRoot().booleanValue());
+      vo = new Purpose(xml.getLabel(), xml.getDescription(), xml.getId(), root);
     }
     return vo;
   }
@@ -266,6 +257,7 @@ public class Xml2VoTransformer implements Transformer {
       for (final org.psikeds.knowledgebase.jaxb.Purpose p : lst) {
         vo.addPurpose(xml2ValueObject(p));
       }
+      LOGGER.trace("xml2ValueObject: xml = {}\n--> vo = {}", xml, vo);
     }
     return vo;
   }
@@ -361,7 +353,7 @@ public class Xml2VoTransformer implements Transformer {
    */
   @Override
   public Variant xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Variant xml) {
-    return xml == null ? null : new Variant(xml.getLabel(), xml.getDescription(), xml.getId(), xml.getHasFeatures());
+    return (xml == null ? null : new Variant(xml.getLabel(), xml.getDescription(), xml.getId(), xml.getHasFeatures(), xml.getDefaultValue()));
   }
 
   /**
@@ -378,6 +370,7 @@ public class Xml2VoTransformer implements Transformer {
       for (final org.psikeds.knowledgebase.jaxb.Variant v : lst) {
         vo.addVariant(xml2ValueObject(v));
       }
+      LOGGER.trace("xml2ValueObject: xml = {}\n--> vo = {}", xml, vo);
     }
     return vo;
   }
