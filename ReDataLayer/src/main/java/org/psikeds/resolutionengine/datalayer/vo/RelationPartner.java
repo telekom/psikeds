@@ -20,6 +20,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * A Relation-Partner is used within Relation of the Form
  * <Left-Side-Relation-Partner> <RelationOperator> <Right-Side-Relation-Partner>
@@ -60,10 +62,8 @@ public class RelationPartner extends ValueObject implements Serializable {
     this.context = context;
   }
 
-  public void addContextPathID(final String id) {
-    if (id != null) {
-      getContext().add(id);
-    }
+  public boolean addContextPathID(final String id) {
+    return (!StringUtils.isEmpty(id) && getContext().add(id));
   }
 
   public String getFeatureID() {

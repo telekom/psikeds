@@ -50,7 +50,7 @@ public class Events extends ValueObject implements Serializable {
   }
 
   public boolean addEvent(final Event value) {
-    return getEvent().add(value);
+    return ((value != null) && getEvent().add(value));
   }
 
   public void setEvent(final List<Event> lst) {

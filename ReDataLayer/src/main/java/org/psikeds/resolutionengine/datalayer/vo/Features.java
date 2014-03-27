@@ -50,7 +50,7 @@ public class Features extends ValueObject implements Serializable {
   }
 
   public boolean addFeature(final Feature<?> value) {
-    return getFeature().add(value);
+    return ((value != null) && getFeature().add(value));
   }
 
   public void setFeature(final List<Feature<?>> lst) {

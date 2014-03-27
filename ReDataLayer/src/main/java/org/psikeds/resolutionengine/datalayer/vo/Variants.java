@@ -50,7 +50,7 @@ public class Variants extends ValueObject implements Serializable {
   }
 
   public boolean addVariant(final Variant value) {
-    return getVariant().add(value);
+    return ((value != null) && getVariant().add(value));
   }
 
   public void setVariant(final List<Variant> lst) {

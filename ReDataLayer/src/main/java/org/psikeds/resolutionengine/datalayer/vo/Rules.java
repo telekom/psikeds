@@ -50,7 +50,7 @@ public class Rules extends ValueObject implements Serializable {
   }
 
   public boolean addRule(final Rule value) {
-    return getRule().add(value);
+    return ((value != null) && getRule().add(value));
   }
 
   public void setRule(final List<Rule> lst) {

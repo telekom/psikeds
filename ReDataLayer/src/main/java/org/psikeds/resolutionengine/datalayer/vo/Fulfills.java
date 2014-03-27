@@ -20,6 +20,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * A Purpose is fulfilled by one or several Variant(s).
  * 
@@ -85,8 +87,8 @@ public class Fulfills extends ValueObject implements Serializable {
     return this.variantID;
   }
 
-  public boolean addVariantID(final String value) {
-    return getVariantID().add(value);
+  public boolean addVariantID(final String id) {
+    return (!StringUtils.isEmpty(id) && getVariantID().add(id));
   }
 
   public void setVariantID(final List<String> lst) {

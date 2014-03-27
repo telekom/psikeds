@@ -89,16 +89,12 @@ public abstract class Feature<T> extends ValueObject {
     return this.values;
   }
 
-  public void addValue(final T value) {
-    if (value != null) {
-      getValues().add(value);
-    }
+  public boolean addValue(final T value) {
+    return ((value != null) && getValues().add(value));
   }
 
-  public void addValue(final List<T> values) {
-    if ((values != null) && !values.isEmpty()) {
-      getValues().addAll(values);
-    }
+  public boolean addValue(final List<T> values) {
+    return ((values != null) && !values.isEmpty() && getValues().addAll(values));
   }
 
   public void setValues(final List<T> values) {

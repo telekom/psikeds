@@ -19,6 +19,8 @@ import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonSubTypes;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * An Event is defined by the ID of the Variant it is attached to,
  * its Context (= Path: Variant->Purpose->Variant->...) and the
@@ -104,10 +106,8 @@ public abstract class Event extends ValueObject {
     this.context = context;
   }
 
-  public void addContextPathID(final String id) {
-    if (id != null) {
-      getContext().add(id);
-    }
+  public boolean addContextPathID(final String id) {
+    return (!StringUtils.isEmpty(id) && getContext().add(id));
   }
 
   public boolean isNotEvent() {

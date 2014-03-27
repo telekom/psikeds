@@ -50,7 +50,7 @@ public class Alternatives extends ValueObject implements Serializable {
   }
 
   public boolean addFulfills(final Fulfills value) {
-    return getFulfills().add(value);
+    return ((value != null) && getFulfills().add(value));
   }
 
   public void setFulfills(final List<Fulfills> lst) {

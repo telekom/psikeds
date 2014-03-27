@@ -50,7 +50,7 @@ public class Constituents extends ValueObject implements Serializable {
   }
 
   public boolean addConstitutes(final Constitutes value) {
-    return getConstitutes().add(value);
+    return ((value != null) && getConstitutes().add(value));
   }
 
   public void setConstitutes(final List<Constitutes> lst) {

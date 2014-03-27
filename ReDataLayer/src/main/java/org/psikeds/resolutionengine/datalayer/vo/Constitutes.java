@@ -20,6 +20,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * A Variant is constituted by one or several Purposes(s).
  * 
@@ -79,7 +81,7 @@ public class Constitutes extends ValueObject implements Serializable {
   }
 
   public boolean addPurposeID(final String value) {
-    return getPurposeID().add(value);
+    return (!StringUtils.isEmpty(value) && getPurposeID().add(value));
   }
 
   public void setPurposeID(final List<String> lst) {

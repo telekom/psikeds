@@ -23,6 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Meta-Infos regarding the Knowledge-Base.
  * 
@@ -137,7 +139,7 @@ public class MetaData extends ValueObject implements Serializable {
   }
 
   public boolean addDescription(final String value) {
-    return getDescription().add(value);
+    return (!StringUtils.isEmpty(value) && getDescription().add(value));
   }
 
   public void setDescription(final List<String> lst) {
@@ -156,7 +158,7 @@ public class MetaData extends ValueObject implements Serializable {
   }
 
   public void addAdditionalInfo(final String key, final Serializable value) {
-    if ((key != null) && (value != null)) {
+    if (!StringUtils.isEmpty(key) && (value != null)) {
       getAdditionalInfo().put(key, value);
     }
   }

@@ -50,7 +50,7 @@ public class Relations extends ValueObject implements Serializable {
   }
 
   public boolean addRelation(final Relation value) {
-    return getRelation().add(value);
+    return ((value != null) && getRelation().add(value));
   }
 
   public void setRelation(final List<Relation> relation) {

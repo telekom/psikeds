@@ -50,7 +50,7 @@ public class Purposes extends ValueObject implements Serializable {
   }
 
   public boolean addPurpose(final Purpose value) {
-    return getPurpose().add(value);
+    return ((value != null) && getPurpose().add(value));
   }
 
   public void setPurpose(final List<Purpose> lst) {

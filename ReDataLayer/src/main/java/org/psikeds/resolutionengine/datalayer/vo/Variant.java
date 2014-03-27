@@ -20,6 +20,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * A single Variant. Variants can optionally have certain Features,
  * i.e. hold a List of IDs of the referenced Features.
@@ -47,6 +49,11 @@ public class Variant extends ValueObject implements Serializable {
 
   public Variant(final String variantID) {
     this(variantID, null, variantID);
+  }
+
+  public Variant(final String variantID, final List<String> featureIds) {
+    this(variantID);
+    this.featureIds = featureIds;
   }
 
   public Variant(final String label, final String description, final String variantID) {
@@ -96,14 +103,12 @@ public class Variant extends ValueObject implements Serializable {
     this.featureIds = featureIds;
   }
 
-  public void addFeatureId(final String featureId) {
-    getFeatureIds().add(featureId);
+  public boolean addFeatureId(final String featureId) {
+    return (!StringUtils.isEmpty(featureId) && getFeatureIds().add(featureId));
   }
 
-  public void addFeature(final Feature<?> feature) {
-    if (feature != null) {
-      getFeatureIds().add(feature.getId());
-    }
+  public boolean addFeature(final Feature<?> feature) {
+    return ((feature != null) && addFeatureId(feature.getId()));
   }
 
   public String getDefaultFeatureValue() {
