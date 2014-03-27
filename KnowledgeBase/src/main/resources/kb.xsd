@@ -52,12 +52,13 @@ For details see file LICENSING in the top project directory
   </xs:element>
 
   <xs:element name="data">
+    <!-- Minimum Knowledge-Data is a (Root-)Purpose and some alternative Purposes fulfilling that Purpose. -->
     <xs:complexType>
       <xs:sequence>
         <xs:element ref="features" minOccurs="0" maxOccurs="1" />      <!-- features/attributes of variants -->
         <xs:element ref="purposes" />                                  <!-- ps nodes -->
         <xs:element ref="variants" />                                  <!-- pv nodes -->
-        <xs:element ref="alternatives" minOccurs="0" maxOccurs="1" />  <!-- is-a releations, i.e. edges from pv to ps -->
+        <xs:element ref="alternatives" />                              <!-- is-a releations, i.e. edges from pv to ps -->
         <xs:element ref="constituents" minOccurs="0" maxOccurs="1" />  <!-- has-a releatons, i.e. edges from ps to pv -->
         <xs:element ref="events" minOccurs="0" maxOccurs="1" />        <!-- event e = context pv->ps->pv->ps->... + trigger -->
         <xs:element ref="rules" minOccurs="0" maxOccurs="1" />         <!-- Rules based on Events: If event1 ==> event2 -->
