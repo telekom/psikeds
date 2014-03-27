@@ -178,10 +178,10 @@ For details see file LICENSING in the top project directory
     <kb:constituents>
       <!-- variant v11 is constituted by purpose p111 and purpose p112 -->
       <kb:constitutes variantID="v11" purposeID="p111 p112" />
-      <!-- variant v23 is constituted by purpose p1 -->
-      <kb:constitutes variantID="v23" purposeID="p1" />
-      <!-- variant v22 is constituted by purpose p3 and purpose p1 -->
-      <kb:constitutes variantID="v22" purposeID="p3 p1" />
+      <!-- variant v23 is constituted by purpose p111 -->
+      <kb:constitutes variantID="v23" purposeID="p111" />
+      <!-- variant v22 is constituted by purpose p112 -->
+      <kb:constitutes variantID="v22" purposeID="p112" />
     </kb:constituents>
 
     <!-- 
