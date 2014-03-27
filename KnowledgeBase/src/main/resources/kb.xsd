@@ -183,8 +183,11 @@ For details see file LICENSING in the top project directory
         <xs:element ref="label" />
         <xs:element ref="description" minOccurs="0" maxOccurs="1" />
       </xs:sequence>
-      <xs:attribute name="id" type="xs:ID" use="required" />               <!-- unique ID of this variant -->
-      <xs:attribute name="hasFeatures" type="xs:IDREFS" use="optional" />  <!-- a variant can have some features -->
+      <xs:attribute name="id" type="xs:ID" use="required" />                <!-- unique ID of this variant -->
+      <xs:attribute name="hasFeatures" type="xs:IDREFS" use="optional" />   <!-- a variant can have some features -->
+      <xs:attribute name="defaultValue" type="xs:string" use="optional" />  <!-- a default Value for the first Feature;
+                                                                                 convient for "flagging" a Variant,
+                                                                                 e.g. Programming-Language=Java or Component-Type=WebServer -->
     </xs:complexType>
   </xs:element>
 
