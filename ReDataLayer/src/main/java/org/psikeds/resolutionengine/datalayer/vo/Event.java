@@ -36,7 +36,7 @@ public abstract class Event extends ValueObject {
 
   private static final long serialVersionUID = 1L;
 
-  protected static final boolean DEFAULT_NOT_EVENT = false;
+  public static final boolean DEFAULT_NOT_EVENT = false;
 
   protected String label;
   protected String description;

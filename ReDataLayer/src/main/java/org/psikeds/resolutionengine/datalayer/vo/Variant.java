@@ -39,24 +39,26 @@ public class Variant extends ValueObject implements Serializable {
   private String label;
   private String description;
   private List<String> featureIds;
+  private String defaultFeatureValue;
 
   public Variant() {
     this(null);
   }
 
   public Variant(final String variantID) {
-    this(variantID, variantID, variantID);
+    this(variantID, null, variantID);
   }
 
   public Variant(final String label, final String description, final String variantID) {
-    this(label, description, variantID, null);
+    this(label, description, variantID, null, null);
   }
 
-  public Variant(final String label, final String description, final String variantID, final List<String> featureIds) {
+  public Variant(final String label, final String description, final String variantID, final List<String> featureIds, final String defaultFeatureValue) {
     super(variantID);
     this.label = label;
     this.description = description;
     this.featureIds = featureIds;
+    this.defaultFeatureValue = defaultFeatureValue;
   }
 
   public String getLabel() {
@@ -102,5 +104,13 @@ public class Variant extends ValueObject implements Serializable {
     if (feature != null) {
       getFeatureIds().add(feature.getId());
     }
+  }
+
+  public String getDefaultFeatureValue() {
+    return this.defaultFeatureValue;
+  }
+
+  public void setDefaultFeatureValue(final String defaultFeatureValue) {
+    this.defaultFeatureValue = defaultFeatureValue;
   }
 }

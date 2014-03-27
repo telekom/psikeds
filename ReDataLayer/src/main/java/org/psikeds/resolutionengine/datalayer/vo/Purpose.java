@@ -32,6 +32,8 @@ public class Purpose extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
+  public static final boolean DEFAULT_IS_ROOT = false;
+
   private String label;
   private String description;
   private boolean root;
@@ -41,11 +43,11 @@ public class Purpose extends ValueObject implements Serializable {
   }
 
   public Purpose(final String purposeID) {
-    this(purposeID, purposeID, purposeID);
+    this(purposeID, null, purposeID);
   }
 
   public Purpose(final String label, final String description, final String purposeID) {
-    this(label, description, purposeID, false);
+    this(label, description, purposeID, DEFAULT_IS_ROOT);
   }
 
   public Purpose(final String label, final String description, final String purposeID, final boolean root) {
