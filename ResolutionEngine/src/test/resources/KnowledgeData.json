@@ -41,49 +41,49 @@
       "purposeID" : "P1",
       "root" : true,
       "label" : "P1",
-      "description" : "P1"
+      "description" : null
     }, {
       "@type" : "Purpose",
       "purposeID" : "P2",
       "root" : true,
       "label" : "P2",
-      "description" : "P2"
+      "description" : null
     }, {
       "@type" : "Purpose",
       "purposeID" : "P111",
       "root" : false,
       "label" : "P111",
-      "description" : "P111"
+      "description" : null
     }, {
       "@type" : "Purpose",
       "purposeID" : "P112",
       "root" : false,
       "label" : "P112",
-      "description" : "P112"
+      "description" : null
     }, {
       "@type" : "Purpose",
       "purposeID" : "P113",
       "root" : false,
       "label" : "P113",
-      "description" : "P113"
+      "description" : null
     }, {
       "@type" : "Purpose",
       "purposeID" : "P221",
       "root" : false,
       "label" : "P221",
-      "description" : "P221"
+      "description" : null
     }, {
       "@type" : "Purpose",
       "purposeID" : "P222",
       "root" : false,
       "label" : "P222",
-      "description" : "P222"
+      "description" : null
     }, {
       "@type" : "Purpose",
       "purposeID" : "P223",
       "root" : false,
       "label" : "P223",
-      "description" : "P223"
+      "description" : null
     } ]
   },
   "variants" : {
@@ -93,73 +93,85 @@
       "variantID" : "V11",
       "featureIds" : [ "F1", "F4" ],
       "label" : "V11",
-      "description" : "V11"
+      "description" : null,
+      "defaultFeatureValue" : null
     }, {
       "@type" : "Variant",
       "variantID" : "V12",
       "featureIds" : [ "F2", "F5" ],
       "label" : "V12",
-      "description" : "V12"
+      "description" : null,
+      "defaultFeatureValue" : null
     }, {
       "@type" : "Variant",
       "variantID" : "V13",
       "featureIds" : [ "F3" ],
       "label" : "V13",
-      "description" : "V13"
+      "description" : null,
+      "defaultFeatureValue" : null
     }, {
       "@type" : "Variant",
       "variantID" : "V21",
       "featureIds" : [ "F1", "F4" ],
       "label" : "V21",
-      "description" : "V21"
+      "description" : null,
+      "defaultFeatureValue" : null
     }, {
       "@type" : "Variant",
       "variantID" : "V22",
       "featureIds" : [ "F2", "F5" ],
       "label" : "V22",
-      "description" : "V22"
+      "description" : null,
+      "defaultFeatureValue" : null
     }, {
       "@type" : "Variant",
       "variantID" : "V23",
       "featureIds" : [ "F3" ],
       "label" : "V23",
-      "description" : "V23"
+      "description" : null,
+      "defaultFeatureValue" : null
     }, {
       "@type" : "Variant",
       "variantID" : "V1121",
       "featureIds" : [ "F1", "F4" ],
       "label" : "V1121",
-      "description" : "V1121"
+      "description" : null,
+      "defaultFeatureValue" : null
     }, {
       "@type" : "Variant",
       "variantID" : "V1122",
       "featureIds" : [ "F2", "F5" ],
       "label" : "V1122",
-      "description" : "V1122"
+      "description" : null,
+      "defaultFeatureValue" : null
     }, {
       "@type" : "Variant",
       "variantID" : "V1123",
       "featureIds" : [ "F3" ],
       "label" : "V1123",
-      "description" : "V1123"
+      "description" : null,
+      "defaultFeatureValue" : null
     }, {
       "@type" : "Variant",
       "variantID" : "V2231",
       "featureIds" : [ "F1", "F4" ],
       "label" : "V2231",
-      "description" : "V2231"
+      "description" : null,
+      "defaultFeatureValue" : null
     }, {
       "@type" : "Variant",
       "variantID" : "V2232",
       "featureIds" : [ "F2", "F5" ],
       "label" : "V2232",
-      "description" : "V2232"
+      "description" : null,
+      "defaultFeatureValue" : null
     }, {
       "@type" : "Variant",
       "variantID" : "V2233",
       "featureIds" : [ "F3" ],
       "label" : "V2233",
-      "description" : "V2233"
+      "description" : null,
+      "defaultFeatureValue" : null
     } ]
   },
   "alternatives" : {
@@ -174,19 +186,19 @@
       "@type" : "Fulfills",
       "purposeID" : "P2",
       "variantID" : [ "V21", "V22", "V23" ],
-      "quantity" : 1,
+      "quantity" : 2,
       "description" : "p2vs"
     }, {
       "@type" : "Fulfills",
       "purposeID" : "P112",
       "variantID" : [ "V1121", "V1122", "V1123" ],
-      "quantity" : 1,
+      "quantity" : 3,
       "description" : "p112vs"
     }, {
       "@type" : "Fulfills",
       "purposeID" : "P223",
       "variantID" : [ "V2231", "V2232", "V2233" ],
-      "quantity" : 1,
+      "quantity" : 4,
       "description" : "p223vs"
     } ]
   },
@@ -219,11 +231,11 @@
   "metadata" : {
     "@type" : "MetaData",
     "language" : "de_DE",
-    "description" : [ "Mock Knowledgebase V1.0 for Testing Purposes", "Created by Marco on MJSW-Zenbook at 26.03.2014 09:10:02" ],
+    "description" : [ "Mock Knowledgebase V1.0 for Testing Purposes", "Created by Marco on MJSW-Zenbook at 27.03.2014 15:47:49" ],
     "version" : "V1.0",
-    "created" : 1395821402091,
-    "lastmodified" : 1395821402091,
-    "loaded" : 1395821402091,
+    "created" : 1395931669675,
+    "lastmodified" : 1395931669675,
+    "loaded" : 1395931669675,
     "creator" : [ "Marco" ],
     "additionalInfo" : {
       "KB_CREATOR" : "Marco",

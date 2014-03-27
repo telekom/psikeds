@@ -631,14 +631,14 @@ public class KnowledgeBaseMock implements KnowledgeBase {
     allFeats.add(f5);
     final Features features = new Features(allFeats);
     // create purposes and purpose-lists
-    final Purpose p1 = new Purpose("P1", "P1", "P1", true);
-    final Purpose p2 = new Purpose("P2", "P2", "P2", true);
-    final Purpose p111 = new Purpose("P111", "P111", "P111", false);
-    final Purpose p112 = new Purpose("P112", "P112", "P112", false);
-    final Purpose p113 = new Purpose("P113", "P113", "P113", false);
-    final Purpose p221 = new Purpose("P221", "P221", "P221", false);
-    final Purpose p222 = new Purpose("P222", "P222", "P222", false);
-    final Purpose p223 = new Purpose("P223", "P223", "P223", false);
+    final Purpose p1 = new Purpose("P1", null, "P1", true);
+    final Purpose p2 = new Purpose("P2", null, "P2", true);
+    final Purpose p111 = new Purpose("P111");
+    final Purpose p112 = new Purpose("P112");
+    final Purpose p113 = new Purpose("P113");
+    final Purpose p221 = new Purpose("P221");
+    final Purpose p222 = new Purpose("P222");
+    final Purpose p223 = new Purpose("P223");
     final List<String> v11ps = new ArrayList<String>();
     v11ps.add(p111.getPurposeID());
     v11ps.add(p112.getPurposeID());
@@ -658,18 +658,18 @@ public class KnowledgeBaseMock implements KnowledgeBase {
     allpurps.add(p223);
     final Purposes purposes = new Purposes(allpurps);
     // create variants and variant-lists
-    final Variant v11 = new Variant("V11", "V11", "V11", intFeats);
-    final Variant v12 = new Variant("V12", "V12", "V12", floatFeats);
-    final Variant v13 = new Variant("V13", "V13", "V13", textFeats);
-    final Variant v21 = new Variant("V21", "V21", "V21", intFeats);
-    final Variant v22 = new Variant("V22", "V22", "V22", floatFeats);
-    final Variant v23 = new Variant("V23", "V23", "V23", textFeats);
-    final Variant v1121 = new Variant("V1121", "V1121", "V1121", intFeats);
-    final Variant v1122 = new Variant("V1122", "V1122", "V1122", floatFeats);
-    final Variant v1123 = new Variant("V1123", "V1123", "V1123", textFeats);
-    final Variant v2231 = new Variant("V2231", "V2231", "V2231", intFeats);
-    final Variant v2232 = new Variant("V2232", "V2232", "V2232", floatFeats);
-    final Variant v2233 = new Variant("V2233", "V2233", "V2233", textFeats);
+    final Variant v11 = new Variant("V11", intFeats);
+    final Variant v12 = new Variant("V12", floatFeats);
+    final Variant v13 = new Variant("V13", textFeats);
+    final Variant v21 = new Variant("V21", intFeats);
+    final Variant v22 = new Variant("V22", floatFeats);
+    final Variant v23 = new Variant("V23", textFeats);
+    final Variant v1121 = new Variant("V1121", intFeats);
+    final Variant v1122 = new Variant("V1122", floatFeats);
+    final Variant v1123 = new Variant("V1123", textFeats);
+    final Variant v2231 = new Variant("V2231", intFeats);
+    final Variant v2232 = new Variant("V2232", floatFeats);
+    final Variant v2233 = new Variant("V2233", textFeats);
     final List<String> p1vs = new ArrayList<String>();
     p1vs.add(v11.getVariantID());
     p1vs.add(v12.getVariantID());
@@ -702,10 +702,10 @@ public class KnowledgeBaseMock implements KnowledgeBase {
     final Variants variants = new Variants(allvars);
     // create alternatives, i.e. links from purposes to variants
     final Alternatives alternatives = new Alternatives();
-    alternatives.addFulfills(new Fulfills("p1vs", p1.getPurposeID(), p1vs));
-    alternatives.addFulfills(new Fulfills("p2vs", p2.getPurposeID(), p2vs));
-    alternatives.addFulfills(new Fulfills("p112vs", p112.getPurposeID(), p112vs));
-    alternatives.addFulfills(new Fulfills("p223vs", p223.getPurposeID(), p223vs));
+    alternatives.addFulfills(new Fulfills("p1vs", p1.getPurposeID(), p1vs, 1));
+    alternatives.addFulfills(new Fulfills("p2vs", p2.getPurposeID(), p2vs, 2));
+    alternatives.addFulfills(new Fulfills("p112vs", p112.getPurposeID(), p112vs, 3));
+    alternatives.addFulfills(new Fulfills("p223vs", p223.getPurposeID(), p223vs, 4));
     // create constituents, i.e. links from variants to purposes
     final Constituents constituents = new Constituents();
     constituents.addConstitutes(new Constitutes("v11ps", v11.getVariantID(), v11ps));
