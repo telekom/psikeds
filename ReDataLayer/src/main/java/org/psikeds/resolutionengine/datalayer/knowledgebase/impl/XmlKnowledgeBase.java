@@ -27,6 +27,7 @@ import org.psikeds.knowledgebase.xml.KBParserCallback;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.impl.Xml2VoTransformer;
+import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.ValidationException;
 import org.psikeds.resolutionengine.datalayer.vo.Alternatives;
 import org.psikeds.resolutionengine.datalayer.vo.Constituents;
 import org.psikeds.resolutionengine.datalayer.vo.Constitutes;
@@ -92,6 +93,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   private Map<String, Object> knowledge;
   private Transformer trans;
   private boolean valid;
+  private boolean failOnUnexpected;
 
   public XmlKnowledgeBase() {
     this(null);
@@ -102,13 +104,14 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   }
 
   public XmlKnowledgeBase(final Transformer trans, final Map<String, Object> knowledge) {
-    this(trans, knowledge, false);
+    this(trans, knowledge, false, true);
   }
 
-  public XmlKnowledgeBase(final Transformer trans, final Map<String, Object> knowledge, final boolean valid) {
+  public XmlKnowledgeBase(final Transformer trans, final Map<String, Object> knowledge, final boolean valid, final boolean failOnUnexpected) {
     setTransformer(trans);
     setKnowledge(knowledge);
     setValid(valid);
+    setFailOnUnexpected(failOnUnexpected);
   }
 
   public Transformer getTransformer() {
@@ -129,6 +132,10 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
 
   public void setValid(final boolean valid) {
     this.valid = valid;
+  }
+
+  public void setFailOnUnexpected(final boolean failOnUnexpected) {
+    this.failOnUnexpected = failOnUnexpected;
   }
 
   // -------------------------------------------------------------
@@ -510,6 +517,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   @Override
   public void handleElement(final Object element) {
     try {
+      LOGGER.trace("--> handleElement()");
       if (element instanceof org.psikeds.knowledgebase.jaxb.Knowledgebase) {
         setKnowledgebase((org.psikeds.knowledgebase.jaxb.Knowledgebase) element);
       }
@@ -543,13 +551,24 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
       else if (element instanceof org.psikeds.knowledgebase.jaxb.Relations) {
         setRelations((org.psikeds.knowledgebase.jaxb.Relations) element);
       }
+      else if (this.failOnUnexpected) {
+        throw new ValidationException("Unexpected XML-Element!");
+      }
       else {
         LOGGER.warn("Skipping unexpected XML-Element:\n{}", element);
       }
     }
+    catch (final ValidationException vaex) {
+      LOGGER.error("Could not handle XML-Element: " + String.valueOf(element), vaex);
+      throw vaex;
+    }
     catch (final Exception ex) {
-      LOGGER.error("Exception while handling XML-Element:\n{}", element);
-      LOGGER.error("handleElement() failed!", ex);
+      final String errmsg = "Could not handle XML-Element: " + String.valueOf(element);
+      LOGGER.error(errmsg, ex);
+      throw new ValidationException(errmsg, ex);
+    }
+    finally {
+      LOGGER.trace("<-- handleElement()");
     }
   }
 
