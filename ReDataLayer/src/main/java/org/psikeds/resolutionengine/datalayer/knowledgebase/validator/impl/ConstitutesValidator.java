@@ -47,46 +47,54 @@ public class ConstitutesValidator implements Validator {
     try {
       LOGGER.debug("Validating KnowledgeBase regarding Constituents / Constitutes ...");
       boolean valid = true;
-
-      final Constituents cons = kb.getConstituents();
-      final List<Constitutes> lst = cons.getConstitutes();
-      for (final Constitutes c : lst) {
-        final String vid = c.getVariantID();
-        if (StringUtils.isEmpty(vid)) {
-          valid = false;
-          LOGGER.warn("Empty VariantID!");
-        }
-        else {
-          final Variant v = kb.getVariant(vid);
-          if ((v == null) || !vid.equals(v.getVariantID())) {
+      // Note: Constituents are optional, i.e. this Node can be null!
+      final Constituents cons = (kb == null ? null : kb.getConstituents());
+      final List<Constitutes> lst = (cons == null ? null : cons.getConstitutes());
+      if ((lst != null) && !lst.isEmpty()) {
+        for (final Constitutes c : lst) {
+          final String vid = c.getVariantID();
+          if (StringUtils.isEmpty(vid)) {
             valid = false;
-            LOGGER.warn("Unknown VariantID: {}", vid);
+            LOGGER.warn("Empty VariantID!");
           }
-          else if (StringUtils.isEmpty(v.getLabel())) {
-            valid = false;
-            LOGGER.warn("Variant {} has no Label!", vid);
-          }
-        }
-        final List<String> purpids = c.getPurposeID();
-        if ((purpids == null) || purpids.isEmpty()) {
-          valid = false;
-          LOGGER.warn("No constituting Purposes of VariantID: {}", vid);
-        }
-        else {
-          for (final String pid : purpids) {
-            if (StringUtils.isEmpty(pid)) {
+          else {
+            final Variant v = kb.getVariant(vid);
+            if ((v == null) || !vid.equals(v.getVariantID())) {
               valid = false;
-              LOGGER.warn("Empty PurposeID for VariantID: {}", vid);
+              LOGGER.warn("Unknown VariantID: {}", vid);
             }
-            else {
-              final Purpose p = kb.getPurpose(pid);
-              if ((p == null) || !pid.equals(p.getPurposeID())) {
+            else if (StringUtils.isEmpty(v.getLabel())) {
+              valid = false;
+              LOGGER.warn("Variant {} has no Label!", vid);
+            }
+          }
+          final List<String> purpids = c.getPurposeID();
+          if ((purpids == null) || purpids.isEmpty()) {
+            valid = false;
+            LOGGER.warn("No constituting Purposes of VariantID: {}", vid);
+          }
+          else {
+            for (final String pid : purpids) {
+              if (StringUtils.isEmpty(pid)) {
                 valid = false;
-                LOGGER.warn("Unknown PurposeID: {}", pid);
+                LOGGER.warn("Empty PurposeID for VariantID: {}", vid);
               }
-              else if (StringUtils.isEmpty(p.getLabel())) {
-                valid = false;
-                LOGGER.warn("Purpose {} has no Label!", pid);
+              else {
+                final Purpose p = kb.getPurpose(pid);
+                if ((p == null) || !pid.equals(p.getPurposeID())) {
+                  valid = false;
+                  LOGGER.warn("Unknown PurposeID: {}", pid);
+                }
+                else {
+                  if (StringUtils.isEmpty(p.getLabel())) {
+                    valid = false;
+                    LOGGER.warn("Purpose {} has no Label!", pid);
+                  }
+                  if (p.isRoot()) {
+                    valid = false;
+                    LOGGER.warn("Purpose {} is marked as Root-Purpose but constituting Variant {}", pid, vid);
+                  }
+                }
               }
             }
           }

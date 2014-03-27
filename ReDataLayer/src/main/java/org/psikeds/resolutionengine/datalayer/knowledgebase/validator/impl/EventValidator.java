@@ -180,6 +180,7 @@ public class EventValidator implements Validator {
             }
           }
           else {
+            // most probably null
             valid = false;
             LOGGER.warn("Unexpected type of Event, neither Variant-Event nor Feature-Value-Event: {}", e);
           }
@@ -219,6 +220,11 @@ public class EventValidator implements Validator {
     final String lastPathElement = checkContextPath(kb, eventId, rootVariantId, ctx);
     if (StringUtils.isEmpty(lastPathElement)) {
       return false;
+    }
+    if (lastPathElement.equals(triggeringVariantId) && lastPathElement.equals(rootVariantId)) {
+      LOGGER.debug("Event {} is a Variant-Event without Context, i.e. Ctx = Variant = Trigger = {}", eventId, rootVariantId);
+      // Note: We need this special case, otherwise we could not define Events on selecting a Variant for a Root-Purpose!
+      return true;
     }
     final Purpose p = kb.getPurpose(lastPathElement);
     if (p == null) {
