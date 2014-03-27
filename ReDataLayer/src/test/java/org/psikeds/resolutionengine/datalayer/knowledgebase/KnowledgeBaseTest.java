@@ -43,6 +43,7 @@ import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.Featu
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.FulfillsValidator;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.RelationValidator;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.RuleValidator;
+import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.VariantValidator;
 import org.psikeds.resolutionengine.datalayer.vo.Alternatives;
 import org.psikeds.resolutionengine.datalayer.vo.Constituents;
 import org.psikeds.resolutionengine.datalayer.vo.Constitutes;
@@ -103,6 +104,7 @@ public class KnowledgeBaseTest {
       validators.add(new FeatureValidator());
       validators.add(new FulfillsValidator());
       validators.add(new ConstitutesValidator());
+      validators.add(new VariantValidator());
       validators.add(new EventValidator());
       validators.add(new RuleValidator());
       validators.add(new RelationValidator());
