@@ -34,6 +34,8 @@ import org.psikeds.resolutionengine.datalayer.vo.Purposes;
 import org.psikeds.resolutionengine.datalayer.vo.Variant;
 import org.psikeds.resolutionengine.interfaces.pojos.Decission;
 import org.psikeds.resolutionengine.interfaces.pojos.Decissions;
+import org.psikeds.resolutionengine.interfaces.pojos.ErrorMessage;
+import org.psikeds.resolutionengine.interfaces.pojos.Errors;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
 import org.psikeds.resolutionengine.interfaces.pojos.Metadata;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest;
@@ -218,7 +220,8 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
   public ResolutionResponse current(final String sessionID) {
     try {
       LOGGER.trace("--> current(); sessionID = {}", sessionID);
-      return select(new ResolutionRequest(sessionID));  // current is just select without any decissions
+      final ResolutionRequest req = (StringUtils.isEmpty(sessionID) ? null : new ResolutionRequest(sessionID));
+      return select(req);  // current is just select without any decissions
     }
     finally {
       LOGGER.trace("<-- current()");
@@ -233,44 +236,47 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
   @Override
   public ResolutionResponse select(final ResolutionRequest req) {
     ResolutionResponse resp = null;
+    Metadata metadata = null;
+    String sessionID = null;
     boolean initialKnowledge = false;
+    boolean freshSession = false;
     try {
       LOGGER.trace("--> select(); req = {}", req);
-      // Step 0: check prerequisites
       if (this.checkValidityAtRuntime) {
         checkValidity();
       }
-      if (req == null) {
-        throw new ResolutionException("Illegal Resolution-Request: No Request-Object!");
-      }
+
       // Step 1: get data; either from request or cache or kb
-      Metadata metadata = req.getMetadata();
+      metadata = (req == null ? null : req.getMetadata());
       if (metadata == null) {
-        metadata = getMetadata();
+        metadata = this.trans.valueObject2Pojo(this.kb.getMetaData());
         LOGGER.debug("Created new default Metadata.");
       }
-      else if (LOGGER.isTraceEnabled()) {
-        LOGGER.debug("Using Metadata supplied by Client:\n{}", metadata);
-      }
       else {
-        LOGGER.debug("Using Metadata supplied by Client.");
+        if (LOGGER.isTraceEnabled()) {
+          LOGGER.trace("Using Metadata supplied by Client:\n{}", metadata);
+        }
+        else {
+          LOGGER.debug("Using Metadata supplied by Client.");
+        }
       }
-      String sessionID = req.getSessionID();
+      sessionID = (req == null ? null : req.getSessionID());
       if (StringUtils.isEmpty(sessionID)) {
-        sessionID = createSessionId(metadata);
-        LOGGER.info("Created new SessionID: {}", sessionID);
+        freshSession = true;
+        sessionID = this.gen.getNextId();
         this.cache.removeSession(sessionID); // just to be sure!
+        LOGGER.info("Created new Session: {}", sessionID);
       }
       else {
-        LOGGER.info("Using SessionID supplied by Client: {}", sessionID);
+        LOGGER.debug("Resuming old Session: {}", sessionID);
       }
-      Knowledge knowledge = req.getKnowledge();
+      Knowledge knowledge = (req == null ? null : req.getKnowledge());
       if (knowledge == null) {
         knowledge = (Knowledge) this.cache.getObject(sessionID, SESS_KEY_KNOWLEDGE);
         if (knowledge == null) {
-          this.cache.removeSession(sessionID); // new knowledge, clean state
-          knowledge = getInitialKnowledge(metadata, sessionID);
           initialKnowledge = true;
+          this.cache.removeSession(sessionID); // new knowledge, clean state
+          knowledge = createInitialKnowledge(metadata, sessionID);
           if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("Created new initial Knowledge for SessionID {}:\n{}", sessionID, knowledge);
           }
@@ -295,10 +301,11 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
           LOGGER.debug("Using Knowledge supplied by Client.");
         }
       }
-      // Step 2: whatever way we got our Knowledge, update Cache
+      // whatever way we got our Knowledge, update Cache
       this.cache.saveObject(sessionID, SESS_KEY_KNOWLEDGE, knowledge);
-      // Step 3: resolve Knowledge based on Decissions
-      final Decissions decissions = req.getDecissions();
+
+      // Step 2: resolve Knowledge based on Decissions
+      final Decissions decissions = (req == null ? null : req.getDecissions());
       if (!initialKnowledge || this.resolveInitialKnowledge) {
         // Sometimes there might be some automatic Resolutions also for
         // Initial-Knowledge right in the Beginning, e.g. some Root-Purpose
@@ -308,7 +315,8 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
         // Therefore this Functionality is configurable!
         knowledge = resolveDecissions(knowledge, decissions, metadata, sessionID);
       }
-      // Step 4: create Response-Object
+
+      // Step 3: create Response-Object
       resp = new ResolutionResponse(sessionID, metadata, knowledge);
       if (resp.isResolved()) {
         // done, cleanup session
@@ -318,13 +326,19 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
       else {
         // cache current state of resolution for next request
         this.cache.saveObject(sessionID, SESS_KEY_KNOWLEDGE, knowledge);
-        LOGGER.debug("Resolved next Step for SessionID {}.", sessionID);
+        LOGGER.debug("Resolved next Step for SessionID {}", sessionID);
       }
-      return resp;
+    }
+    catch (final Exception ex) {
+      LOGGER.warn("Could not resolve Knowledge!", ex);
+      final Errors errors = new Errors();
+      errors.add(new ErrorMessage(ex));
+      resp = new ResolutionResponse(sessionID, metadata, errors);
     }
     finally {
-      LOGGER.trace("<-- select(); initialKnowledge = {}; resp = {}", initialKnowledge, resp);
+      LOGGER.trace("<-- select(); freshSession = {}; initialKnowledge = {}; resp = {}", freshSession, initialKnowledge, resp);
     }
+    return resp;
   }
 
   // ----------------------------------------------------------------
@@ -337,23 +351,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     }
   }
 
-  private Metadata getMetadata() {
-    return this.trans.valueObject2Pojo(this.kb.getMetaData());
-  }
-
-  private String createSessionId(final Metadata metadata) {
-    String sessionID = null;
-    try {
-      // ??? Session-ID somehow depended on Metadata or vice versa ???
-      sessionID = this.gen.getNextId();
-      return sessionID;
-    }
-    finally {
-      LOGGER.trace("Generated a new SessionID: {}", sessionID);
-    }
-  }
-
-  private Knowledge getInitialKnowledge(final Metadata metadata, final String sessionID) {
+  private Knowledge createInitialKnowledge(final Metadata metadata, final String sessionID) {
     // initial knowledge consists of root-purposes and their
     // fulfilling variants as first choices for the client
     final Purposes purps = this.kb.getRootPurposes();
@@ -396,7 +394,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
 
   private Knowledge autoResolve(final Knowledge knowledge, final Metadata metadata, final String sessionID) {
     LOGGER.debug("Auto-Resolution!");
-    return resolve(knowledge, (Decission) null, metadata, sessionID);
+    return resolve(knowledge, null, metadata, sessionID);
   }
 
   private Knowledge resolve(Knowledge knowledge, final Decission decission, final Metadata metadata, final String sessionID) {
