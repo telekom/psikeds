@@ -111,7 +111,7 @@ public class ResolutionController {
       LOGGER.error("init() failed!", ex);
     }
     finally {
-      LOGGER.trace("<-- init(); ret = {}; resp = {}", ret, resp);
+      LOGGER.trace("<-- init(); ret = {}\nresp = {}", ret, resp);
     }
     return ret;
   }
@@ -145,7 +145,7 @@ public class ResolutionController {
       LOGGER.error("select() failed!", ex);
     }
     finally {
-      LOGGER.trace("<-- select(); ret = {}; req = {}; resp = {}", ret, req, resp);
+      LOGGER.trace("<-- select(); ret = {}\nreq = {}\nresp = {}", ret, req, resp);
     }
     return ret;
   }
