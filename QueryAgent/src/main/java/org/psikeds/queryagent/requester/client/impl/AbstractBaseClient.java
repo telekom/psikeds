@@ -37,28 +37,29 @@ public abstract class AbstractBaseClient {
 
   protected WebClientFactory clientFactory;
 
-  public AbstractBaseClient(final WebClientFactory clientFactory) {
+  protected AbstractBaseClient(final WebClientFactory clientFactory) {
     this.clientFactory = clientFactory;
   }
 
-  /**
-   * @param clientFactory the clientFactory to set
-   */
+  public WebClientFactory getClientFactory() {
+    return this.clientFactory;
+  }
+
   public void setClientFactory(final WebClientFactory clientFactory) {
     this.clientFactory = clientFactory;
   }
 
-  // -------------------------------------------------------------
+  // ----------------------------------------------------------------
 
-  protected <T> T invokeService(final String url, final String httpMethod, final Class<T> responseClass) {
-    return invokeService(url, httpMethod, null, null, responseClass);
+  protected Response invokeService(final String url, final String httpMethod) {
+    return invokeService(url, httpMethod, null, null);
   }
 
-  protected <T> T invokeService(final String url, final String httpMethod, final Object body, final Class<?> requestClass, final Class<T> responseClass) {
+  protected Response invokeService(final String url, final String httpMethod, final Object body, final Class<?> requestClass) {
+    Response resp = null;
     try {
-      getLogger().trace("--> invokeService({}, {}, {}, {}, {})", url, httpMethod, body, requestClass, responseClass);
+      getLogger().trace("--> invokeService( {}, {}, {}, {} )", url, httpMethod, body, requestClass);
       final WebClient client = this.clientFactory.getClient(url);
-      Response resp = null;
       if (body == null) {
         resp = client.invoke(httpMethod, null);
       }
@@ -68,31 +69,72 @@ public abstract class AbstractBaseClient {
       else {
         resp = client.invoke(httpMethod, body.getClass().cast(body));
       }
-      return getContent(resp, responseClass);
+      return resp;
     }
     finally {
-      getLogger().trace("<-- invokeService({}, {}, {}, {}, {})", url, httpMethod, body, requestClass, responseClass);
+      getLogger().trace("<-- invokeService( {} ); Resp = {}", url, resp);
     }
   }
 
-  private <T> T getContent(final Response resp, final Class<T> valueType) {
+  // ----------------------------------------------------------------
+
+  protected boolean isJsonResponse(final Response resp) {
+    return ((resp != null) && MediaType.APPLICATION_JSON_TYPE.equals(resp.getMediaType()));
+  }
+
+  protected boolean isXmlResponse(final Response resp) {
+    return (((resp != null) && MediaType.TEXT_XML_TYPE.equals(resp.getMediaType())) || MediaType.APPLICATION_XML_TYPE.equals(resp.getMediaType()));
+  }
+
+  // ----------------------------------------------------------------
+
+  protected int getStatusCode(final Response resp) {
+    final StatusType stat = (resp == null ? null : resp.getStatusInfo());
+    return (stat == null ? Response.Status.INTERNAL_SERVER_ERROR.getStatusCode() : stat.getStatusCode());
+  }
+
+  protected String getReasonPhrase(final Response resp) {
+    final StatusType stat = (resp == null ? null : resp.getStatusInfo());
+    return (stat == null ? null : stat.getReasonPhrase());
+  }
+
+  protected boolean isOK(final Response resp) {
+    return (getStatusCode(resp) == Response.Status.OK.getStatusCode());
+  }
+
+  protected boolean isError(final Response resp) {
+    return !isOK(resp);
+  }
+
+  // ----------------------------------------------------------------
+
+  protected <T> T getContent(final Response resp, final Class<T> responseClass) {
+    T data = null;
     InputStream stream = null;
     try {
-      getLogger().trace("--> getContent({}, {})", resp, valueType);
-      final Object obj = resp == null ? null : resp.getEntity();
-      if (!(obj instanceof InputStream)) {
-        throw new IllegalStateException("Could not get content, no input stream!");
-      }
-      stream = (InputStream) obj;
-      if (isJsonResponse(resp)) {
-        return parseJsonContent(stream, valueType);
-      }
-      else if (isXmlResponse(resp)) {
-        return parseXmlContent(stream, valueType);
+      getLogger().trace("--> getContent({}, {})", resp, responseClass);
+      if (responseClass == Response.class) {
+        // shortcut
+        data = responseClass.cast(resp);
       }
       else {
-        throw new IOException("Unsupported MediaType!");
+        final Object entity = (resp == null ? null : resp.getEntity());
+        if (entity instanceof InputStream) {
+          // we have an raw stream --> unmarshall
+          stream = (InputStream) entity;
+          if (isJsonResponse(resp)) {
+            data = parseJsonContent(stream, responseClass);
+          }
+          else {
+            throw new IOException("Unsupported MediaType!");
+          }
+        }
+        else {
+          // no stream --> try to cast
+          data = responseClass.cast(entity);
+        }
       }
+      return data;
     }
     catch (final JsonParseException jpex) {
       throw new IllegalStateException("Cannot parse JSON Repsonse.", jpex);
@@ -106,83 +148,31 @@ public abstract class AbstractBaseClient {
           stream.close();
         }
         catch (final IOException ioex) {
-          getLogger().debug("Could not close input stream.", ioex);
+          getLogger().debug("Could not close Input Stream.", ioex);
         }
         finally {
           stream = null;
         }
       }
-      getLogger().trace("<-- getContent({}, {})", resp, valueType);
+      getLogger().trace("<-- getContent(); data = {}", data);
     }
   }
 
   private <T> T parseJsonContent(final InputStream stream, final Class<T> valueType) throws JsonParseException, IOException {
     T content = null;
     try {
-      getLogger().trace("--> parseJsonContent({}, {})", stream, valueType);
+      getLogger().trace("--> parseJsonContent( {}, {} )", stream, valueType);
       final MappingJsonFactory factory = new MappingJsonFactory();
       final JsonParser parser = factory.createJsonParser(stream);
       content = parser.readValueAs(valueType);
       return content;
     }
     finally {
-      getLogger().trace("<-- parseJsonContent({}, {}); JSON-Content:\n{}", stream, valueType, content);
+      getLogger().trace("<-- parseJsonContent()\nJSON-Content = {}", content);
     }
   }
 
-  private <T> T parseXmlContent(final InputStream stream, final Class<T> valueType) {
-    final T content = null;
-    try {
-      getLogger().trace("--> parseXmlContent({}, {})", stream, valueType);
-      // TODO: implement
-      return content;
-    }
-    finally {
-      getLogger().trace("<-- parseXmlContent({}, {}); XML-Content:\n{}", stream, valueType, content);
-    }
-  }
-
-  // -------------------------------------------------------------
-
-  protected boolean isJsonResponse(final Response resp) {
-    if (resp == null) {
-      return false;
-    }
-    return MediaType.APPLICATION_JSON_TYPE.equals(resp.getMediaType());
-  }
-
-  protected boolean isXmlResponse(final Response resp) {
-    if (resp == null) {
-      return false;
-    }
-    return MediaType.TEXT_XML_TYPE.equals(resp.getMediaType()) || MediaType.APPLICATION_XML_TYPE.equals(resp.getMediaType());
-  }
-
-  protected String getResponseStatus(final Response resp) {
-    String status = null;
-    try {
-      getLogger().trace("--> getResponseStatus({})", resp);
-      final StringBuilder sb = new StringBuilder("Response = ");
-      if (resp != null) {
-        final StatusType stat = resp.getStatusInfo();
-        if (stat != null) {
-          sb.append(stat.getStatusCode());
-          sb.append(' ');
-          sb.append(stat.getReasonPhrase());
-        }
-        sb.append(" (Length: ");
-        sb.append(resp.getLength());
-        sb.append(" Bytes) (Type: ");
-        sb.append(resp.getMediaType());
-        sb.append(')');
-      }
-      status = sb.toString();
-      return status;
-    }
-    finally {
-      getLogger().trace("<-- getResponseStatus({})\n{}", resp, status);
-    }
-  }
+  // ----------------------------------------------------------------
 
   protected abstract Logger getLogger();
 }

@@ -14,6 +14,8 @@
  *******************************************************************************/
 package org.psikeds.queryagent.requester.client.impl;
 
+import javax.ws.rs.core.Response;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,7 +86,7 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
     this.selectServiceMethod = selectServiceMethod;
   }
 
-  // ------------------------------------------------------
+  // ----------------------------------------------------------------
 
   public String getInitServiceUrl() {
     return this.initServiceUrl;
@@ -134,7 +136,7 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
     this.selectServiceMethod = selectServiceMethod;
   }
 
-  //------------------------------------------------------
+  // ----------------------------------------------------------------
 
   /**
    * @return ResolutionResponse
@@ -142,7 +144,9 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
    */
   @Override
   public ResolutionResponse invokeInitService() {
-    return invokeService(this.initServiceUrl, this.initServiceMethod, ResolutionResponse.class);
+    final Response resp = invokeService(this.initServiceUrl, this.initServiceMethod);
+    // TODO: check status code and create error responses
+    return getContent(resp, ResolutionResponse.class);
   }
 
   /**
@@ -152,7 +156,9 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
    */
   @Override
   public ResolutionResponse invokeCurrentService(final String sessionID) {
-    return invokeService(this.currentServiceUrl, this.currentServiceMethod, sessionID, String.class, ResolutionResponse.class);
+    final Response resp = invokeService(this.currentServiceUrl, this.currentServiceMethod, sessionID, String.class);
+    // TODO: check status code and create error responses
+    return getContent(resp, ResolutionResponse.class);
   }
 
   /**
@@ -163,7 +169,9 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
    */
   @Override
   public ResolutionResponse invokeSelectService(final ResolutionRequest req) {
-    return invokeService(this.selectServiceUrl, this.selectServiceMethod, req, ResolutionRequest.class, ResolutionResponse.class);
+    final Response resp = invokeService(this.selectServiceUrl, this.selectServiceMethod, req, ResolutionRequest.class);
+    // TODO: check status code and create error responses
+    return getContent(resp, ResolutionResponse.class);
   }
 
   /**

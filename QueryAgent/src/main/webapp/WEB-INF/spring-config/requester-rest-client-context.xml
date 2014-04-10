@@ -2,7 +2,7 @@
 <!--
 psiKeds :- ps induced knowledge entity delivery system
 
-Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
 
 This file is free software: you can redistribute
 it and/or modify it under the terms of the
@@ -27,6 +27,19 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <ref bean="xmlProvider" />
   </util:list>
 
+  <!-- Factory caching/reusing WebClients for every URL -->
+  <!--
+  <bean id="webClientCache" class="org.psikeds.queryagent.requester.client.impl.WebClientCache">
+    <constructor-arg index="0" type="java.lang.String" value="${resolutionengine.rest.cache.max.clients}" />
+  </bean>
+
+  <bean id="webClientFactory" class="org.psikeds.queryagent.requester.client.impl.WebClientFactoryImpl">
+   <constructor-arg index="0" ref="webClientCache" />
+   <constructor-arg index="1" ref="allProviders" />
+  </bean>
+  -->
+
+  <!-- Factory without WebClient-Cache -->
   <bean id="webClientFactory" class="org.psikeds.queryagent.requester.client.impl.WebClientFactoryImpl">
    <constructor-arg index="0" ref="allProviders" />
   </bean>
