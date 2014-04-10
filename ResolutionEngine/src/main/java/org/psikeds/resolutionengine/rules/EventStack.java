@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.springframework.util.StringUtils;
 
-import org.psikeds.resolutionengine.cache.LimitedHashMap;
+import org.psikeds.common.cache.LimitedHashMap;
 import org.psikeds.resolutionengine.datalayer.vo.Event;
 
 /**

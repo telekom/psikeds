@@ -12,7 +12,7 @@
  *
  * For details see file LICENSING in the top project directory
  *******************************************************************************/
-package org.psikeds.resolutionengine.cache;
+package org.psikeds.common.cache;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

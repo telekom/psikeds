@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.commons.lang.StringUtils;
 
+import org.psikeds.common.cache.LimitedHashMap;
+
 /**
  * The ResolutionCache is holding all information regarding the current
  * Resolutions / Sessions.
