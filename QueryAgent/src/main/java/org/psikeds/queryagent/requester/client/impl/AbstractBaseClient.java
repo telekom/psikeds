@@ -72,7 +72,7 @@ public abstract class AbstractBaseClient {
       return resp;
     }
     finally {
-      getLogger().trace("<-- invokeService( {} ); Resp = {}", url, resp);
+      getLogger().trace("<-- invokeService( {} ); Response = {}", url, resp);
     }
   }
 
@@ -95,7 +95,7 @@ public abstract class AbstractBaseClient {
 
   protected String getReasonPhrase(final Response resp) {
     final StatusType stat = (resp == null ? null : resp.getStatusInfo());
-    return (stat == null ? null : stat.getReasonPhrase());
+    return (stat == null ? Response.Status.INTERNAL_SERVER_ERROR.getReasonPhrase() : stat.getReasonPhrase());
   }
 
   protected boolean isOK(final Response resp) {
@@ -109,13 +109,13 @@ public abstract class AbstractBaseClient {
   // ----------------------------------------------------------------
 
   protected <T> T getContent(final Response resp, final Class<T> responseClass) {
-    T data = null;
+    T content = null;
     InputStream stream = null;
     try {
-      getLogger().trace("--> getContent({}, {})", resp, responseClass);
+      getLogger().trace("--> getContent( {}, {} )", resp, responseClass);
       if (responseClass == Response.class) {
         // shortcut
-        data = responseClass.cast(resp);
+        content = responseClass.cast(resp);
       }
       else {
         final Object entity = (resp == null ? null : resp.getEntity());
@@ -123,7 +123,7 @@ public abstract class AbstractBaseClient {
           // we have an raw stream --> unmarshall
           stream = (InputStream) entity;
           if (isJsonResponse(resp)) {
-            data = parseJsonContent(stream, responseClass);
+            content = parseJsonContent(stream, responseClass);
           }
           else {
             throw new IOException("Unsupported MediaType!");
@@ -131,10 +131,10 @@ public abstract class AbstractBaseClient {
         }
         else {
           // no stream --> try to cast
-          data = responseClass.cast(entity);
+          content = responseClass.cast(entity);
         }
       }
-      return data;
+      return content;
     }
     catch (final JsonParseException jpex) {
       throw new IllegalStateException("Cannot parse JSON Repsonse.", jpex);
@@ -154,21 +154,21 @@ public abstract class AbstractBaseClient {
           stream = null;
         }
       }
-      getLogger().trace("<-- getContent(); data = {}", data);
+      getLogger().trace("<-- getContent(); Content = {}", content);
     }
   }
 
-  private <T> T parseJsonContent(final InputStream stream, final Class<T> valueType) throws JsonParseException, IOException {
-    T content = null;
+  private <T> T parseJsonContent(final InputStream stream, final Class<T> responseClass) throws JsonParseException, IOException {
+    T json = null;
     try {
-      getLogger().trace("--> parseJsonContent( {}, {} )", stream, valueType);
+      getLogger().trace("--> parseJsonContent(); Class = {}", responseClass);
       final MappingJsonFactory factory = new MappingJsonFactory();
       final JsonParser parser = factory.createJsonParser(stream);
-      content = parser.readValueAs(valueType);
-      return content;
+      json = parser.readValueAs(responseClass);
+      return json;
     }
     finally {
-      getLogger().trace("<-- parseJsonContent()\nJSON-Content = {}", content);
+      getLogger().trace("<-- parseJsonContent(); JSON = {}", json);
     }
   }
 

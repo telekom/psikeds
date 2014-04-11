@@ -14,13 +14,17 @@
  *******************************************************************************/
 package org.psikeds.queryagent.requester.client.impl;
 
+import java.io.IOException;
+
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.psikeds.queryagent.requester.client.ResolutionEngineClient;
 import org.psikeds.queryagent.requester.client.WebClientFactory;
+import org.psikeds.resolutionengine.interfaces.pojos.ErrorMessage;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse;
 
@@ -144,9 +148,22 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
    */
   @Override
   public ResolutionResponse invokeInitService() {
-    final Response resp = invokeService(this.initServiceUrl, this.initServiceMethod);
-    // TODO: check status code and create error responses
-    return getContent(resp, ResolutionResponse.class);
+    ResolutionResponse rr = null;
+    try {
+      LOGGER.trace("--> invokeInitService()");
+      final Response resp = invokeService(this.initServiceUrl, this.initServiceMethod);
+      if (isError(resp)) {
+        rr = createErrorResponse(resp);
+      }
+      else {
+        rr = getContent(resp, ResolutionResponse.class);
+      }
+    }
+    catch (final Exception ex) {
+      rr = createErrorResponse(ex);
+    }
+    LOGGER.trace("<-- invokeInitService(); Response = {}", rr);
+    return rr;
   }
 
   /**
@@ -156,9 +173,22 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
    */
   @Override
   public ResolutionResponse invokeCurrentService(final String sessionID) {
-    final Response resp = invokeService(this.currentServiceUrl, this.currentServiceMethod, sessionID, String.class);
-    // TODO: check status code and create error responses
-    return getContent(resp, ResolutionResponse.class);
+    ResolutionResponse rr = null;
+    try {
+      LOGGER.trace("--> invokeCurrentService( {} )", sessionID);
+      final Response resp = invokeService(this.currentServiceUrl, this.currentServiceMethod, sessionID, String.class);
+      if (isError(resp)) {
+        rr = createErrorResponse(resp);
+      }
+      else {
+        rr = getContent(resp, ResolutionResponse.class);
+      }
+    }
+    catch (final Exception ex) {
+      rr = createErrorResponse(ex);
+    }
+    LOGGER.trace("<-- invokeCurrentService( {} ); Response = {}", sessionID, rr);
+    return rr;
   }
 
   /**
@@ -169,10 +199,25 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
    */
   @Override
   public ResolutionResponse invokeSelectService(final ResolutionRequest req) {
-    final Response resp = invokeService(this.selectServiceUrl, this.selectServiceMethod, req, ResolutionRequest.class);
-    // TODO: check status code and create error responses
-    return getContent(resp, ResolutionResponse.class);
+    ResolutionResponse rr = null;
+    try {
+      LOGGER.trace("--> invokeSelectService( {} )", req);
+      final Response resp = invokeService(this.selectServiceUrl, this.selectServiceMethod, req, ResolutionRequest.class);
+      if (isError(resp)) {
+        rr = createErrorResponse(resp);
+      }
+      else {
+        rr = getContent(resp, ResolutionResponse.class);
+      }
+    }
+    catch (final Exception ex) {
+      rr = createErrorResponse(ex);
+    }
+    LOGGER.trace("<-- invokeSelectService( ); Response = {}", rr);
+    return rr;
   }
+
+  // ----------------------------------------------------------------
 
   /**
    * @return Logger
@@ -181,5 +226,32 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
   @Override
   protected Logger getLogger() {
     return LOGGER;
+  }
+
+  // ----------------------------------------------------------------
+
+  private ResolutionResponse createErrorResponse(final Response resp) {
+    final ResolutionResponse rr = new ResolutionResponse();
+    final ErrorMessage em = new ErrorMessage(getStatusCode(resp), getReasonPhrase(resp));
+    rr.addError(em);
+    return rr;
+  }
+
+  private ResolutionResponse createErrorResponse(final Exception ex) {
+    final ResolutionResponse rr = new ResolutionResponse();
+    final int code;
+    if (ex instanceof IllegalArgumentException) {
+      code = Status.BAD_REQUEST.getStatusCode();
+    }
+    else if (ex instanceof IOException) {
+      code = Status.SERVICE_UNAVAILABLE.getStatusCode();
+    }
+    else {
+      code = Status.INTERNAL_SERVER_ERROR.getStatusCode();
+    }
+    final String message = ex.getMessage();
+    final ErrorMessage em = new ErrorMessage(code, message);
+    rr.addError(em);
+    return rr;
   }
 }
