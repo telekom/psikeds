@@ -28,6 +28,7 @@ sensor NamedColor {
   label "Color-Names"
   description "perceptible colors denoted by their names"
 }
+
 str.att namedColorAzure [ NamedColor -> "azure" ]
 str.att namedColorPink [ NamedColor -> "pink" ]
 str.att namedColorIvory [ NamedColor -> "ivory" ]
@@ -50,15 +51,15 @@ sensor PreprintedAddrField {
 str.att withPreprintedAddrField [ PreprintedAddrField -> "T" ]
 str.att withoutPreprintedAddrField [ PreprintedAddrField -> "F" ]
 
-sensor PaperThickness {
+sensor PaperImportance {
   label "Paper-Thickness"
   description "thickness of paper as one criteria of paper quality"
   unit "g/qm"
 }
 
-int.att P70gQuality [ PaperThickness -> 70 ]
-int.att P80gQuality [ PaperThickness -> 80 ]
-int.att P90gQuality [ PaperThickness -> 90 ]
+int.att P1Importance[ PaperImportance -> 1 ]
+int.att P2Importance[ PaperImportance -> 2 ]
+int.att P3Importance[ PaperImportance -> 3 ]
 
 sensor DinANumber {
 	label "Din-A-Numbers"
@@ -164,9 +165,21 @@ sensor Weight {
   description "weight of an envelope or a paper page or both together"
   unit "g"
 }
-float.range.att envelopeWeight [Weight >> ( min 2.9 , max 20.0 , inc 1.1)]
-float.range.att paperWeight [Weight >> ( min 1.1 , max 27.5 , inc 1.1)]
-float.range.att letterWeight [Weight >> ( min 4.0 , max 47.5 , inc 1.1)]
+float.att Weight1P1 [ Weight -> 1.1 ]
+float.att Weight1P3 [ Weight -> 1.3 ]
+float.att Weight1P5 [ Weight -> 1.5 ]
+float.att Weight1P7 [ Weight -> 1.7 ]
+float.att Weight2P2 [ Weight -> 2.2 ]
+float.att Weight3P2 [ Weight -> 3.2 ]
+float.att Weight4P2 [ Weight -> 4.2 ]
+float.att Weight4P4 [ Weight -> 4.4 ]
+float.att Weight6P5 [ Weight -> 6.5 ]
+float.att Weight8P8 [ Weight -> 8.8 ]
+float.att Weight13P0 [ Weight -> 13.2 ]
+float.att Weight17P5 [ Weight -> 17.5 ]
+
+float.range.att cardWeight [Weight >> ( min 1.0 , max 2.0 , inc 0.1)]
+float.range.att letterWeight [Weight >> ( min 2.0 , max 31.0 , inc 0.1)]
 
 sensor CountSectors {
   label "count-sectors"
@@ -183,6 +196,7 @@ concept DinA6Letter {
   	*int> DinA6Number
   	and *float> DinA6Height
   	and *float> DinA6Width
+  	and *float> Weight1P1
   ]
 }
 
@@ -193,6 +207,7 @@ concept DinA5Letter {
   	*int> DinA5Number
   	and *float> DinA5Height
   	and *float> DinA5Width
+  	and *float> Weight2P2
   ]
 }
 
@@ -203,6 +218,7 @@ concept DinA4Letter {
   	*int> DinA4Number
   	and *float> DinA4Height
   	and *float> DinA4Width
+  	and *float> Weight4P4
   ]
 }
 
@@ -213,6 +229,7 @@ concept DinA3Letter {
   	*int> DinA3Number
   	and *float> DinA3Height
   	and *float> DinA3Width
+  	and *float> Weight8P8
   ]
 }
 
@@ -223,6 +240,7 @@ concept DinA2Letter {
   	*int> DinA2Number
   	and *float> DinA2Height
   	and *float> DinA2Width
+  	and *float> Weight17P5
   ]
 }
 
@@ -255,6 +273,7 @@ concept DinC4Envelope {
   	*float> DinC4Number
   	and *float> DinC4Height
   	and *float> DinC4Width
+  	and *float> Weight13P0
   ]
 }
 
@@ -265,6 +284,7 @@ concept DinC5Envelope {
   	*float> DinC5Number
   	and *float> DinC5Height
   	and *float> DinC5Width
+  	and  *float> Weight6P5
   ]
 }
 
@@ -275,6 +295,7 @@ concept DinC56Envelope {
   	*float> DinC56Number
   	and *float> DinC6Height
   	and *float> DinC5Width
+  	and *float> Weight4P2
   ]
 }
 
@@ -285,6 +306,7 @@ concept DinC6Envelope {
   	*float> DinC6Number
   	and *float> DinC6Height
   	and *float> DinC6Width
+  	and *float> Weight3P2
   ]
 }
 
@@ -360,7 +382,7 @@ variant Postcard {
 		*str> namedColorIvory
 		or *str> namedColorWhite
   ]
-  perceived.by Weight within *floatRange> letterWeight
+  perceived.by Weight within *floatRange> cardWeight
 }
 
 variant Envelope {
@@ -372,7 +394,6 @@ variant Envelope {
 		or *str> namedColorIvory
 		or *str> namedColorWhite
   ]
-  perceived.by Weight within *floatRange> envelopeWeight
   classified.as [ 
   	*concept> DinC4Envelope
   	or *concept> DinC5Envelope
@@ -390,12 +411,11 @@ variant WritingPaper {
 		or *str> namedColorIvory
 		or *str> namedColorWhite
     ]
-  specified.by PaperThickness as [
-  	*int> P70gQuality
-  	or *int> P80gQuality
-  	or *int> P90gQuality
+  specified.by PaperImportance as [
+  	*int> P1Importance
+  	or *int> P2Importance
+  	or *int> P3Importance
   ]
-  perceived.by Weight within *floatRange> paperWeight
   perceived.by CountSectors within *intRange> howManySections
   classified.as [
   	*concept> DinA6Letter
@@ -415,6 +435,12 @@ variant WritingCard {
 		or *str> namedColorIvory
 		or *str> namedColorWhite
     ]
+  specified.by Weight as [
+    *float> Weight1P1
+    or *float> Weight1P3
+    or *float> Weight1P5
+    or *float> Weight1P7
+  ]
   classified.as [
     *concept> DinA6CardConveyable
     or *concept> DinA6CardUnconveyable
@@ -818,93 +844,102 @@ means (PostcardAsContextTop -> preparedAddressAreaOnWritingCardAsPostcard)
 /* RULE-1.C */
 logic.enforcer IFpostcardTHENuse45CentStamp
 label "postcard=>45-cent-stamp"
-description "Rule 1.C: a postcard costs 45 cents"
+description "Rule 1.C : if-then-rule : a postcard costs 45 cents"
 means (PostcardAsContextTop -> stamp045AsPostcardEnabler)
 
 /* RULE-1.D */
-relation ColorOfPostCardIsColorOfWritingCard
+relation.normal ColorOfPostCardIsColorOfWritingCard
 label "color-of-the-postcard-is-the-color-of-the-writing-card"
-description "Rule 1.D"
-means ( PostcardColor equal WritingCardPostcardColor )
+description "Rule 1.D : relation"
+means ( 
+  valFrom PostcardColor equal valFrom WritingCardPostcardColor
+)
 
 /* RULE-2.A */
 logic.enforcer IFuncompLetterTHENuseCardWithoutAddressField
 label "uncompressed-letter-on-a-card=>card-without-preprinted-address-field"
-description "Rule 2.A"
+description "Rule 2.A : if-then-rule"
 means ( UncompressedLetterAsContextTop 
   -> uncompressedLetterWritingCardWithoutAddressField)
 
 /* RULE-2.B */
 logic.rule IfuncompLetterWithCardTHENuseC6Envelope
 label "uncompressed-letter-on-a-card=>uncompressedLetterInDinC6Envelope" 
-description "Rule-2.B"
+description "Rule-2.B : if-then-rule"
 means ({ uncompressedLetterWithCardAsFileMedia } -> uncompressedLetterInDinC6Envelope)
 
 /* RULE-2.C */
-relation EnvelopeDinSizeOfUncomLettIsLessOrEqualPaperDinSize
+relation.normal EnvelopeDinSizeOfUncomLettIsLessOrEqualPaperDinSize
 label "the-size-of-an-uncompressed-letter-envelope-is-less-or-equal-its-paper-din-size"
-description "Rule 2.C"
-means ( uncompressedLetterEnvelopDinSize lessOrEqual uncompressedLetterPaperDinSize)
+description "Rule 2.C : relation"
+means ( valFrom uncompressedLetterEnvelopDinSize lessOrEqual valFrom uncompressedLetterPaperDinSize)
 
 /* RULE-2.D */
-relation SizeOfUncomLettIsSizeOfEnevlope
+relation.normal SizeOfUncomLettIsSizeOfEnevlope
 label "the-size-of-an-uncompressed-letter-is-the-size-of-its-envelope"
-description "Rule 2.D"
-means ( uncompressedLetterDinSize equal uncompressedLetterEnvelopDinSize)
+description "Rule 2.D : relation"
+means ( valFrom uncompressedLetterDinSize equal valFrom uncompressedLetterEnvelopDinSize)
 
 /* RULE-2.E */
-relation ColorOfUncompLetterIsColorOfEnvelope
+relation.normal ColorOfUncompLetterIsColorOfEnvelope
 label "color-of-an-uncompressed-letter-is-color-of-its-envelope"
-description "Rule 2.G"
-means ( uncompressedLetterColor equal uncompressedLetterEnvelopColor)
+description "Rule 2.G : relation"
+means ( valFrom uncompressedLetterColor equal valFrom uncompressedLetterEnvelopColor)
 
 /* RULE-2.F.a */
 logic.rule IFuncompDinC6LetterTHENuse60CentStamp
 label "uncompressed-DINC6-letter=>60-cent-stamp"
-description "Rule 2.F.a"
+description "Rule 2.F.a : if-then-rule"
 means ({ UncompressedDinC6Letter } -> UncompressedLetterStamp060Cent)
 
 /* RULE-2.F.b */
 logic.rule IFuncompDinC5LetterTHENuse145CentStamp
 label "uncompressed-DINC5-letter=>145-cent-stamp"
-description "Rule 2.F.b"
+description "Rule 2.F.b : if-then-rule"
 means ({ UncompressedDinC5Letter } -> UncompressedLetterStamp145Cent)
 
 /* RULE-2.F.c */
 logic.rule IFuncompDinC4LetterTHENuse145CentStamp
 label "uncompressed-DINC4-letter=>145-cent-stamp"
-description "Rule 2.F.c"
+description "Rule 2.F.c : if-then-rule"
 means ({UncompressedDinC4Letter} -> UncompressedLetterStamp145Cent)
+
+/* RULE-2.G */
+relation.normal PaperDinSizeGreaterThenDinA3inUncompressedLetters 
+label "paper-size-greater-than-DIN-A-3-in-uncompressed-letters"
+description "Rule 2.G: relation"
+means ( constInt DinA3Number less valFrom uncompressedLetterPaperDinSize)
 
 /* RULE-3.A */
 logic.enforcer IFcompressedLetterTHENusePaper
 label "compressed-letter=>use-paper"
-description "Rule 3.A: foldable letters must be written on paper"
+description "Rule 3.A : if-then-rule : foldable letters must be written on paper"
 means (CompressedLetterAsContextTop -> compressedLetterWithPaper)
 
 /* RULE 3.B */  
-relation EnvelopeDinSizeOfCompLettIsLessThanPaperDinSize
+relation.normal EnvelopeDinSizeOfCompLettIsLessThanPaperDinSize
 label "the-size-of-an-compressed-letter-envelope-is-less-than-its-paper-din-size"
-description "Rule 3.B"
-means ( compressedLetterEnvelopeSize less compressedLetterPaperSize)
+description "Rule 3.B : relation"
+means ( valFrom compressedLetterEnvelopeSize less valFrom compressedLetterPaperSize
+)
 
 /* A2 paper only in C4 envelope by using the method 'quarter in size' */
 /* RULE-3.C.a */
 logic.rule IFcompLetterWithDinA2PaperTHENfoldQuarterInSize
 label "Convey-Din-A2-Paper-only-folded-a-quarter-in-size"
-description "Rule 3.C.A" 
+description "Rule 3.C.A : if-then-rule" 
 means ({compressedLetterWithDinA2Paper } -> compressedLetterFoldQuarterInSize)
 
 /* RULE-3.C.b */
 logic.rule IFcompLetterWithDinA2PaperThenOnlyDINC4Envelope
 label "Convey-Din-A2-Paper-only-in-Din-C4-Envelope"
-description "Rule 3.C.C"
+description "Rule 3.C.C : if-then-rule"
 means ({ compressedLetterWithDinA2Paper } -> compressedLetterWithDinC4Envelope)
 
 /* RULE-3.D.a */
 logic.rule IFA3PaperInC4EnvelopenTHENhalfInSize
 label "A3-Paper-in-C4-envelope-must-be-folded-half-in-size"
-description "Rule-3.D.a"
+description "Rule-3.D.a : if-then-rule"
 means ({ compressedLetterWithDinA3Paper 
      and compressedLetterWithDinC4Envelope
       } -> compressedLetterFoldHalfInSize)
@@ -912,7 +947,7 @@ means ({ compressedLetterWithDinA3Paper
 /* RULE-3.D.b */ 
 logic.rule IFA3PaperInC5EnvelopenTHENquarterInSize
 label "A3-paper-in-C5-envelope-must-be-folded-quarter-in-size"
-description "Rule-3.D.b"
+description "Rule-3.D.b : if-then-rule"
 means ({ compressedLetterWithDinA3Paper 
      and compressedLetterWithDinC5Envelope 
        } -> compressedLetterFoldQuarterInSize)
@@ -921,23 +956,21 @@ means ({ compressedLetterWithDinA3Paper
 /* RULE-3.D.c */
 logic.rule IFcompLetterWithDinA3PaperThenNotDinC56Envelope
 label "Dont-Convey-Din-A3-Paper-in-Din-C56-Envelope"
-description "Rule 3.D.c"
+description "Rule 3.D.c : if-then-rule"
 means ({ compressedLetterWithDinA3Paper } -> compressedLetterWithoutDinC56Envelope)
 
 /* RULE-3.D.d */
 logic.rule IFcompLetterWithDinA3PaperThenNotDinC6Envelope
 label "Dont-Convey-Din-A3-Paper-in-Din-C6-Envelope"
-description "Rule 3.D.d"
+description "Rule 3.D.d : if-then-rule"
 means ({ compressedLetterWithDinA3Paper } -> compressedLetterWithoutDinC6Envelope)
-
-
 
 /* A4 paper only in C5, C56, C6 envelope by ... */
 /* RULE-3.E.a */ 
 
 logic.rule IFA4PaperInC5EnvelopenTHENhalfInSize
 label "A4-Paper-in-C5-envelope-must-be-folded-half-in-size"
-description "Rule-3.E.a"
+description "Rule-3.E.a : if-then-rule"
 means ({ compressedLetterWithDinA4Paper 
      and compressedLetterWithDinC5Envelope 
        } -> compressedLetterFoldHalfInSize)
@@ -945,7 +978,7 @@ means ({ compressedLetterWithDinA4Paper
 /* RULE-3.E.b */ 
 logic.rule IFA4PaperInC56EnvelopenTHENthirdInSize
 label "A4-Paper-in-C56-envelope-must-be-folded-third-in-size"
-description "Rule-3.E.b"
+description "Rule-3.E.b : if-then-rule"
 means ({ compressedLetterWithDinA4Paper 
      and compressedLetterWithDinC56Envelope 
        } -> compressedLetterFoldThirdInSize)
@@ -953,7 +986,7 @@ means ({ compressedLetterWithDinA4Paper
 /* RULE-3.E.c */
 logic.rule IFA4PaperInC6EnvelopenTHENquarterInSize
 label "A4-Paper-in-C6-envelope-must-be-folded-quarter-in-size"
-description "Rule-3.E.c"
+description "Rule-3.E.c : if-then-rule"
 means ({ compressedLetterWithDinA4Paper 
      and compressedLetterWithDinC6Envelope 
        } -> compressedLetterFoldQuarterInSize)
@@ -961,60 +994,76 @@ means ({ compressedLetterWithDinA4Paper
 /* RULE-3.F.a */  
 logic.rule IFfoldingThirdInSizeTHENdinC56Envelope
 label "folding-third-in-size-requires-a-C56-envelope"
-description "Rule 3.F.a" 
+description "Rule 3.F.a : if-then-rule" 
 means ({compressedLetterFoldThirdInSize} -> compressedLetterWithDinC56Envelope)
 
 /* RULE-3.F.b */  
 logic.rule IFfoldingThirdInSizeTHENa4Paper
 label "folding-third-in-size-requires-a-A4-paper"
-description "Rule 3.F.b" 
+description "Rule 3.F.b : if-then-rule" 
 means ({ compressedLetterFoldThirdInSize } -> compressedLetterWithDinA4Paper)
 
 /* A5 paper only in C6 envelope by ... */ 
 /* RULE-3.G */ 
 logic.rule IfcompLetterWithA5PaperTHENfoldHalfInSize
 label "A5-Paper-in-C6-envelope-must-be-folded-half-in-size"
-description "Rule-3.G"
+description "Rule-3.G : if-then-rule"
 means ({ compressedLetterWithDinA5Paper } -> compressedLetterFoldHalfInSize )
 
 /* RULE-3.H.a */
-relation SizeOfComLettIsSizeOfEnevlope
+relation.normal SizeOfComLettIsSizeOfEnevlope
 label "size-of-a-compressed-letter-is-the-size-of-its-envelope"
-description "Rule 3.H.a"
-means (compressedLetterEnvelopeSize equal compressedLetterDinSize)
+description "Rule 3.H.a : relation"
+means ( valFrom compressedLetterEnvelopeSize equal valFrom compressedLetterDinSize)
 
 /* RULE-3.H.b */
-relation ColorOfCompLetterIsColorOfEnvelope
+relation.normal ColorOfCompLetterIsColorOfEnvelope
 label "color-of-a-compressed-letter-is-the-color-of-its-envelope"
-description "Rule 3.H.b"
-means ( compressedLetterEnvelopeColor equal compressedLetterColor)
+description "Rule 3.H.b : relation"
+means ( valFrom compressedLetterEnvelopeColor equal valFrom compressedLetterColor)
 
 /* RULE-3.I.a */
 logic.rule IFcompC6LetterTHEN60CentStamp
 label "compressed-C6-letter=>60-cent-stamp"
-description "Rule 3.I.a"
+description "Rule 3.I.a : if-then-rule"
 means ({ compressedDinC6Letter } ->   compressedLetterStamp060Cent)
 
 /* RULE-3.I.b */ 
 logic.rule IFcompC56LetterTHEN60CentStamp
 label "compressed-C56-letter=>60-cent-stamp"
-description "Rule 3.I.b"
+description "Rule 3.I.b : if-then-rule"
 means ({compressedDinC56Letter } -> compressedLetterStamp060Cent)
 
 /* RULE-3.I.c */ 
 logic.rule IFcompC5LetterTHEN145CentStamp
 label "compressed-C5-letter=>145-cent-stamp"
-description "Rule 3.I.c" 
+description "Rule 3.I.c : if-then-rule" 
 means ({compressedDinC5Letter } -> compressedLetterStamp145Cent )
 
 /* RULE-3.I.d */ 
 logic.rule IFcompC4LetterTHEN145CentStamp
 label "compressed-C4-letter=>145-cent-stamp"
-description "Rule 3.I.d" 
+description "Rule 3.I.d : if-then-rule" 
 means ({compressedDinC4Letter } -> compressedLetterStamp145Cent)
 
+/* RULE-3.K.a */
+relation.qualified compressThirdASizeOnlyIfDinCeuqal56
+label "folding-third-in-size-requires-envelope-with-dinC-Number=5,6"
+description "Rule 3.K.a : conditioned-relation"
+means ( if compressedLetterFoldThirdInSize then 
+  valFrom compressedLetterEnvelopeSize equal constFloat DinC56Number)
+  
+relation.qualified compressThirdASizeOnlyIfPaperDinANumberlessConstA5
+label "folding-third-in-size-requires-paper-with-dinA-number-less-then-5"
+description "Rule 3.K.b : conditioned-relation"
+means ( if compressedLetterFoldThirdInSize then 
+  valFrom compressedLetterPaperSize less constInt DinA5Number)
 
-
-
+relation.qualified compressThirdASizeOnlyIfConstA3lessPaperDinANumber
+label "folding-third-in-size-requires-paper-with-dinA-number-greater-then-3"
+description "Rule 3.K.c : conditioned-relation"
+means ( if compressedLetterFoldThirdInSize then 
+   constInt DinA3Number less valFrom compressedLetterPaperSize
+)
 
 

@@ -12,17 +12,21 @@ import org.psikeds.kb.modelling.psiKedsXtxKrl.KnowledgeBase
 import org.psikeds.kb.modelling.psiKedsXtxKrl.XLabel
 
 import org.psikeds.kb.modelling.psiKedsXtxKrl.Sensor
-import org.psikeds.kb.modelling.psiKedsXtxKrl.SensorStringValueArea
-import org.psikeds.kb.modelling.psiKedsXtxKrl.SensorIntDigitArea
-import org.psikeds.kb.modelling.psiKedsXtxKrl.SensorFloatDigitArea
+import org.psikeds.kb.modelling.psiKedsXtxKrl.SensorStringAttrArea
+import org.psikeds.kb.modelling.psiKedsXtxKrl.SensorIntAttrArea
+import org.psikeds.kb.modelling.psiKedsXtxKrl.SensorFloatAttrArea
+/* 
 import org.psikeds.kb.modelling.psiKedsXtxKrl.SensorIntRangeArea
 import org.psikeds.kb.modelling.psiKedsXtxKrl.SensorFloatRangeArea
+* 
+*/
 import org.psikeds.kb.modelling.psiKedsXtxKrl.Concept
 import org.psikeds.kb.modelling.psiKedsXtxKrl.Variant
 import org.psikeds.kb.modelling.psiKedsXtxKrl.IsFulfilledBy
 import org.psikeds.kb.modelling.psiKedsXtxKrl.IsConstitutedBy
 import org.psikeds.kb.modelling.psiKedsXtxKrl.OpenContextualPath
 import org.psikeds.kb.modelling.psiKedsXtxKrl.ClosedContextualPath
+import org.psikeds.kb.modelling.psiKedsXtxKrl.RelationalStatement
 
 /**
  * Generates code from your model files on save.
@@ -33,7 +37,7 @@ class PsiKedsXtxKrlGenerator implements IGenerator {
 	
 	override void doGenerate(Resource resource, IFileSystemAccess fsa) {
 		val model = resource.contents.head as KnowledgeBase
-		fsa.generateFile(model.kbId+'-knowledbase.xml', model.toCode)
+		fsa.generateFile(model.kbId+'.pkb.xml', model.toCode)
 	}
 	
 
@@ -74,29 +78,19 @@ This file is licensed under the conditions of a/the
   </kb:meta>
   <kb:data>
     <kb:sensors> 
-    «IF (base.sensorStringValueAreas.length > 0) »
-      «FOR sensorStringArea : base.sensorStringValueAreas»
+    «IF (base.listOfSensorStringAttrAreas.length > 0) »
+      «FOR sensorStringArea : base.listOfSensorStringAttrAreas»
         «sensorStringArea.toXml»
       «ENDFOR»
     «ENDIF»
-    «IF (base.sensorIntDigitAreas.length > 0) »
-      «FOR sensorIntDigitArea : base.sensorIntDigitAreas»
+    «IF (base.listOfSensorIntAttrAreas.length > 0) »
+      «FOR sensorIntDigitArea : base.listOfSensorIntAttrAreas»
         «sensorIntDigitArea.toXml»
       «ENDFOR»
     «ENDIF»
-    «IF (base.sensorFloatDigitAreas.length > 0) »
-      «FOR sensorFloatDigitArea : base.sensorFloatDigitAreas»
+    «IF (base.listOfSensorFloatAttrAreas.length > 0) »
+      «FOR sensorFloatDigitArea : base.listOfSensorFloatAttrAreas»
         «sensorFloatDigitArea.toXml»
-      «ENDFOR»
-    «ENDIF» 
-    «IF (base.sensorIntRangeArea.length > 0) »
-      «FOR sensorIntRangeArea : base.sensorIntRangeArea»
-        «sensorIntRangeArea.toXml»
-      «ENDFOR»
-    «ENDIF» 
-    «IF (base.sensorFloatRangeArea.length > 0) »
-      «FOR sensorFloatRangeArea : base.sensorFloatRangeArea»
-        «sensorFloatRangeArea.toXml»
       «ENDFOR»
     «ENDIF» 
     </kb:sensors>
@@ -156,9 +150,9 @@ This file is licensed under the conditions of a/the
       «FOR enforceEvent :  base.listOfContextualEnforceEvents»
          <kb:event id="«enforceEvent.name»" 
            nexusId="«enforceEvent.fact.ref.name»" 
-           context="«enforceEvent.fact.ref.name»">
+           contextPsPvRefs="«enforceEvent.fact.ref.name»">
            «enforceEvent.labeledDescription.toXml("")»
-           <kb:variantTrigger triggerID="«enforceEvent.fact.ref.name»" />
+           <kb:variantTrigger variantRef="«enforceEvent.fact.ref.name»" />
          </kb:event>
       «ENDFOR»
       «ENDIF»
@@ -168,7 +162,7 @@ This file is licensed under the conditions of a/the
            «varEvent.context.toXml»>
            «varEvent.labeledDescription.toXml("")»
            «IF varEvent.negation»<kb:not />«ENDIF»
-           <kb:variantTrigger triggerID="«varEvent.fact.ref.name»" />
+           <kb:variantTrigger variantRef="«varEvent.fact.ref.name»" />
          </kb:event>
       «ENDFOR»
       «ENDIF» 
@@ -178,7 +172,7 @@ This file is licensed under the conditions of a/the
            «attStrEvent.context.toXml»>
            «attStrEvent.labeledDescription.toXml("")»
            «IF attStrEvent.negation»<kb:not />«ENDIF»
-           <kb:attStrTrigger triggerID="«attStrEvent.fact.ref.name»" />
+           <kb:attStrTrigger strValueRef="«attStrEvent.fact.ref.name»" />
          </kb:event>
       «ENDFOR»
       «ENDIF»
@@ -188,7 +182,7 @@ This file is licensed under the conditions of a/the
            «attIntEvent.context.toXml»>
            «attIntEvent.labeledDescription.toXml("")»
            «IF attIntEvent.negation»<kb:not />«ENDIF»
-           <kb:attIntTrigger triggerID="«attIntEvent.fact.ref.name»" />
+           <kb:attIntTrigger intValueRef="«attIntEvent.fact.ref.name»" />
          </kb:event>
       «ENDFOR»
       «ENDIF»
@@ -198,7 +192,7 @@ This file is licensed under the conditions of a/the
            «attFloatEvent.context.toXml»>
            «attFloatEvent.labeledDescription.toXml("")»
            «IF attFloatEvent.negation»<kb:not />«ENDIF»
-           <kb:attFloatTrigger triggerID="«attFloatEvent.fact.ref.name»" />
+           <kb:attFloatTrigger floatValueRef="«attFloatEvent.fact.ref.name»" />
          </kb:event>
       «ENDFOR»
       «ENDIF»
@@ -208,7 +202,7 @@ This file is licensed under the conditions of a/the
            «concEvent.context.toXml»>
            «concEvent.labeledDescription.toXml("")»
            «IF concEvent.negation»<kb:not />«ENDIF»
-           <kb:conceptTrigger triggerID="«concEvent.fact.ref.name»" />
+           <kb:conceptTrigger conceptRef="«concEvent.fact.ref.name»" />
          </kb:event>
       «ENDFOR»
       «ENDIF»      
@@ -222,7 +216,7 @@ This file is licensed under the conditions of a/the
          <kb:parameter id="«parameter.name»" 
            «parameter.context.toXml»>
            «parameter.labeledDescription.toXml("")»
-           <kb:valueSet sensorID="«parameter.fact.ref.name»" />
+           <kb:valueSet sensorRef="«parameter.fact.ref.name»" />
          </kb:parameter>
       «ENDFOR»
     </kb:parameters> 
@@ -237,8 +231,8 @@ This file is licensed under the conditions of a/the
       «IF ( base.listOfLogicalEnforcers != null )»
       «FOR enforcerRule :  base.listOfLogicalEnforcers»
          <kb:rule id="«enforcerRule.name»"
-            premiseEventIDs="«enforcerRule.premise.name»" 
-            conclusioEventID="«enforcerRule.conclusio.name»" > 
+            premiseEventRefs="«enforcerRule.premise.name»" 
+            conclusioEventRef="«enforcerRule.conclusio.name»" > 
            «enforcerRule.labeledDescription.toXml("")»
          </kb:rule>
       «ENDFOR»
@@ -247,37 +241,62 @@ This file is licensed under the conditions of a/the
       «IF ( base.listOfLogicalRules != null )»
       «FOR logicalRule :  base.listOfLogicalRules»
          <kb:rule id="«logicalRule.name»"
-           premiseEventIDs="«FOR evPoin : logicalRule.listOfPremiseEvents»«evPoin.name» «ENDFOR»»" 
-           conclusioEventID="«logicalRule.conclusio.name»" > 
+           premiseEventRefs="«FOR evPoin : logicalRule.listOfPremiseEvents»«evPoin.name» «ENDFOR»»" 
+           conclusioEventRef="«logicalRule.conclusio.name»" > 
            «logicalRule.labeledDescription.toXml("")»
          </kb:rule>
       «ENDFOR»
       «ENDIF»    
     </kb:rules> 
     «ENDIF»
-    «IF ( base.listOfRelationalConstraints != null &&
-            base.listOfRelationalConstraints.length > 0)»
+    «IF (  ( base.listOfNormRCs != null &&
+             base.listOfNormRCs.length > 0)
+        || ( base.listOfCondRCs != null &&
+             base.listOfCondRCs.length > 0)
+        )»
     <kb:relations>
-      «FOR relation :  base.listOfRelationalConstraints»
-      <kb:relation id="«relation.name»" type="«relation.relationType»"
-          lParameter="«relation.firstArg.name»" rParameter="«relation.secondArg.name»"> 
-        «relation.labeledDescription.toXml("")»
-      </kb:releation>
-       «ENDFOR»
-    <kb:/relations>    
+      «IF base.listOfNormRCs != null»
+      «FOR rel :  base.listOfNormRCs»
+      <kb:relation id="«rel.name»" type="«rel.stmnt.relType»" «rel.stmnt.toXml»>
+        «rel.labeledDescription.toXml("")»
+      </kb:relation>
+      «ENDFOR»
+      «ENDIF»
+      «IF base.listOfCondRCs != null»
+      «FOR rel :  base.listOfCondRCs»
+      <kb:ifrelation id="«rel.name»"  >
+        «rel.labeledDescription.toXml("")»
+        <kb:ifPremise eventRef="«rel.trigger.name»" />
+        <kb:thenReleation type="«rel.stmnt.relType»" «rel.stmnt.toXml» />
+      </kb:ifrelation>
+      «ENDFOR»
+      «ENDIF»      
+      
+    </kb:relations>    
     «ENDIF»
   </kb:data>    
-</kb:knowledgeBase>
+</kb:knowledgebase>
 	'''
+	
+	def String toXml (RelationalStatement stmnt) '''
+    «IF stmnt.leVarArg != null»lParamRef="«stmnt.leVarArg.name»"«ENDIF»
+    «IF stmnt.leStrConst != null» lStrConstRef="«stmnt.leStrConst.name»" «ENDIF»
+    «IF stmnt.leIntConst != null» lIntConstRef="«stmnt.leIntConst.name»" «ENDIF»
+    «IF stmnt.leFloatConst != null» lFloatConstRef="«stmnt.leFloatConst.name»" «ENDIF»
+    «IF stmnt.riVarArg != null» rParamRef="«stmnt.riVarArg.name»" «ENDIF»
+    «IF stmnt.riStrConst != null» rStrConstRef="«stmnt.riStrConst.name»" «ENDIF»
+    «IF stmnt.riIntConst != null» rIntConstRef="«stmnt.riIntConst.name»" «ENDIF»
+    «IF stmnt.riFloatConst != null» rFloatConstRef="«stmnt.riFloatConst.name»" «ENDIF»'''
+    
   def String toXml(OpenContextualPath opCtxPath) '''
-  nexusId="«opCtxPath.variantPurposeRow.head.variant.name»
-  context="«FOR variPurpPair : opCtxPath.variantPurposeRow»«variPurpPair.variant.name» «variPurpPair.purpose.name» «ENDFOR»"'''
+  nexusId="«opCtxPath.variantPurposeRow.head.variant.name»"
+  contextPsPvRefs="«FOR variPurpPair : opCtxPath.variantPurposeRow»«variPurpPair.variant.name» «variPurpPair.purpose.name» «ENDFOR»"'''
 
   def String toXml(ClosedContextualPath clCtxPath) '''
   «IF clCtxPath.variantPurposeRow != null && clCtxPath.variantPurposeRow.head != null »
-  nexusId="«clCtxPath.variantPurposeRow.head.variant.name»"«ELSE»
-  nexusId="«clCtxPath.closingVariant.name»"«ENDIF»
-  context="«FOR variPurpPair : clCtxPath.variantPurposeRow»«variPurpPair.variant.name» «variPurpPair.purpose.name» «ENDFOR»«clCtxPath.closingVariant.name»"'''
+  nexusPvRef"«clCtxPath.variantPurposeRow.head.variant.name»"«ELSE»
+  nexusPvRef"«clCtxPath.closingVariant.name»"«ENDIF»
+  contextPsPvRefs="«FOR variPurpPair : clCtxPath.variantPurposeRow»«variPurpPair.variant.name» «variPurpPair.purpose.name» «ENDFOR»«clCtxPath.closingVariant.name»"'''
 
   def String stringToXmlTag(String value, String tag) '''
     <«tag»>«value»</«tag»>
@@ -301,17 +320,17 @@ This file is licensed under the conditions of a/the
       <kb:attributes>
         «IF concept.listOfAttStrReferences != null»
           «FOR attRef : concept.listOfAttStrReferences»
-          <kb:attribute referredValue="«attRef.ref.name»" />
+          <kb:attribute valueRef="«attRef.ref.name»" />
           «ENDFOR»
         «ENDIF»
         «IF concept.listOfAttIntReferences != null»
           «FOR attRef : concept.listOfAttIntReferences»
-          <kb:attribute referredValue="«attRef.ref.name»" />
+          <kb:attribute valueRef="«attRef.ref.name»" />
           «ENDFOR»
         «ENDIF»
         «IF concept.listOfAttFloatReferences != null»
           «FOR attRef : concept.listOfAttFloatReferences»
-          <kb:attribute referredValue="«attRef.ref.name»" />
+          <kb:attribute valueRef="«attRef.ref.name»" />
           «ENDFOR»
         «ENDIF»
       </kb:attributes>
@@ -334,7 +353,7 @@ This file is licensed under the conditions of a/the
                  oneOutOfThisSection.listOfStrAttReferences.size>0)»
             <kb:oneOutOfTheseStrAttributes>
               «FOR attStrRef : oneOutOfThisSection.listOfStrAttReferences»
-              <kb:attribute referredValue="«attStrRef.ref.name»" />
+              <kb:attribute valueRef="«attStrRef.ref.name»" />
               «ENDFOR»
             </kb:oneOutOfTheseStrAttributes>           
             «ENDIF»
@@ -342,7 +361,7 @@ This file is licensed under the conditions of a/the
                  oneOutOfThisSection.listOfIntAttReferences.size>0)»
             <kb:oneOutOfTheseIntAttributes>
               «FOR attStrRef : oneOutOfThisSection.listOfIntAttReferences»
-              <kb:attribute referredValue="«attStrRef.ref.name»" />
+              <kb:attribute valueRef="«attStrRef.ref.name»" />
               «ENDFOR»
             </kb:oneOutOfTheseIntAttributes>           
             «ENDIF»  
@@ -350,7 +369,7 @@ This file is licensed under the conditions of a/the
                  oneOutOfThisSection.listOfFloatAttReferences.size>0)»
             <kb:oneOutOfTheseFloatAttributes>
               «FOR attStrRef : oneOutOfThisSection.listOfFloatAttReferences»
-              <kb:attribute referredValue="«attStrRef.ref.name»" />
+              <kb:attribute valueRef="«attStrRef.ref.name»" />
               «ENDFOR»
             </kb:oneOutOfTheseFloatAttributes>           
             «ENDIF»
@@ -359,10 +378,10 @@ This file is licensed under the conditions of a/the
         «IF variant.listOfOneOutOfThisRanges != null»
         «FOR oneOutOfThisRange : variant.listOfOneOutOfThisRanges »
           «IF oneOutOfThisRange.attIntRangeReference != null »
-           <kb:oneOutOfThisRange referredRange="«oneOutOfThisRange.attIntRangeReference.ref.name»" />
+           <kb:oneOutOfThisRange rangeRef="«oneOutOfThisRange.attIntRangeReference.ref.name»" />
           «ENDIF»
           «IF oneOutOfThisRange.attFloatRangeReference != null »
-            <kb:oneOutOfThisRange referredRange="«oneOutOfThisRange.attFloatRangeReference.ref.name»" />
+            <kb:oneOutOfThisRange rangeRef="«oneOutOfThisRange.attFloatRangeReference.ref.name»" />
           «ENDIF»
         «ENDFOR»
         «ENDIF»
@@ -370,7 +389,7 @@ This file is licensed under the conditions of a/the
         && variant.listOfConceptReferences.size()>0)»
         <kb:oneOfTheseConcepts>
           «FOR conc : variant.listOfConceptReferences »
-          <kb:concept referredConcept="«conc.ref.name»" />
+          <kb:concept conceptRef="«conc.ref.name»" />
           «ENDFOR»
         </kb:oneOfTheseConcepts>
         «ENDIF»
@@ -381,75 +400,69 @@ This file is licensed under the conditions of a/the
   '''
   
   def String toXml(IsFulfilledBy isFulFilledBy) '''
-    <kb:isFulfilledBy purposeID="«isFulFilledBy.purposeRef.name»" 
-      variantIDs="«FOR vari : isFulFilledBy.variantRefs»«vari.name» «ENDFOR»" />
+    <kb:isFulfilledBy purposeRef="«isFulFilledBy.purposeRef.name»" 
+      variantRefs="«FOR vari : isFulFilledBy.variantRefs»«vari.name» «ENDFOR»" />
   '''
  
   def String toXml(IsConstitutedBy isConstitutedBy) '''
-    <kb:isConstitutedBy variantID="«isConstitutedBy.variantRef.name»">
+    <kb:isConstitutedBy variantRef="«isConstitutedBy.variantRef.name»">
       «FOR cba : isConstitutedBy.listOfisConstitutedByAssignments»
-      <kb:constituent many"«cba.many»" instancesOfPurpose="«cba.purposeRef.name»" />
+      <kb:constituent many="«cba.many»" purposeRef="«cba.purposeRef.name»" />
       «ENDFOR»
     </kb:isConstitutedBy>  
   ''' 
-  def String toXml(SensorStringValueArea sensorArea) '''
+  def String toXml(SensorStringAttrArea sensorArea) '''
   «var sensor=sensorArea.sensor»
     <kb:sensor id="«sensor.name»">
       «sensor.toXml»
       <kb:valueSet>
         «FOR value : sensorArea.sensorStringValues»
-        <kb:value id="«value.name»" sensedByID="«value.sensedBy.name»">«value.value»</kb:value>
+        <kb:value id="«value.name»" sensedByRef="«value.sensedBy.name»">«value.value»</kb:value>
         «ENDFOR»
       </kb:valueSet>
     </kb:sensor>
    '''
-  def String toXml(SensorIntDigitArea sensorArea) '''
+  def String toXml(SensorIntAttrArea sensorArea) '''
   «var sensor=sensorArea.sensor»
     <kb:sensor id="«sensor.name»">
       «sensor.toXml»
       <kb:valueSet>
-        «FOR digit : sensorArea.sensorIntDigits»
-        <kb:value id="«digit.name»" sensedByID="«digit.sensedBy.name»">«digit.value»</kb:value>
+        «IF sensorArea.listOfSensorIntDigits != null»
+        «FOR digit : sensorArea.listOfSensorIntDigits»
+        <kb:value id="«digit.name»" sensedByRef="«digit.sensedBy.name»">«digit.value»</kb:value>
         «ENDFOR»
+        «ENDIF»
+        «IF sensorArea.listOfSensorIntRanges != null»
+        «FOR range : sensorArea.listOfSensorIntRanges»
+        <kb:range id="«range.name»" sensedByRef="«range.sensedBy.name»"
+          minVal="«range.value.minVal»" maxVal="«range.value.maxVal»" incVal="«range.value.incVal»" />
+        «ENDFOR»
+        «ENDIF»
       </kb:valueSet>
     </kb:sensor>
    '''
 
-  def String toXml(SensorFloatDigitArea sensorArea) '''
+  def String toXml(SensorFloatAttrArea sensorArea) '''
   «var sensor=sensorArea.sensor»
     <kb:sensor id="«sensor.name»">
       «sensor.toXml»
       <kb:valueSet>
-        «FOR digit : sensorArea.sensorFloatDigits»
-        <kb:value id="«digit.name»" sensedByID="«digit.sensedBy.name»">«digit.value»</kb:value>
+        «IF sensorArea.listOfSensorFloatDigits != null»
+        «FOR digit : sensorArea.listOfSensorFloatDigits»
+        <kb:value id="«digit.name»" sensedByRef="«digit.sensedBy.name»">«digit.value»</kb:value>
         «ENDFOR»
+        «ENDIF»
+        «IF sensorArea.listOfSensorFloatRanges != null»
+        «FOR range : sensorArea.listOfSensorFloatRanges»
+        <kb:range id="«range.name»" sensedByRef="«range.sensedBy.name»"
+          minVal="«range.value.minVal»" maxVal="«range.value.maxVal»" incVal="«range.value.incVal»" />
+       «ENDFOR»
+        «ENDIF»
       </kb:valueSet>
     </kb:sensor>
   '''
-  def String toXml(SensorIntRangeArea sensorArea) '''
-  «var sensor=sensorArea.sensor»
-    <kb:sensor id="«sensor.name»">
-      «sensor.toXml»
-      <kb:rangeSet>
-        «FOR range : sensorArea.sensorIntRanges»
-        <kb:range id="«range.name»" sensedByID="«range.sensedBy.name»"
-          minVal="«range.value.minVal»" maxVal="«range.value.maxVal»" incVal="«range.value.incVal»" />
-       «ENDFOR»
-      </kb:rangeSet>
-    </kb:sensor>
-  '''
-  def String toXml(SensorFloatRangeArea sensorArea) '''
-  «var sensor=sensorArea.sensor»
-    <kb:sensor id="«sensor.name»">
-      «sensor.toXml»
-      <kb:rangeSet>
-        «FOR range : sensorArea.sensorFloatRanges»
-        <kb:range id="«range.name»" sensedByID="«range.sensedBy.name»"
-          minVal="«range.value.minVal»" maxVal="«range.value.maxVal»" incVal="«range.value.incVal»" />
-       «ENDFOR»
-      </kb:rangeSet>
-    </kb:sensor>
-'''
+
+
    
 }
 
