@@ -18,7 +18,7 @@ You should have got a version of this license together with this file.
   xsi:schemaLocation="http://org.psikeds.knowledgebase kb.xsd">
   <kb:meta>
     <kb:created>2014-04-04</kb:created>
-    <kb:lastmodified>2014-04-14</kb:lastmodified>
+    <kb:lastmodified>2014-04-16</kb:lastmodified>
     <kb:version>0.1.1</kb:version>
     <kb:creator>Karsten Reincke</kb:creator>
     <kb:creator>Marco Juliano</kb:creator>
@@ -29,323 +29,324 @@ You should have got a version of this license together with this file.
   </kb:meta>
   <kb:data>
     <kb:sensors> 
-      <kb:sensor id="NamedColor">
-        <kb:label>Color-Names</kb:label>
-        <kb:description>
-        perceptible colors denoted by their names
-        </kb:description>
-        <kb:valueSet>
-          <kb:value id="namedColorAzure" sensedByRef="NamedColor">azure</kb:value>
-          <kb:value id="namedColorPink" sensedByRef="NamedColor">pink</kb:value>
-          <kb:value id="namedColorIvory" sensedByRef="NamedColor">ivory</kb:value>
-          <kb:value id="namedColorWhite" sensedByRef="NamedColor">white</kb:value>
-        </kb:valueSet>
-      </kb:sensor>
-      <kb:sensor id="PreprintedAddrField">
-        <kb:label>Preprinted-Address-Field</kb:label>
-        <kb:description>
-        contains a preprinted address field
-        </kb:description>
-        <kb:valueSet>
-          <kb:value id="withPreprintedAddrField" sensedByRef="PreprintedAddrField">T</kb:value>
-          <kb:value id="withoutPreprintedAddrField" sensedByRef="PreprintedAddrField">F</kb:value>
-        </kb:valueSet>
-      </kb:sensor>
-      <kb:sensor id="StampValue">
-        <kb:label>Stamp-Value</kb:label>
-        <kb:valueSet>
-          <kb:value id="Euro045" sensedByRef="StampValue">45</kb:value>
-          <kb:value id="Euro060" sensedByRef="StampValue">60</kb:value>
-          <kb:value id="Euro090" sensedByRef="StampValue">90</kb:value>
-          <kb:value id="Euro145" sensedByRef="StampValue">145</kb:value>
-          <kb:value id="Euro240" sensedByRef="StampValue">240</kb:value>
-        </kb:valueSet>
-      </kb:sensor>
-      <kb:sensor id="PaperImportance">
-        <kb:label>Paper-Thickness</kb:label>
-        <kb:description>
-        thickness of paper as one criteria of paper quality
-        </kb:description>
-        <kb:valueSet>
-          <kb:value id="P1Importance" sensedByRef="PaperImportance">1</kb:value>
-          <kb:value id="P2Importance" sensedByRef="PaperImportance">2</kb:value>
-          <kb:value id="P3Importance" sensedByRef="PaperImportance">3</kb:value>
-        </kb:valueSet>
-      </kb:sensor>
-      <kb:sensor id="DinANumber">
-        <kb:label>Din-A-Numbers</kb:label>
-        <kb:description>
-        sensor to perceive Din A Format Numbers
-        </kb:description>
-        <kb:valueSet>
-          <kb:value id="DinA0Number" sensedByRef="DinANumber">0</kb:value>
-          <kb:value id="DinA1Number" sensedByRef="DinANumber">1</kb:value>
-          <kb:value id="DinA2Number" sensedByRef="DinANumber">2</kb:value>
-          <kb:value id="DinA3Number" sensedByRef="DinANumber">3</kb:value>
-          <kb:value id="DinA4Number" sensedByRef="DinANumber">4</kb:value>
-          <kb:value id="DinA5Number" sensedByRef="DinANumber">5</kb:value>
-          <kb:value id="DinA6Number" sensedByRef="DinANumber">6</kb:value>
-          <kb:value id="DinA7Number" sensedByRef="DinANumber">7</kb:value>
-          <kb:value id="DinA8Number" sensedByRef="DinANumber">8</kb:value>
-          <kb:value id="DinA9Number" sensedByRef="DinANumber">9</kb:value>
-          <kb:value id="DinA10Number" sensedByRef="DinANumber">10</kb:value>
-        </kb:valueSet>
-      </kb:sensor>
-      <kb:sensor id="CountSectors">
-        <kb:label>count-sectors</kb:label>
-        <kb:description>
-        counts the number of sections evoked by the folding method
-        </kb:description>
-        <kb:valueSet>
-          <kb:range id="howManySections" sensedByRef="CountSectors"
-            minVal="1" maxVal="4" incVal="1" />
-        </kb:valueSet>
-      </kb:sensor>
-      <kb:sensor id="DinCNumber">
-        <kb:label>Din-C-Numbers</kb:label>
-        <kb:description>
-        sensor to perceive Din C Format Numbers
-        </kb:description>
-        <kb:valueSet>
-          <kb:value id="DinC0Number" sensedByRef="DinCNumber">0.0</kb:value>
-          <kb:value id="DinC1Number" sensedByRef="DinCNumber">1.0</kb:value>
-          <kb:value id="DinC2Number" sensedByRef="DinCNumber">2.0</kb:value>
-          <kb:value id="DinC3Number" sensedByRef="DinCNumber">3.0</kb:value>
-          <kb:value id="DinC4Number" sensedByRef="DinCNumber">4.0</kb:value>
-          <kb:value id="DinC5Number" sensedByRef="DinCNumber">5.0</kb:value>
-          <kb:value id="DinC56Number" sensedByRef="DinCNumber">5.6</kb:value>
-          <kb:value id="DinC6Number" sensedByRef="DinCNumber">6.0</kb:value>
-          <kb:value id="DinC7Number" sensedByRef="DinCNumber">7.0</kb:value>
-          <kb:value id="DinC8Number" sensedByRef="DinCNumber">8.0</kb:value>
-          <kb:value id="DinC9Number" sensedByRef="DinCNumber">9.0</kb:value>
-          <kb:value id="DinC10Number" sensedByRef="DinCNumber">10.0</kb:value>
-        </kb:valueSet>
-      </kb:sensor>
-      <kb:sensor id="DinFormatHeight">
-        <kb:label>Din-Format-Height</kb:label>
-        <kb:description>
-        DIN form based heights of paper sizes:
-        	 DIN-A as portrait (height > width )
-             DIN-C as landscape (width > height)
-        </kb:description>
-        <kb:valueSet>
-          <kb:value id="DinA0Height" sensedByRef="DinFormatHeight">118.9</kb:value>
-          <kb:value id="DinA1Height" sensedByRef="DinFormatHeight">84.1</kb:value>
-          <kb:value id="DinA2Height" sensedByRef="DinFormatHeight">59.4</kb:value>
-          <kb:value id="DinA3Height" sensedByRef="DinFormatHeight">42.0</kb:value>
-          <kb:value id="DinA4Height" sensedByRef="DinFormatHeight">29.7</kb:value>
-          <kb:value id="DinA5Height" sensedByRef="DinFormatHeight">21.0</kb:value>
-          <kb:value id="DinA6Height" sensedByRef="DinFormatHeight">14.8</kb:value>
-          <kb:value id="DinA7Height" sensedByRef="DinFormatHeight">10.5</kb:value>
-          <kb:value id="DinA8Height" sensedByRef="DinFormatHeight">7.4</kb:value>
-          <kb:value id="DinA9Height" sensedByRef="DinFormatHeight">5.2</kb:value>
-          <kb:value id="DinA10Height" sensedByRef="DinFormatHeight">3.7</kb:value>
-          <kb:value id="DinC0Height" sensedByRef="DinFormatHeight">91.7</kb:value>
-          <kb:value id="DinC1Height" sensedByRef="DinFormatHeight">64.8</kb:value>
-          <kb:value id="DinC2Height" sensedByRef="DinFormatHeight">45.8</kb:value>
-          <kb:value id="DinC3Height" sensedByRef="DinFormatHeight">32.4</kb:value>
-          <kb:value id="DinC4Height" sensedByRef="DinFormatHeight">22.9</kb:value>
-          <kb:value id="DinC5Height" sensedByRef="DinFormatHeight">16.2</kb:value>
-          <kb:value id="DinC6Height" sensedByRef="DinFormatHeight">11.4</kb:value>
-          <kb:value id="DinC7Height" sensedByRef="DinFormatHeight">8.1</kb:value>
-          <kb:value id="DinC8Height" sensedByRef="DinFormatHeight">5.7</kb:value>
-          <kb:value id="DinC9Height" sensedByRef="DinFormatHeight">4.0</kb:value>
-          <kb:value id="DinC10Height" sensedByRef="DinFormatHeight">2.8</kb:value>
-        </kb:valueSet>
-      </kb:sensor>
-      <kb:sensor id="DinFormatWidth">
-        <kb:label>Din-Format-Width</kb:label>
-        <kb:description>
-        DIN form based widths of paper sizes:
-        	 DIN-A as portrait (height > width )
-             DIN-C as landscape (width > height)
-        </kb:description>
-        <kb:valueSet>
-          <kb:value id="DinA0Width" sensedByRef="DinFormatWidth">84.1</kb:value>
-          <kb:value id="DinA1Width" sensedByRef="DinFormatWidth">59.4</kb:value>
-          <kb:value id="DinA2Width" sensedByRef="DinFormatWidth">42.0</kb:value>
-          <kb:value id="DinA3Width" sensedByRef="DinFormatWidth">29.7</kb:value>
-          <kb:value id="DinA4Width" sensedByRef="DinFormatWidth">21.0</kb:value>
-          <kb:value id="DinA5Width" sensedByRef="DinFormatWidth">14.8</kb:value>
-          <kb:value id="DinA6Width" sensedByRef="DinFormatWidth">10.5</kb:value>
-          <kb:value id="DinA7Width" sensedByRef="DinFormatWidth">7.4</kb:value>
-          <kb:value id="DinA8Width" sensedByRef="DinFormatWidth">5.2</kb:value>
-          <kb:value id="DinA9Width" sensedByRef="DinFormatWidth">3.7</kb:value>
-          <kb:value id="DinA10Width" sensedByRef="DinFormatWidth">2.6</kb:value>
-          <kb:value id="DinC0Width" sensedByRef="DinFormatWidth">129.7</kb:value>
-          <kb:value id="DinC1Width" sensedByRef="DinFormatWidth">91.7</kb:value>
-          <kb:value id="DinC2Width" sensedByRef="DinFormatWidth">64.8</kb:value>
-          <kb:value id="DinC3Width" sensedByRef="DinFormatWidth">45.8</kb:value>
-          <kb:value id="DinC4Width" sensedByRef="DinFormatWidth">32.4</kb:value>
-          <kb:value id="DinC5Width" sensedByRef="DinFormatWidth">22.9</kb:value>
-          <kb:value id="DinC6Width" sensedByRef="DinFormatWidth">16.2</kb:value>
-          <kb:value id="DinC7Width" sensedByRef="DinFormatWidth">11.4</kb:value>
-          <kb:value id="DinC8Width" sensedByRef="DinFormatWidth">8.1</kb:value>
-          <kb:value id="DinC9Width" sensedByRef="DinFormatWidth">5.7</kb:value>
-          <kb:value id="DinC10Width" sensedByRef="DinFormatWidth">4.0</kb:value>
-        </kb:valueSet>
-      </kb:sensor>
-      <kb:sensor id="Weight">
-        <kb:label>weight</kb:label>
-        <kb:description>
-        weight of an envelope or a paper page or both together
-        </kb:description>
-        <kb:valueSet>
-          <kb:value id="Weight1P1" sensedByRef="Weight">1.1</kb:value>
-          <kb:value id="Weight1P3" sensedByRef="Weight">1.3</kb:value>
-          <kb:value id="Weight1P5" sensedByRef="Weight">1.5</kb:value>
-          <kb:value id="Weight1P7" sensedByRef="Weight">1.7</kb:value>
-          <kb:value id="Weight2P2" sensedByRef="Weight">2.2</kb:value>
-          <kb:value id="Weight3P2" sensedByRef="Weight">3.2</kb:value>
-          <kb:value id="Weight4P2" sensedByRef="Weight">4.2</kb:value>
-          <kb:value id="Weight4P4" sensedByRef="Weight">4.4</kb:value>
-          <kb:value id="Weight6P5" sensedByRef="Weight">6.5</kb:value>
-          <kb:value id="Weight8P8" sensedByRef="Weight">8.8</kb:value>
-          <kb:value id="Weight13P0" sensedByRef="Weight">13.2</kb:value>
-          <kb:value id="Weight17P5" sensedByRef="Weight">17.5</kb:value>
-          <kb:range id="cardWeight" sensedByRef="Weight"
-            minVal="1.0" maxVal="2.0" incVal="0.1" />
-          <kb:range id="letterWeight" sensedByRef="Weight"
-            minVal="2.0" maxVal="31.0" incVal="0.1" />
-        </kb:valueSet>
-      </kb:sensor>
+        <kb:sensor id="NamedColor">
+          <kb:label>Color-Names</kb:label>
+          <kb:description>
+          perceptible colors denoted by their names
+          </kb:description>
+          <kb:valueSet>
+            <kb:value id="namedColorAzure" sensedByRef="NamedColor">azure</kb:value>
+            <kb:value id="namedColorPink" sensedByRef="NamedColor">pink</kb:value>
+            <kb:value id="namedColorIvory" sensedByRef="NamedColor">ivory</kb:value>
+            <kb:value id="namedColorWhite" sensedByRef="NamedColor">white</kb:value>
+          </kb:valueSet>
+        </kb:sensor>
+        <kb:sensor id="PreprintedAddrField">
+          <kb:label>Preprinted-Address-Field</kb:label>
+          <kb:description>
+          contains a preprinted address field
+          </kb:description>
+          <kb:valueSet>
+            <kb:value id="withPreprintedAddrField" sensedByRef="PreprintedAddrField">T</kb:value>
+            <kb:value id="withoutPreprintedAddrField" sensedByRef="PreprintedAddrField">F</kb:value>
+          </kb:valueSet>
+        </kb:sensor>
+        <kb:sensor id="StampValue">
+          <kb:label>Stamp-Value</kb:label>
+          <kb:valueSet>
+            <kb:value id="Euro045" sensedByRef="StampValue">45</kb:value>
+            <kb:value id="Euro060" sensedByRef="StampValue">60</kb:value>
+            <kb:value id="Euro090" sensedByRef="StampValue">90</kb:value>
+            <kb:value id="Euro145" sensedByRef="StampValue">145</kb:value>
+            <kb:value id="Euro240" sensedByRef="StampValue">240</kb:value>
+          </kb:valueSet>
+        </kb:sensor>
+        <kb:sensor id="PaperImportance">
+          <kb:label>Paper-Thickness</kb:label>
+          <kb:description>
+          thickness of paper as one criteria of paper quality
+          </kb:description>
+          <kb:valueSet>
+            <kb:value id="P1Importance" sensedByRef="PaperImportance">1</kb:value>
+            <kb:value id="P2Importance" sensedByRef="PaperImportance">2</kb:value>
+            <kb:value id="P3Importance" sensedByRef="PaperImportance">3</kb:value>
+          </kb:valueSet>
+        </kb:sensor>
+        <kb:sensor id="DinANumber">
+          <kb:label>Din-A-Numbers</kb:label>
+          <kb:description>
+          sensor to perceive Din A Format Numbers
+          </kb:description>
+          <kb:valueSet>
+            <kb:value id="DinA0Number" sensedByRef="DinANumber">0</kb:value>
+            <kb:value id="DinA1Number" sensedByRef="DinANumber">1</kb:value>
+            <kb:value id="DinA2Number" sensedByRef="DinANumber">2</kb:value>
+            <kb:value id="DinA3Number" sensedByRef="DinANumber">3</kb:value>
+            <kb:value id="DinA4Number" sensedByRef="DinANumber">4</kb:value>
+            <kb:value id="DinA5Number" sensedByRef="DinANumber">5</kb:value>
+            <kb:value id="DinA6Number" sensedByRef="DinANumber">6</kb:value>
+            <kb:value id="DinA7Number" sensedByRef="DinANumber">7</kb:value>
+            <kb:value id="DinA8Number" sensedByRef="DinANumber">8</kb:value>
+            <kb:value id="DinA9Number" sensedByRef="DinANumber">9</kb:value>
+            <kb:value id="DinA10Number" sensedByRef="DinANumber">10</kb:value>
+          </kb:valueSet>
+        </kb:sensor>
+        <kb:sensor id="CountSectors">
+          <kb:label>count-sectors</kb:label>
+          <kb:description>
+          counts the number of sections evoked by the folding method
+          </kb:description>
+          <kb:valueSet>
+            <kb:range id="howManySections" sensedByRef="CountSectors"
+              minVal="1" maxVal="4" incVal="1" />
+          </kb:valueSet>
+        </kb:sensor>
+        <kb:sensor id="DinCNumber">
+          <kb:label>Din-C-Numbers</kb:label>
+          <kb:description>
+          sensor to perceive Din C Format Numbers
+          </kb:description>
+          <kb:valueSet>
+            <kb:value id="DinC0Number" sensedByRef="DinCNumber">0.0</kb:value>
+            <kb:value id="DinC1Number" sensedByRef="DinCNumber">1.0</kb:value>
+            <kb:value id="DinC2Number" sensedByRef="DinCNumber">2.0</kb:value>
+            <kb:value id="DinC3Number" sensedByRef="DinCNumber">3.0</kb:value>
+            <kb:value id="DinC4Number" sensedByRef="DinCNumber">4.0</kb:value>
+            <kb:value id="DinC5Number" sensedByRef="DinCNumber">5.0</kb:value>
+            <kb:value id="DinC56Number" sensedByRef="DinCNumber">5.6</kb:value>
+            <kb:value id="DinC6Number" sensedByRef="DinCNumber">6.0</kb:value>
+            <kb:value id="DinC7Number" sensedByRef="DinCNumber">7.0</kb:value>
+            <kb:value id="DinC8Number" sensedByRef="DinCNumber">8.0</kb:value>
+            <kb:value id="DinC9Number" sensedByRef="DinCNumber">9.0</kb:value>
+            <kb:value id="DinC10Number" sensedByRef="DinCNumber">10.0</kb:value>
+          </kb:valueSet>
+        </kb:sensor>
+        <kb:sensor id="DinFormatHeight">
+          <kb:label>Din-Format-Height</kb:label>
+          <kb:description>
+          DIN form based heights of paper sizes:
+          	 DIN-A as portrait (height > width )
+               DIN-C as landscape (width > height)
+          </kb:description>
+          <kb:valueSet>
+            <kb:value id="DinA0Height" sensedByRef="DinFormatHeight">118.9</kb:value>
+            <kb:value id="DinA1Height" sensedByRef="DinFormatHeight">84.1</kb:value>
+            <kb:value id="DinA2Height" sensedByRef="DinFormatHeight">59.4</kb:value>
+            <kb:value id="DinA3Height" sensedByRef="DinFormatHeight">42.0</kb:value>
+            <kb:value id="DinA4Height" sensedByRef="DinFormatHeight">29.7</kb:value>
+            <kb:value id="DinA5Height" sensedByRef="DinFormatHeight">21.0</kb:value>
+            <kb:value id="DinA6Height" sensedByRef="DinFormatHeight">14.8</kb:value>
+            <kb:value id="DinA7Height" sensedByRef="DinFormatHeight">10.5</kb:value>
+            <kb:value id="DinA8Height" sensedByRef="DinFormatHeight">7.4</kb:value>
+            <kb:value id="DinA9Height" sensedByRef="DinFormatHeight">5.2</kb:value>
+            <kb:value id="DinA10Height" sensedByRef="DinFormatHeight">3.7</kb:value>
+            <kb:value id="DinC0Height" sensedByRef="DinFormatHeight">91.7</kb:value>
+            <kb:value id="DinC1Height" sensedByRef="DinFormatHeight">64.8</kb:value>
+            <kb:value id="DinC2Height" sensedByRef="DinFormatHeight">45.8</kb:value>
+            <kb:value id="DinC3Height" sensedByRef="DinFormatHeight">32.4</kb:value>
+            <kb:value id="DinC4Height" sensedByRef="DinFormatHeight">22.9</kb:value>
+            <kb:value id="DinC5Height" sensedByRef="DinFormatHeight">16.2</kb:value>
+            <kb:value id="DinC6Height" sensedByRef="DinFormatHeight">11.4</kb:value>
+            <kb:value id="DinC7Height" sensedByRef="DinFormatHeight">8.1</kb:value>
+            <kb:value id="DinC8Height" sensedByRef="DinFormatHeight">5.7</kb:value>
+            <kb:value id="DinC9Height" sensedByRef="DinFormatHeight">4.0</kb:value>
+            <kb:value id="DinC10Height" sensedByRef="DinFormatHeight">2.8</kb:value>
+          </kb:valueSet>
+        </kb:sensor>
+        <kb:sensor id="DinFormatWidth">
+          <kb:label>Din-Format-Width</kb:label>
+          <kb:description>
+          DIN form based widths of paper sizes:
+          	 DIN-A as portrait (height > width )
+               DIN-C as landscape (width > height)
+          </kb:description>
+          <kb:valueSet>
+            <kb:value id="DinA0Width" sensedByRef="DinFormatWidth">84.1</kb:value>
+            <kb:value id="DinA1Width" sensedByRef="DinFormatWidth">59.4</kb:value>
+            <kb:value id="DinA2Width" sensedByRef="DinFormatWidth">42.0</kb:value>
+            <kb:value id="DinA3Width" sensedByRef="DinFormatWidth">29.7</kb:value>
+            <kb:value id="DinA4Width" sensedByRef="DinFormatWidth">21.0</kb:value>
+            <kb:value id="DinA5Width" sensedByRef="DinFormatWidth">14.8</kb:value>
+            <kb:value id="DinA6Width" sensedByRef="DinFormatWidth">10.5</kb:value>
+            <kb:value id="DinA7Width" sensedByRef="DinFormatWidth">7.4</kb:value>
+            <kb:value id="DinA8Width" sensedByRef="DinFormatWidth">5.2</kb:value>
+            <kb:value id="DinA9Width" sensedByRef="DinFormatWidth">3.7</kb:value>
+            <kb:value id="DinA10Width" sensedByRef="DinFormatWidth">2.6</kb:value>
+            <kb:value id="DinC0Width" sensedByRef="DinFormatWidth">129.7</kb:value>
+            <kb:value id="DinC1Width" sensedByRef="DinFormatWidth">91.7</kb:value>
+            <kb:value id="DinC2Width" sensedByRef="DinFormatWidth">64.8</kb:value>
+            <kb:value id="DinC3Width" sensedByRef="DinFormatWidth">45.8</kb:value>
+            <kb:value id="DinC4Width" sensedByRef="DinFormatWidth">32.4</kb:value>
+            <kb:value id="DinC5Width" sensedByRef="DinFormatWidth">22.9</kb:value>
+            <kb:value id="DinC6Width" sensedByRef="DinFormatWidth">16.2</kb:value>
+            <kb:value id="DinC7Width" sensedByRef="DinFormatWidth">11.4</kb:value>
+            <kb:value id="DinC8Width" sensedByRef="DinFormatWidth">8.1</kb:value>
+            <kb:value id="DinC9Width" sensedByRef="DinFormatWidth">5.7</kb:value>
+            <kb:value id="DinC10Width" sensedByRef="DinFormatWidth">4.0</kb:value>
+          </kb:valueSet>
+        </kb:sensor>
+        <kb:sensor id="Weight">
+          <kb:label>weight</kb:label>
+          <kb:description>
+          weight of an envelope or a paper page or both together
+          </kb:description>
+          <kb:valueSet>
+            <kb:value id="Weight1P1" sensedByRef="Weight">1.1</kb:value>
+            <kb:value id="Weight1P3" sensedByRef="Weight">1.3</kb:value>
+            <kb:value id="Weight1P5" sensedByRef="Weight">1.5</kb:value>
+            <kb:value id="Weight1P7" sensedByRef="Weight">1.7</kb:value>
+            <kb:value id="Weight2P2" sensedByRef="Weight">2.2</kb:value>
+            <kb:value id="Weight3P2" sensedByRef="Weight">3.2</kb:value>
+            <kb:value id="Weight4P2" sensedByRef="Weight">4.2</kb:value>
+            <kb:value id="Weight4P4" sensedByRef="Weight">4.4</kb:value>
+            <kb:value id="Weight6P5" sensedByRef="Weight">6.5</kb:value>
+            <kb:value id="Weight8P8" sensedByRef="Weight">8.8</kb:value>
+            <kb:value id="Weight13P0" sensedByRef="Weight">13.2</kb:value>
+            <kb:value id="Weight17P5" sensedByRef="Weight">17.5</kb:value>
+            <kb:range id="cardWeight" sensedByRef="Weight"
+              minVal="1.0" maxVal="2.0" incVal="0.1" />
+            <kb:range id="letterWeight" sensedByRef="Weight"
+              minVal="2.0" maxVal="31.0" incVal="0.1" />
+          </kb:valueSet>
+        </kb:sensor>
     </kb:sensors>
-  
+
+
     <kb:concepts>
-     <kb:concept id="DinA6Letter">
-      <kb:label>DIN-A6-Values</kb:label>
-      <kb:description>
-      DIN A6 constitutive values
-      </kb:description>
-      <kb:attributes>
-        <kb:attribute valueRef="DinA6Number" />
-        <kb:attribute valueRef="DinA6Height" />
-        <kb:attribute valueRef="DinA6Width" />
-        <kb:attribute valueRef="Weight1P1" />
-      </kb:attributes>
-    </kb:concept>
-     <kb:concept id="DinA5Letter">
-      <kb:label>DIN-A5-Values</kb:label>
-      <kb:description>
-      DIN A5 constitutive values
-      </kb:description>
-      <kb:attributes>
-        <kb:attribute valueRef="DinA5Number" />
-        <kb:attribute valueRef="DinA5Height" />
-        <kb:attribute valueRef="DinA5Width" />
-        <kb:attribute valueRef="Weight2P2" />
-      </kb:attributes>
-    </kb:concept>
-     <kb:concept id="DinA4Letter">
-      <kb:label>DIN-A4-Values</kb:label>
-      <kb:description>
-      DIN A4 constitutive values
-      </kb:description>
-      <kb:attributes>
-        <kb:attribute valueRef="DinA4Number" />
-        <kb:attribute valueRef="DinA4Height" />
-        <kb:attribute valueRef="DinA4Width" />
-        <kb:attribute valueRef="Weight4P4" />
-      </kb:attributes>
-    </kb:concept>
-     <kb:concept id="DinA3Letter">
-      <kb:label>DIN-A3-Values</kb:label>
-      <kb:description>
-      DIN A3 constitutive values
-      </kb:description>
-      <kb:attributes>
-        <kb:attribute valueRef="DinA3Number" />
-        <kb:attribute valueRef="DinA3Height" />
-        <kb:attribute valueRef="DinA3Width" />
-        <kb:attribute valueRef="Weight8P8" />
-      </kb:attributes>
-    </kb:concept>
-     <kb:concept id="DinA2Letter">
-      <kb:label>DIN-A2-Values</kb:label>
-      <kb:description>
-      DIN A2 constitutive values
-      </kb:description>
-      <kb:attributes>
-        <kb:attribute valueRef="DinA2Number" />
-        <kb:attribute valueRef="DinA2Height" />
-        <kb:attribute valueRef="DinA2Width" />
-        <kb:attribute valueRef="Weight17P5" />
-      </kb:attributes>
-    </kb:concept>
-     <kb:concept id="DinA6CardConveyable">
-      <kb:label>Conveyable-DIN-A6-Writing-Card</kb:label>
-      <kb:description>
-      constitutive values for a conveyable DIN A6 writing card
-      </kb:description>
-      <kb:attributes>
-        <kb:attribute valueRef="withPreprintedAddrField" />
-        <kb:attribute valueRef="DinA6Number" />
-        <kb:attribute valueRef="DinA6Height" />
-        <kb:attribute valueRef="DinA6Width" />
-      </kb:attributes>
-    </kb:concept>
-     <kb:concept id="DinA6CardUnconveyable">
-      <kb:label>Conveyable-DIN-A6-Writing-Card</kb:label>
-      <kb:description>
-      constitutive values for an unconveyable DIN A6 writing card
-      </kb:description>
-      <kb:attributes>
-        <kb:attribute valueRef="withPreprintedAddrField" />
-        <kb:attribute valueRef="DinA6Number" />
-        <kb:attribute valueRef="DinA6Height" />
-        <kb:attribute valueRef="DinA6Width" />
-      </kb:attributes>
-    </kb:concept>
-     <kb:concept id="DinC4Envelope">
-      <kb:label>DIN-C4-Envelope</kb:label>
-      <kb:description>
-      DIN C4 constitutive values
-      </kb:description>
-      <kb:attributes>
-        <kb:attribute valueRef="DinC4Number" />
-        <kb:attribute valueRef="DinC4Height" />
-        <kb:attribute valueRef="DinC4Width" />
-        <kb:attribute valueRef="Weight13P0" />
-      </kb:attributes>
-    </kb:concept>
-     <kb:concept id="DinC5Envelope">
-      <kb:label>DIN-C5-Envelope</kb:label>
-      <kb:description>
-      DIN C5 constitutive values
-      </kb:description>
-      <kb:attributes>
-        <kb:attribute valueRef="DinC5Number" />
-        <kb:attribute valueRef="DinC5Height" />
-        <kb:attribute valueRef="DinC5Width" />
-        <kb:attribute valueRef="Weight6P5" />
-      </kb:attributes>
-    </kb:concept>
-     <kb:concept id="DinC56Envelope">
-      <kb:label>DIN-C5,6-Envelope</kb:label>
-      <kb:description>
-      DIN C5,6 constitutive values
-      </kb:description>
-      <kb:attributes>
-        <kb:attribute valueRef="DinC56Number" />
-        <kb:attribute valueRef="DinC6Height" />
-        <kb:attribute valueRef="DinC5Width" />
-        <kb:attribute valueRef="Weight4P2" />
-      </kb:attributes>
-    </kb:concept>
-     <kb:concept id="DinC6Envelope">
-      <kb:label>DIN-C6-Envelope</kb:label>
-      <kb:description>
-      DIN C6 constitutive values
-      </kb:description>
-      <kb:attributes>
-        <kb:attribute valueRef="DinC6Number" />
-        <kb:attribute valueRef="DinC6Height" />
-        <kb:attribute valueRef="DinC6Width" />
-        <kb:attribute valueRef="Weight3P2" />
-      </kb:attributes>
-    </kb:concept>
+       <kb:concept id="DinA6Letter">
+        <kb:label>DIN-A6-Values</kb:label>
+        <kb:description>
+        DIN A6 constitutive values
+        </kb:description>
+        <kb:attributes>
+          <kb:attribute valueRef="DinA6Number" />
+          <kb:attribute valueRef="DinA6Height" />
+          <kb:attribute valueRef="DinA6Width" />
+          <kb:attribute valueRef="Weight1P1" />
+        </kb:attributes>
+      </kb:concept>
+       <kb:concept id="DinA5Letter">
+        <kb:label>DIN-A5-Values</kb:label>
+        <kb:description>
+        DIN A5 constitutive values
+        </kb:description>
+        <kb:attributes>
+          <kb:attribute valueRef="DinA5Number" />
+          <kb:attribute valueRef="DinA5Height" />
+          <kb:attribute valueRef="DinA5Width" />
+          <kb:attribute valueRef="Weight2P2" />
+        </kb:attributes>
+      </kb:concept>
+       <kb:concept id="DinA4Letter">
+        <kb:label>DIN-A4-Values</kb:label>
+        <kb:description>
+        DIN A4 constitutive values
+        </kb:description>
+        <kb:attributes>
+          <kb:attribute valueRef="DinA4Number" />
+          <kb:attribute valueRef="DinA4Height" />
+          <kb:attribute valueRef="DinA4Width" />
+          <kb:attribute valueRef="Weight4P4" />
+        </kb:attributes>
+      </kb:concept>
+       <kb:concept id="DinA3Letter">
+        <kb:label>DIN-A3-Values</kb:label>
+        <kb:description>
+        DIN A3 constitutive values
+        </kb:description>
+        <kb:attributes>
+          <kb:attribute valueRef="DinA3Number" />
+          <kb:attribute valueRef="DinA3Height" />
+          <kb:attribute valueRef="DinA3Width" />
+          <kb:attribute valueRef="Weight8P8" />
+        </kb:attributes>
+      </kb:concept>
+       <kb:concept id="DinA2Letter">
+        <kb:label>DIN-A2-Values</kb:label>
+        <kb:description>
+        DIN A2 constitutive values
+        </kb:description>
+        <kb:attributes>
+          <kb:attribute valueRef="DinA2Number" />
+          <kb:attribute valueRef="DinA2Height" />
+          <kb:attribute valueRef="DinA2Width" />
+          <kb:attribute valueRef="Weight17P5" />
+        </kb:attributes>
+      </kb:concept>
+       <kb:concept id="DinA6CardConveyable">
+        <kb:label>Conveyable-DIN-A6-Writing-Card</kb:label>
+        <kb:description>
+        constitutive values for a conveyable DIN A6 writing card
+        </kb:description>
+        <kb:attributes>
+          <kb:attribute valueRef="withPreprintedAddrField" />
+          <kb:attribute valueRef="DinA6Number" />
+          <kb:attribute valueRef="DinA6Height" />
+          <kb:attribute valueRef="DinA6Width" />
+        </kb:attributes>
+      </kb:concept>
+       <kb:concept id="DinA6CardUnconveyable">
+        <kb:label>Conveyable-DIN-A6-Writing-Card</kb:label>
+        <kb:description>
+        constitutive values for an unconveyable DIN A6 writing card
+        </kb:description>
+        <kb:attributes>
+          <kb:attribute valueRef="withPreprintedAddrField" />
+          <kb:attribute valueRef="DinA6Number" />
+          <kb:attribute valueRef="DinA6Height" />
+          <kb:attribute valueRef="DinA6Width" />
+        </kb:attributes>
+      </kb:concept>
+       <kb:concept id="DinC4Envelope">
+        <kb:label>DIN-C4-Envelope</kb:label>
+        <kb:description>
+        DIN C4 constitutive values
+        </kb:description>
+        <kb:attributes>
+          <kb:attribute valueRef="DinC4Number" />
+          <kb:attribute valueRef="DinC4Height" />
+          <kb:attribute valueRef="DinC4Width" />
+          <kb:attribute valueRef="Weight13P0" />
+        </kb:attributes>
+      </kb:concept>
+       <kb:concept id="DinC5Envelope">
+        <kb:label>DIN-C5-Envelope</kb:label>
+        <kb:description>
+        DIN C5 constitutive values
+        </kb:description>
+        <kb:attributes>
+          <kb:attribute valueRef="DinC5Number" />
+          <kb:attribute valueRef="DinC5Height" />
+          <kb:attribute valueRef="DinC5Width" />
+          <kb:attribute valueRef="Weight6P5" />
+        </kb:attributes>
+      </kb:concept>
+       <kb:concept id="DinC56Envelope">
+        <kb:label>DIN-C5,6-Envelope</kb:label>
+        <kb:description>
+        DIN C5,6 constitutive values
+        </kb:description>
+        <kb:attributes>
+          <kb:attribute valueRef="DinC56Number" />
+          <kb:attribute valueRef="DinC6Height" />
+          <kb:attribute valueRef="DinC5Width" />
+          <kb:attribute valueRef="Weight4P2" />
+        </kb:attributes>
+      </kb:concept>
+       <kb:concept id="DinC6Envelope">
+        <kb:label>DIN-C6-Envelope</kb:label>
+        <kb:description>
+        DIN C6 constitutive values
+        </kb:description>
+        <kb:attributes>
+          <kb:attribute valueRef="DinC6Number" />
+          <kb:attribute valueRef="DinC6Height" />
+          <kb:attribute valueRef="DinC6Width" />
+          <kb:attribute valueRef="Weight3P2" />
+        </kb:attributes>
+      </kb:concept>
     </kb:concepts>
-    
+      
     <kb:purposes>
       <kb:purpose id="informRemoteAddressee" root="true">
         <kb:label>inform-remote-addressee</kb:label>
@@ -580,6 +581,7 @@ You should have got a version of this license together with this file.
         <kb:constituent many="1" purposeRef="enableMessageTransport" />
       </kb:isConstitutedBy>  
     </kb:constituents> 
+    
     <kb:events>
       <kb:event id="PostcardAsContextTop" 
         nexusId="Postcard" 
@@ -642,7 +644,7 @@ You should have got a version of this license together with this file.
         <kb:variantTrigger variantRef="FoldMethod14" />
       </kb:event>
       <kb:event id="preparedAddressAreaOnWritingCardAsPostcard" 
-        nexusPvRef"Postcard"
+        nexusPvRef="Postcard"
         contextPsPvRefs="Postcard fileMessages WritingCard">
         <kb:label>preprinted-address-area-on-writing-card-as-postcard</kb:label>
         <kb:description>
@@ -651,7 +653,7 @@ You should have got a version of this license together with this file.
         <kb:attStrTrigger strValueRef="withPreprintedAddrField" />
       </kb:event>
       <kb:event id="uncompressedLetterWritingCardWithoutAddressField" 
-        nexusPvRef"UncompressedLetter"
+        nexusPvRef="UncompressedLetter"
         contextPsPvRefs="UncompressedLetter fileMessages WritingCard">
         <kb:label>an-uncompressed-letter-with-a-writing-card-without-addr-field</kb:label>
         <kb:description>
@@ -661,7 +663,7 @@ You should have got a version of this license together with this file.
         <kb:attStrTrigger strValueRef="withPreprintedAddrField" />
       </kb:event>
       <kb:event id="stamp045AsPostcardEnabler" 
-        nexusPvRef"Postcard"
+        nexusPvRef="Postcard"
         contextPsPvRefs="Postcard fileMessages WritingCard">
         <kb:label>045-cent-stamp-as-postcard-transport-enabler</kb:label>
         <kb:description>
@@ -670,19 +672,19 @@ You should have got a version of this license together with this file.
         <kb:attIntTrigger intValueRef="Euro045" />
       </kb:event>
       <kb:event id="UncompressedLetterStamp060Cent" 
-        nexusPvRef"UncompressedLetter"
+        nexusPvRef="UncompressedLetter"
         contextPsPvRefs="UncompressedLetter enableMessageTransport Stamp">
         <kb:label>uncompressed-letter-stamp-with-value-60</kb:label>
         <kb:attIntTrigger intValueRef="Euro060" />
       </kb:event>
       <kb:event id="UncompressedLetterStamp145Cent" 
-        nexusPvRef"UncompressedLetter"
+        nexusPvRef="UncompressedLetter"
         contextPsPvRefs="UncompressedLetter enableMessageTransport Stamp">
         <kb:label>uncompressed-letter-stamp-with-value-60</kb:label>
         <kb:attIntTrigger intValueRef="Euro145" />
       </kb:event>
       <kb:event id="compressedLetterWithDinA2Paper" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter fileMessages WritingPaper">
         <kb:label>compressed-letter-with-DIN-A2-paper</kb:label>
         <kb:description>
@@ -691,7 +693,7 @@ You should have got a version of this license together with this file.
         <kb:attIntTrigger intValueRef="DinA2Number" />
       </kb:event>
       <kb:event id="compressedLetterWithDinA3Paper" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter fileMessages WritingPaper">
         <kb:label>compressed-letter-with-DIN-A3-paper</kb:label>
         <kb:description>
@@ -700,7 +702,7 @@ You should have got a version of this license together with this file.
         <kb:attIntTrigger intValueRef="DinA3Number" />
       </kb:event>
       <kb:event id="compressedLetterWithDinA4Paper" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter fileMessages WritingPaper">
         <kb:label>compressed-letter-with-DIN-A4-paper</kb:label>
         <kb:description>
@@ -709,7 +711,7 @@ You should have got a version of this license together with this file.
         <kb:attIntTrigger intValueRef="DinA4Number" />
       </kb:event>
       <kb:event id="compressedLetterWithDinA5Paper" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter fileMessages WritingPaper">
         <kb:label>compressed-letter-with-DIN-A5-paper</kb:label>
         <kb:description>
@@ -718,19 +720,19 @@ You should have got a version of this license together with this file.
         <kb:attIntTrigger intValueRef="DinA5Number" />
       </kb:event>
       <kb:event id="compressedLetterStamp060Cent" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter enableMessageTransport Stamp">
         <kb:label>uncompressed-letter-stamp-with-value-60</kb:label>
         <kb:attIntTrigger intValueRef="Euro060" />
       </kb:event>
       <kb:event id="compressedLetterStamp145Cent" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter enableMessageTransport Stamp">
         <kb:label>uncompressed-letter-stamp-with-value-145</kb:label>
         <kb:attIntTrigger intValueRef="Euro145" />
       </kb:event>
       <kb:event id="UncompressedDinC6Letter" 
-        nexusPvRef"UncompressedLetter"
+        nexusPvRef="UncompressedLetter"
         contextPsPvRefs="UncompressedLetter">
         <kb:label>uncompressed-Din-C6-Letter</kb:label>
         <kb:description>
@@ -739,7 +741,7 @@ You should have got a version of this license together with this file.
         <kb:attFloatTrigger floatValueRef="DinC6Number" />
       </kb:event>
       <kb:event id="UncompressedDinC4Letter" 
-        nexusPvRef"UncompressedLetter"
+        nexusPvRef="UncompressedLetter"
         contextPsPvRefs="UncompressedLetter protectMessage Envelope">
         <kb:label>uncompressed-Din-C4-Letter</kb:label>
         <kb:description>
@@ -748,7 +750,7 @@ You should have got a version of this license together with this file.
         <kb:attFloatTrigger floatValueRef="DinC4Number" />
       </kb:event>
       <kb:event id="compressedLetterWithDinC4Envelope" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter protectMessage Envelope">
         <kb:label>compressed-letter-with-DIN-C4-envelope</kb:label>
         <kb:description>
@@ -757,7 +759,7 @@ You should have got a version of this license together with this file.
         <kb:attFloatTrigger floatValueRef="DinC4Number" />
       </kb:event>
       <kb:event id="compressedLetterWithDinC5Envelope" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter protectMessage Envelope">
         <kb:label>compressed-letter-with-DIN-C5-envelope</kb:label>
         <kb:description>
@@ -766,7 +768,7 @@ You should have got a version of this license together with this file.
         <kb:attFloatTrigger floatValueRef="DinC5Number" />
       </kb:event>
       <kb:event id="compressedLetterWithDinC56Envelope" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter protectMessage Envelope">
         <kb:label>compressed-letter-with-DIN-C56-envelope</kb:label>
         <kb:description>
@@ -775,7 +777,7 @@ You should have got a version of this license together with this file.
         <kb:attFloatTrigger floatValueRef="DinC56Number" />
       </kb:event>
       <kb:event id="compressedLetterWithoutDinC56Envelope" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter protectMessage Envelope">
         <kb:label>compressed-letter-without-DIN-C56-envelope</kb:label>
         <kb:description>
@@ -785,7 +787,7 @@ You should have got a version of this license together with this file.
         <kb:attFloatTrigger floatValueRef="DinC56Number" />
       </kb:event>
       <kb:event id="compressedLetterWithDinC6Envelope" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter protectMessage Envelope">
         <kb:label>compressed-letter-with-DIN-C6-envelope</kb:label>
         <kb:description>
@@ -794,7 +796,7 @@ You should have got a version of this license together with this file.
         <kb:attFloatTrigger floatValueRef="DinC6Number" />
       </kb:event>
       <kb:event id="compressedLetterWithoutDinC6Envelope" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter protectMessage Envelope">
         <kb:label>compressed-letter-without-DIN-C6-envelope</kb:label>
         <kb:description>
@@ -804,7 +806,7 @@ You should have got a version of this license together with this file.
         <kb:attFloatTrigger floatValueRef="DinC6Number" />
       </kb:event>
       <kb:event id="compressedDinC6Letter" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter">
         <kb:label>compressed-Din-C6-Letter</kb:label>
         <kb:description>
@@ -813,7 +815,7 @@ You should have got a version of this license together with this file.
         <kb:attFloatTrigger floatValueRef="DinC6Number" />
       </kb:event>
       <kb:event id="compressedDinC56Letter" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter">
         <kb:label>compressed-Din-C56-Letter</kb:label>
         <kb:description>
@@ -822,7 +824,7 @@ You should have got a version of this license together with this file.
         <kb:attFloatTrigger floatValueRef="DinC56Number" />
       </kb:event>
       <kb:event id="compressedDinC5Letter" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter">
         <kb:label>compressed-Din-C5-Letter</kb:label>
         <kb:description>
@@ -831,7 +833,7 @@ You should have got a version of this license together with this file.
         <kb:attFloatTrigger floatValueRef="DinC5Number" />
       </kb:event>
       <kb:event id="compressedDinC4Letter" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter">
         <kb:label>compressed-Din-C4-Letter</kb:label>
         <kb:description>
@@ -840,13 +842,13 @@ You should have got a version of this license together with this file.
         <kb:attFloatTrigger floatValueRef="DinC4Number" />
       </kb:event>
       <kb:event id="uncompressedLetterInDinC6Envelope" 
-        nexusPvRef"UncompressedLetter"
+        nexusPvRef="UncompressedLetter"
         contextPsPvRefs="UncompressedLetter protectMessage Envelope">
         <kb:label>uncompressed-letter-in-a-DIN-C6-envelope</kb:label>
         <kb:conceptTrigger conceptRef="DinC6Envelope" />
       </kb:event>
       <kb:event id="UncompressedDinC5Letter" 
-        nexusPvRef"UncompressedLetter"
+        nexusPvRef="UncompressedLetter"
         contextPsPvRefs="UncompressedLetter protectMessage Envelope">
         <kb:label>uncompressed-Din-C5-Letter</kb:label>
         <kb:description>
@@ -858,37 +860,37 @@ You should have got a version of this license together with this file.
     
     <kb:parameters>
       <kb:parameter id="PostcardColor" 
-        nexusPvRef"Postcard"
+        nexusPvRef="Postcard"
         contextPsPvRefs="Postcard">
         <kb:label>Postcard-Color</kb:label>
         <kb:valueSet sensorRef="NamedColor" />
       </kb:parameter>
       <kb:parameter id="WritingCardPostcardColor" 
-        nexusPvRef"Postcard"
+        nexusPvRef="Postcard"
         contextPsPvRefs="Postcard fileMessages WritingCard">
         <kb:label>Writing-Card-Color-Used-As-Postcard</kb:label>
         <kb:valueSet sensorRef="NamedColor" />
       </kb:parameter>
       <kb:parameter id="uncompressedLetterEnvelopDinSize" 
-        nexusPvRef"UncompressedLetter"
+        nexusPvRef="UncompressedLetter"
         contextPsPvRefs="UncompressedLetter protectMessage Envelope">
         <kb:label>uncompressed-letter-envelope-din-size</kb:label>
         <kb:valueSet sensorRef="DinCNumber" />
       </kb:parameter>
       <kb:parameter id="uncompressedLetterEnvelopColor" 
-        nexusPvRef"UncompressedLetter"
+        nexusPvRef="UncompressedLetter"
         contextPsPvRefs="UncompressedLetter protectMessage Envelope">
         <kb:label>uncompressed-letter-envelope-color</kb:label>
         <kb:valueSet sensorRef="NamedColor" />
       </kb:parameter>
       <kb:parameter id="uncompressedLetterPaperDinSize" 
-        nexusPvRef"UncompressedLetter"
+        nexusPvRef="UncompressedLetter"
         contextPsPvRefs="UncompressedLetter fileMessages WritingPaper">
         <kb:label>uncompressed-letter-paper-din-size</kb:label>
         <kb:valueSet sensorRef="DinANumber" />
       </kb:parameter>
       <kb:parameter id="uncompressedLetterDinSize" 
-        nexusPvRef"UncompressedLetter"
+        nexusPvRef="UncompressedLetter"
         contextPsPvRefs="UncompressedLetter">
         <kb:label>uncompressed-letter-din-size</kb:label>
         <kb:description>
@@ -897,7 +899,7 @@ You should have got a version of this license together with this file.
         <kb:valueSet sensorRef="DinCNumber" />
       </kb:parameter>
       <kb:parameter id="uncompressedLetterColor" 
-        nexusPvRef"UncompressedLetter"
+        nexusPvRef="UncompressedLetter"
         contextPsPvRefs="UncompressedLetter">
         <kb:label>uncompressed-letter-color</kb:label>
         <kb:description>
@@ -906,7 +908,7 @@ You should have got a version of this license together with this file.
         <kb:valueSet sensorRef="NamedColor" />
       </kb:parameter>
       <kb:parameter id="compressedLetterEnvelopeColor" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter protectMessage Envelope">
         <kb:label>compressed-letter-envelope-color</kb:label>
         <kb:description>
@@ -915,7 +917,7 @@ You should have got a version of this license together with this file.
         <kb:valueSet sensorRef="NamedColor" />
       </kb:parameter>
       <kb:parameter id="compressedLetterDinSize" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter">
         <kb:label>compressed-letter-din-size</kb:label>
         <kb:description>
@@ -924,7 +926,7 @@ You should have got a version of this license together with this file.
         <kb:valueSet sensorRef="DinCNumber" />
       </kb:parameter>
       <kb:parameter id="compressedLetterColor" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter">
         <kb:label>compressed-letter-color</kb:label>
         <kb:description>
@@ -933,7 +935,7 @@ You should have got a version of this license together with this file.
         <kb:valueSet sensorRef="NamedColor" />
       </kb:parameter>
       <kb:parameter id="compressedLetterPaperSize" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter fileMessages WritingPaper">
         <kb:label>compressed-letter-paper-size</kb:label>
         <kb:description>
@@ -942,7 +944,7 @@ You should have got a version of this license together with this file.
         <kb:valueSet sensorRef="DinANumber" />
       </kb:parameter>
       <kb:parameter id="compressedLetterEnvelopeSize" 
-        nexusPvRef"CompressedLetter"
+        nexusPvRef="CompressedLetter"
         contextPsPvRefs="CompressedLetter protectMessage Envelope">
         <kb:label>compressed-letter-envelope-size</kb:label>
         <kb:description>

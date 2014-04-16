@@ -77,30 +77,41 @@ This file is licensed under the conditions of a/the
     «ENDIF»
   </kb:meta>
   <kb:data>
+    «IF ( ( base.listOfSensorStringAttrAreas != null &&
+            base.listOfSensorStringAttrAreas.length > 0)
+       || ( base.listOfSensorIntAttrAreas != null &&
+            base.listOfSensorIntAttrAreas.length > 0)
+       || ( base.listOfSensorFloatAttrAreas != null &&
+            base.listOfSensorFloatAttrAreas.length > 0)       
+        )»
     <kb:sensors> 
-    «IF (base.listOfSensorStringAttrAreas.length > 0) »
+      «IF (base.listOfSensorStringAttrAreas.length > 0) »
       «FOR sensorStringArea : base.listOfSensorStringAttrAreas»
         «sensorStringArea.toXml»
       «ENDFOR»
-    «ENDIF»
-    «IF (base.listOfSensorIntAttrAreas.length > 0) »
+      «ENDIF»
+      «IF (base.listOfSensorIntAttrAreas.length > 0) »
       «FOR sensorIntDigitArea : base.listOfSensorIntAttrAreas»
         «sensorIntDigitArea.toXml»
       «ENDFOR»
-    «ENDIF»
-    «IF (base.listOfSensorFloatAttrAreas.length > 0) »
+      «ENDIF»
+      «IF (base.listOfSensorFloatAttrAreas.length > 0) »
       «FOR sensorFloatDigitArea : base.listOfSensorFloatAttrAreas»
         «sensorFloatDigitArea.toXml»
       «ENDFOR»
-    «ENDIF» 
+      «ENDIF» 
     </kb:sensors>
-  
+     «ENDIF» 
+
+
+    «IF ( base.listOfConcepts != null && base.listOfConcepts.length > 0)»  
     <kb:concepts>
-    «IF (base.listOfConcepts.length > 0) »
+      «IF (base.listOfConcepts.length > 0) »
       «FOR concept : base.listOfConcepts» «concept.toXml»«ENDFOR»
-    «ENDIF» 
+      «ENDIF» 
     </kb:concepts>
-    
+    «ENDIF»   
+      
     «IF base.listOfPurposes.length > 0»
     <kb:purposes>
       «FOR purpose : base.listOfPurposes»
@@ -125,13 +136,14 @@ This file is licensed under the conditions of a/the
     </kb:alternatives>  
     «ENDIF»
      
-    «IF base.listOfIsConstitutedByStatements.length > 0»
+    «IF ( base.listOfIsConstitutedByStatements != null && base.listOfIsConstitutedByStatements.length > 0)» 
     <kb:constituents>
       «FOR isConstitutedBy : base.listOfIsConstitutedByStatements»
         «isConstitutedBy.toXml»
       «ENDFOR»
     </kb:constituents> 
     «ENDIF»
+    
     «IF ( ( base.listOfContextualEnforceEvents != null &&
             base.listOfContextualEnforceEvents.length > 0)
         || ( base.listOfContextEventClosedByVariants != null &&
@@ -294,8 +306,8 @@ This file is licensed under the conditions of a/the
 
   def String toXml(ClosedContextualPath clCtxPath) '''
   «IF clCtxPath.variantPurposeRow != null && clCtxPath.variantPurposeRow.head != null »
-  nexusPvRef"«clCtxPath.variantPurposeRow.head.variant.name»"«ELSE»
-  nexusPvRef"«clCtxPath.closingVariant.name»"«ENDIF»
+  nexusPvRef="«clCtxPath.variantPurposeRow.head.variant.name»"«ELSE»
+  nexusPvRef="«clCtxPath.closingVariant.name»"«ENDIF»
   contextPsPvRefs="«FOR variPurpPair : clCtxPath.variantPurposeRow»«variPurpPair.variant.name» «variPurpPair.purpose.name» «ENDFOR»«clCtxPath.closingVariant.name»"'''
 
   def String stringToXmlTag(String value, String tag) '''

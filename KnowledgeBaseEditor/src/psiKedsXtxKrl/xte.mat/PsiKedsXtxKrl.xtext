@@ -1,6 +1,13 @@
 grammar org.psikeds.kb.modelling.PsiKedsXtxKrl with org.eclipse.xtext.common.Terminals
 
+/* 
+ * (c) 2014 Karsten Reincke, Deutsche Telekom AG, Darmstadt
+ * 
+ * This file is part of the psiKeds project and licensed under the AGPL 
+ */
 generate psiKedsXtxKrl "http://www.psikeds.org/kb/modelling/PsiKedsXtxKrl"
+
+
 
 /* (A) a valid psiKeds knowledge base needs ... */
 KnowledgeBase:
