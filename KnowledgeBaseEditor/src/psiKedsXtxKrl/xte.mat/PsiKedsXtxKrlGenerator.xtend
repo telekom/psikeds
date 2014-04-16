@@ -462,7 +462,5 @@ This file is licensed under the conditions of a/the
     </kb:sensor>
   '''
 
-
-   
 }
 

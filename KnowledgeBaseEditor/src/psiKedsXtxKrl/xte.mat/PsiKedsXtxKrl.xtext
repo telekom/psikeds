@@ -4,7 +4,7 @@ generate psiKedsXtxKrl "http://www.psikeds.org/kb/modelling/PsiKedsXtxKrl"
 
 /* (A) a valid psiKeds knowledge base needs ... */
 KnowledgeBase:
-  
+    {KnowledgeBase}
   /* (1) a valid psiKeds knowledge base must/can offer some meta information */
   'KB-META:'
   'id' kbId=ID
@@ -37,11 +37,10 @@ KnowledgeBase:
    * ]
    */
   'PSIKEDS-SENSORS:'  
-   (   sensorStringValueAreas+=SensorStringValueArea
-     | sensorIntDigitAreas+=SensorIntDigitArea
-     | sensorFloatDigitAreas+=SensorFloatDigitArea
-     | sensorIntRangeArea+=SensorIntRangeArea /* only definable, currently not evaluated */
-     | sensorFloatRangeArea+=SensorFloatRangeArea /* only definable, currently not evaluated */
+   (   
+       ( ( listOfSensorStringAttrAreas+=SensorStringAttrArea
+       | listOfSensorIntAttrAreas+=SensorIntAttrArea ) 
+       | listOfSensorFloatAttrAreas+=SensorFloatAttrArea )
    )*
  
   'PSIKEDS-CONCEPTS:'
@@ -84,18 +83,24 @@ KnowledgeBase:
     
   'PSIKEDS-INFERENCE-CONDITIONS:' 
   /* (8) a possibly empty list of logical rules */ 
-  (	  listOfLogicalEnforcers+=LogicalEnforcer
+ 
+  (	 listOfLogicalEnforcers+=LogicalEnforcer
   	| listOfLogicalRules+=LogicalRule
-    | listOfRelationalConstraints+=RelationalConstraint
+    | listOfNormRCs+=RelationalConstraint
+    | listOfCondRCs+=ConditionedRelationalConstraint
   )*
+
 ;
+ 
 
 /* (B) definitions, which are multiply used by other elements
- * either by being embedded into other xtext defintions
+ * either by being embedded into other xtext definitions
  * or by being used as references
  */
 
 /* (B.0) my terminals */
+
+
 terminal YYYYMMDD:
   ('0'..'9')('0'..'9')('0'..'9')('0'..'9')'-'?
   (('0'('1'..'9'))|('1'('0'..'2')))'-'?
@@ -103,6 +108,10 @@ terminal YYYYMMDD:
     (('1'|'2')('0'..'9'))|
     ('3'('0'..'1'))
   )
+ ;
+
+terminal FLOATVALUE:
+  (('0'..'9')('0'..'9')*)'.'('0'..'9')('0'..'9')*
  ;
 
 /* (B.1) an expandable label */
@@ -139,24 +148,13 @@ SensorReference:
   '*sensor>' ref=[Sensor]
 ;
 
-/* (B.2.0) collection of SensorAreas, used for the generator */
-/* Collection, only for simplifying the code generator 
-SensorValue:
-  ( SensorStringValue
-  | SensorIntDigit
-  | SensorFloatDigit
-  | SensorIntRange
-  | SensorFloatRange
-  )
-;
-* */
-
 /* (B.2.1) a sensor with an explicitly defined set of perceivable string values 
  * Note: 
  * - It is up to the knowledge engineer to insert a reference to the right 
  *   (the intended) sensor into the definition of the allowed values
  */
-SensorStringValueArea:
+
+SensorStringAttrArea:
   sensor=Sensor
   (sensorStringValues+=SensorStringValue)+
 ;
@@ -170,9 +168,11 @@ SensorStringValue:
  * - It is up to the knowledge engineer to insert a reference to the right 
  *   (the intended) sensor into the definition of the allowed values
  */
-SensorIntDigitArea:
+SensorIntAttrArea:
   sensor=Sensor
-  (sensorIntDigits+=SensorIntDigit)+
+  ((listOfSensorIntDigits+=SensorIntDigit)|
+   (listOfSensorIntRanges+=SensorIntRange)
+   )+
 ;
 
 SensorIntDigit:
@@ -185,19 +185,22 @@ SensorIntDigit:
  *   (the intended) sensor into the definition of the allowed values
  */
 
-SensorFloatDigitArea:
+SensorFloatAttrArea:
   sensor=Sensor
-//  type='float'
-  (sensorFloatDigits+=SensorFloatDigit)+
+  ((listOfSensorFloatDigits+=SensorFloatDigit) |
+  (listOfSensorFloatRanges+=SensorFloatRange))+
 ;
 
 SensorFloatDigit:
-  'float.att' name=ID '[' sensedBy=[Sensor] '->' value=FloatValue ']'
+  'float.att' name=ID '[' sensedBy=[Sensor] '->' value=FLOATVALUE ']'
 ;
 
+/* 
 FloatValue:
-  (INT)?'.'INT
+  {FloatValue}
+  fval=(INT)?'.'INT
 ;
+*/
 
 /* (B.2.4) a sensor with an implicitly defined set of perceivable integer values
  * Note: 
@@ -207,12 +210,6 @@ FloatValue:
  *   by functions and relations. But they can not be used in logical rules
  * - Ranges will only be usable in later versions of psiKeds (> 1.0.0)
  */
-
-SensorIntRangeArea:
-  sensor=Sensor
-//  type='intRange'
-  (sensorIntRanges+=SensorIntRange)+
-;
 
 SensorIntRange:
   'int.range.att' name=ID '[' sensedBy=[Sensor] '>>' value=IntRange ']'
@@ -231,18 +228,12 @@ IntRange:
  * - Ranges will only be usable in later versions of psiKeds (> 1.0.0)
  */
 
-SensorFloatRangeArea:
-  sensor=Sensor
-//  type='floatRange'
-  (sensorFloatRanges+=SensorFloatRange)+
-;
-
 SensorFloatRange:
   'float.range.att' name=ID '[' sensedBy=[Sensor] '>>' value=FloatRange ']'
 ;
 
 FloatRange:
-  '(' 'min' minVal=FloatValue ',' 'max' maxVal=FloatValue ',' 'inc' incVal=FloatValue ')'
+  '(' 'min' minVal=FLOATVALUE ',' 'max' maxVal=FLOATVALUE ',' 'inc' incVal=FLOATVALUE ')'
 ;
 
 /* (C) the top down definitions */
@@ -495,13 +486,48 @@ enum RelationType:
 ;
 
 RelationalConstraint:
-  'relation'
+  'relation.normal'
+   name=ID 
+   labeledDescription=XLabel
+   'means (' 
+      stmnt=RelationalStatement
+   ')'
+;
+
+
+ConditionedRelationalConstraint:
+  'relation.qualified'
    name=ID 
    labeledDescription=XLabel
    'means ('
-    firstArg=[RelationParameter]
-    relationType=RelationType
-    secondArg=[RelationParameter]
-    ')'
+      'if'
+      trigger=[ContextualLogicEvent]
+      'then'
+      stmnt=RelationalStatement
+  ')'
 ;
 
+RelationalStatement:
+      ( ( ( 'valFrom' leVarArg=[RelationParameter] 
+            relType=RelationType
+            (   'constStr' riStrConst=[SensorStringValue]
+              | 'constInt' riIntConst=[SensorIntDigit]
+              | 'constFloat' riFloatConst=[SensorFloatDigit]       
+            )
+          )
+          |
+          ( ( 'constStr' leStrConst=[SensorStringValue]
+              | 'constInt' leIntConst=[SensorIntDigit]
+              | 'constFloat' leFloatConst=[SensorFloatDigit]       
+            )
+            relType=RelationType
+            'valFrom' riVarArg=[RelationParameter] 
+          )  
+        )
+        |
+        ( 'valFrom' leVarArg=[RelationParameter] 
+          relType=RelationType
+          'valFrom' riVarArg=[RelationParameter] 
+        )  
+      )    
+;

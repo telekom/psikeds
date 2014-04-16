@@ -37,6 +37,7 @@ desktop.ini
 *.bak
 *.old
 *.log
+*.sav
 
 # ignore local changes to log4j settings
 log4j.xml
