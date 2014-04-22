@@ -12,21 +12,27 @@ proprietary license: All rights are reserved. Feel free to contact:
   k.reincke@telekom.de
 
 -->
-<kb:knowledgebase xmlns="http://org.psikeds.knowledgebase"
+<kb:knowledgebase 
+  xmlns="http://org.psikeds.knowledgebase"
   xmlns:kb="http://org.psikeds.knowledgebase"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://org.psikeds.knowledgebase kb.xsd">
+  xsi:schemaLocation="http://org.psikeds.knowledgebase psikeds.xsd">
   <kb:meta>
+    <kb:id>w7LampDemoPurePsPv</kb:id>
+    <kb:name>w7/kbsr L[A|T][M|P][PH|PY] purely ps/pv based demo database</kb:name>
+    <kb:release>0.1.1</kb:release>
+    <kb:copyright>2014, Karsten Reincke, Deutsche Telekom AG, Darmstadt</kb:copyright>
+    <kb:license>proprietary license: All rights are reserved. Feel free to contact:
+      k.reincke@telekom.de</kb:license>
     <kb:created>2014-04-06</kb:created>
-    <kb:lastmodified>2014-04-16</kb:lastmodified>
-    <kb:version>0.1.1</kb:version>
+    <kb:lastmodified>2014-04-22</kb:lastmodified>
     <kb:creator>Karsten Reincke</kb:creator>
     <kb:description>Re-implementation of the first w7/kbsr LAMP demo database purely based
      on the elements which constitute the structure of an entity: purposes
      and variants</kb:description>
+    <kb:description>This version still reproduces the known semantic leak</kb:description>
   </kb:meta>
   <kb:data>
-
 
       
     <kb:purposes>
@@ -71,25 +77,26 @@ proprietary license: All rights are reserved. Feel free to contact:
       <kb:purpose id="deliverPages" root="false">
         <kb:label>deliver: Pages</kb:label>
       </kb:purpose>
-      <kb:purpose id="execScripts" root="false">
+      <kb:purpose id="execScripts">
         <kb:label>execute: Scripts</kb:label>
       </kb:purpose>
-      <kb:purpose id="linkToDataStore" root="false">
+      <kb:purpose id="linkToDataStore">
         <kb:label>link to: Data store </kb:label>
       </kb:purpose>
-      <kb:purpose id="storeData" root="false">
+      <kb:purpose id="storeData">
         <kb:label>store : Data</kb:label>
       </kb:purpose>
-      <kb:purpose id="execEeBeans" root="false">
+      <kb:purpose id="execEeBeans">
         <kb:label>execute : EE Beans</kb:label>
       </kb:purpose>
-      <kb:purpose id="execJavaApps" root="false">
+      <kb:purpose id="execJavaApps">
         <kb:label>execute : Java Applications</kb:label>
       </kb:purpose>
     </kb:purposes>
-    
+
     <kb:variants>
-      <kb:variant id="WeSeScriSoSt">
+      <kb:variant id="WeSeScriSoSt"
+        type="explicit">
         <kb:label>Apache-Scripting-Software-Stack</kb:label>
         <kb:description>
         An Apache based web server software stack enriched by particular scripting 
@@ -97,7 +104,8 @@ proprietary license: All rights are reserved. Feel free to contact:
         </kb:description>
       </kb:variant>
       
-      <kb:variant id="WeSeDbScriSoSt">
+      <kb:variant id="WeSeDbScriSoSt"
+        type="explicit">
         <kb:label>Apache-Database-Scripting-Software-Stack</kb:label>
         <kb:description>
         An Apache based web server software stack being able to use database data
@@ -106,7 +114,8 @@ proprietary license: All rights are reserved. Feel free to contact:
         </kb:description>
       </kb:variant>
       
-      <kb:variant id="JaEjbDbSoSt">
+      <kb:variant id="JaEjbDbSoSt"
+        type="explicit">
         <kb:label>Java-Ejb-Database-Software-Stack</kb:label>
         <kb:description>
         A java application server software stack being able to use database data
@@ -114,7 +123,8 @@ proprietary license: All rights are reserved. Feel free to contact:
         </kb:description>
       </kb:variant>
       
-      <kb:variant id="JaWapDbSoSt">
+      <kb:variant id="JaWapDbSoSt"
+        type="explicit">
         <kb:label>Java-Web-App-Database-Software-Stack</kb:label>
         <kb:description>
         A java application server software stacke being able to compute its output 
@@ -122,307 +132,343 @@ proprietary license: All rights are reserved. Feel free to contact:
         </kb:description>
       </kb:variant>
       
-      <kb:variant id="Apache">
+      <kb:variant id="Apache"
+        type="explicit">
         <kb:label>Apache</kb:label>
         <kb:description>
         The famous Apache Webserver
         </kb:description>
       </kb:variant>
       
-      <kb:variant id="ModPhp">
+      <kb:variant id="ModPhp"
+        type="explicit">
         <kb:label>Apache-PHP-Module</kb:label>
       </kb:variant>
       
-      <kb:variant id="ModPython">
+      <kb:variant id="ModPython"
+        type="explicit">
         <kb:label>Apache-Python-Module</kb:label>
       </kb:variant>
       
-      <kb:variant id="MysqlPhpConnector">
+      <kb:variant id="MysqlPhpConnector"
+        type="explicit">
         <kb:label>Mysql-PHP-Connector</kb:label>
       </kb:variant>
       
-      <kb:variant id="MysqlPythonConnector">
+      <kb:variant id="MysqlPythonConnector"
+        type="explicit">
         <kb:label>Mysql-Python-Connector</kb:label>
       </kb:variant>
       
-      <kb:variant id="MysqlJavaConnector">
+      <kb:variant id="MysqlJavaConnector"
+        type="explicit">
         <kb:label>Mysql-JDBC-Connector</kb:label>
       </kb:variant>
       
-      <kb:variant id="PostgresPhpConnector">
+      <kb:variant id="PostgresPhpConnector"
+        type="explicit">
         <kb:label>Postgres-PHP-Connector</kb:label>
       </kb:variant>
       
-      <kb:variant id="PostgresPythonConnector">
+      <kb:variant id="PostgresPythonConnector"
+        type="explicit">
         <kb:label>Postgres-Python-Connector</kb:label>
       </kb:variant>
       
-      <kb:variant id="PostgresJavaConnector">
+      <kb:variant id="PostgresJavaConnector"
+        type="explicit">
         <kb:label>Postgres-JDBC-Connector</kb:label>
       </kb:variant>
       
-      <kb:variant id="Postgres">
+      <kb:variant id="Postgres"
+        type="explicit">
         <kb:label>Postgres</kb:label>
       </kb:variant>
       
-      <kb:variant id="Mysql">
+      <kb:variant id="Mysql"
+        type="explicit">
         <kb:label>Mysql</kb:label>
       </kb:variant>
       
-      <kb:variant id="Jboss">
-        <kb:label>JBossr</kb:label>
+      <kb:variant id="Jboss"
+        type="explicit">
+        <kb:label>JBoss</kb:label>
       </kb:variant>
       
-      <kb:variant id="Tomcat">
+      <kb:variant id="Tomcat"
+        type="explicit">
         <kb:label>Tomcat</kb:label>
       </kb:variant>
       
     </kb:variants>  
-    
+
     <kb:alternatives>
-      <kb:isFulfilledBy purposeRef="deliverStaticWebPages" 
-        variantRefs="Apache " />
-      <kb:isFulfilledBy purposeRef="deliverDynamicWebPages" 
-        variantRefs="WeSeScriSoSt WeSeDbScriSoSt " />
-      <kb:isFulfilledBy purposeRef="deliverPersistentDynamicWebPages" 
-        variantRefs="JaEjbDbSoSt JaWapDbSoSt " />
-      <kb:isFulfilledBy purposeRef="deliverSimpleJavaApplicationsOutput" 
-        variantRefs="Tomcat " />
-      <kb:isFulfilledBy purposeRef="deliverPages" 
-        variantRefs="Apache " />
-      <kb:isFulfilledBy purposeRef="execScripts" 
-        variantRefs="ModPhp ModPython " />
-      <kb:isFulfilledBy purposeRef="linkToDataStore" 
-        variantRefs="MysqlPhpConnector MysqlPythonConnector MysqlJavaConnector PostgresPhpConnector PostgresPythonConnector PostgresJavaConnector " />
-      <kb:isFulfilledBy purposeRef="storeData" 
-        variantRefs="Mysql Postgres " />
-      <kb:isFulfilledBy purposeRef="execEeBeans" 
-        variantRefs="Jboss " />
-      <kb:isFulfilledBy purposeRef="execJavaApps" 
-        variantRefs="Tomcat " />
+      <kb:fulfills psRef="deliverStaticWebPages"
+        pvRefs="Apache "
+        implicitPvRefs="" />
+      <kb:fulfills psRef="deliverDynamicWebPages"
+        pvRefs="WeSeScriSoSt WeSeDbScriSoSt "
+        implicitPvRefs="" />
+      <kb:fulfills psRef="deliverPersistentDynamicWebPages"
+        pvRefs="JaEjbDbSoSt JaWapDbSoSt "
+        implicitPvRefs="" />
+      <kb:fulfills psRef="deliverSimpleJavaApplicationsOutput"
+        pvRefs="Tomcat "
+        implicitPvRefs="" />
+      <kb:fulfills psRef="deliverPages"
+        pvRefs="Apache "
+        implicitPvRefs="" />
+      <kb:fulfills psRef="execScripts"
+        pvRefs="ModPhp ModPython "
+        implicitPvRefs="" />
+      <kb:fulfills psRef="linkToDataStore"
+        pvRefs="MysqlPhpConnector MysqlPythonConnector MysqlJavaConnector PostgresPhpConnector PostgresPythonConnector PostgresJavaConnector "
+        implicitPvRefs="" />
+      <kb:fulfills psRef="storeData"
+        pvRefs="Mysql Postgres "
+        implicitPvRefs="" />
+      <kb:fulfills psRef="execEeBeans"
+        pvRefs="Jboss "
+        implicitPvRefs="" />
+      <kb:fulfills psRef="execJavaApps"
+        pvRefs="Tomcat "
+        implicitPvRefs="" />
     </kb:alternatives>  
      
     <kb:constituents>
-      <kb:isConstitutedBy variantRef="WeSeScriSoSt">
-        <kb:constituent many="1" purposeRef="deliverPages" />
-        <kb:constituent many="1" purposeRef="execScripts" />
-      </kb:isConstitutedBy>  
-      <kb:isConstitutedBy variantRef="WeSeDbScriSoSt">
-        <kb:constituent many="1" purposeRef="deliverPages" />
-        <kb:constituent many="1" purposeRef="execScripts" />
-        <kb:constituent many="1" purposeRef="linkToDataStore" />
-        <kb:constituent many="1" purposeRef="storeData" />
-      </kb:isConstitutedBy>  
-      <kb:isConstitutedBy variantRef="JaEjbDbSoSt">
-        <kb:constituent many="1" purposeRef="linkToDataStore" />
-        <kb:constituent many="1" purposeRef="storeData" />
-        <kb:constituent many="1" purposeRef="execEeBeans" />
-      </kb:isConstitutedBy>  
-      <kb:isConstitutedBy variantRef="JaWapDbSoSt">
-        <kb:constituent many="1" purposeRef="linkToDataStore" />
-        <kb:constituent many="1" purposeRef="storeData" />
-        <kb:constituent many="1" purposeRef="execJavaApps" />
-      </kb:isConstitutedBy>  
+      <kb:constitutes pvRef="WeSeScriSoSt">
+        <kb:component many="1" psRef="deliverPages" />
+        <kb:component many="1" psRef="execScripts" />
+      </kb:constitutes>  
+      <kb:constitutes pvRef="WeSeDbScriSoSt">
+        <kb:component many="1" psRef="deliverPages" />
+        <kb:component many="1" psRef="execScripts" />
+        <kb:component many="1" psRef="linkToDataStore" />
+        <kb:component many="1" psRef="storeData" />
+      </kb:constitutes>  
+      <kb:constitutes pvRef="JaEjbDbSoSt">
+        <kb:component many="1" psRef="linkToDataStore" />
+        <kb:component many="1" psRef="storeData" />
+        <kb:component many="1" psRef="execEeBeans" />
+      </kb:constitutes>  
+      <kb:constitutes pvRef="JaWapDbSoSt">
+        <kb:component many="1" psRef="linkToDataStore" />
+        <kb:component many="1" psRef="storeData" />
+        <kb:component many="1" psRef="execJavaApps" />
+      </kb:constitutes>  
     </kb:constituents> 
+
     
     <kb:events>
       <kb:event id="WeSeDbWithMysqlPhpConnex" 
-        nexusId="WeSeDbScriSoSt"
-        contextPsPvRefs="WeSeDbScriSoSt linkToDataStore ">
+        nexusRef="WeSeDbScriSoSt"
+        contextRefs="WeSeDbScriSoSt linkToDataStore"> 
         <kb:label>DB based web server with mysql-php-connector</kb:label>
-        <kb:variantTrigger variantRef="MysqlPhpConnector" />
+        <kb:trigger tt="pv" ref="MysqlPhpConnector" />
       </kb:event>
       <kb:event id="WeSeDbWithMysqlPythonConnex" 
-        nexusId="WeSeDbScriSoSt"
-        contextPsPvRefs="WeSeDbScriSoSt linkToDataStore ">
+        nexusRef="WeSeDbScriSoSt"
+        contextRefs="WeSeDbScriSoSt linkToDataStore"> 
         <kb:label>DB based web server with mysql-phython-connector</kb:label>
-        <kb:variantTrigger variantRef="MysqlPythonConnector" />
+        <kb:trigger tt="pv" ref="MysqlPythonConnector" />
       </kb:event>
       <kb:event id="WeSeDbWithPostgresPhpConnex" 
-        nexusId="WeSeDbScriSoSt"
-        contextPsPvRefs="WeSeDbScriSoSt linkToDataStore ">
+        nexusRef="WeSeDbScriSoSt"
+        contextRefs="WeSeDbScriSoSt linkToDataStore"> 
         <kb:label>DB based web server with postgres-php-connector</kb:label>
-        <kb:variantTrigger variantRef="PostgresPhpConnector" />
+        <kb:trigger tt="pv" ref="PostgresPhpConnector" />
       </kb:event>
       <kb:event id="WeSeDbWithPostgresPythonConnex" 
-        nexusId="WeSeDbScriSoSt"
-        contextPsPvRefs="WeSeDbScriSoSt linkToDataStore ">
+        nexusRef="WeSeDbScriSoSt"
+        contextRefs="WeSeDbScriSoSt linkToDataStore"> 
         <kb:label>DB based web server with postgres-phython-connector</kb:label>
-        <kb:variantTrigger variantRef="PostgresPythonConnector" />
+        <kb:trigger tt="pv" ref="PostgresPythonConnector" />
       </kb:event>
       <kb:event id="WeSeDbWithModPython" 
-        nexusId="WeSeDbScriSoSt"
-        contextPsPvRefs="WeSeDbScriSoSt execScripts ">
+        nexusRef="WeSeDbScriSoSt"
+        contextRefs="WeSeDbScriSoSt execScripts"> 
         <kb:label>DB based web server with mod-python</kb:label>
-        <kb:variantTrigger variantRef="ModPython" />
+        <kb:trigger tt="pv" ref="ModPython" />
       </kb:event>
       <kb:event id="WeSeDbWithModPhp" 
-        nexusId="WeSeDbScriSoSt"
-        contextPsPvRefs="WeSeDbScriSoSt execScripts ">
+        nexusRef="WeSeDbScriSoSt"
+        contextRefs="WeSeDbScriSoSt execScripts"> 
         <kb:label>DB based web server with mod-php</kb:label>
-        <kb:variantTrigger variantRef="ModPhp" />
+        <kb:trigger tt="pv" ref="ModPhp" />
       </kb:event>
       <kb:event id="WeSeDbWithMysql" 
-        nexusId="WeSeDbScriSoSt"
-        contextPsPvRefs="WeSeDbScriSoSt storeData ">
+        nexusRef="WeSeDbScriSoSt"
+        contextRefs="WeSeDbScriSoSt storeData"> 
         <kb:label>DB based web server with mysql</kb:label>
-        <kb:variantTrigger variantRef="Mysql" />
+        <kb:trigger tt="pv" ref="Mysql" />
       </kb:event>
       <kb:event id="WeSeDbWithPostgres" 
-        nexusId="WeSeDbScriSoSt"
-        contextPsPvRefs="WeSeDbScriSoSt storeData ">
+        nexusRef="WeSeDbScriSoSt"
+        contextRefs="WeSeDbScriSoSt storeData"> 
         <kb:label>DB based web server with postgres</kb:label>
-        <kb:variantTrigger variantRef="Postgres" />
+        <kb:trigger tt="pv" ref="Postgres" />
       </kb:event>
       <kb:event id="JaEjbDbWithMysqlJavaConnector" 
-        nexusId="JaEjbDbSoSt"
-        contextPsPvRefs="JaEjbDbSoSt linkToDataStore ">
+        nexusRef="JaEjbDbSoSt"
+        contextRefs="JaEjbDbSoSt linkToDataStore"> 
         <kb:label>Java Ejb Database Software Stack mit Mysql Java Connector</kb:label>
-        <kb:variantTrigger variantRef="MysqlJavaConnector" />
+        <kb:trigger tt="pv" ref="MysqlJavaConnector" />
       </kb:event>
       <kb:event id="JaEjbDbWithPostgresJavaConnector" 
-        nexusId="JaEjbDbSoSt"
-        contextPsPvRefs="JaEjbDbSoSt linkToDataStore ">
+        nexusRef="JaEjbDbSoSt"
+        contextRefs="JaEjbDbSoSt linkToDataStore"> 
         <kb:label>Java Ejb Database Software Stack mit Postgres Java Connector</kb:label>
-        <kb:variantTrigger variantRef="PostgresJavaConnector" />
+        <kb:trigger tt="pv" ref="PostgresJavaConnector" />
       </kb:event>
       <kb:event id="JaEjbDbWithMysql" 
-        nexusId="JaEjbDbSoSt"
-        contextPsPvRefs="JaEjbDbSoSt storeData ">
+        nexusRef="JaEjbDbSoSt"
+        contextRefs="JaEjbDbSoSt storeData"> 
         <kb:label>Java Ejb Database Software Stack mit Mysql DBMS</kb:label>
-        <kb:variantTrigger variantRef="Mysql" />
+        <kb:trigger tt="pv" ref="Mysql" />
       </kb:event>
       <kb:event id="JaEjbDbWithPostgres" 
-        nexusId="JaEjbDbSoSt"
-        contextPsPvRefs="JaEjbDbSoSt storeData ">
+        nexusRef="JaEjbDbSoSt"
+        contextRefs="JaEjbDbSoSt storeData"> 
         <kb:label>Java Ejb Database Software Stack mit Postgres DBMS</kb:label>
-        <kb:variantTrigger variantRef="Postgres" />
+        <kb:trigger tt="pv" ref="Postgres" />
       </kb:event>
       <kb:event id="JaWapDbWithMysqlJavaConnector" 
-        nexusId="JaWapDbSoSt"
-        contextPsPvRefs="JaWapDbSoSt linkToDataStore ">
+        nexusRef="JaWapDbSoSt"
+        contextRefs="JaWapDbSoSt linkToDataStore"> 
         <kb:label>Java Web App Database Software Stack mit Mysql Java Connector</kb:label>
-        <kb:variantTrigger variantRef="MysqlJavaConnector" />
+        <kb:trigger tt="pv" ref="MysqlJavaConnector" />
       </kb:event>
       <kb:event id="JaWapDbWithPostgresJavaConnector" 
-        nexusId="JaWapDbSoSt"
-        contextPsPvRefs="JaWapDbSoSt linkToDataStore ">
+        nexusRef="JaWapDbSoSt"
+        contextRefs="JaWapDbSoSt linkToDataStore"> 
         <kb:label>Java Web App Database Software Stack mit Postgres Java Connector</kb:label>
-        <kb:variantTrigger variantRef="PostgresJavaConnector" />
+        <kb:trigger tt="pv" ref="PostgresJavaConnector" />
       </kb:event>
       <kb:event id="JaWapDbWithMysql" 
-        nexusId="JaWapDbSoSt"
-        contextPsPvRefs="JaWapDbSoSt storeData ">
+        nexusRef="JaWapDbSoSt"
+        contextRefs="JaWapDbSoSt storeData"> 
         <kb:label>Java Web App Database Software Stack mit Mysql </kb:label>
-        <kb:variantTrigger variantRef="Mysql" />
+        <kb:trigger tt="pv" ref="Mysql" />
       </kb:event>
       <kb:event id="JaWapDbWithPostgres" 
-        nexusId="JaWapDbSoSt"
-        contextPsPvRefs="JaWapDbSoSt storeData ">
+        nexusRef="JaWapDbSoSt"
+        contextRefs="JaWapDbSoSt storeData"> 
         <kb:label>Java Web App Database Software Stack mit Postgres </kb:label>
-        <kb:variantTrigger variantRef="Postgres" />
+        <kb:trigger tt="pv" ref="Postgres" />
       </kb:event>
     </kb:events> 
     
     
-   <kb:rules>
-
-     <kb:rule id="IFmysqlPhpConnexTHENModPhp"
-       premiseEventRefs="WeSeDbWithMysqlPhpConnex »" 
-       conclusioEventRef="WeSeDbWithModPhp" > 
-       <kb:label>IF mysql-php-connector THEN mod-php</kb:label>
-       <kb:description>
-       R-1.1
-       </kb:description>
-     </kb:rule>
-     <kb:rule id="IFmysqlPythonConnexTHENModPython"
-       premiseEventRefs="WeSeDbWithMysqlPythonConnex »" 
-       conclusioEventRef="WeSeDbWithModPython" > 
-       <kb:label>IF mysql-python-connector THEN mod-python</kb:label>
-       <kb:description>
-       R-1.2
-       </kb:description>
-     </kb:rule>
-     <kb:rule id="IFpostgresPhpConnexTHENModPhp"
-       premiseEventRefs="WeSeDbWithPostgresPhpConnex »" 
-       conclusioEventRef="WeSeDbWithModPhp" > 
-       <kb:label>IF postgres-php-connector THEN mod-php</kb:label>
-       <kb:description>
-       R-1.3
-       </kb:description>
-     </kb:rule>
-     <kb:rule id="IFpostgresPythonConnexTHENModPython"
-       premiseEventRefs="WeSeDbWithPostgresPythonConnex »" 
-       conclusioEventRef="WeSeDbWithModPython" > 
-       <kb:label>IF postgres-python-connector THEN mod-python</kb:label>
-       <kb:description>
-       R-1.4
-       </kb:description>
-     </kb:rule>
-     <kb:rule id="IFmysqlPhpConnexTHENmysqlDb"
-       premiseEventRefs="WeSeDbWithMysqlPhpConnex »" 
-       conclusioEventRef="WeSeDbWithMysql" > 
-       <kb:label>IF mysql-php-connector THEN mysql dbms</kb:label>
-       <kb:description>
-       R-2.1
-       </kb:description>
-     </kb:rule>
-     <kb:rule id="IFmysqlPythonConnexTHENmysqlDb"
-       premiseEventRefs="WeSeDbWithMysqlPythonConnex »" 
-       conclusioEventRef="WeSeDbWithMysql" > 
-       <kb:label>IF mysql-python-connector THEN mysql dbms</kb:label>
-       <kb:description>
-       R-2.2
-       </kb:description>
-     </kb:rule>
-     <kb:rule id="IFpostgresPhpConnexTHENmysqlDb"
-       premiseEventRefs="WeSeDbWithPostgresPhpConnex »" 
-       conclusioEventRef="WeSeDbWithPostgres" > 
-       <kb:label>IF postgres-php-connector THEN postgres dbms</kb:label>
-       <kb:description>
-       R-2.3
-       </kb:description>
-     </kb:rule>
-     <kb:rule id="IFpostgresPythonConnexTHENmysqlDb"
-       premiseEventRefs="WeSeDbWithPostgresPythonConnex »" 
-       conclusioEventRef="WeSeDbWithPostgres" > 
-       <kb:label>IF postgres-python-connector THEN postgres dbms</kb:label>
-       <kb:description>
-       R-2.4
-       </kb:description>
-     </kb:rule>
-     <kb:rule id="IFJaEjbDbWithMysqlJavaConnectorTHENJaEjbDbWithMysql"
-       premiseEventRefs="JaEjbDbWithMysqlJavaConnector »" 
-       conclusioEventRef="JaEjbDbWithMysql" > 
-       <kb:label>Mysql Connector in context of JavaEjbDbSoST requires Mysql DBMS</kb:label>
-       <kb:description>
-       R-3.1
-       </kb:description>
-     </kb:rule>
-     <kb:rule id="IFJaEjbDbWithPostgresJavaConnectorTHENJaEjbDbWithPostgres"
-       premiseEventRefs="JaEjbDbWithPostgresJavaConnector »" 
-       conclusioEventRef="JaEjbDbWithPostgres" > 
-       <kb:label>Postgress Connector in context of JavaEjbDbSoST requires Postgres DBMS</kb:label>
-       <kb:description>
-       R-3.2
-       </kb:description>
-     </kb:rule>
-     <kb:rule id="IFJaWapDbWithPostgresJavaConnectorTHENJaWapDbWithPostgres"
-       premiseEventRefs="JaWapDbWithMysqlJavaConnector »" 
-       conclusioEventRef="JaWapDbWithMysql" > 
-       <kb:label>Mysql Connector in context of JavaWapDbSoST requires Mysql DBMS</kb:label>
-       <kb:description>
-       R-3.3
-       </kb:description>
-     </kb:rule>
-     <kb:rule id="IFJaWapDbWithPostgresJavaConnectorTHENJaWapDbWithPostgres"
-       premiseEventRefs="JaWapDbWithPostgresJavaConnector »" 
-       conclusioEventRef="JaWapDbWithPostgres" > 
-       <kb:label>Postgress Connector in context of JavaWapDbSoST requires Postgres DBMS</kb:label>
-       <kb:description>
-       R-3.4
-       </kb:description>
-     </kb:rule>
-   </kb:rules> 
+    <kb:rules>
+      <kb:rule id="IFmysqlPhpConnexTHENModPhp"
+       nexusRef="WeSeDbScriSoSt"
+        premiseRefs="WeSeDbWithMysqlPhpConnex "
+        conclusioRef="WeSeDbWithModPhp" >
+        <kb:label>IF mysql-php-connector THEN mod-php</kb:label>
+        <kb:description>
+        R-1.1
+        </kb:description>
+      </kb:rule>
+      <kb:rule id="IFmysqlPythonConnexTHENModPython"
+       nexusRef="WeSeDbScriSoSt"
+        premiseRefs="WeSeDbWithMysqlPythonConnex "
+        conclusioRef="WeSeDbWithModPython" >
+        <kb:label>IF mysql-python-connector THEN mod-python</kb:label>
+        <kb:description>
+        R-1.2
+        </kb:description>
+      </kb:rule>
+      <kb:rule id="IFpostgresPhpConnexTHENModPhp"
+       nexusRef="WeSeDbScriSoSt"
+        premiseRefs="WeSeDbWithPostgresPhpConnex "
+        conclusioRef="WeSeDbWithModPhp" >
+        <kb:label>IF postgres-php-connector THEN mod-php</kb:label>
+        <kb:description>
+        R-1.3
+        </kb:description>
+      </kb:rule>
+      <kb:rule id="IFpostgresPythonConnexTHENModPython"
+       nexusRef="WeSeDbScriSoSt"
+        premiseRefs="WeSeDbWithPostgresPythonConnex "
+        conclusioRef="WeSeDbWithModPython" >
+        <kb:label>IF postgres-python-connector THEN mod-python</kb:label>
+        <kb:description>
+        R-1.4
+        </kb:description>
+      </kb:rule>
+      <kb:rule id="IFmysqlPhpConnexTHENmysqlDb"
+       nexusRef="WeSeDbScriSoSt"
+        premiseRefs="WeSeDbWithMysqlPhpConnex "
+        conclusioRef="WeSeDbWithMysql" >
+        <kb:label>IF mysql-php-connector THEN mysql dbms</kb:label>
+        <kb:description>
+        R-2.1
+        </kb:description>
+      </kb:rule>
+      <kb:rule id="IFmysqlPythonConnexTHENmysqlDb"
+       nexusRef="WeSeDbScriSoSt"
+        premiseRefs="WeSeDbWithMysqlPythonConnex "
+        conclusioRef="WeSeDbWithMysql" >
+        <kb:label>IF mysql-python-connector THEN mysql dbms</kb:label>
+        <kb:description>
+        R-2.2
+        </kb:description>
+      </kb:rule>
+      <kb:rule id="IFpostgresPhpConnexTHENmysqlDb"
+       nexusRef="WeSeDbScriSoSt"
+        premiseRefs="WeSeDbWithPostgresPhpConnex "
+        conclusioRef="WeSeDbWithPostgres" >
+        <kb:label>IF postgres-php-connector THEN postgres dbms</kb:label>
+        <kb:description>
+        R-2.3
+        </kb:description>
+      </kb:rule>
+      <kb:rule id="IFpostgresPythonConnexTHENmysqlDb"
+       nexusRef="WeSeDbScriSoSt"
+        premiseRefs="WeSeDbWithPostgresPythonConnex "
+        conclusioRef="WeSeDbWithPostgres" >
+        <kb:label>IF postgres-python-connector THEN postgres dbms</kb:label>
+        <kb:description>
+        R-2.4
+        </kb:description>
+      </kb:rule>
+      <kb:rule id="IFJaEjbDbWithMysqlJavaConnectorTHENJaEjbDbWithMysql"
+       nexusRef="JaEjbDbSoSt"
+        premiseRefs="JaEjbDbWithMysqlJavaConnector "
+        conclusioRef="JaEjbDbWithMysql" >
+        <kb:label>Mysql Connector in context of JavaEjbDbSoST requires Mysql DBMS</kb:label>
+        <kb:description>
+        R-3.1
+        </kb:description>
+      </kb:rule>
+      <kb:rule id="IFJaEjbDbWithPostgresJavaConnectorTHENJaEjbDbWithPostgres"
+       nexusRef="JaEjbDbSoSt"
+        premiseRefs="JaEjbDbWithPostgresJavaConnector "
+        conclusioRef="JaEjbDbWithPostgres" >
+        <kb:label>Postgress Connector in context of JavaEjbDbSoST requires Postgres DBMS</kb:label>
+        <kb:description>
+        R-3.2
+        </kb:description>
+      </kb:rule>
+      <kb:rule id="IFJaWapDbWithMysqlJavaConnectorTHENJaWapDbWithMysql"
+       nexusRef="JaWapDbSoSt"
+        premiseRefs="JaWapDbWithMysqlJavaConnector "
+        conclusioRef="JaWapDbWithMysql" >
+        <kb:label>Mysql Connector in context of JavaWapDbSoST requires Mysql DBMS</kb:label>
+        <kb:description>
+        R-3.3
+        </kb:description>
+      </kb:rule>
+      <kb:rule id="IFJaWapDbWithPostgresJavaConnectorTHENJaWapDbWithPostgres"
+       nexusRef="JaWapDbSoSt"
+        premiseRefs="JaWapDbWithPostgresJavaConnector "
+        conclusioRef="JaWapDbWithPostgres" >
+        <kb:label>Postgress Connector in context of JavaWapDbSoST requires Postgres DBMS</kb:label>
+        <kb:description>
+        R-3.4
+        </kb:description>
+      </kb:rule>
+    </kb:rules> 
+    
   </kb:data>    
 </kb:knowledgebase>

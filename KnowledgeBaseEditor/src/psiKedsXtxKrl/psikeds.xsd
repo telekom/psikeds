@@ -1,0 +1,559 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://org.psikeds.knowledgebase"
+  xmlns:kb="http://org.psikeds.knowledgebase">
+  
+  <xs:element name="knowledgebase">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:meta" />
+        <xs:element ref="kb:data"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="meta">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:id"/>
+        <xs:element ref="kb:name" minOccurs="0" />
+        <xs:element ref="kb:teaser" minOccurs="0" />
+        <xs:element ref="kb:release" minOccurs="0"  />
+        <xs:element ref="kb:copyright" minOccurs="0" />
+        <xs:element ref="kb:license" minOccurs="0" />
+        <xs:element ref="kb:created" minOccurs="0" />
+        <xs:element ref="kb:lastmodified" minOccurs="0" />
+        <xs:element ref="kb:language" minOccurs="0" />
+        <xs:element ref="kb:creator" minOccurs="0"  maxOccurs="unbounded" />
+        <xs:element ref="kb:description" minOccurs="0"  maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="id" type="kb:nonEmptyString"/>
+  <xs:element name="name" type="kb:nonEmptyString"/>
+  <xs:element name="teaser" type="xs:string"/>
+  <xs:element name="release" type="kb:nonEmptyString"/>
+  <xs:element name="copyright" type="kb:nonEmptyString"/>
+  <xs:element name="license" type="xs:string"/>
+  <xs:element name="created" type="xs:string"/>
+  <xs:element name="lastmodified" type="xs:string"/>
+  <xs:element name="language" type="kb:nonEmptyString"/>
+  <xs:element name="creator" type="xs:string"/>
+  <xs:element name="data">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:sensors" minOccurs="0"/>
+        <xs:element ref="kb:concepts" minOccurs="0"/>
+        <xs:element ref="kb:purposes"/>
+        <xs:element ref="kb:variants"/>
+        <xs:element ref="kb:alternatives" minOccurs="1"/>
+        <xs:element ref="kb:constituents" minOccurs="0"/>
+        <xs:element ref="kb:derivations" minOccurs="0"/>
+        <xs:element ref="kb:events" minOccurs="0"/>
+        <xs:element ref="kb:parameters" minOccurs="0"/>
+        <xs:element ref="kb:rules" minOccurs="0"/>
+        <xs:element ref="kb:relations" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="sensors">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:sensor" minOccurs="1" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="sensor">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:label"/>
+        <xs:element ref="kb:description" minOccurs="0"/>
+        <xs:element ref="kb:unit"  minOccurs="0" />
+        <xs:element ref="kb:values"/>
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:ID"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="unit" type="xs:string"/>
+  
+  <xs:element name="values">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice>
+          <xs:element ref="kb:strValue" minOccurs="1" maxOccurs="unbounded" />
+          <xs:choice minOccurs="1" maxOccurs="unbounded">
+            <xs:element ref="kb:intValue" />
+            <xs:element ref="kb:intRange" />
+          </xs:choice>
+          <xs:choice minOccurs="1" maxOccurs="unbounded">
+            <xs:element ref="kb:floatValue" />
+            <xs:element ref="kb:floatRange" />
+          </xs:choice>            
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="strValue" type="kb:sensedStringValue" />
+  
+  <xs:complexType name="sensedStringValue"> 
+    <xs:simpleContent>
+      <xs:extension base="xs:string"> 
+        <xs:attribute name="id" use="required" type="xs:ID"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:element name="intValue" type="kb:sensedIntValue" />
+  
+  <xs:complexType name="sensedIntValue"> 
+    <xs:simpleContent>
+      <xs:extension base="xs:integer"> 
+        <xs:attribute name="id" use="required" type="xs:ID"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+    
+   <xs:element name="intRange">
+    <xs:complexType>
+      <xs:attribute name="id" use="required" type="xs:ID"/>
+      <xs:attribute name="min" type="xs:integer"/> 
+      <xs:attribute name="max" type="xs:integer"/>          
+      <xs:attribute name="inc" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+    
+  <xs:element name="floatValue" type="kb:sensedFloatValue" />
+  
+  <xs:complexType name="sensedFloatValue"> 
+    <xs:simpleContent>
+      <xs:extension base="xs:decimal"> 
+        <xs:attribute name="id" use="required" type="xs:ID"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  
+   <xs:element name="floatRange">
+    <xs:complexType>
+      <xs:attribute name="id" use="required" type="xs:ID"/>
+      <xs:attribute name="min" type="xs:decimal"/> 
+      <xs:attribute name="max" type="xs:decimal"/>          
+      <xs:attribute name="inc" type="xs:decimal"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="concepts">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="1" maxOccurs="unbounded" ref="kb:concept"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="concept">
+    <xs:complexType>
+      <xs:sequence >
+        <xs:element ref="kb:label" />
+        <xs:element ref="kb:description" minOccurs="0" />
+        <xs:element ref="kb:attributes" />
+      </xs:sequence>
+      <xs:attribute name="conceptRef" type="xs:IDREF"/>
+      <xs:attribute name="id" type="xs:ID"/> 
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="attributes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element  ref="kb:attribute" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+
+  <xs:element name="purposes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="1" maxOccurs="unbounded" ref="kb:purpose"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="purpose">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:label"/>
+        <xs:element ref="kb:description" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:ID"/>
+      <xs:attribute name="root" type="xs:boolean"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="variants">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element  ref="kb:variant" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="variant">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:label"/>
+        <xs:element ref="kb:description" minOccurs="0" />
+        <xs:element ref="kb:primarilyDenotedBy" minOccurs="0" />
+        <xs:element ref="kb:secondarilyDenotedBy" minOccurs="0" />
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:ID"/>
+      <xs:attribute name="singleton" type="xs:boolean"/>
+      <xs:attribute name="type" use="required" type="kb:VarType"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="primarilyDenotedBy">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:oneOutOfTheseStrAttributes"  minOccurs="0"/>
+        <xs:element ref="kb:oneOutOfTheseIntAttributes" minOccurs="0" />      
+        <xs:element ref="kb:oneOutOfTheseFloatAttributes" minOccurs="0" />
+        <xs:element ref="kb:oneOutOfThisRange" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="kb:oneOutOfTheseTerminalConcepts" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="oneOutOfTheseStrAttributes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:attribute" minOccurs="1" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="oneOutOfTheseFloatAttributes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:attribute"  minOccurs="1" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="oneOutOfTheseIntAttributes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:attribute"  minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="oneOutOfThisRange">
+    <xs:complexType>
+      <xs:attribute name="rangeRef" use="required" type="xs:IDREF"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="oneOutOfTheseTerminalConcepts">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:subsumption" minOccurs="1" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="secondarilyDenotedBy">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:subsumption" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+    <xs:element name="subsumption">
+    <xs:complexType>
+      <xs:attribute name="ref" type="xs:IDREF"/>
+      <xs:attribute name="type" type="kb:ConceptType"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="alternatives">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="1" maxOccurs="unbounded" ref="kb:fulfills"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="fulfills">
+    <xs:complexType>
+      <xs:attribute name="psRef" use="required" type="xs:IDREF"/>
+      <xs:attribute name="pvRefs" use="required" type="xs:IDREFS"/>
+      <xs:attribute name="implicitPvRefs" type="xs:IDREFS" />
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="constituents">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:constitutes" minOccurs="1"  maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="constitutes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:component" maxOccurs="unbounded" />
+      </xs:sequence>
+      <xs:attribute name="pvRef" use="required" type="xs:IDREF"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="component">
+    <xs:complexType>
+      <xs:attribute name="many" use="required" type="xs:integer"/>
+      <xs:attribute name="psRef" use="required" type="xs:IDREF"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="derivations">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:setup" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="setup">
+    <xs:complexType>
+      <xs:attribute name="pvImplRef" use="required" type="xs:IDREF"/>
+      <xs:attribute name="psRefs" use="required" type="xs:IDREFS"/>
+    </xs:complexType>
+  </xs:element>
+  
+
+  
+  <xs:element name="events">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="kb:event"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="event">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:label"/>
+        <xs:element ref="kb:description" minOccurs="0" />
+        <xs:element ref="kb:not" minOccurs="0"/>
+        <xs:element ref="kb:trigger"/>
+      </xs:sequence>
+
+      <xs:attribute name="id" use="required" type="xs:ID"/>
+      <xs:attribute name="nexusRef" use="required" type="xs:IDREF"/>
+      <xs:attribute name="contextRefs" use="required" type="xs:IDREFS"/>     
+    </xs:complexType>
+  </xs:element>
+  
+  
+  <xs:element name="not">
+    <xs:complexType/>
+  </xs:element>
+  
+  <xs:element name="trigger">
+    <xs:complexType>
+      <xs:attribute name="ref" use="required" type="xs:IDREF"/>
+      <xs:attribute name="tt" use="required" type="kb:TriggerType"/>
+    </xs:complexType>
+  </xs:element>
+  
+  
+  <xs:element name="parameters">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:parameter" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="parameter">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:label"/>
+        <xs:element ref="kb:description" minOccurs="0" />
+        <xs:element ref="kb:valueSet"/>
+      </xs:sequence>
+      
+      <xs:attribute name="id" use="required" type="xs:ID"/>
+      <xs:attribute name="nexusRef" use="required" type="xs:IDREF"/>
+      <xs:attribute name="contextRefs" use="required" type="xs:IDREFS"/>
+       
+    </xs:complexType>
+  </xs:element>
+  
+  
+  <xs:element name="valueSet">
+    <xs:complexType>
+      <xs:attribute name="sensorRef" use="required" type="xs:IDREF"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="rules">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:rule" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="rule">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:label"/>
+        <xs:element ref="kb:description" minOccurs="0" />
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:ID"/>
+      <xs:attribute name="nexusRef" use="required" type="xs:IDREF"/>  
+      <xs:attribute name="premiseRefs" use="required" type="xs:IDREFS" />                
+      <xs:attribute name="conclusioRef" use="required" type="xs:IDREF"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="relations">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice  maxOccurs="unbounded">
+          <xs:element ref="kb:relation" />
+          <xs:element ref="kb:condRelation"/>
+        </xs:choice>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="relation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:label"/>
+        <xs:element ref="kb:description" minOccurs="0" />
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:ID"/>
+      <xs:attribute name="nexusRef" use="required" type="xs:IDREF"/>           
+      <xs:attribute name="lpRef" use="required" type="xs:IDREF"/>
+      <xs:attribute name="lpType" use="required" type="kb:RelParamType"/>
+      <xs:attribute name="rtype" use="required" type="kb:RelationType"/>
+      <xs:attribute name="rpRef" use="required" type="xs:IDREF"/>
+      <xs:attribute name="rpType" use="required" type="kb:RelParamType"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="condRelation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="kb:label"/>
+        <xs:element ref="kb:description" minOccurs="0" />
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:ID"/>
+      <xs:attribute name="nexusRef" use="required" type="xs:IDREF"/>                
+      <xs:attribute name="condRef" use="required" type="xs:IDREF"/>
+      <xs:attribute name="lpRef" use="required" type="xs:IDREF"/>
+      <xs:attribute name="lpType" use="required" type="kb:RelParamType"/>
+      <xs:attribute name="rtype" use="required" type="kb:RelationType"/>
+      <xs:attribute name="rpRef" use="required" type="xs:IDREF"/>
+      <xs:attribute name="rpType" use="required" type="kb:RelParamType"/>
+    </xs:complexType>
+  </xs:element>
+
+
+
+  
+  <!-- ============================================================== -->
+  <!-- Basic attributes, types and restrictions -->
+  <!-- ============================================================== -->
+
+ <!-- used to denote sensored values in concepts and variant valuelists -->
+   <xs:element name="attribute">
+    <xs:complexType>
+      <xs:attribute name="type" use="required" type="kb:SpecificAttributeType"/>
+      <xs:attribute name="ref" use="required" type="xs:IDREF"/>
+    </xs:complexType>
+  </xs:element>  
+ 
+ <!-- used in nearly all defined knowledge base tokens -->
+ 
+  <xs:element name="label" type="kb:nonEmptyString" />
+  <xs:element name="description" type="xs:string" />
+
+  <xs:simpleType name="RelationType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="eq"/>
+      <xs:enumeration value="neq"/>
+      <xs:enumeration value="less"/>
+      <xs:enumeration value="leq"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="RelParamType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="vVal"/>
+      <xs:enumeration value="cInt"/>
+      <xs:enumeration value="cFloat"/>
+      <xs:enumeration value="cStr"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="SpecificAttributeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="str"/>
+      <xs:enumeration value="int"/>
+      <xs:enumeration value="float"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="TriggerType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="pv"/>
+      <xs:enumeration value="strAtt"/>
+      <xs:enumeration value="intAtt"/>
+      <xs:enumeration value="floatAtt"/>
+      <xs:enumeration value="concept"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="VarType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="explicit"/>
+      <xs:enumeration value="implicit"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ConceptType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="sensored"/>
+      <xs:enumeration value="derived"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="nonEmptyString">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1" />
+      <xs:maxLength value="255" />
+      <xs:pattern value="[^\t\n\r\s]*.*[^\t\n\r\s]*" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="quantity" type="kb:positiveNumber" />
+
+  <xs:simpleType name="positiveNumber">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="0" />
+    </xs:restriction>
+  </xs:simpleType>
+
+
+</xs:schema>
