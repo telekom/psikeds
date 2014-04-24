@@ -204,57 +204,71 @@ proprietary license: All rights are reserved. Feel free to contact:
 
     <kb:alternatives>
       <kb:fulfills psRef="deliverStaticWebPages"
-        pvRefs="Apache "
-        implicitPvRefs="" />
+        pvRefs="Apache " />
       <kb:fulfills psRef="deliverDynamicWebPages"
-        pvRefs="WeSeScriSoSt WeSeDbScriSoSt "
-        implicitPvRefs="" />
+        pvRefs="WeSeScriSoSt WeSeDbScriSoSt " />
       <kb:fulfills psRef="deliverPersistentDynamicWebPages"
-        pvRefs="JaEjbDbSoSt JaWapDbSoSt "
-        implicitPvRefs="" />
+        pvRefs="JaEjbDbSoSt JaWapDbSoSt " />
       <kb:fulfills psRef="deliverSimpleJavaApplicationsOutput"
-        pvRefs="Tomcat "
-        implicitPvRefs="" />
+        pvRefs="Tomcat " />
       <kb:fulfills psRef="deliverPages"
-        pvRefs="Apache "
-        implicitPvRefs="" />
+        pvRefs="Apache " />
       <kb:fulfills psRef="execScripts"
-        pvRefs="ModPhp ModPython "
-        implicitPvRefs="" />
+        pvRefs="ModPhp ModPython " />
       <kb:fulfills psRef="linkToDataStore"
-        pvRefs="MysqlPhpConnector MysqlPythonConnector MysqlJavaConnector PostgresPhpConnector PostgresPythonConnector PostgresJavaConnector "
-        implicitPvRefs="" />
+        pvRefs="MysqlPhpConnector MysqlPythonConnector MysqlJavaConnector PostgresPhpConnector PostgresPythonConnector PostgresJavaConnector " />
       <kb:fulfills psRef="storeData"
-        pvRefs="Mysql Postgres "
-        implicitPvRefs="" />
+        pvRefs="Mysql Postgres " />
       <kb:fulfills psRef="execEeBeans"
-        pvRefs="Jboss "
-        implicitPvRefs="" />
+        pvRefs="Jboss " />
       <kb:fulfills psRef="execJavaApps"
-        pvRefs="Tomcat "
-        implicitPvRefs="" />
+        pvRefs="Tomcat " />
     </kb:alternatives>  
      
     <kb:constituents>
       <kb:constitutes pvRef="WeSeScriSoSt">
-        <kb:component many="1" psRef="deliverPages" />
-        <kb:component many="1" psRef="execScripts" />
+        <kb:component psRef="deliverPages">
+          <kb:quantity>1</kb:quantity>
+        </kb:component>
+        <kb:component psRef="execScripts">
+          <kb:quantity>1</kb:quantity>
+        </kb:component>
       </kb:constitutes>  
       <kb:constitutes pvRef="WeSeDbScriSoSt">
-        <kb:component many="1" psRef="deliverPages" />
-        <kb:component many="1" psRef="execScripts" />
-        <kb:component many="1" psRef="linkToDataStore" />
-        <kb:component many="1" psRef="storeData" />
+        <kb:component psRef="deliverPages">
+          <kb:quantity>1</kb:quantity>
+        </kb:component>
+        <kb:component psRef="execScripts">
+          <kb:quantity>1</kb:quantity>
+        </kb:component>
+        <kb:component psRef="linkToDataStore">
+          <kb:quantity>1</kb:quantity>
+        </kb:component>
+        <kb:component psRef="storeData">
+          <kb:quantity>1</kb:quantity>
+        </kb:component>
       </kb:constitutes>  
       <kb:constitutes pvRef="JaEjbDbSoSt">
-        <kb:component many="1" psRef="linkToDataStore" />
-        <kb:component many="1" psRef="storeData" />
-        <kb:component many="1" psRef="execEeBeans" />
+        <kb:component psRef="linkToDataStore">
+          <kb:quantity>1</kb:quantity>
+        </kb:component>
+        <kb:component psRef="storeData">
+          <kb:quantity>1</kb:quantity>
+        </kb:component>
+        <kb:component psRef="execEeBeans">
+          <kb:quantity>1</kb:quantity>
+        </kb:component>
       </kb:constitutes>  
       <kb:constitutes pvRef="JaWapDbSoSt">
-        <kb:component many="1" psRef="linkToDataStore" />
-        <kb:component many="1" psRef="storeData" />
-        <kb:component many="1" psRef="execJavaApps" />
+        <kb:component psRef="linkToDataStore">
+          <kb:quantity>1</kb:quantity>
+        </kb:component>
+        <kb:component psRef="storeData">
+          <kb:quantity>1</kb:quantity>
+        </kb:component>
+        <kb:component psRef="execJavaApps">
+          <kb:quantity>1</kb:quantity>
+        </kb:component>
       </kb:constitutes>  
     </kb:constituents> 
 
@@ -262,106 +276,106 @@ proprietary license: All rights are reserved. Feel free to contact:
     <kb:events>
       <kb:event id="WeSeDbWithMysqlPhpConnex" 
         nexusRef="WeSeDbScriSoSt"
-        contextRefs="WeSeDbScriSoSt linkToDataStore"> 
+        contextPath="WeSeDbScriSoSt linkToDataStore"> 
         <kb:label>DB based web server with mysql-php-connector</kb:label>
-        <kb:trigger tt="pv" ref="MysqlPhpConnector" />
-      </kb:event>
+          <kb:trigger  type="pv" ref="MysqlPhpConnector" />
+       </kb:event>
       <kb:event id="WeSeDbWithMysqlPythonConnex" 
         nexusRef="WeSeDbScriSoSt"
-        contextRefs="WeSeDbScriSoSt linkToDataStore"> 
+        contextPath="WeSeDbScriSoSt linkToDataStore"> 
         <kb:label>DB based web server with mysql-phython-connector</kb:label>
-        <kb:trigger tt="pv" ref="MysqlPythonConnector" />
-      </kb:event>
+          <kb:trigger  type="pv" ref="MysqlPythonConnector" />
+       </kb:event>
       <kb:event id="WeSeDbWithPostgresPhpConnex" 
         nexusRef="WeSeDbScriSoSt"
-        contextRefs="WeSeDbScriSoSt linkToDataStore"> 
+        contextPath="WeSeDbScriSoSt linkToDataStore"> 
         <kb:label>DB based web server with postgres-php-connector</kb:label>
-        <kb:trigger tt="pv" ref="PostgresPhpConnector" />
-      </kb:event>
+          <kb:trigger  type="pv" ref="PostgresPhpConnector" />
+       </kb:event>
       <kb:event id="WeSeDbWithPostgresPythonConnex" 
         nexusRef="WeSeDbScriSoSt"
-        contextRefs="WeSeDbScriSoSt linkToDataStore"> 
+        contextPath="WeSeDbScriSoSt linkToDataStore"> 
         <kb:label>DB based web server with postgres-phython-connector</kb:label>
-        <kb:trigger tt="pv" ref="PostgresPythonConnector" />
-      </kb:event>
+          <kb:trigger  type="pv" ref="PostgresPythonConnector" />
+       </kb:event>
       <kb:event id="WeSeDbWithModPython" 
         nexusRef="WeSeDbScriSoSt"
-        contextRefs="WeSeDbScriSoSt execScripts"> 
+        contextPath="WeSeDbScriSoSt execScripts"> 
         <kb:label>DB based web server with mod-python</kb:label>
-        <kb:trigger tt="pv" ref="ModPython" />
-      </kb:event>
+          <kb:trigger  type="pv" ref="ModPython" />
+       </kb:event>
       <kb:event id="WeSeDbWithModPhp" 
         nexusRef="WeSeDbScriSoSt"
-        contextRefs="WeSeDbScriSoSt execScripts"> 
+        contextPath="WeSeDbScriSoSt execScripts"> 
         <kb:label>DB based web server with mod-php</kb:label>
-        <kb:trigger tt="pv" ref="ModPhp" />
-      </kb:event>
+          <kb:trigger  type="pv" ref="ModPhp" />
+       </kb:event>
       <kb:event id="WeSeDbWithMysql" 
         nexusRef="WeSeDbScriSoSt"
-        contextRefs="WeSeDbScriSoSt storeData"> 
+        contextPath="WeSeDbScriSoSt storeData"> 
         <kb:label>DB based web server with mysql</kb:label>
-        <kb:trigger tt="pv" ref="Mysql" />
-      </kb:event>
+          <kb:trigger  type="pv" ref="Mysql" />
+       </kb:event>
       <kb:event id="WeSeDbWithPostgres" 
         nexusRef="WeSeDbScriSoSt"
-        contextRefs="WeSeDbScriSoSt storeData"> 
+        contextPath="WeSeDbScriSoSt storeData"> 
         <kb:label>DB based web server with postgres</kb:label>
-        <kb:trigger tt="pv" ref="Postgres" />
-      </kb:event>
+          <kb:trigger  type="pv" ref="Postgres" />
+       </kb:event>
       <kb:event id="JaEjbDbWithMysqlJavaConnector" 
         nexusRef="JaEjbDbSoSt"
-        contextRefs="JaEjbDbSoSt linkToDataStore"> 
+        contextPath="JaEjbDbSoSt linkToDataStore"> 
         <kb:label>Java Ejb Database Software Stack mit Mysql Java Connector</kb:label>
-        <kb:trigger tt="pv" ref="MysqlJavaConnector" />
-      </kb:event>
+          <kb:trigger  type="pv" ref="MysqlJavaConnector" />
+       </kb:event>
       <kb:event id="JaEjbDbWithPostgresJavaConnector" 
         nexusRef="JaEjbDbSoSt"
-        contextRefs="JaEjbDbSoSt linkToDataStore"> 
+        contextPath="JaEjbDbSoSt linkToDataStore"> 
         <kb:label>Java Ejb Database Software Stack mit Postgres Java Connector</kb:label>
-        <kb:trigger tt="pv" ref="PostgresJavaConnector" />
-      </kb:event>
+          <kb:trigger  type="pv" ref="PostgresJavaConnector" />
+       </kb:event>
       <kb:event id="JaEjbDbWithMysql" 
         nexusRef="JaEjbDbSoSt"
-        contextRefs="JaEjbDbSoSt storeData"> 
+        contextPath="JaEjbDbSoSt storeData"> 
         <kb:label>Java Ejb Database Software Stack mit Mysql DBMS</kb:label>
-        <kb:trigger tt="pv" ref="Mysql" />
-      </kb:event>
+          <kb:trigger  type="pv" ref="Mysql" />
+       </kb:event>
       <kb:event id="JaEjbDbWithPostgres" 
         nexusRef="JaEjbDbSoSt"
-        contextRefs="JaEjbDbSoSt storeData"> 
+        contextPath="JaEjbDbSoSt storeData"> 
         <kb:label>Java Ejb Database Software Stack mit Postgres DBMS</kb:label>
-        <kb:trigger tt="pv" ref="Postgres" />
-      </kb:event>
+          <kb:trigger  type="pv" ref="Postgres" />
+       </kb:event>
       <kb:event id="JaWapDbWithMysqlJavaConnector" 
         nexusRef="JaWapDbSoSt"
-        contextRefs="JaWapDbSoSt linkToDataStore"> 
+        contextPath="JaWapDbSoSt linkToDataStore"> 
         <kb:label>Java Web App Database Software Stack mit Mysql Java Connector</kb:label>
-        <kb:trigger tt="pv" ref="MysqlJavaConnector" />
-      </kb:event>
+          <kb:trigger  type="pv" ref="MysqlJavaConnector" />
+       </kb:event>
       <kb:event id="JaWapDbWithPostgresJavaConnector" 
         nexusRef="JaWapDbSoSt"
-        contextRefs="JaWapDbSoSt linkToDataStore"> 
+        contextPath="JaWapDbSoSt linkToDataStore"> 
         <kb:label>Java Web App Database Software Stack mit Postgres Java Connector</kb:label>
-        <kb:trigger tt="pv" ref="PostgresJavaConnector" />
-      </kb:event>
+          <kb:trigger  type="pv" ref="PostgresJavaConnector" />
+       </kb:event>
       <kb:event id="JaWapDbWithMysql" 
         nexusRef="JaWapDbSoSt"
-        contextRefs="JaWapDbSoSt storeData"> 
+        contextPath="JaWapDbSoSt storeData"> 
         <kb:label>Java Web App Database Software Stack mit Mysql </kb:label>
-        <kb:trigger tt="pv" ref="Mysql" />
-      </kb:event>
+          <kb:trigger  type="pv" ref="Mysql" />
+       </kb:event>
       <kb:event id="JaWapDbWithPostgres" 
         nexusRef="JaWapDbSoSt"
-        contextRefs="JaWapDbSoSt storeData"> 
+        contextPath="JaWapDbSoSt storeData"> 
         <kb:label>Java Web App Database Software Stack mit Postgres </kb:label>
-        <kb:trigger tt="pv" ref="Postgres" />
-      </kb:event>
+          <kb:trigger  type="pv" ref="Postgres" />
+       </kb:event>
     </kb:events> 
     
     
     <kb:rules>
       <kb:rule id="IFmysqlPhpConnexTHENModPhp"
-       nexusRef="WeSeDbScriSoSt"
+        nexusRef="WeSeDbScriSoSt"
         premiseRefs="WeSeDbWithMysqlPhpConnex "
         conclusioRef="WeSeDbWithModPhp" >
         <kb:label>IF mysql-php-connector THEN mod-php</kb:label>
@@ -370,7 +384,7 @@ proprietary license: All rights are reserved. Feel free to contact:
         </kb:description>
       </kb:rule>
       <kb:rule id="IFmysqlPythonConnexTHENModPython"
-       nexusRef="WeSeDbScriSoSt"
+        nexusRef="WeSeDbScriSoSt"
         premiseRefs="WeSeDbWithMysqlPythonConnex "
         conclusioRef="WeSeDbWithModPython" >
         <kb:label>IF mysql-python-connector THEN mod-python</kb:label>
@@ -379,7 +393,7 @@ proprietary license: All rights are reserved. Feel free to contact:
         </kb:description>
       </kb:rule>
       <kb:rule id="IFpostgresPhpConnexTHENModPhp"
-       nexusRef="WeSeDbScriSoSt"
+        nexusRef="WeSeDbScriSoSt"
         premiseRefs="WeSeDbWithPostgresPhpConnex "
         conclusioRef="WeSeDbWithModPhp" >
         <kb:label>IF postgres-php-connector THEN mod-php</kb:label>
@@ -388,7 +402,7 @@ proprietary license: All rights are reserved. Feel free to contact:
         </kb:description>
       </kb:rule>
       <kb:rule id="IFpostgresPythonConnexTHENModPython"
-       nexusRef="WeSeDbScriSoSt"
+        nexusRef="WeSeDbScriSoSt"
         premiseRefs="WeSeDbWithPostgresPythonConnex "
         conclusioRef="WeSeDbWithModPython" >
         <kb:label>IF postgres-python-connector THEN mod-python</kb:label>
@@ -397,7 +411,7 @@ proprietary license: All rights are reserved. Feel free to contact:
         </kb:description>
       </kb:rule>
       <kb:rule id="IFmysqlPhpConnexTHENmysqlDb"
-       nexusRef="WeSeDbScriSoSt"
+        nexusRef="WeSeDbScriSoSt"
         premiseRefs="WeSeDbWithMysqlPhpConnex "
         conclusioRef="WeSeDbWithMysql" >
         <kb:label>IF mysql-php-connector THEN mysql dbms</kb:label>
@@ -406,7 +420,7 @@ proprietary license: All rights are reserved. Feel free to contact:
         </kb:description>
       </kb:rule>
       <kb:rule id="IFmysqlPythonConnexTHENmysqlDb"
-       nexusRef="WeSeDbScriSoSt"
+        nexusRef="WeSeDbScriSoSt"
         premiseRefs="WeSeDbWithMysqlPythonConnex "
         conclusioRef="WeSeDbWithMysql" >
         <kb:label>IF mysql-python-connector THEN mysql dbms</kb:label>
@@ -415,7 +429,7 @@ proprietary license: All rights are reserved. Feel free to contact:
         </kb:description>
       </kb:rule>
       <kb:rule id="IFpostgresPhpConnexTHENmysqlDb"
-       nexusRef="WeSeDbScriSoSt"
+        nexusRef="WeSeDbScriSoSt"
         premiseRefs="WeSeDbWithPostgresPhpConnex "
         conclusioRef="WeSeDbWithPostgres" >
         <kb:label>IF postgres-php-connector THEN postgres dbms</kb:label>
@@ -424,7 +438,7 @@ proprietary license: All rights are reserved. Feel free to contact:
         </kb:description>
       </kb:rule>
       <kb:rule id="IFpostgresPythonConnexTHENmysqlDb"
-       nexusRef="WeSeDbScriSoSt"
+        nexusRef="WeSeDbScriSoSt"
         premiseRefs="WeSeDbWithPostgresPythonConnex "
         conclusioRef="WeSeDbWithPostgres" >
         <kb:label>IF postgres-python-connector THEN postgres dbms</kb:label>
@@ -433,7 +447,7 @@ proprietary license: All rights are reserved. Feel free to contact:
         </kb:description>
       </kb:rule>
       <kb:rule id="IFJaEjbDbWithMysqlJavaConnectorTHENJaEjbDbWithMysql"
-       nexusRef="JaEjbDbSoSt"
+        nexusRef="JaEjbDbSoSt"
         premiseRefs="JaEjbDbWithMysqlJavaConnector "
         conclusioRef="JaEjbDbWithMysql" >
         <kb:label>Mysql Connector in context of JavaEjbDbSoST requires Mysql DBMS</kb:label>
@@ -442,7 +456,7 @@ proprietary license: All rights are reserved. Feel free to contact:
         </kb:description>
       </kb:rule>
       <kb:rule id="IFJaEjbDbWithPostgresJavaConnectorTHENJaEjbDbWithPostgres"
-       nexusRef="JaEjbDbSoSt"
+        nexusRef="JaEjbDbSoSt"
         premiseRefs="JaEjbDbWithPostgresJavaConnector "
         conclusioRef="JaEjbDbWithPostgres" >
         <kb:label>Postgress Connector in context of JavaEjbDbSoST requires Postgres DBMS</kb:label>
@@ -451,7 +465,7 @@ proprietary license: All rights are reserved. Feel free to contact:
         </kb:description>
       </kb:rule>
       <kb:rule id="IFJaWapDbWithMysqlJavaConnectorTHENJaWapDbWithMysql"
-       nexusRef="JaWapDbSoSt"
+        nexusRef="JaWapDbSoSt"
         premiseRefs="JaWapDbWithMysqlJavaConnector "
         conclusioRef="JaWapDbWithMysql" >
         <kb:label>Mysql Connector in context of JavaWapDbSoST requires Mysql DBMS</kb:label>
@@ -460,7 +474,7 @@ proprietary license: All rights are reserved. Feel free to contact:
         </kb:description>
       </kb:rule>
       <kb:rule id="IFJaWapDbWithPostgresJavaConnectorTHENJaWapDbWithPostgres"
-       nexusRef="JaWapDbSoSt"
+        nexusRef="JaWapDbSoSt"
         premiseRefs="JaWapDbWithPostgresJavaConnector "
         conclusioRef="JaWapDbWithPostgres" >
         <kb:label>Postgress Connector in context of JavaWapDbSoST requires Postgres DBMS</kb:label>

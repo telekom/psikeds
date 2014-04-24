@@ -12,7 +12,7 @@ licensing
 */
 
 06: licensing
-"CC-SA-BY 3.0 (https://creativecommons.org/licenses/by-sa/3.0/)
+"CC-SA-BY 3.0 (https://creativecommons.org/licenses/by-sa/3.0/). 
 You should have got a version of this license together with this file."
 
 07: created 2014-04-04
@@ -25,7 +25,6 @@ You should have got a version of this license together with this file."
    stamped German C4/C5/C56/C6 letter"
   
 PSIKEDS-SENSORS:
-
 
 sensor NamedColor (
   label "Color-Names"
@@ -211,131 +210,131 @@ PSIKEDS-CONCEPTS:
 concept DinA6Letter (
   label "DIN-A6-Values"
   description "DIN A6 constitutive values"
-  denotes {
-      *int> DinA6Number
-    & *float> DinA6Height
-    & *float> DinA6Width
-    & *float> Weight1P1
+  denotes-entities-with-the-features {
+      [ *int> DinA6Number *sensed-by> DinANumber ]
+    & [ *float> DinA6Height *sensed-by> DinFormatHeight ]
+    & [ *float> DinA6Width *sensed-by> DinFormatWidth ]
+    & [ *float> Weight1P1 *sensed-by> Weight ]
   }
 )
 
 concept DinA5Letter (
   label "DIN-A5-Values"
   description "DIN A5 constitutive values"
-  denotes {
-      *int> DinA5Number
-    & *float> DinA5Height
-    & *float> DinA5Width
-    & *float> Weight2P2
+  denotes-entities-with-the-features {
+      [ *int> DinA5Number *sensed-by> DinANumber ]
+    & [ *float> DinA5Height *sensed-by> DinFormatHeight ]
+    & [ *float> DinA5Width *sensed-by> DinFormatWidth ]
+    & [ *float> Weight2P2 *sensed-by> Weight ]
   }
 )
 
 concept DinA4Letter (
   label "DIN-A4-Values"
   description "DIN A4 constitutive values"
-  denotes {
-      *int> DinA4Number
-    & *float> DinA4Height
-    & *float> DinA4Width
-    & *float> Weight4P4
+  denotes-entities-with-the-features {
+      [ *int> DinA4Number *sensed-by> DinANumber ]
+    & [ *float> DinA4Height *sensed-by> DinFormatHeight ]
+    & [ *float> DinA4Width *sensed-by> DinFormatWidth ]
+    & [ *float> Weight4P4 *sensed-by> Weight ]
   }
 )
 
 concept DinA3Letter (
   label "DIN-A3-Values"
   description "DIN A3 constitutive values"
-  denotes {
-      *int> DinA3Number
-    & *float> DinA3Height
-    & *float> DinA3Width
-    & *float> Weight8P8
+  denotes-entities-with-the-features {
+      [ *int> DinA3Number *sensed-by> DinANumber ]
+    & [ *float> DinA3Height *sensed-by> DinFormatHeight ]
+    & [ *float> DinA3Width *sensed-by> DinFormatWidth ]
+    & [ *float> Weight8P8 *sensed-by> Weight ]
   }
 )
 
 concept DinA2Letter (
   label "DIN-A2-Values"
   description "DIN A2 constitutive values"
-   denotes {
-      *int> DinA2Number
-    & *float> DinA2Height
-    & *float> DinA2Width
-    & *float> Weight17P5
+  denotes-entities-with-the-features {
+      [ *int> DinA2Number *sensed-by> DinANumber ]
+    & [ *float> DinA2Height *sensed-by> DinFormatHeight ]
+    & [ *float> DinA2Width *sensed-by> DinFormatWidth ]
+    & [ *float> Weight17P5 *sensed-by> Weight ]
   }
 )
 
 concept DinA6CardConveyable (
   label "Conveyable-DIN-A6-Writing-Card"
   description "constitutive values for a conveyable DIN A6 writing card"
-   denotes {
-      *str> withPreprintedAddrField
-    & *int> DinA6Number
-    & *float> DinA6Height
-    & *float> DinA6Width
+  denotes-entities-with-the-features {
+      [ *str> withPreprintedAddrField *sensed-by> PreprintedAddrField]
+    & [ *int> DinA6Number *sensed-by> DinANumber ]
+    & [ *float> DinA6Height *sensed-by> DinFormatHeight ]
+    & [ *float> DinA6Width *sensed-by> DinFormatWidth ]  
   }
 )
 
 concept DinA6CardUnconveyable (
-  label "Conveyable-DIN-A6-Writing-Card"
+  label "Unconveyable-DIN-A6-Writing-Card"
   description "constitutive values for an unconveyable DIN A6 writing card"
-  denotes {
-      *str> withPreprintedAddrField
-    & *int> DinA6Number
-    & *float> DinA6Height
-    & *float> DinA6Width
+  denotes-entities-with-the-features {
+      [ *str> withoutPreprintedAddrField *sensed-by> PreprintedAddrField]
+    & [ *int> DinA6Number *sensed-by> DinANumber ]
+    & [ *float> DinA6Height *sensed-by> DinFormatHeight ]
+    & [ *float> DinA6Width *sensed-by> DinFormatWidth  ]
   }
 )
 
 concept DinC4Envelope (
   label "DIN-C4-Envelope"
   description "DIN C4 constitutive values"
-  denotes {
-      *float> DinC4Number
-    & *float> DinC4Height
-    & *float> DinC4Width
-    & *float> Weight13P0
+  denotes-entities-with-the-features {
+      [ *float> DinC4Number *sensed-by> DinCNumber  ]
+    & [ *float> DinC4Height *sensed-by> DinFormatHeight  ]
+    & [ *float> DinC4Width *sensed-by> DinFormatWidth  ]
+    & [ *float> Weight13P0 *sensed-by> Weight ]
   }
 )
 
 concept DinC5Envelope (
   label "DIN-C5-Envelope"
   description "DIN C5 constitutive values"
-  denotes {
-      *float> DinC5Number
-    & *float> DinC5Height
-    & *float> DinC5Width
-    & *float> Weight6P5
+  denotes-entities-with-the-features {
+      [ *float> DinC5Number *sensed-by> DinCNumber  ]
+    & [ *float> DinC5Height *sensed-by> DinFormatHeight  ]
+    & [ *float> DinC5Width *sensed-by> DinFormatWidth  ]
+    & [ *float> Weight6P5 *sensed-by> Weight ]
   }
 )
 
 concept DinC56Envelope (
   label "DIN-C5,6-Envelope"
   description "DIN C5,6 constitutive values"
-  denotes {
-      *float> DinC56Number
-    & *float> DinC6Height
-    & *float> DinC5Width
-    & *float> Weight4P2
+  denotes-entities-with-the-features {
+      [ *float> DinC56Number *sensed-by> DinCNumber  ]
+    & [ *float> DinC6Height *sensed-by> DinFormatHeight  ]
+    & [ *float> DinC5Width *sensed-by> DinFormatWidth  ]
+    & [ *float> Weight4P2 *sensed-by> Weight ]
   }
 )
 
 concept DinC6Envelope (
   label "DIN-C6-Envelope"
   description "DIN C6 constitutive values"
-    denotes {
-      *float> DinC6Number
-    & *float> DinC6Height
-    & *float> DinC6Width
-    & *float> Weight3P2
+  denotes-entities-with-the-features {
+      [ *float> DinC6Number *sensed-by> DinCNumber  ]
+    & [ *float> DinC6Height *sensed-by> DinFormatHeight  ]
+    & [ *float> DinC6Width *sensed-by> DinFormatWidth  ]
+    & [ *float> Weight3P2 *sensed-by> Weight ]    
   }
 )
 
 concept DinA6Entity (
   label "DIN-A6-Definition"
   description "concept denotes any entity with A6 values"
-    denotes {
-      *int> DinA6Number
-    & *float> DinA6Height
-    & *float> DinA6Width
+  denotes-entities-with-the-features {
+      [ *int> DinA6Number *sensed-by> DinANumber ]
+    & [ *float> DinA6Height *sensed-by> DinFormatHeight ]
+    & [ *float> DinA6Width *sensed-by> DinFormatWidth  ]
   }
 )
 
@@ -378,7 +377,7 @@ PSIKEDS-VARIANTS:
 variant CompressedLetter (
   label "Compressed-Letter"
   description "a letter containing a compressed media"
-  
+  type explicit
   specified.by NamedColor as {
       *str> namedColorAzure
     | *str> namedColorPink 
@@ -396,10 +395,10 @@ variant CompressedLetter (
   perceived.by Weight within *floatRange> letterWeight
 )
 
-
 variant UncompressedLetter (
   label "Uncompressed-Letter"
   description "a letter containing an uncompressed media"
+  type explicit
   
   specified.by NamedColor as {
       *str> namedColorAzure 
@@ -420,6 +419,7 @@ variant UncompressedLetter (
 variant Postcard (
   label "Postcard"
   description "standard postcard"
+  type explicit
   
   specified.by NamedColor as {
       *str> namedColorIvory 
@@ -432,6 +432,7 @@ variant Postcard (
 variant Envelope (
   label "Envelope"
   description "an envelope for protecting a written message"
+  type explicit
   
   specified.by NamedColor as {
       *str> namedColorAzure 
@@ -451,6 +452,7 @@ variant Envelope (
 variant WritingPaper (
   label "WritingPaper"
   description "a page of letter paper"
+  type explicit
   
   specified.by NamedColor as {
       *str> namedColorAzure
@@ -479,6 +481,7 @@ variant WritingPaper (
 variant WritingCard (
   label "WritingCard"
   description "a card for writing a message"
+  type explicit
   
   specified.by NamedColor as {
       *str> namedColorAzure
@@ -503,26 +506,32 @@ variant WritingCard (
 )
 
 variant FoldMethod12 (
-  singleton true
   label "Fold-Method-Half-in-Size"
   description "a method to fold a piece of paper half in size"
+  type explicit
+  singleton true
 )
 
 variant FoldMethod13 (
-  singleton true  
   label "Fold-Method-a-third-in-Size"
   description "a method to fold a piece of paper a third in size"
+  type explicit
+  singleton true
 )
 
+
 variant FoldMethod14 (
-  singleton true
   label "Fold-Method-a-quarter-in-Size"
   description "a method to fold a piece of paper a quarter in size"
+  type explicit
+  singleton true
 )
+
 
 variant Stamp (
   label "Stamp"
   description "a stamp indicating that the transport is paid"
+  type explicit
   
   specified.by StampValue as {
       *int> Euro045
@@ -533,9 +542,10 @@ variant Stamp (
   }
 )
 
-variant.impl LetterPackage (
+variant LetterPackage (
   label "Letter,package"
   description "Implicit variant set up as subset of its 'constituting ps" 
+  type implicit
 )
 
 PSIKEDS-IS-FULFILLED-BY-STATEMENTS:
@@ -577,7 +587,7 @@ purpose.system enableMessageTransport (
 
 purpose.system prepareMultipleLetterWritings ( 
   isFulfilledBy {
-    *pv.impl> LetterPackage
+    *pv> LetterPackage
   }
 )
 

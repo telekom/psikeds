@@ -18,6 +18,9 @@ import org.psikeds.kb.modelling.psiKedsXtxKrl.BOOLEANenum
 import org.psikeds.kb.modelling.psiKedsXtxKrl.ExplicitVariant
 import org.psikeds.kb.modelling.psiKedsXtxKrl.ImplicitVariant
 import org.psikeds.kb.modelling.psiKedsXtxKrl.VariantPurposePair
+import org.psikeds.kb.modelling.psiKedsXtxKrl.ContextEventClosedByString
+import org.psikeds.kb.modelling.psiKedsXtxKrl.ContextEventClosedByInt
+import org.psikeds.kb.modelling.psiKedsXtxKrl.ContextEventClosedByFloat
 
 /**
  * Generates code from your model files on save.
@@ -95,8 +98,7 @@ This file is licensed under the conditions of a/the
           «ENDIF»
           «IF ( sensorArea.feedback.sensorIntRanges != null)»
           «FOR att :sensorArea.feedback.sensorIntRanges»
-          <kb:intRange id="«att.name»" 
-            min="«att.min»" max="«att.max»" inc="«att.inc»" />
+          <kb:intRange id="«att.name»" min="«att.min»" max="«att.max»" inc="«att.inc»" />
           «ENDFOR»
           «ENDIF»
           «IF ( sensorArea.feedback.sensorFloatDigits != null)»
@@ -106,8 +108,7 @@ This file is licensed under the conditions of a/the
           «ENDIF»
           «IF ( sensorArea.feedback.sensorFloatRanges != null)»
           «FOR att :sensorArea.feedback.sensorFloatRanges»
-          <kb:floatRange id="«att.name»" 
-            min="«att.min»" max="«att.max»" inc="«att.inc»" />
+          <kb:floatRange id="«att.name»" min="«att.min»" max="«att.max»" inc="«att.inc»" />
           «ENDFOR»
           «ENDIF»                   
         </kb:values>        
@@ -125,17 +126,17 @@ This file is licensed under the conditions of a/the
         <kb:attributes>
           «IF concept.attStrReferences != null»
           «FOR attRef : concept.attStrReferences»
-          <kb:attribute type="str" ref="«attRef.ref.name»" />
+          <kb:complexAttribute type="str" value="«attRef.ref.name»" sensedByRef="«attRef.sensor.name»" />
           «ENDFOR»
           «ENDIF»
           «IF concept.attIntReferences != null»
           «FOR attRef : concept.attIntReferences»
-          <kb:attribute type="int" ref="«attRef.ref.name»" />
+          <kb:complexAttribute type="int" value="«attRef.ref.name»" sensedByRef="«attRef.sensor.name»" />
           «ENDFOR»
           «ENDIF»
           «IF concept.attFloatReferences != null»
           «FOR attRef : concept.attFloatReferences»
-          <kb:attribute type="float" ref="«attRef.ref.name»" />
+          <kb:complexAttribute type="float" value="«attRef.ref.name»" sensedByRef="«attRef.sensor.name»" />
           «ENDFOR»
           «ENDIF»
         </kb:attributes>
@@ -156,20 +157,19 @@ This file is licensed under the conditions of a/the
     «ENDIF»   
 
     <kb:variants>
-      «FOR pv : base.explicitVariants»«pv.toXml»«ENDFOR»
-      «IF ( base.implicitVariants != null )»
-      «FOR pv : base.implicitVariants»«pv.toXml»«ENDFOR»      
-      «ENDIF»      
+      «FOR pv : base.variants»
+      «IF pv instanceof ExplicitVariant»«(pv as ExplicitVariant).toXml»«ENDIF»
+      «IF pv instanceof ImplicitVariant»«(pv as ImplicitVariant).toXml»«ENDIF»
+      «ENDFOR»
     </kb:variants>  
 
     «IF base.isFulfilledByStatements.length > 0»
     <kb:alternatives>
       «FOR ifb : base.isFulfilledByStatements»
       <kb:fulfills psRef="«ifb.psRef.name»"
-        «IF ( (ifb.explPvRefs!=null && ifb.explPvRefs.length > 0)
-            ||  (ifb.implPvRefs!=null && ifb.implPvRefs.length > 0) )»
-        pvRefs="«IF ifb.explPvRefs!=null»«FOR pv : ifb.explPvRefs»«pv.ref.name» «ENDFOR»«ENDIF»"
-        implicitPvRefs="«IF ifb.implPvRefs!=null»«FOR pv : ifb.implPvRefs»«pv.ref.name»«ENDFOR»«ENDIF»"«ENDIF» />
+        «IF  (ifb.pvRefs!=null && ifb.pvRefs.length > 0)»
+        pvRefs="«FOR pvRef : ifb.pvRefs»«pvRef.name» «ENDFOR»" />
+        «ENDIF»
       «ENDFOR»
     </kb:alternatives>  
     «ENDIF»
@@ -180,7 +180,9 @@ This file is licensed under the conditions of a/the
       «FOR isConstitutedBy : base.isConstitutedByStatements»
       <kb:constitutes pvRef="«isConstitutedBy.pvRef.name»">
         «FOR cba : isConstitutedBy.isConstitutedByAssignments»
-        <kb:component many="«cba.many»" psRef="«cba.psRef.name»" />
+        <kb:component psRef="«cba.psRef.name»">
+          <kb:quantity>«cba.quantity»</kb:quantity>
+        </kb:component>
         «ENDFOR»
       </kb:constitutes>  
       «ENDFOR»
@@ -199,12 +201,8 @@ This file is licensed under the conditions of a/the
     
     «IF ( ( base.contextEventClosedByVariants != null &&
             base.contextEventClosedByVariants.length > 0 )
-        || ( base.contextEventClosedByStrings != null &&
-            base.contextEventClosedByStrings.length > 0)
-        || ( base.contextEventClosedByInts != null &&
-            base.contextEventClosedByInts.length > 0)
-        || ( base.contextEventClosedByFloats != null &&
-            base.contextEventClosedByFloats.length > 0)
+        || ( base.contextEventClosedByAttributes != null &&
+            base.contextEventClosedByAttributes.length > 0)
         || ( base.contextEventClosedByConcepts != null &&
             base.contextEventClosedByConcepts.length > 0)         
         )»
@@ -214,40 +212,33 @@ This file is licensed under the conditions of a/the
       <kb:event id="«vEv.name»" 
         «vEv.context.toXml»> 
         «vEv.xlabel.toXml»
-        «IF vEv.negation»<kb:not />«ENDIF»
-        «IF vEv.exPvFact!=null»<kb:trigger tt="pv" ref="«vEv.exPvFact.ref.name»" />«ENDIF»
-        «IF vEv.imPvFact!=null»<kb:trigger tt="pv.impl" ref="«vEv.imPvFact.ref.name»" />«ENDIF»
-      </kb:event>
+          <kb:trigger «IF vEv.negation»notEvent="true"«ENDIF» type="pv" ref="«vEv.pvFact.name»" />
+       </kb:event>
       «ENDFOR»
       «ENDIF» 
-      «IF ( base.contextEventClosedByStrings != null )»
-      «FOR attStrEvent : base.contextEventClosedByStrings»
-      <kb:event id="«attStrEvent.name»"
-        «attStrEvent.context.toXml» >
-        «attStrEvent.xlabel.toXml»
-        «IF attStrEvent.negation»<kb:not />«ENDIF»
-        <kb:trigger tt="strAtt" ref="«attStrEvent.fact.ref.name»" />
-      </kb:event>
-      «ENDFOR»
-      «ENDIF»
-      «IF ( base.contextEventClosedByInts != null )»
-      «FOR attIntEvent : base.contextEventClosedByInts»
-      <kb:event id="«attIntEvent.name»"
-        «attIntEvent.context.toXml» >
-        «attIntEvent.xlabel.toXml»
-        «IF attIntEvent.negation»<kb:not />«ENDIF»
-        <kb:trigger tt="intAtt" ref="«attIntEvent.fact.ref.name»" />
-      </kb:event>
-      «ENDFOR»
-      «ENDIF»
-      «IF ( base.contextEventClosedByFloats != null )»
-      «FOR attFloatEvent : base.contextEventClosedByFloats»
-      <kb:event id="«attFloatEvent.name»" 
-        «attFloatEvent.context.toXml» >
-        «attFloatEvent.xlabel.toXml»
-        «IF attFloatEvent.negation»<kb:not />«ENDIF»
-        <kb:trigger tt="floatAtt" ref="«attFloatEvent.fact.ref.name»" />
-      </kb:event>
+      «IF ( base.contextEventClosedByAttributes != null )»
+      «FOR attEvent : base.contextEventClosedByAttributes»
+        «IF (attEvent instanceof ContextEventClosedByString)»
+        <kb:event id="«attEvent.name»"
+          «attEvent.context.toXml» >
+          «attEvent.xlabel.toXml»
+          <kb:trigger «IF attEvent.negation»notEvent="true"«ENDIF» type="attribute" ref="«attEvent.fact.ref.name»" />
+        </kb:event>
+        «ENDIF»
+        «IF (attEvent instanceof ContextEventClosedByInt)»
+        <kb:event id="«attEvent.name»"
+          «attEvent.context.toXml» >
+          «attEvent.xlabel.toXml»
+          <kb:trigger «IF attEvent.negation»notEvent="true"«ENDIF» type="attribute" ref="«attEvent.fact.ref.name»" />
+        </kb:event>
+        «ENDIF»
+        «IF (attEvent instanceof ContextEventClosedByFloat)»
+        <kb:event id="«attEvent.name»"
+          «attEvent.context.toXml» >
+          «attEvent.xlabel.toXml»
+          <kb:trigger «IF attEvent.negation»notEvent="true"«ENDIF» type="attribute" ref="«attEvent.fact.ref.name»" />
+        </kb:event>
+        «ENDIF»
       «ENDFOR»
       «ENDIF»
       «IF ( base.contextEventClosedByConcepts != null )»
@@ -255,8 +246,7 @@ This file is licensed under the conditions of a/the
       <kb:event id="«concEvent.name»"
         «concEvent.context.toXml» >
         «concEvent.xlabel.toXml»
-        «IF concEvent.negation»<kb:not />«ENDIF»
-        <kb:trigger tt="concept" ref="«concEvent.fact.ref.name»" />
+        <kb:trigger «IF concEvent.negation»notEvent="true"«ENDIF»type="concept" ref="«concEvent.fact.ref.name»" />
       </kb:event>
       «ENDFOR»
       «ENDIF»      
@@ -285,8 +275,8 @@ This file is licensed under the conditions of a/the
       «IF ( base.logicalEnforcers != null )»
       «FOR enfR :  base.logicalEnforcers»
       <kb:rule id="«enfR.name»"
-        «IF enfR.nexusEpv!=null»nexusRef="«enfR.nexusEpv.ref.name»«ELSE»«enfR.nexusIpv.ref.name»«ENDIF»"
-        «IF enfR.nexusEpv!=null»premiseRefs="«enfR.nexusEpv.ref.name»«ELSE»«enfR.nexusIpv.ref.name»«ENDIF»"
+        nexusRef="«enfR.nexusPvRef.name»"
+        premiseRefs="«enfR.nexusPvRef.name»"
         conclusioRef="«enfR.conclusio.name»" >
         «enfR.xlabel.toXml»
       </kb:rule>
@@ -295,7 +285,7 @@ This file is licensed under the conditions of a/the
       «IF ( base.logicalRules != null )»
       «FOR logR :  base.logicalRules»
       <kb:rule id="«logR.name»"
-       «IF logR.nexusEpv!=null»nexusRef="«logR.nexusEpv.ref.name»«ELSE»«logR.nexusIpv.ref.name»«ENDIF»"
+        nexusRef="«logR.nexusPvRef.name»"
         premiseRefs="«FOR evP : logR.premiseEvents»«evP.name» «ENDFOR»"
         conclusioRef="«logR.conclusio.name»" >
         «logR.xlabel.toXml»
@@ -314,9 +304,9 @@ This file is licensed under the conditions of a/the
       «IF base.relationalConstraints != null»
       «FOR rel :  base.relationalConstraints»
       <kb:relation id="«rel.name»"
-        «IF rel.nexusEpv!=null»nexusRef="«rel.nexusEpv.ref.name»«ELSE»«rel.nexusIpv.ref.name»«ENDIF»"
+        nexusRef="«rel.nexusPvRef.name»"
         «rel.stmnt.lArgToXml»
-        rtype="«rel.stmnt.relType»"
+        relType="«rel.stmnt.relType»"
         «rel.stmnt.rArgToXml» >
         «rel.xlabel.toXml»
       </kb:relation>
@@ -324,14 +314,14 @@ This file is licensed under the conditions of a/the
       «ENDIF»
       «IF base.conditionedRelationalConstraints != null»
       «FOR rel :  base.conditionedRelationalConstraints»
-      <kb:condRelation id="«rel.name»"
-        «IF rel.nexusEpv!=null»nexusRef="«rel.nexusEpv.ref.name»«ELSE»«rel.nexusIpv.ref.name»«ENDIF»"
+      <kb:relation id="«rel.name»"
+        nexusRef="«rel.nexusPvRef.name»"
         condRef="«rel.trigger.name»"
         «rel.stmnt.lArgToXml»
-        rtype="«rel.stmnt.relType»"
+        relType="«rel.stmnt.relType»"
         «rel.stmnt.rArgToXml» >
         «rel.xlabel.toXml»
-      </kb:condRelation>
+      </kb:relation>
       «ENDFOR»
       «ENDIF»      
       
@@ -359,19 +349,18 @@ def String toXml(XLabel xlabel) '''
 /* multiply usable: paths into the different event or rule structures */
   def String toXml(OpenContextualPath opCtxPath) '''
   «IF opCtxPath.variantPurposeRow!=null && opCtxPath.variantPurposeRow.length>0»
-  nexusRef="«opCtxPath.variantPurposeRow.head.deReferPairHead»"
-  contextRefs="«FOR vpp:opCtxPath.variantPurposeRow»«vpp.deReferPair»«ENDFOR»"«ENDIF»'''
+  nexusRef="«opCtxPath.variantPurposeRow.head.pvRef.name»"
+  contextPath="«FOR vpp:opCtxPath.variantPurposeRow»«vpp.deReferPair»«ENDFOR»"«ENDIF»'''
  
   def String toXml(ClosedContextualPath clCtxPath) '''
   «IF clCtxPath.variantPurposeRow!=null && clCtxPath.variantPurposeRow.length>0»
-  nexusRef="«clCtxPath.variantPurposeRow.head.deReferPairHead»"«ELSE»nexusRef="«clCtxPath.closingVariant.ref.name»"«ENDIF»
-  contextRefs=" «IF clCtxPath.variantPurposeRow!=null»«FOR vpp : clCtxPath.variantPurposeRow»«vpp.deReferPair» «ENDFOR»«ENDIF»«clCtxPath.closingVariant.ref.name»"'''
+    nexusRef="«clCtxPath.variantPurposeRow.head.pvRef.name»" «ELSE»
+    nexusRef="«clCtxPath.closingVariant.name»"«ENDIF»
+  contextPath="«IF clCtxPath.variantPurposeRow!=null»«FOR vpp : clCtxPath.variantPurposeRow»«vpp.deReferPair» «ENDFOR»«ENDIF»«clCtxPath.closingVariant.name»"'''
 
-  def String deReferPairHead(VariantPurposePair vpp) '''
-  «IF vpp.explPvRef!=null»«vpp.explPvRef.ref.name»«ELSE»«vpp.implPvRef.ref.name»«ENDIF»'''
 
   def String deReferPair(VariantPurposePair vpp) '''
-  «IF vpp.explPvRef!=null»«vpp.explPvRef.ref.name»«ELSE»«vpp.implPvRef.ref.name»«ENDIF» «vpp.purpose.name»'''
+  «IF vpp.pvRef!=null»«vpp.pvRef.name» «vpp.psRef.name»«ENDIF»'''
 	
 /* multiply usable: left and write arguments into relations */
   def String lArgToXml (RelationalStatement stmnt) '''
@@ -410,47 +399,47 @@ def String toXml(XLabel xlabel) '''
         «FOR oneOutOfThisSection : variant.oneOfTheseAttributesSections»
         «IF (oneOutOfThisSection.strAttReferences != null &&
              oneOutOfThisSection.strAttReferences.size>0)»
-        <kb:oneOutOfTheseStrAttributes>
-          «FOR attStrRef : oneOutOfThisSection.strAttReferences»
-          <kb:attribute type="str" ref="«attStrRef.ref.name»" />
+        <kb:oneOutOfTheseAttributes sensedByRef="«oneOutOfThisSection.sensor.name»" type="str">
+          «FOR attRef : oneOutOfThisSection.strAttReferences»
+          <kb:attribute ref="«attRef.ref.name»" />
           «ENDFOR»
-        </kb:oneOutOfTheseStrAttributes>           
+        </kb:oneOutOfTheseAttributes>           
         «ENDIF»
         «IF (oneOutOfThisSection.intAttReferences != null &&
                  oneOutOfThisSection.intAttReferences.size>0)»
-        <kb:oneOutOfTheseIntAttributes>
-          «FOR attStrRef : oneOutOfThisSection.intAttReferences»
-          <kb:attribute type="int" ref="«attStrRef.ref.name»" />
+        <kb:oneOutOfTheseAttributes sensedByRef="«oneOutOfThisSection.sensor.name»" type="int">
+          «FOR attRef : oneOutOfThisSection.intAttReferences»
+          <kb:attribute ref="«attRef.ref.name»" />
           «ENDFOR»
-        </kb:oneOutOfTheseIntAttributes>           
+        </kb:oneOutOfTheseAttributes>           
         «ENDIF»  
         «IF (oneOutOfThisSection.floatAttReferences != null &&
                  oneOutOfThisSection.floatAttReferences.size>0)»
-        <kb:oneOutOfTheseFloatAttributes>
-          «FOR attStrRef : oneOutOfThisSection.floatAttReferences»
-          <kb:attribute type="float" ref="«attStrRef.ref.name»" />
+        <kb:oneOutOfTheseAttributes sensedByRef="«oneOutOfThisSection.sensor.name»" type="int">
+          «FOR attRef : oneOutOfThisSection.floatAttReferences»
+          <kb:attribute ref="«attRef.ref.name»" />
           «ENDFOR»
-        </kb:oneOutOfTheseFloatAttributes>           
+        </kb:oneOutOfTheseAttributes>           
         «ENDIF»
         «ENDFOR»
         «ENDIF»
         «IF variant.oneOutOfThisRanges != null»
         «FOR oneOutOfThisRange : variant.oneOutOfThisRanges »
         «IF oneOutOfThisRange.attIntRangeReference != null »
-        <kb:oneOutOfThisRange rangeRef="«oneOutOfThisRange.attIntRangeReference.ref.name»" />
+        <kb:oneOutOfThisRange sensedByRef="«oneOutOfThisRange.sensor.name»" type="int" rangeRef="«oneOutOfThisRange.attIntRangeReference.ref.name»" />
         «ENDIF»
         «IF oneOutOfThisRange.attFloatRangeReference != null »
-        <kb:oneOutOfThisRange rangeRef="«oneOutOfThisRange.attFloatRangeReference.ref.name»" />
+        <kb:oneOutOfThisRange sensedByRef="«oneOutOfThisRange.sensor.name»" type="float" rangeRef="«oneOutOfThisRange.attFloatRangeReference.ref.name»" />
         «ENDIF»
         «ENDFOR»
         «ENDIF»
         «IF ( variant.conceptReferences != null
            && variant.conceptReferences.size()>0)»
-        <kb:oneOutOfTheseTerminalConcepts>
+        <kb:oneOutOfTheseConcepts>
           «FOR conc : variant.conceptReferences »
-          <kb:subsumption type="sensored" ref="«conc.ref.name»" />
+          <kb:subsumption type="terminal" ref="«conc.ref.name»" />
           «ENDFOR»
-        </kb:oneOutOfTheseTerminalConcepts>
+        </kb:oneOutOfTheseConcepts>
         «ENDIF»
       </kb:primarilyDenotedBy>
       «ENDIF»

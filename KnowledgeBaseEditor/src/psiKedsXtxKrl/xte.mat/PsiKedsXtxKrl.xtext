@@ -59,8 +59,10 @@ KnowledgeBase:
 
   'PSIKEDS-VARIANTS:'	
   /* (4) a list of at least one variant */	
-	(explicitVariants+=ExplicitVariant)+
-  (implicitVariants+=ImplicitVariant)*	
+//	(explicitVariants+=ExplicitVariant)+
+//  (implicitVariants+=ImplicitVariant)*	
+  
+  (variants+=Variant)+
   
 	/* (5) a list of at least one 
 	 * '[this purpose] is-fulfilled-by [these variants]' statements
@@ -79,9 +81,7 @@ KnowledgeBase:
 	/* (7) a possibly empty list of events used by logical rules*/ 
 
   (   contextEventClosedByVariants+=ContextEventClosedByVariant
-    | contextEventClosedByStrings+=ContextEventClosedByString
-    | contextEventClosedByInts+=ContextEventClosedByInt
-    | contextEventClosedByFloats+=ContextEventClosedByFloat
+    | contextEventClosedByAttributes+=ContextEventClosedByAttribute
     | contextEventClosedByConcepts+=ContextEventClosedByConcept
   )*
 
@@ -213,41 +213,69 @@ SensorReference:
 Concept:
   'concept' name=ID '('
     xlabel=XLabel
-    'denotes' '{'
-      ( attStrReferences+=AttStrReference
-      | attIntReferences+=AttIntReference
-      |  attFloatReferences+=AttFloatReference
+    'denotes-entities-with-the-features' '{'
+      ( attStrReferences+=ComplexAttStrReference
+      | attIntReferences+=ComplexAttIntReference
+      |  attFloatReferences+=ComplexAttFloatReference
       )
       ( '&' 
-        (  attStrReferences+=AttStrReference
-        |  attIntReferences+=AttIntReference
-        |  attFloatReferences+=AttFloatReference
+        (  attStrReferences+=ComplexAttStrReference
+        |  attIntReferences+=ComplexAttIntReference
+        |  attFloatReferences+=ComplexAttFloatReference
         )
       )*
     '}'
 ')';
 
 /* (C.1.1) Attribute based on a string value */
-AttStrReference:
-  '*str>' ref=[SensableStrValue] 
+
+SimpleAttStrReference:
+  '*str>' ref=[SensableStrValue]
 ;
+
 /* (C.1.2) Attribute based on an integer value */
-AttIntReference:
+SimpleAttIntReference:
   '*int>' ref=[SensableIntValue]
 ;
 /* (C.1.3) Attribute based on an float value */
-AttFloatReference:
-  '*float>' ref=[SensableFloatValue]
+SimpleAttFloatReference:
+   '*float>' ref=[SensableFloatValue]
 ;
 
 /* (C.1.4) Attribute based on an integer range */
-AttIntRangReference:
-  '*intRange>' ref=[SensableIntRange]
+SimpleAttIntRangReference:
+  '*intRange>' ref=[SensableIntRange] 
 ;
 /* (C.1.5) Attribute based on an float range */
-AttFloatRangeReference:
+SimpleAttFloatRangeReference:
   '*floatRange>' ref=[SensableFloatRange]
 ;
+
+ComplexAttStrReference:
+  '[' '*str>' ref=[SensableStrValue] '*sensed-by>' sensor=[Sensor] ']'
+;
+
+/* (C.1.2) Attribute based on an integer value */
+ComplexAttIntReference:
+  '[' '*int>' ref=[SensableIntValue] '*sensed-by>' sensor=[Sensor] ']'
+;
+/* (C.1.3) Attribute based on an float value */
+ComplexAttFloatReference:
+  '['  '*float>' ref=[SensableFloatValue] '*sensed-by>' sensor=[Sensor] ']'
+;
+
+/* (C.1.4) Attribute based on an integer range */
+ComplexAttIntRangReference:
+  '['  '*intRange>' ref=[SensableIntRange] '*sensed-by>' sensor=[Sensor] ']'
+;
+/* (C.1.5) Attribute based on an float range */
+ComplexAttFloatRangeReference:
+  '[' '*floatRange>' ref=[SensableFloatRange] '*sensed-by>' sensor=[Sensor] ']'
+;
+
+
+
+
 
 ConceptReference:
   '*concept>' ref=[Concept]
@@ -271,19 +299,26 @@ Purpose:
 
 /* (C.3) definitions of variants  */
 
+Variant:
+  ExplicitVariant | ImplicitVariant
+;
 
 /* (C.3.A) definitions of implicit variants  */
 ImplicitVariant:
-  'variant.impl' name=ID '('
+  'variant' name=ID '('
    xlabel=XLabel
+   
+   'type' type='implicit'
+   
 ')'
 ;
 
 /* (C.3.A) definitions of implicit variants  */
 ExplicitVariant:
 	'variant' name=ID '('
-	 ('singleton' singleton=BOOLEAN)?
    xlabel=XLabel
+   'type' type='explicit'
+   ('singleton' singleton=BOOLEAN)?
    
    /* 0 - n lists of one of these context-free features */
    (oneOfTheseAttributesSections+=(OneOfTheseAttributesSection)*)
@@ -304,44 +339,25 @@ ExplicitVariant:
 ;	
 
 
-
-          /*
-           * Note: for filling the list of derived concepts (references) it is 
-           * up to the knowledge engineer to insert only concepts with lists 
-           * of attributes which are proper subsets of one the lists of 
-           * attributes of the sensorially evoked concepts
-           */
-
-
-
-ExplicitPvReference:
-  '*pv>' ref=[ExplicitVariant]
-;
-
-ImplicitPvReference:
-  '*pv.impl>' ref=[ImplicitVariant]
-;
-
-
 OneOfTheseAttributesSection:
    'specified.by' sensor=[Sensor] 'as {'
       
-     (  ( ( strAttReferences+=AttStrReference '|')*
-            strAttReferences+=AttStrReference)
+     (  ( ( strAttReferences+=SimpleAttStrReference '|')*
+            strAttReferences+=SimpleAttStrReference)
        
-     | (  ( intAttReferences+=AttIntReference '|')*
-            intAttReferences+=AttIntReference)
+     | (  ( intAttReferences+=SimpleAttIntReference '|')*
+            intAttReferences+=SimpleAttIntReference)
             
-     | (  ( floatAttReferences+=AttFloatReference '|')*
-            floatAttReferences+=AttFloatReference)
+     | (  ( floatAttReferences+=SimpleAttFloatReference '|')*
+            floatAttReferences+=SimpleAttFloatReference)
      )
    '}'
 ;
 
 OneOutOfThisRange:
    'perceived.by' sensor=[Sensor] 'within' 
-    ( attIntRangeReference=AttIntRangReference
-      | attFloatRangeReference=AttFloatRangeReference
+    ( attIntRangeReference=SimpleAttIntRangReference
+      | attFloatRangeReference=SimpleAttFloatRangeReference
     )         
 ;
 
@@ -351,8 +367,8 @@ IsFulfilledByStatement:
   'purpose.system' psRef=[Purpose] '(' 
    'isFulfilledBy' '{' 
 
-      ( ((explPvRefs+=ExplicitPvReference)|(implPvRefs+=ImplicitPvReference)) '|' )* 
-        ((explPvRefs+=ExplicitPvReference)|(implPvRefs+=ImplicitPvReference))
+      ( '*pv>' pvRefs+=[Variant] '|' )* 
+        '*pv>' pvRefs+=[Variant]
     '}'
   ')'
 ;
@@ -370,7 +386,7 @@ IsConstitutedByStatement:
 ;
 
 IsConstitutedByAssignment:
-  '<' many=INT 'of' '*ps>' psRef=[Purpose] '>'
+  '<' quantity=INT 'of' '*ps>' psRef=[Purpose] '>'
 ;
 
 
@@ -405,17 +421,20 @@ ContextEventClosedByVariant:
     xlabel=XLabel
     'context' context=OpenContextualPath
      (negation?='NOT')?
-    'fact' ((exPvFact=ExplicitPvReference)|(imPvFact=ImplicitPvReference))
+    'fact' '*pv>' pvFact=[Variant]
   ')'
 ;
 
+ContextEventClosedByAttribute:
+  ContextEventClosedByString|ContextEventClosedByInt|ContextEventClosedByFloat
+;
 
 ContextEventClosedByString:
   'event.str' name=ID '('
     xlabel=XLabel
     'context' context=ClosedContextualPath
     (negation?='NOT')?
-    'fact' fact=AttStrReference
+    'fact' fact=SimpleAttStrReference
   ')'
 ;
 
@@ -424,7 +443,7 @@ ContextEventClosedByInt:
     xlabel=XLabel
     'context' context=ClosedContextualPath
     (negation?='NOT')?
-    'fact' fact=AttIntReference
+    'fact' fact=SimpleAttIntReference
   ')'
 ;
 
@@ -433,7 +452,7 @@ ContextEventClosedByFloat:
     xlabel=XLabel
     'context' context=ClosedContextualPath
     (negation?='NOT')?
-    'fact' fact=AttFloatReference
+    'fact' fact=SimpleAttFloatReference
   ')'
 ;
 
@@ -457,7 +476,7 @@ RelationParameter:
 ClosedContextualPath:
   '['
   (variantPurposeRow += VariantPurposePair)*
-  closingVariant =ExplicitPvReference
+   '*pv>' closingVariant =[Variant]
   ']'
 ;
 
@@ -468,14 +487,14 @@ OpenContextualPath:
 ;
 
 VariantPurposePair:
-   ((explPvRef=ExplicitPvReference)|(implPvRef=ImplicitPvReference))
-  '*ps>' purpose=[Purpose]
+  '*pv>' pvRef=[Variant]
+  '*ps>' psRef=[Purpose]
 ;
 
 LogicalEnforcer:
   'logic.enforcer' name=ID '('
    xlabel=XLabel
-  'nexus' ((nexusEpv=ExplicitPvReference)|(nexusIpv=ImplicitPvReference))
+  'nexus' '*pv>' nexusPvRef=[Variant]
   'evokes' '*ev>' conclusio=[ContextualLogicEvent]
  ')'
 ;
@@ -483,7 +502,7 @@ LogicalEnforcer:
 LogicalRule:
   'logic.rule' name=ID '('
    xlabel=XLabel
-  'nexus' ((nexusEpv=ExplicitPvReference)|(nexusIpv=ImplicitPvReference))
+   'nexus' '*pv>' nexusPvRef=[Variant]
    'induces' '[' '{'
       ( '*ev>' premiseEvents+=[ContextualLogicEvent] '&')*
         '*ev>' premiseEvents+=[ContextualLogicEvent]
@@ -496,7 +515,7 @@ LogicalRule:
 RelationalConstraint:
   'relation.normal' name=ID '('
    xlabel=XLabel
-   'nexus' ((nexusEpv=ExplicitPvReference)|(nexusIpv=ImplicitPvReference))
+   'nexus' '*pv>' nexusPvRef=[Variant]
    'means' '['
        stmnt=RelationalStatement 
    ']'
@@ -507,7 +526,7 @@ RelationalConstraint:
 ConditionedRelationalConstraint:
   'relation.qualified' name=ID '(' 
    xlabel=XLabel
-   'nexus' ((nexusEpv=ExplicitPvReference)|(nexusIpv=ImplicitPvReference))
+   'nexus' '*pv>' nexusPvRef=[Variant]
    'means' '<'
       '*ev>' trigger=[ContextualLogicEvent]
       '=>'

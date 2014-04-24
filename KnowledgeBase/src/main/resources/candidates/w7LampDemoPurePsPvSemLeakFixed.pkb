@@ -80,6 +80,7 @@ variant WeSeScriSoSt (
   description 
   "An Apache based web server software stack enriched by particular scripting 
    modules for delivering dynamically composed web pages."
+   type explicit
 )
 
 variant WeSeDbScriSoSt (
@@ -88,6 +89,7 @@ variant WeSeDbScriSoSt (
   "An Apache based web server software stack being able to use database data
    and being enriched by particular scripting modules for delivering 
    dynamically composed web pages"
+   type explicit
 )
 
 variant JaEjbDbSoSt (
@@ -95,6 +97,7 @@ variant JaEjbDbSoSt (
   description 
   "A java application server software stack being able to use database data
    and to operate on java beans for offering web services etc."
+   type explicit
 )
 
 variant JaWapDbSoSt (
@@ -102,29 +105,67 @@ variant JaWapDbSoSt (
   description 
   "A java application server software stacke being able to compute its output 
    on the base of database data."
+   type explicit
 )
 
 variant Apache ( 
   label "Apache"
   description "The famous Apache Webserver"
+  type explicit
 )
 
-variant ModPhp ( label "Apache-PHP-Module")
-variant ModPython ( label "Apache-Python-Module")
+variant ModPhp ( 
+	label "Apache-PHP-Module" 
+	type explicit
+)
+variant ModPython ( 
+	label "Apache-Python-Module" 
+	type explicit
+)
 
-variant MysqlPhpConnector ( label "Mysql-PHP-Connector")
-variant MysqlPythonConnector ( label "Mysql-Python-Connector")
-variant MysqlJavaConnector ( label "Mysql-JDBC-Connector")
+variant MysqlPhpConnector ( 
+	label "Mysql-PHP-Connector" 
+	type explicit
+)
+variant MysqlPythonConnector ( 
+	label "Mysql-Python-Connector"
+	type explicit
+)
+variant MysqlJavaConnector ( 
+	label "Mysql-JDBC-Connector"
+	type explicit
+)
 
-variant PostgresPhpConnector ( label "Postgres-PHP-Connector")
-variant PostgresPythonConnector ( label "Postgres-Python-Connector")
-variant PostgresJavaConnector ( label "Postgres-JDBC-Connector")
+variant PostgresPhpConnector ( 
+	label "Postgres-PHP-Connector"
+	type explicit
+)
+variant PostgresPythonConnector ( 
+	label "Postgres-Python-Connector"
+	type explicit
+)
+variant PostgresJavaConnector ( 
+	label "Postgres-JDBC-Connector"
+	type explicit
+)
 
-variant Postgres ( label "Postgres")
-variant Mysql ( label "Mysql")
+variant Postgres ( 
+	label "Postgres"
+	type explicit
+)
+variant Mysql ( 
+	label "Mysql"
+	 type explicit
+)
 
-variant Jboss ( label "JBoss")
-variant Tomcat ( label "Tomcat")
+variant Jboss ( 
+	label "JBoss"
+	type explicit
+)
+variant Tomcat ( 
+	label "Tomcat"
+	type explicit
+)
 
 
 PSIKEDS-IS-FULFILLED-BY-STATEMENTS:
