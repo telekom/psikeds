@@ -23,7 +23,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
   <bean id="kbXsdSource" class="org.springframework.core.io.ClassPathResource">
-    <constructor-arg index="0" type="java.lang.String" value="kb.xsd" />
+    <constructor-arg index="0" type="java.lang.String" value="psikeds.xsd" />
   </bean>
 
   <bean id="XSDValidator" class="org.psikeds.knowledgebase.xml.impl.XSDValidator">

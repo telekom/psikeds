@@ -4,7 +4,7 @@
   xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
   xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-  <jxb:bindings schemaLocation="../resources/kb.xsd" node="/xs:schema">
+  <jxb:bindings schemaLocation="../resources/psikeds.xsd" node="/xs:schema">
 
     <jxb:globalBindings>
       <jxb:serializable uid="1" />

@@ -36,7 +36,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
   the JAR-File using a Standard-Spring-ClassPathResource
   -->
   <bean id="kbXmlSource" class="org.springframework.core.io.ClassPathResource">
-    <constructor-arg index="0" type="java.lang.String" value="kb.xml" />
+    <constructor-arg index="0" type="java.lang.String" value="default.knowledgebase.xml" />
   </bean>
 
   <!--

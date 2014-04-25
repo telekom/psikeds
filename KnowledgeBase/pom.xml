@@ -121,7 +121,7 @@ For details see file LICENSING in the top project directory
               <bindingDirectory>${project.basedir}/src/main/bindings</bindingDirectory>
               <bindingFiles>jaxb-kb-binding.xml</bindingFiles>
               <schemaDirectory>${project.basedir}/src/main/resources</schemaDirectory>
-              <schemaFiles>kb.xsd</schemaFiles>
+              <schemaFiles>psikeds.xsd</schemaFiles>
               <packageName>org.psikeds.knowledgebase.jaxb</packageName>
               <outputDirectory>${project.build.directory}/generated-sources/jaxb</outputDirectory>
               <clearOutputDir>true</clearOutputDir>

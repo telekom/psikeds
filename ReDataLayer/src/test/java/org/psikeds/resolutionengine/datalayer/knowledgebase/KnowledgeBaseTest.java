@@ -77,7 +77,7 @@ public class KnowledgeBaseTest {
     BasicConfigurator.configure();
     LOG4J = System.getProperty("org.psikeds.test.log4j.xml", "../ResolutionEngine/src/main/resources/log4j.xml");
     DOMConfigurator.configure(LOG4J);
-    XML = System.getProperty("org.psikeds.test.kb.xml", "../KnowledgeBase/src/main/resources/kb.xml");
+    XML = System.getProperty("org.psikeds.test.kb.xml", "../KnowledgeBase/src/main/resources/default.knowledgebase.xml");
     TEST_DATA_DIR = new File(System.getProperty("org.psikeds.test.data.dir", "./src/test/resources/"));
     if (!TEST_DATA_DIR.exists()) {
       TEST_DATA_DIR.mkdir();
