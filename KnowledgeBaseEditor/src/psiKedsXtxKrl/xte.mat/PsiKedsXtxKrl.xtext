@@ -1,0 +1,565 @@
+grammar org.psikeds.kb.modelling.PsiKedsXtxKrl with org.eclipse.xtext.common.Terminals
+
+/* 
+ * (c) 2014 Karsten Reincke, Deutsche Telekom AG, Darmstadt
+ * 
+ * This file is part of the psiKeds project and licensed under the AGPL 
+ */
+generate psiKedsXtxKrl "http://www.psikeds.org/kb/modelling/PsiKedsXtxKrl"
+
+
+
+/* (A) a valid psiKeds knowledge base needs ... */
+KnowledgeBase:
+    {KnowledgeBase}
+
+  
+  /* (1) a valid psiKeds knowledge base must/can offer some meta information */
+  'KB-META:'
+  '01: id' kbId=ID
+  ('02: name' kbName=STRING)?
+  ('03: teaser' kbTeaser=STRING)?
+  ('04: release' kbRelease=STRING)?
+  ('05: (C)' kbCopyright=STRING)?
+  ('06: licensing' kbLicense=STRING)?
+  ('07: created' kbFirstCreationDate=YYYYMMDD)?
+  ('08: modified' kbLastModificationDate=YYYYMMDD)?
+  ('09: language' kbLanguage=STRING)?
+  ('10: engineer' (kbCreatorName+=STRING)+)?
+  ('11: description' (kbDescription+=STRING)+)?
+
+  /* (2) a valid psiKeds knowledge base can define some sensors and lists of
+   * their specific value range. Sensors are methods to perceive / describe 
+   * / denote features of real domain objects. They link the attribute-values 
+   * (as they are noted in the knowledge entities) to the real world features. 
+   * 
+   * Sensors a type consistent: they can be lists of string values, integer 
+   * values, float values, integer ranges, or float ranges.
+   * 
+   * [Note: 
+   * - if you want to define a knowledge base being only composed of purposes, 
+   *   variants, variant contexts, and logical rules, you do not need any 
+   *   sensors. So, the list of sensors can be empty.
+   * - what ever you want to use for describing / specifying the domain
+   *   objects must be defined as sensor value in this area. Later on all
+   *   knowledge base entities can only refer to these primary definitions.
+   * ]
+   */
+  'PSIKEDS-SENSORS:' 
+  (sensorAreas+=SensorArea)*
+ 
+  'PSIKEDS-CONCEPTS:'
+	/* (2.B) some concepts to denote / describe / cluster objects */
+	(concepts+=Concept)*
+
+  
+  'PSIKEDS-PURPOSES:'  
+	/* (3) a list of at least one purpose */
+	(purposes+=Purpose)+
+
+  'PSIKEDS-VARIANTS:'	
+  /* (4) a list of at least one variant */	
+//	(explicitVariants+=ExplicitVariant)+
+//  (implicitVariants+=ImplicitVariant)*	
+  
+  (variants+=Variant)+
+  
+	/* (5) a list of at least one 
+	 * '[this purpose] is-fulfilled-by [these variants]' statements
+	 */
+	'PSIKEDS-IS-FULFILLED-BY-STATEMENTS:'
+	(isFulfilledByStatements+=IsFulfilledByStatement)+
+	
+  /* (6) a possibly empty list of '[this variant] is-constituted-by 
+   * [something fulfilling these purposes]' statements
+   */
+  'PSIKEDS-IS-CONSTITUTED-BY-STATEMENTS:'	
+	(isConstitutedByStatements+=IsConstitutedByStatement)*
+  (isConstitutedBySubsetStatements+=IsConstitutedBySubsetStatement)*
+  
+  'PSIKEDS-LOGICAL-INFERENCE-ELEMENTS:'	
+	/* (7) a possibly empty list of events used by logical rules*/ 
+
+  (   contextEventClosedByVariants+=ContextEventClosedByVariant
+    | contextEventClosedByAttributes+=ContextEventClosedByAttribute
+    | contextEventClosedByConcepts+=ContextEventClosedByConcept
+  )*
+
+  'PSIKEDS-RELATIONAL-INFERENCE-ELEMENTS:' 
+  (relationsParameters+=(RelationParameter))*
+    
+  'PSIKEDS-INFERENCE-CONDITIONS:' 
+  /* (8) a possibly empty list of logical rules */ 
+ 
+  (	  logicalEnforcers+=LogicalEnforcer
+  	| logicalRules+=LogicalRule
+    | relationalConstraints+=RelationalConstraint
+    | conditionedRelationalConstraints+=ConditionedRelationalConstraint
+  )*
+
+;
+
+
+/* (B) definitions, which are multiply used by other elements
+ * either by being embedded into other xtext definitions
+ * or by being used as references
+ */
+
+/* (B.0) my terminals */
+
+
+terminal YYYYMMDD:
+  ('0'..'9')('0'..'9')('0'..'9')('0'..'9')'-'?
+  (('0'('1'..'9'))|('1'('0'..'2')))'-'?
+  ( ('0'('1'..'9')) |
+    (('1'|'2')('0'..'9'))|
+    ('3'('0'..'1'))
+  )
+ ;
+
+terminal FLOATVALUE:
+  (('0'..'9')('0'..'9')*)'.'('0'..'9')('0'..'9')*
+ ;
+
+enum RelationType:
+  eq | neq | less | leq
+;
+
+enum BOOLEANenum:
+   unknown | false | true 
+;
+
+enum BOOLEAN returns BOOLEANenum:
+  false | true
+;
+
+/* (B.1) an extended label */
+XLabel:
+  'label' label=STRING
+  ('description' description=STRING)?
+;
+
+/* (B.2) Sensor declaration for grouping sensor values by referencing to 
+ * the grouping class: sensors are instruments for 'looking' into the domain 
+ * (real world) and to deliver features of the perceived object. 
+ * A sensor can/should only deliver values of the same type.
+ */
+
+SensorArea:
+  sensor=Sensor
+  feedback=Feedback
+;
+
+Sensor:
+  'sensor' name=ID '('
+  xlabel=XLabel
+  ('unit' unit=STRING)?
+;    
+    
+Feedback:   
+   'perceives' '{'
+      ( ( (sensorStringValues+=SensableStrValue)+)
+      | ( ( (sensorIntDigits+=SensableIntValue)|
+            (sensorIntRanges+=SensableIntRange))+
+        )
+      | (  ((sensorFloatDigits+=SensableFloatValue) |
+            (sensorFloatRanges+=SensableFloatRange))+  
+        )
+      )
+    '}'
+  ')' 
+;
+
+
+
+SensableStrValue:
+  'str' name=ID ':' value=STRING 
+;
+  
+SensableIntValue:
+  'int' name=ID  ':' value=INT 
+;  
+
+SensableIntRange:
+  'int.range' name=ID ':'  
+    '<' 'min' min=INT',' 'max' max=INT','  'inc' inc=INT '>'
+;
+
+SensableFloatValue:
+  'float' name=ID ':' value=FLOATVALUE
+;
+
+SensableFloatRange:
+  'float.range' name=ID ':'  
+    '<' 'min' min=FLOATVALUE',' 'max' max=FLOATVALUE','  'inc' inc=FLOATVALUE '>'
+;
+
+SensorReference:
+  '*sensor>' ref=[Sensor]
+;
+
+/* (C) the top down definitions */
+
+/* (C.1) elements to define concepts: Concepts are sets of different
+ * attributes. An attribute is a feature value perceived by a sensor.
+ * Concepts shall contain only attributes of different sensors.
+ * 
+ * Note:
+ * - It is up to the knowledge engineer not to insert more than one value of
+ *   the same sensor into one concept
+ */
+
+
+Concept:
+  'concept' name=ID '('
+    xlabel=XLabel
+    'denotes-entities-with-the-features' '{'
+      ( attStrReferences+=ComplexAttStrReference
+      | attIntReferences+=ComplexAttIntReference
+      |  attFloatReferences+=ComplexAttFloatReference
+      )
+      ( '&' 
+        (  attStrReferences+=ComplexAttStrReference
+        |  attIntReferences+=ComplexAttIntReference
+        |  attFloatReferences+=ComplexAttFloatReference
+        )
+      )*
+    '}'
+')';
+
+/* (C.1.1) Attribute based on a string value */
+
+SimpleAttStrReference:
+  '*str>' ref=[SensableStrValue]
+;
+
+/* (C.1.2) Attribute based on an integer value */
+SimpleAttIntReference:
+  '*int>' ref=[SensableIntValue]
+;
+/* (C.1.3) Attribute based on an float value */
+SimpleAttFloatReference:
+   '*float>' ref=[SensableFloatValue]
+;
+
+/* (C.1.4) Attribute based on an integer range */
+SimpleAttIntRangReference:
+  '*intRange>' ref=[SensableIntRange] 
+;
+/* (C.1.5) Attribute based on an float range */
+SimpleAttFloatRangeReference:
+  '*floatRange>' ref=[SensableFloatRange]
+;
+
+ComplexAttStrReference:
+  '[' '*str>' ref=[SensableStrValue] '*sensed-by>' sensor=[Sensor] ']'
+;
+
+/* (C.1.2) Attribute based on an integer value */
+ComplexAttIntReference:
+  '[' '*int>' ref=[SensableIntValue] '*sensed-by>' sensor=[Sensor] ']'
+;
+/* (C.1.3) Attribute based on an float value */
+ComplexAttFloatReference:
+  '['  '*float>' ref=[SensableFloatValue] '*sensed-by>' sensor=[Sensor] ']'
+;
+
+/* (C.1.4) Attribute based on an integer range */
+ComplexAttIntRangReference:
+  '['  '*intRange>' ref=[SensableIntRange] '*sensed-by>' sensor=[Sensor] ']'
+;
+/* (C.1.5) Attribute based on an float range */
+ComplexAttFloatRangeReference:
+  '[' '*floatRange>' ref=[SensableFloatRange] '*sensed-by>' sensor=[Sensor] ']'
+;
+
+
+
+
+
+ConceptReference:
+  '*concept>' ref=[Concept]
+;
+
+SensoriallyEvokedConcepts:
+  '*concept>' ref=[Concept] 
+;
+
+ConceptuallyDerivedConcepts:
+  '*concept.derived>' ref=[Concept]
+;
+
+/* (C.2) definitions of purposes  */ 
+Purpose:
+	'purpose' name=ID '('
+	 	('root' root=BOOLEAN)?
+	 	xlabel=XLabel
+	')'
+;
+
+/* (C.3) definitions of variants  */
+
+Variant:
+  ExplicitVariant | ImplicitVariant
+;
+
+/* (C.3.A) definitions of implicit variants  */
+ImplicitVariant:
+  'variant' name=ID '('
+   xlabel=XLabel
+   
+   'type' type='implicit'
+   
+')'
+;
+
+/* (C.3.A) definitions of implicit variants  */
+ExplicitVariant:
+	'variant' name=ID '('
+   xlabel=XLabel
+   'type' type='explicit'
+   ('singleton' singleton=BOOLEAN)?
+   
+   /* 0 - n lists of one of these context-free features */
+   (oneOfTheseAttributesSections+=(OneOfTheseAttributesSection)*)
+   /* one list of one of these terminal concepts */
+   
+   (oneOutOfThisRanges+=(OneOutOfThisRange)*)
+   
+   ('classified.as' '{' 
+     ( conceptReferences+=SensoriallyEvokedConcepts '|' )*
+     conceptReferences+=SensoriallyEvokedConcepts
+     ('|'
+       ( derivedConceptReferences+=ConceptuallyDerivedConcepts '|')*  
+       derivedConceptReferences+=ConceptuallyDerivedConcepts  
+     )?
+   '}'
+   )?
+')'
+;	
+
+
+OneOfTheseAttributesSection:
+   'specified.by' sensor=[Sensor] 'as {'
+      
+     (  ( ( strAttReferences+=SimpleAttStrReference '|')*
+            strAttReferences+=SimpleAttStrReference)
+       
+     | (  ( intAttReferences+=SimpleAttIntReference '|')*
+            intAttReferences+=SimpleAttIntReference)
+            
+     | (  ( floatAttReferences+=SimpleAttFloatReference '|')*
+            floatAttReferences+=SimpleAttFloatReference)
+     )
+   '}'
+;
+
+OneOutOfThisRange:
+   'perceived.by' sensor=[Sensor] 'within' 
+    ( attIntRangeReference=SimpleAttIntRangReference
+      | attFloatRangeReference=SimpleAttFloatRangeReference
+    )         
+;
+
+/* (C.4) is fulfilled by statement  */
+
+IsFulfilledByStatement:
+  'purpose.system' psRef=[Purpose] '(' 
+   'isFulfilledBy' '{' 
+
+      ( '*pv>' pvRefs+=[Variant] '|' )* 
+        '*pv>' pvRefs+=[Variant]
+    '}'
+  ')'
+;
+
+/* (C.5) is constituted by statement   */
+ 
+IsConstitutedByStatement:
+  'purpose.variant' pvRef=[ExplicitVariant] '('
+    'isConstitutedBy' '{'
+      (isConstitutedByAssignments+=IsConstitutedByAssignment '&')*
+       isConstitutedByAssignments+=IsConstitutedByAssignment '&'
+       isConstitutedByAssignments+=IsConstitutedByAssignment
+     '}'
+  ')'
+;
+
+IsConstitutedByAssignment:
+  '<' quantity=INT 'of' '*ps>' psRef=[Purpose] '>'
+;
+
+
+IsConstitutedBySubsetStatement:
+  'purpose.variant.impl' pvRef=[ImplicitVariant] '('
+    'isConstitutedBySubsetOf' '{'
+      ('*ps>' psRefs+=[Purpose] '/')*
+       '*ps>' psRefs+=[Purpose] '/'
+       '*ps>' psRefs+=[Purpose]
+      '}'
+  ')'
+;
+
+
+/* (C.6) elements for defining events being perceptible during the inference process*/
+
+ContextualLogicEvent:
+	ContextEventClosedByVariant
+    | ContextEventClosedByString
+    | ContextEventClosedByInt
+    | ContextEventClosedByFloat
+    | ContextEventClosedByConcept
+;
+
+
+/* Note:
+ * - it is up to the knowledge engineer to select the same variant
+ *   as context and as fact!
+ */
+ContextEventClosedByVariant:
+  'event.var' name=ID '('
+    xlabel=XLabel
+    'context' context=OpenContextualPath
+     (negation?='NOT')?
+    'fact' '*pv>' pvFact=[Variant]
+  ')'
+;
+
+ContextEventClosedByAttribute:
+  ContextEventClosedByString|ContextEventClosedByInt|ContextEventClosedByFloat
+;
+
+ContextEventClosedByString:
+  'event.str' name=ID '('
+    xlabel=XLabel
+    'context' context=ClosedContextualPath
+    (negation?='NOT')?
+    'fact' fact=SimpleAttStrReference
+  ')'
+;
+
+ContextEventClosedByInt:
+  'event.int' name=ID '('
+    xlabel=XLabel
+    'context' context=ClosedContextualPath
+    (negation?='NOT')?
+    'fact' fact=SimpleAttIntReference
+  ')'
+;
+
+ContextEventClosedByFloat:
+  'event.float' name=ID '('
+    xlabel=XLabel
+    'context' context=ClosedContextualPath
+    (negation?='NOT')?
+    'fact' fact=SimpleAttFloatReference
+  ')'
+;
+
+ContextEventClosedByConcept:
+  'event.concept' name=ID '('
+    xlabel=XLabel
+    'context' context=ClosedContextualPath
+    (negation?='NOT')?
+    'fact' fact=ConceptReference
+  ')'
+;
+
+RelationParameter:
+  'relation.param' name=ID '('
+    xlabel=XLabel
+    'context' context=ClosedContextualPath
+    'value.type' fact=SensorReference
+  ')'
+;
+ 
+ClosedContextualPath:
+  '['
+  (variantPurposeRow += VariantPurposePair)*
+   '*pv>' closingVariant =[Variant]
+  ']'
+;
+
+OpenContextualPath:
+  '['
+  (variantPurposeRow += VariantPurposePair)+
+  ']'
+;
+
+VariantPurposePair:
+  '*pv>' pvRef=[Variant]
+  '*ps>' psRef=[Purpose]
+;
+
+LogicalEnforcer:
+  'logic.enforcer' name=ID '('
+   xlabel=XLabel
+  'nexus' '*pv>' nexusPvRef=[Variant]
+  'evokes' '*ev>' conclusio=[ContextualLogicEvent]
+ ')'
+;
+
+LogicalRule:
+  'logic.rule' name=ID '('
+   xlabel=XLabel
+   'nexus' '*pv>' nexusPvRef=[Variant]
+   'induces' '[' '{'
+      ( '*ev>' premiseEvents+=[ContextualLogicEvent] '&')*
+        '*ev>' premiseEvents+=[ContextualLogicEvent]
+    '}' 
+    '=>' '*ev>' conclusio=[ContextualLogicEvent]
+   ']'
+ ')'
+;
+
+RelationalConstraint:
+  'relation.normal' name=ID '('
+   xlabel=XLabel
+   'nexus' '*pv>' nexusPvRef=[Variant]
+   'means' '['
+       stmnt=RelationalStatement 
+   ']'
+ ')'
+;
+
+
+ConditionedRelationalConstraint:
+  'relation.qualified' name=ID '(' 
+   xlabel=XLabel
+   'nexus' '*pv>' nexusPvRef=[Variant]
+   'means' '<'
+      '*ev>' trigger=[ContextualLogicEvent]
+      '=>'
+      '[' stmnt=RelationalStatement ']'
+  '>'
+ ')'
+;
+
+RelationalStatement:
+      ( ( ( '*val>' leVarArg=[RelationParameter] 
+            relType=RelationType
+            ( 'const'  
+              ( '*str>' riStrConst=[SensableStrValue]
+              | '*int>' riIntConst=[SensableIntValue]
+              | '*float>' riFloatConst=[SensableFloatValue]  
+              )                 
+            )
+          )
+          |
+          ( ( 'const'
+              ( '*str>' leStrConst=[SensableStrValue]
+              | '*int>' leIntConst=[SensableIntValue]
+              | '*float>' leFloatConst=[SensableFloatValue]
+              )       
+            )
+            relType=RelationType
+            '*val>' riVarArg=[RelationParameter] 
+          )  
+        )
+        |
+        ( '*val>' leVarArg=[RelationParameter] 
+          relType=RelationType
+          '*val>' riVarArg=[RelationParameter]       
+        )  
+      )    
+;

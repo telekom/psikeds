@@ -1,0 +1,63 @@
+TOPDIR=$(HOME)
+# ---
+PSIKEDSREP=$(TOPDIR)/gits.remote.net/psikeds
+PKBEDITOR=$(PSIKEDSREP)/KnowledgeBaseEditor/src/psiKedsXtxKrl
+
+PKBXTEMAT=$(PKBEDITOR)/xte.mat
+PKBREFMAT=$(PKBEDITOR)/pkb.mat
+
+# ----
+EWSXTX=$(TOPDIR)/ews.xtx
+EWSXTXPKB=$(EWSXTX)/org.psikeds.kb
+EWSXTXPKBDEFDIR=$(EWSXTXPKB)/src/org/psikeds/kb
+EWSXTXPKBCGENDIR=$(EWSXTXPKBDEFDIR)/modelling/generator
+
+EWS_PKB_REF=$(TOPDIR)/ews.pkb.reference/psiKedsReference
+EWS_PKB_REFSRC=$(EWS_PKB_REF)/src
+EWS_PKB_REFSRCGEN=$(EWS_PKB_REF)/src-gen
+
+EWS_PKB_TPL=$(TOPDIR)/ews.pkb.reference/psiKedsTemplate
+EWS_PKB_TPLSRC=$(EWS_PKB_TPL)/src
+EWS_PKB_TPLSRCGEN=$(EWS_PKB_TPL)/src-gen
+
+
+# ---
+SRC_PKBDEFFILES=$(EWSXTXPKBDEFDIR)/*.xtext
+SRC_PKBCGENFILES=$(EWSXTXPKBCGENDIR)/*.xtend
+SRC_PKBREFPKBFILES=$(EWS_PKB_REFSRC)/*.pkb
+SRC_PKBREFXMLFILES=$(EWS_PKB_REFSRCGEN)/*.pkb.xml
+
+SRC_PKBTPLPKBFILE=$(EWS_PKB_TPLSRC)/psikedsTemplate.pkb
+
+TGT_PKBXTEMAT_DIR=$(PKBXTEMAT)/
+TGT_PKBREFMAT_DIR=$(PKBREFMAT)/
+
+SAVEXT=sav
+
+use:
+	echo "use: make -s pull\ni  => pulls xtext-Definition & xtend-Codegenerator -> xte.mat, and reference database ->pkb.mat"
+
+pull:	pull2git
+
+savsav:
+	echo "saving saved files"
+	find . -name "*.$(SAVEXT)" | while read file; do echo "saving $$file"; mv $$file $$file.$(SAVEXT); done
+
+sav:	savsav
+	echo "saving existing target files"
+	find . -name "*.xtext" | while read file; do echo "saving $$file"; mv $$file $$file.$(SAVEXT); done
+	find . -name "*.xtend" | while read file; do echo "saving $$file"; mv $$file $$file.$(SAVEXT); done
+	find . -name "*.pkb" | while read file; do echo "saving $$file"; mv $$file $$file.$(SAVEXT); done
+	find . -name "*.xml" | while read file; do echo "saving $$file"; mv $$file $$file.$(SAVEXT); done
+
+pull2git:	sav	
+	echo "1) pulling xtext/xtend: $(SRC_PKBDEFFILES) + $(SRC_PKBCGENFILES)  => $(TGT_PKBXTEMAT_DIR)"
+	cp $(SRC_PKBDEFFILES) $(SRC_PKBCGENFILES) $(TGT_PKBXTEMAT_DIR)
+	echo "2) pulling pkb/pkb.xml: $(SRC_PKBREFPKBFILES) + $(SRC_PKBREFXMLFILES)  => $(TGT_PKBREFMAT_DIR)"
+	cp $(SRC_PKBREFPKBFILES) $(SRC_PKBREFXMLFILES) $(TGT_PKBREFMAT_DIR)
+	echo "3) pulling template.pkb $(SRC_PKBTPLPKBFILE) => $(TGT_PKBREFMAT_DIR)"
+	cp $(SRC_PKBTPLPKBFILE) $(TGT_PKBREFMAT_DIR) 
+ 
+clean:
+	find . -name "*.$(SAVEXT)" | while read file; do rm $$file; done
+
