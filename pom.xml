@@ -88,7 +88,6 @@ For details see file LICENSING in the top project directory
 
     <!-- knowledge base -->
     <module>KnowledgeBase</module>
-    <module>KbEclipseEditor</module>
 
     <!-- resolution engine -->
     <module>ReDataLayer</module>
