@@ -15,16 +15,21 @@
 package org.psikeds.resolutionengine.datalayer.vo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
- * A Rule is always attached to a Variant and defined by a Premise (premiseEventID)
+ * A Rule is always attached to a Variant and defined by one or several Premise(s) (premiseEventID)
  * and a Conclusion (conclusionEventID).
  * 
  * Note 1: Rule-ID must be globally unique.
  * 
- * Note 2: Variant-ID, Premise-Event-ID and Conclusion-Event-ID must point to
+ * Note 2: Variant-ID, Premise-Event-IDs and Conclusion-Event-ID must point to
  * existing Objects!
  * 
  * @author marco@juliano.de
@@ -38,24 +43,29 @@ public class Rule extends ValueObject implements Serializable {
   private String label;
   private String description;
   private String variantID;
-  private String premiseEventID;
+  private List<String> premiseEventID;
   private String conclusionEventID;
 
   public Rule() {
-    this(null, null, null, null, null, null);
+    this(null, null);
   }
 
-  public Rule(final String ruleID, final String variantID, final String premiseEventID, final String conclusionEventID) {
-    this(ruleID, ruleID, ruleID, variantID, premiseEventID, conclusionEventID);
+  public Rule(final String ruleID, final String variantID) {
+    this(ruleID, null, ruleID, variantID, (List<String>) null, null);
   }
 
   public Rule(final String label, final String description, final String ruleID, final String variantID, final String premiseEventID, final String conclusionEventID) {
+    this(label, description, ruleID, variantID, (List<String>) null, conclusionEventID);
+    addPremiseEventID(premiseEventID);
+  }
+
+  public Rule(final String label, final String description, final String ruleID, final String variantID, final List<String> premiseEventID, final String conclusionEventID) {
     super(ruleID);
-    this.label = label;
-    this.description = description;
-    this.variantID = variantID;
-    this.premiseEventID = premiseEventID;
-    this.conclusionEventID = conclusionEventID;
+    setLabel(label);
+    setDescription(description);
+    setVariantID(variantID);
+    setPremiseEventID(premiseEventID);
+    setConclusionEventID(conclusionEventID);
   }
 
   public String getLabel() {
@@ -90,19 +100,30 @@ public class Rule extends ValueObject implements Serializable {
     this.variantID = variantID;
   }
 
-  public String getPremiseEventID() {
-    return this.premiseEventID;
-  }
-
-  public void setPremiseEventID(final String premiseEventID) {
-    this.premiseEventID = premiseEventID;
-  }
-
   public String getConclusionEventID() {
     return this.conclusionEventID;
   }
 
   public void setConclusionEventID(final String conclusionEventID) {
     this.conclusionEventID = conclusionEventID;
+  }
+
+  public List<String> getPremiseEventID() {
+    if (this.premiseEventID == null) {
+      this.premiseEventID = new ArrayList<String>();
+    }
+    return this.premiseEventID;
+  }
+
+  public boolean addPremiseEventID(final String premiseEventID) {
+    return (!StringUtils.isEmpty(premiseEventID) && getPremiseEventID().add(premiseEventID));
+  }
+
+  public boolean addPremiseEventID(final Collection<? extends String> col) {
+    return ((col != null) && !col.isEmpty() && getPremiseEventID().addAll(col));
+  }
+
+  public void setPremiseEventID(final List<String> premiseEventID) {
+    this.premiseEventID = premiseEventID;
   }
 }

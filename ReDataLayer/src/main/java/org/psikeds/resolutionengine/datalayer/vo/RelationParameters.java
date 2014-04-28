@@ -20,44 +20,40 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-
 /**
- * Feature holding String-Values.
+ * List of RelationParameters.
  * 
  * @author marco@juliano.de
  * 
  */
-@XmlRootElement(name = "StringFeature")
-public class StringFeature extends Feature<String> implements Serializable {
+@XmlRootElement(name = "RelationParameters")
+public class RelationParameters extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  public StringFeature() {
+  private List<RelationParameter> parameter;
+
+  public RelationParameters() {
     this(null);
   }
 
-  public StringFeature(final String featureID) {
-    this(featureID, featureID, featureID);
+  public RelationParameters(final List<RelationParameter> parameter) {
+    super();
+    setParameter(parameter);
   }
 
-  public StringFeature(final String label, final String description, final String featureID) {
-    this(label, description, featureID, null);
+  public List<RelationParameter> getParameter() {
+    if (this.parameter == null) {
+      this.parameter = new ArrayList<RelationParameter>();
+    }
+    return this.parameter;
   }
 
-  public StringFeature(final String label, final String description, final String featureID, final List<String> values) {
-    super(label, description, featureID, values);
+  public boolean addParameter(final RelationParameter value) {
+    return ((value != null) && getParameter().add(value));
   }
 
-  @JsonIgnore
-  @Override
-  public String getValueType() {
-    return VALUE_TYPE_STRING;
-  }
-
-  @JsonIgnore
-  @Override
-  public List<String> getValuesAsStrings() {
-    return new ArrayList<String>(getValues());
+  public void setParameter(final List<RelationParameter> parameter) {
+    this.parameter = parameter;
   }
 }

@@ -36,39 +36,98 @@ public class MetaData extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private Calendar created;
-  private Calendar lastmodified;
-  private Calendar loaded;
-  private String language;
-  private String version;
-  private List<String> creator;
-  private List<String> description;
-  private Map<String, Object> additionalInfo;
+  protected String name;
+  protected String teaser;
+  protected String release;
+  protected String copyright;
+  protected String license;
+  protected String language;
+  protected Calendar created;
+  protected Calendar lastmodified;
+  protected Calendar loaded;
+  protected List<String> creator;
+  protected List<String> description;
+  protected Map<String, Object> additionalInfo;
 
-  public MetaData() {
-    this(null, null, null, null, null, null);
+  public MetaData(final String id, final String name, final String teaser, final String release, final String copyright, final String license, final String language,
+      final Calendar created, final Calendar lastmodified, final List<String> creator, final List<String> description) {
+    this(id, name, teaser, release, copyright, license, language, created, lastmodified, null, creator, description, null);
   }
 
-  public MetaData(final Calendar created, final Calendar lastmodified,
-      final String language, final String version,
-      final List<String> creator, final List<String> description) {
-    this(created, lastmodified, null, language, version, creator, description, null);
-  }
-
-  public MetaData(final Calendar created, final Calendar lastmodified, final Calendar loaded,
-      final String language, final String version,
-      final List<String> creator, final List<String> description,
-      final Map<String, Object> additionalInfo) {
-    super();
+  public MetaData(final String id, final String name, final String teaser, final String release, final String copyright, final String license, final String language,
+      final Calendar created, final Calendar lastmodified, final Calendar loaded,
+      final List<String> creator, final List<String> description, final Map<String, Object> additionalInfo) {
+    super(id);
+    setName(name);
+    setTeaser(teaser);
+    setRelease(release);
+    setCopyright(copyright);
+    setLicense(license);
+    setLanguage(language);
     setCreated(created);
     setLastmodified(lastmodified);
     setLoaded(loaded);
-    setLanguage(language);
-    setVersion(version);
     setCreator(creator);
     setDescription(description);
     setAdditionalInfo(additionalInfo);
   }
+
+  // ----------------------------------------------------------------
+
+  public String getLanguage() {
+    return this.language;
+  }
+
+  public void setLanguage(final String language) {
+    this.language = language;
+  }
+
+  @Override
+  public String getId() {
+    return (StringUtils.isEmpty(this.id) ? this.name : this.id);
+  }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public void setName(final String name) {
+    this.name = name;
+  }
+
+  public String getTeaser() {
+    return this.teaser;
+  }
+
+  public void setTeaser(final String teaser) {
+    this.teaser = teaser;
+  }
+
+  public String getRelease() {
+    return this.release;
+  }
+
+  public void setRelease(final String release) {
+    this.release = release;
+  }
+
+  public String getCopyright() {
+    return this.copyright;
+  }
+
+  public void setCopyright(final String copyright) {
+    this.copyright = copyright;
+  }
+
+  public String getLicense() {
+    return this.license;
+  }
+
+  public void setLicense(final String license) {
+    this.license = license;
+  }
+
+  // ----------------------------------------------------------------
 
   public Calendar getCreated() {
     return this.created;
@@ -100,21 +159,7 @@ public class MetaData extends ValueObject implements Serializable {
     }
   }
 
-  public String getLanguage() {
-    return this.language;
-  }
-
-  public void setLanguage(final String language) {
-    this.language = language;
-  }
-
-  public String getVersion() {
-    return this.version;
-  }
-
-  public void setVersion(final String version) {
-    this.version = version;
-  }
+  // ----------------------------------------------------------------
 
   public List<String> getCreator() {
     if (this.creator == null) {

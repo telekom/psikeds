@@ -23,9 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * A Variant is constituted by one or several Purposes(s).
- * 
- * Note: VariantID and PurposeID(s) must reference existing Objects!
+ * A Variant is constituted by one or several Component(s), i.e. Purposes.
  * 
  * @author marco@juliano.de
  * 
@@ -35,34 +33,21 @@ public class Constitutes extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private String description;
   private String variantID;
-  private List<String> purposeID;
+  private List<Component> components;
 
   public Constitutes() {
-    this(null, null, (List<String>) null);
+    this(null, (List<Component>) null);
   }
 
-  public Constitutes(final String description, final String variantID, final String purposeID) {
+  public Constitutes(final String variantID, final String purposeID) {
     super();
-    setDescription(description);
     setVariantID(variantID);
-    addPurposeID(purposeID);
   }
 
-  public Constitutes(final String description, final String variantID, final List<String> purposeID) {
+  public Constitutes(final String variantID, final List<Component> components) {
     super();
-    setDescription(description);
     setVariantID(variantID);
-    setPurposeID(purposeID);
-  }
-
-  public String getDescription() {
-    return this.description;
-  }
-
-  public void setDescription(final String value) {
-    this.description = value;
   }
 
   public String getVariantID() {
@@ -73,18 +58,22 @@ public class Constitutes extends ValueObject implements Serializable {
     this.variantID = value;
   }
 
-  public List<String> getPurposeID() {
-    if (this.purposeID == null) {
-      this.purposeID = new ArrayList<String>();
+  public List<Component> getComponents() {
+    if (this.components == null) {
+      this.components = new ArrayList<Component>();
     }
-    return this.purposeID;
+    return this.components;
   }
 
-  public boolean addPurposeID(final String value) {
-    return (!StringUtils.isEmpty(value) && getPurposeID().add(value));
+  public boolean addComponent(final String purposeID) {
+    return (!StringUtils.isEmpty(purposeID) && addComponent(new Component(purposeID)));
   }
 
-  public void setPurposeID(final List<String> lst) {
-    this.purposeID = lst;
+  public boolean addComponent(final Component comp) {
+    return ((comp != null) && getComponents().add(comp));
+  }
+
+  public void setComponents(final List<Component> components) {
+    this.components = components;
   }
 }

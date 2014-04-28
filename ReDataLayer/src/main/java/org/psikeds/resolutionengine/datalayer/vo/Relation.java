@@ -20,12 +20,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * A Relation is always attached to a Variant and defined as some logical
- * Operation/Dependency between two Features, defined by the corresponding
- * Relation-Partners.
+ * Operation/Dependency between two Features or a Feature and a constant Value,
+ * defined by the corresponding Relation-Partners.
  * 
- * Example: Left greaterThan Right
- * Semantic: The Value of the "Left" Feature must always be greater than
- * the Value of the "Right" Feature.
+ * Optionally a conditional can be specified (conditionalEventID), meaning that
+ * this Relation is only relevant if the corresponding Event was triggered.
  * 
  * Note 1: Relation-ID must be globally unique.
  * 
@@ -43,28 +42,36 @@ public class Relation extends ValueObject implements Serializable {
 
   private String label;
   private String description;
-  private String variantId;
-  private RelationPartner leftSide;
-  private RelationPartner rightSide;
+  private String variantID;
+  private String conditionalEventID;
+  private RelationParameter leftSide;
+  private RelationParameter rightSide;
   private RelationOperator operator;
 
   public Relation() {
-    this(null, null, null, null, null, null, null);
+    this(null, null, null, null, null, null);
   }
 
-  public Relation(final String label, final String description, final String relationID, final String variantId, final RelationPartner leftSide, final RelationPartner rightSide) {
-    this(label, description, relationID, variantId, leftSide, rightSide, DEFAULT_OPERATOR);
+  public Relation(final String label, final String description, final String relationID, final String variantID, final RelationParameter leftSide, final RelationParameter rightSide) {
+    this(label, description, relationID, variantID, leftSide, rightSide, DEFAULT_OPERATOR);
   }
 
-  public Relation(final String label, final String description, final String relationID, final String variantId,
-      final RelationPartner leftSide, final RelationPartner rightSide, final RelationOperator operator) {
+  public Relation(final String label, final String description, final String relationID, final String variantID,
+      final RelationParameter leftSide, final RelationParameter rightSide, final RelationOperator operator) {
+    this(label, description, relationID, variantID, leftSide, rightSide, operator, null);
+  }
+
+  public Relation(final String label, final String description, final String relationID, final String variantID,
+      final RelationParameter leftSide, final RelationParameter rightSide, final RelationOperator operator,
+      final String conditionalEventID) {
     super(relationID);
     setLabel(label);
     setDescription(description);
-    setVariantID(variantId);
+    setVariantID(variantID);
     setLeftSide(leftSide);
     setRightSide(rightSide);
     setOperator(operator);
+    setConditionalEventID(conditionalEventID);
   }
 
   public String getLabel() {
@@ -92,11 +99,11 @@ public class Relation extends ValueObject implements Serializable {
   }
 
   public String getVariantID() {
-    return this.variantId;
+    return this.variantID;
   }
 
-  public void setVariantID(final String variantId) {
-    this.variantId = variantId;
+  public void setVariantID(final String variantID) {
+    this.variantID = variantID;
   }
 
   public RelationOperator getOperator() {
@@ -107,19 +114,27 @@ public class Relation extends ValueObject implements Serializable {
     this.operator = (operator != null ? operator : DEFAULT_OPERATOR);
   }
 
-  public RelationPartner getLeftSide() {
+  public RelationParameter getLeftSide() {
     return this.leftSide;
   }
 
-  public void setLeftSide(final RelationPartner leftSide) {
+  public void setLeftSide(final RelationParameter leftSide) {
     this.leftSide = leftSide;
   }
 
-  public RelationPartner getRightSide() {
+  public RelationParameter getRightSide() {
     return this.rightSide;
   }
 
-  public void setRightSide(final RelationPartner rightSide) {
+  public void setRightSide(final RelationParameter rightSide) {
     this.rightSide = rightSide;
+  }
+
+  public String getConditionalEventID() {
+    return this.conditionalEventID;
+  }
+
+  public void setConditionalEventID(final String conditionalEventID) {
+    this.conditionalEventID = conditionalEventID;
   }
 }

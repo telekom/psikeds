@@ -38,10 +38,15 @@ public class Variant extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
+  public static final boolean DEFAULT_IS_SINGLETON = false;
+  public static final boolean DEFAULT_IS_IMPLICIT = false;
+
   private String label;
   private String description;
+  private boolean singleton;
+  private boolean implicit;
   private List<String> featureIds;
-  private String defaultFeatureValue;
+  private List<FeatureValue> featureValues;
 
   public Variant() {
     this(null);
@@ -51,22 +56,40 @@ public class Variant extends ValueObject implements Serializable {
     this(variantID, null, variantID);
   }
 
-  public Variant(final String variantID, final List<String> featureIds) {
+  public Variant(final String variantID, final List<FeatureValue> featureValues) {
     this(variantID);
-    this.featureIds = featureIds;
+    setFeatureValues(featureValues);
+    calculateFeatureIds();
   }
 
   public Variant(final String label, final String description, final String variantID) {
-    this(label, description, variantID, null, null);
+    this(label, description, variantID, DEFAULT_IS_SINGLETON, DEFAULT_IS_IMPLICIT);
   }
 
-  public Variant(final String label, final String description, final String variantID, final List<String> featureIds, final String defaultFeatureValue) {
-    super(variantID);
-    this.label = label;
-    this.description = description;
-    this.featureIds = featureIds;
-    this.defaultFeatureValue = defaultFeatureValue;
+  public Variant(final String label, final String description, final String variantID, final boolean singleton, final boolean implicit) {
+    this(label, description, variantID, singleton, implicit, null, null);
   }
+
+  public Variant(final String label, final String description, final String variantID,
+      final boolean singleton, final boolean implicit,
+      final List<FeatureValue> featureValues) {
+    this(label, description, variantID, singleton, implicit, null, featureValues);
+    calculateFeatureIds();
+  }
+
+  public Variant(final String label, final String description, final String variantID,
+      final boolean singleton, final boolean implicit,
+      final List<String> featureIds, final List<FeatureValue> featureValues) {
+    super(variantID);
+    setLabel(label);
+    setDescription(description);
+    setSingleton(singleton);
+    setImplicit(implicit);
+    setFeatureIds(featureIds);
+    setFeatureValues(featureValues);
+  }
+
+  // ----------------------------------------------------------------
 
   public String getLabel() {
     return this.label;
@@ -92,6 +115,24 @@ public class Variant extends ValueObject implements Serializable {
     setId(variantID);
   }
 
+  public boolean isSingleton() {
+    return this.singleton;
+  }
+
+  public void setSingleton(final boolean singleton) {
+    this.singleton = singleton;
+  }
+
+  public boolean isImplicit() {
+    return this.implicit;
+  }
+
+  public void setImplicit(final boolean implicit) {
+    this.implicit = implicit;
+  }
+
+  // ----------------------------------------------------------------
+
   public List<String> getFeatureIds() {
     if (this.featureIds == null) {
       this.featureIds = new ArrayList<String>();
@@ -107,15 +148,46 @@ public class Variant extends ValueObject implements Serializable {
     return (!StringUtils.isEmpty(featureId) && getFeatureIds().add(featureId));
   }
 
-  public boolean addFeature(final Feature<?> feature) {
-    return ((feature != null) && addFeatureId(feature.getId()));
+  public void clearFeatureIds() {
+    if (this.featureIds != null) {
+      this.featureIds.clear();
+      this.featureIds = null;
+    }
   }
 
-  public String getDefaultFeatureValue() {
-    return this.defaultFeatureValue;
+  public void calculateFeatureIds() {
+    clearFeatureIds();
+    if (this.featureValues != null) {
+      for (final FeatureValue fv : this.featureValues) {
+        final String featureId = (fv == null ? null : fv.getFeatureID());
+        if (!StringUtils.isEmpty(featureId) && !getFeatureIds().contains(featureId)) {
+          addFeatureId(featureId);
+        }
+      }
+    }
   }
 
-  public void setDefaultFeatureValue(final String defaultFeatureValue) {
-    this.defaultFeatureValue = defaultFeatureValue;
+  // ----------------------------------------------------------------
+
+  public List<FeatureValue> getFeatureValues() {
+    if (this.featureValues == null) {
+      this.featureValues = new ArrayList<FeatureValue>();
+    }
+    return this.featureValues;
+  }
+
+  public void setFeatureValues(final List<FeatureValue> featureValues) {
+    this.featureValues = featureValues;
+  }
+
+  public boolean addFeatureValue(final FeatureValue value) {
+    return ((value != null) && getFeatureValues().add(value));
+  }
+
+  public void clearFeatureValues() {
+    if (this.featureValues != null) {
+      this.featureValues.clear();
+      this.featureValues = null;
+    }
   }
 }

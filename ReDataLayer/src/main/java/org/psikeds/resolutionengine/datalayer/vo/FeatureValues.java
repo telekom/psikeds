@@ -21,39 +21,39 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * List of Features.
+ * List of FeatureValues.
  * 
  * @author marco@juliano.de
  * 
  */
-@XmlRootElement(name = "Features")
-public class Features extends ValueObject implements Serializable {
+@XmlRootElement(name = "FeatureValues")
+public class FeatureValues extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private List<Feature> feature;
+  private List<FeatureValue> value;
 
-  public Features() {
+  public FeatureValues() {
     this(null);
   }
 
-  public Features(final List<Feature> lst) {
+  public FeatureValues(final List<FeatureValue> lst) {
     super();
-    setFeature(lst);
+    setValue(lst);
   }
 
-  public List<Feature> getFeature() {
-    if (this.feature == null) {
-      this.feature = new ArrayList<Feature>();
+  public List<FeatureValue> getValue() {
+    if (this.value == null) {
+      this.value = new ArrayList<FeatureValue>();
     }
-    return this.feature;
+    return this.value;
   }
 
-  public boolean addFeature(final Feature value) {
-    return ((value != null) && getFeature().add(value));
+  public boolean addValue(final FeatureValue value) {
+    return ((value != null) && getValue().add(value));
   }
 
-  public void setFeature(final List<Feature> lst) {
-    this.feature = lst;
+  public void setValue(final List<FeatureValue> lst) {
+    this.value = lst;
   }
 }

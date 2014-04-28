@@ -14,17 +14,18 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.datalayer.vo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonSubTypes;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.StringUtils;
 
 /**
  * An Event is defined by the ID of the Variant it is attached to,
  * its Context (= Path: Variant->Purpose->Variant->...) and the
- * triggering Entity, i.e. a Variant or a Feature-Value.
+ * triggering Entity, i.e. a Variant, a Feature-Value or a Concept.
  * 
  * Note 1: Event-ID must be globally unique.
  * 
@@ -33,34 +34,49 @@ import org.apache.commons.lang.StringUtils;
  * @author marco@juliano.de
  * 
  */
-@JsonSubTypes({ @JsonSubTypes.Type(value = VariantEvent.class, name = "VariantEvent"), @JsonSubTypes.Type(value = FeatureEvent.class, name = "FeatureEvent"), })
-public abstract class Event extends ValueObject {
+@XmlRootElement(name = "Event")
+public class Event extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
+  public static final String TRIGGER_TYPE_VARIANT = "variant";
+  public static final String TRIGGER_TYPE_FEATURE_VALUE = "feature";
+  public static final String TRIGGER_TYPE_CONCEPT = "concept";
+
   public static final boolean DEFAULT_NOT_EVENT = false;
 
-  protected String label;
-  protected String description;
-  protected String variantID;
-  protected List<String> context;
-  protected boolean notEvent;
+  private String label;
+  private String description;
+  private String variantID;
+  private List<String> context;
+  private String triggerID;
+  private String triggerType;
+  private boolean notEvent;
 
-  protected Event() {
-    this(null, null, null, null, null);
+  public Event() {
+    this(null, null);
   }
 
-  protected Event(final String label, final String description, final String eventID, final String variantID, final List<String> context) {
-    this(label, description, eventID, variantID, context, DEFAULT_NOT_EVENT);
+  public Event(final String eventID, final String variantID) {
+    this(eventID, null, eventID, variantID, null, null, null);
   }
 
-  protected Event(final String label, final String description, final String eventID, final String variantID, final List<String> context, final boolean notEvent) {
+  public Event(final String label, final String description, final String eventID, final String variantID,
+      final List<String> context, final String triggerID, final String triggerType) {
+    this(label, description, eventID, variantID, context, triggerID, triggerType, DEFAULT_NOT_EVENT);
+  }
+
+  public Event(final String label, final String description, final String eventID, final String variantID,
+      final List<String> context, final String triggerID, final String triggerType,
+      final boolean notEvent) {
     super(eventID);
-    this.label = label;
-    this.description = description;
-    this.variantID = variantID;
-    this.context = context;
-    this.notEvent = notEvent;
+    setLabel(label);
+    setDescription(description);
+    setVariantID(variantID);
+    setContext(context);
+    setTriggerID(triggerID);
+    setTriggerType(triggerType);
+    setNotEvent(notEvent);
   }
 
   public String getLabel() {
@@ -108,6 +124,30 @@ public abstract class Event extends ValueObject {
 
   public boolean addContextPathID(final String id) {
     return (!StringUtils.isEmpty(id) && getContext().add(id));
+  }
+
+  public String getTriggerID() {
+    return this.triggerID;
+  }
+
+  public void setTriggerID(final String triggerID) {
+    this.triggerID = triggerID;
+  }
+
+  public String getTriggerType() {
+    return this.triggerType;
+  }
+
+  public void setTriggerType(final String type) {
+    if (TRIGGER_TYPE_FEATURE_VALUE.equalsIgnoreCase(type)) {
+      this.triggerType = TRIGGER_TYPE_FEATURE_VALUE;
+    }
+    else if (TRIGGER_TYPE_CONCEPT.equalsIgnoreCase(type)) {
+      this.triggerType = TRIGGER_TYPE_CONCEPT;
+    }
+    else {
+      this.triggerType = TRIGGER_TYPE_VARIANT;
+    }
   }
 
   public boolean isNotEvent() {

@@ -42,7 +42,7 @@ public abstract class ValueObject implements Serializable, Comparable<Object> {
   private static final char COMPOSE_ID_SEPARATOR = '/';
 
   // unique id of this Value Object
-  private String id;
+  protected String id;
 
   protected ValueObject() {
     this.id = null;
@@ -149,13 +149,15 @@ public abstract class ValueObject implements Serializable, Comparable<Object> {
 
   protected static String composeId(final ValueObject... vos) {
     final StringBuilder sb = new StringBuilder();
-    for (final ValueObject v : vos) {
-      final String vid = (v == null ? null : v.getId());
-      if (!StringUtils.isEmpty(vid)) {
-        if (sb.length() > 0) {
-          sb.append(COMPOSE_ID_SEPARATOR);
+    if (vos != null) {
+      for (final ValueObject v : vos) {
+        final String vid = (v == null ? null : v.getId());
+        if (!StringUtils.isEmpty(vid)) {
+          if (sb.length() > 0) {
+            sb.append(COMPOSE_ID_SEPARATOR);
+          }
+          sb.append(vid);
         }
-        sb.append(vid);
       }
     }
     return sb.toString();
@@ -163,12 +165,14 @@ public abstract class ValueObject implements Serializable, Comparable<Object> {
 
   protected static String composeId(final String... ids) {
     final StringBuilder sb = new StringBuilder();
-    for (final String vid : ids) {
-      if (!StringUtils.isEmpty(vid)) {
-        if (sb.length() > 0) {
-          sb.append(COMPOSE_ID_SEPARATOR);
+    if (ids != null) {
+      for (final String vid : ids) {
+        if (!StringUtils.isEmpty(vid)) {
+          if (sb.length() > 0) {
+            sb.append(COMPOSE_ID_SEPARATOR);
+          }
+          sb.append(vid);
         }
-        sb.append(vid);
       }
     }
     return sb.toString();
