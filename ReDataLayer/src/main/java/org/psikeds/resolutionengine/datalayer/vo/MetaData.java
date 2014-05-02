@@ -36,18 +36,26 @@ public class MetaData extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  protected String name;
-  protected String teaser;
-  protected String release;
-  protected String copyright;
-  protected String license;
-  protected String language;
-  protected Calendar created;
-  protected Calendar lastmodified;
-  protected Calendar loaded;
-  protected List<String> creator;
-  protected List<String> description;
-  protected Map<String, Object> additionalInfo;
+  private String name;
+  private String teaser;
+  private String release;
+  private String copyright;
+  private String license;
+  private String language;
+  private Calendar created;
+  private Calendar lastmodified;
+  private Calendar loaded;
+  private List<String> creator;
+  private List<String> description;
+  private Map<String, Object> additionalInfo;
+
+  public MetaData() {
+    this(null);
+  }
+
+  public MetaData(final String id) {
+    this(id, null, null, null, null, null, null, null, null, null, null);
+  }
 
   public MetaData(final String id, final String name, final String teaser, final String release, final String copyright, final String license, final String language,
       final Calendar created, final Calendar lastmodified, final List<String> creator, final List<String> description) {
@@ -190,6 +198,8 @@ public class MetaData extends ValueObject implements Serializable {
   public void setDescription(final List<String> lst) {
     this.description = lst;
   }
+
+  // ----------------------------------------------------------------
 
   public Map<String, Object> getAdditionalInfo() {
     if (this.additionalInfo == null) {

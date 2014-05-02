@@ -48,7 +48,11 @@ public class Concept extends ValueObject implements Serializable {
   }
 
   public Concept(final String conceptID) {
-    this(conceptID, null, conceptID, null);
+    this(conceptID, null, conceptID);
+  }
+
+  public Concept(final String label, final String description, final String conceptID) {
+    this(label, description, conceptID, null);
   }
 
   public Concept(final String label, final String description, final String conceptID, final List<FeatureValue> values) {

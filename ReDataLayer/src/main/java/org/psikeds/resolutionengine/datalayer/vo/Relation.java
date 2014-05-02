@@ -18,6 +18,10 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
+import org.springframework.util.StringUtils;
+
 /**
  * A Relation is always attached to a Variant and defined as some logical
  * Operation/Dependency between two Features or a Feature and a constant Value,
@@ -136,5 +140,10 @@ public class Relation extends ValueObject implements Serializable {
 
   public void setConditionalEventID(final String conditionalEventID) {
     this.conditionalEventID = conditionalEventID;
+  }
+
+  @JsonIgnore
+  public boolean isConditional() {
+    return (!StringUtils.isEmpty(getConditionalEventID()));
   }
 }

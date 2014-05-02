@@ -48,15 +48,15 @@ public class Feature extends ValueObject implements Serializable {
   private List<FeatureValue> values;
 
   public Feature() {
-    this(null, null);
+    this(null);
   }
 
-  public Feature(final String featureID, final String type) {
-    this(featureID, null, featureID, type, null);
+  public Feature(final String featureID) {
+    this(featureID, null, featureID, null);
   }
 
-  public Feature(final String label, final String description, final String featureID, final String type, final String unit) {
-    this(label, description, featureID, type, unit, null);
+  public Feature(final String label, final String description, final String featureID, final String unit) {
+    this(label, description, featureID, null, unit, null);
   }
 
   public Feature(final String label, final String description, final String featureID, final String type, final String unit, final List<FeatureValue> values) {

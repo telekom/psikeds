@@ -47,6 +47,7 @@ public class Variant extends ValueObject implements Serializable {
   private boolean implicit;
   private List<String> featureIds;
   private List<FeatureValue> featureValues;
+  private List<Concept> concepts;
 
   public Variant() {
     this(null);
@@ -54,12 +55,6 @@ public class Variant extends ValueObject implements Serializable {
 
   public Variant(final String variantID) {
     this(variantID, null, variantID);
-  }
-
-  public Variant(final String variantID, final List<FeatureValue> featureValues) {
-    this(variantID);
-    setFeatureValues(featureValues);
-    calculateFeatureIds();
   }
 
   public Variant(final String label, final String description, final String variantID) {
@@ -72,14 +67,14 @@ public class Variant extends ValueObject implements Serializable {
 
   public Variant(final String label, final String description, final String variantID,
       final boolean singleton, final boolean implicit,
-      final List<FeatureValue> featureValues) {
-    this(label, description, variantID, singleton, implicit, null, featureValues);
-    calculateFeatureIds();
+      final List<String> featureIds, final List<FeatureValue> featureValues) {
+    this(label, description, variantID, singleton, implicit, featureIds, featureValues, null);
   }
 
   public Variant(final String label, final String description, final String variantID,
       final boolean singleton, final boolean implicit,
-      final List<String> featureIds, final List<FeatureValue> featureValues) {
+      final List<String> featureIds, final List<FeatureValue> featureValues,
+      final List<Concept> concepts) {
     super(variantID);
     setLabel(label);
     setDescription(description);
@@ -145,25 +140,13 @@ public class Variant extends ValueObject implements Serializable {
   }
 
   public boolean addFeatureId(final String featureId) {
-    return (!StringUtils.isEmpty(featureId) && getFeatureIds().add(featureId));
+    return (!StringUtils.isEmpty(featureId) && !getFeatureIds().contains(featureId) && getFeatureIds().add(featureId));
   }
 
   public void clearFeatureIds() {
     if (this.featureIds != null) {
       this.featureIds.clear();
       this.featureIds = null;
-    }
-  }
-
-  public void calculateFeatureIds() {
-    clearFeatureIds();
-    if (this.featureValues != null) {
-      for (final FeatureValue fv : this.featureValues) {
-        final String featureId = (fv == null ? null : fv.getFeatureID());
-        if (!StringUtils.isEmpty(featureId) && !getFeatureIds().contains(featureId)) {
-          addFeatureId(featureId);
-        }
-      }
     }
   }
 
@@ -188,6 +171,30 @@ public class Variant extends ValueObject implements Serializable {
     if (this.featureValues != null) {
       this.featureValues.clear();
       this.featureValues = null;
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  public List<Concept> getConcepts() {
+    if (this.concepts == null) {
+      this.concepts = new ArrayList<Concept>();
+    }
+    return this.concepts;
+  }
+
+  public void setConcepts(final List<Concept> concepts) {
+    this.concepts = concepts;
+  }
+
+  public boolean addConcept(final Concept value) {
+    return ((value != null) && getConcepts().add(value));
+  }
+
+  public void clearConcepts() {
+    if (this.concepts != null) {
+      this.concepts.clear();
+      this.concepts = null;
     }
   }
 }

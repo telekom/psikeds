@@ -20,6 +20,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -52,12 +54,9 @@ public class RelationParameter extends ValueObject implements Serializable {
     this(null, null);
   }
 
-  public RelationParameter(final String parameterID, final String variantID) {
-    this(parameterID, null, parameterID, variantID, null, null, null);
-  }
-
-  public RelationParameter(final String label, final String description, final String parameterID, final String variantID, final String featureValueID) {
-    this(label, description, parameterID, variantID, null, PARAMETER_TYPE_CONST_VALUE, featureValueID);
+  public RelationParameter(final String variantID, final String featureValueID) {
+    this(null, null, null, variantID, null, PARAMETER_TYPE_CONST_VALUE, featureValueID);
+    setId(variantID, featureValueID);
   }
 
   public RelationParameter(final String label, final String description, final String parameterID, final String variantID,
@@ -113,7 +112,17 @@ public class RelationParameter extends ValueObject implements Serializable {
   }
 
   public void setParameterType(final String parameterType) {
-    this.parameterType = parameterType;
+    if (PARAMETER_TYPE_FEATURE.equalsIgnoreCase(parameterType)) {
+      this.parameterType = PARAMETER_TYPE_FEATURE;
+    }
+    else {
+      this.parameterType = PARAMETER_TYPE_CONST_VALUE;
+    }
+  }
+
+  @JsonIgnore
+  public boolean isConstant() {
+    return PARAMETER_TYPE_CONST_VALUE.equals(getParameterType());
   }
 
   public String getParameterValue() {
