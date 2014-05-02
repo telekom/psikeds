@@ -29,15 +29,13 @@ public interface Transformer {
 
   org.psikeds.resolutionengine.datalayer.vo.Constituents xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Constituents xml);
 
-  org.psikeds.resolutionengine.datalayer.vo.Constitutes xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Constitutes xml);
+  org.psikeds.resolutionengine.datalayer.vo.Constituents xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Derivations xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Event xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Event xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Events xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Events xml);
 
-  org.psikeds.resolutionengine.datalayer.vo.Feature<?> xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Feature xml);
-
-  org.psikeds.resolutionengine.datalayer.vo.Features xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Features xml);
+  org.psikeds.resolutionengine.datalayer.vo.Feature xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Sensor xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Fulfills xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Fulfills xml);
 
@@ -47,19 +45,13 @@ public interface Transformer {
 
   org.psikeds.resolutionengine.datalayer.vo.Purposes xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Purposes xml);
 
-  org.psikeds.resolutionengine.datalayer.vo.Relation xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Relation xml);
+  org.psikeds.resolutionengine.datalayer.vo.RelationParameter xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Parameter xml);
 
-  org.psikeds.resolutionengine.datalayer.vo.RelationOperator xml2ValueObject(final org.psikeds.knowledgebase.jaxb.RelationOperator xml);
+  org.psikeds.resolutionengine.datalayer.vo.RelationOperator xml2ValueObject(final org.psikeds.knowledgebase.jaxb.RelationType xml);
 
-  org.psikeds.resolutionengine.datalayer.vo.RelationPartner xml2ValueObject(final org.psikeds.knowledgebase.jaxb.RelationPartner xml);
-
-  org.psikeds.resolutionengine.datalayer.vo.Relations xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Relations xml);
+  String xml2ValueObject(final org.psikeds.knowledgebase.jaxb.RelParamType xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Rule xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Rule xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Rules xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Rules xml);
-
-  org.psikeds.resolutionengine.datalayer.vo.Variant xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Variant xml);
-
-  org.psikeds.resolutionengine.datalayer.vo.Variants xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Variants xml);
 }

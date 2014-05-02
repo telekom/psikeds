@@ -15,17 +15,23 @@
 package org.psikeds.resolutionengine.datalayer.knowledgebase;
 
 import org.psikeds.resolutionengine.datalayer.vo.Alternatives;
+import org.psikeds.resolutionengine.datalayer.vo.Concept;
+import org.psikeds.resolutionengine.datalayer.vo.Concepts;
 import org.psikeds.resolutionengine.datalayer.vo.Constituents;
 import org.psikeds.resolutionengine.datalayer.vo.Constitutes;
 import org.psikeds.resolutionengine.datalayer.vo.Event;
 import org.psikeds.resolutionengine.datalayer.vo.Events;
 import org.psikeds.resolutionengine.datalayer.vo.Feature;
+import org.psikeds.resolutionengine.datalayer.vo.FeatureValue;
+import org.psikeds.resolutionengine.datalayer.vo.FeatureValues;
 import org.psikeds.resolutionengine.datalayer.vo.Features;
 import org.psikeds.resolutionengine.datalayer.vo.Fulfills;
 import org.psikeds.resolutionengine.datalayer.vo.MetaData;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
 import org.psikeds.resolutionengine.datalayer.vo.Purposes;
 import org.psikeds.resolutionengine.datalayer.vo.Relation;
+import org.psikeds.resolutionengine.datalayer.vo.RelationParameter;
+import org.psikeds.resolutionengine.datalayer.vo.RelationParameters;
 import org.psikeds.resolutionengine.datalayer.vo.Relations;
 import org.psikeds.resolutionengine.datalayer.vo.Rule;
 import org.psikeds.resolutionengine.datalayer.vo.Rules;
@@ -42,6 +48,10 @@ public interface KnowledgeBase {
 
   Features getFeatures();
 
+  FeatureValues getFeatureValues();
+
+  Concepts getConcepts();
+
   Purposes getPurposes();
 
   Variants getVariants();
@@ -54,13 +64,19 @@ public interface KnowledgeBase {
 
   Rules getRules();
 
+  RelationParameters getRelationParameters();
+
   Relations getRelations();
 
   // -------------------------------
   // get Objects by ID
   // -------------------------------
 
-  Feature<?> getFeature(String featureId);
+  Feature getFeature(String featureId);
+
+  FeatureValue getFeatureValue(String featureValueID);
+
+  Concept getConcept(String conceptID);
 
   Purpose getPurpose(String purposeId);
 
@@ -70,6 +86,8 @@ public interface KnowledgeBase {
 
   Rule getRule(String ruleId);
 
+  RelationParameter getRelationParameter(String parameterID);
+
   Relation getRelation(String relationId);
 
   // -------------------------------
@@ -78,15 +96,21 @@ public interface KnowledgeBase {
 
   Fulfills getFulfills(String purposeId);
 
-  long getQuantity(String purposeId, String variantId);
-
   Constitutes getConstitutes(String variantId);
 
+  long getQuantity(String variantId, String purposeId);
+
   Features getFeatures(String variantId);
+
+  FeatureValues getFeatureValuesOfConcept(String conceptID);
+
+  FeatureValues getFeatureValuesWithinRange(String featureId, String rangeID);
 
   Events getAttachedEvents(String variantId);
 
   Rules getAttachedRules(String variantId);
+
+  RelationParameters getAttachedRelationParameters(String variantId);
 
   Relations getAttachedRelations(String variantId);
 
@@ -105,6 +129,10 @@ public interface KnowledgeBase {
   boolean isConstitutedBy(String variantId, String purposeId);
 
   boolean hasFeature(String variantId, String featureId);
+
+  boolean hasFeatureValue(String featureID, String featureValueID);
+
+  boolean isIncludedIn(String featureValueID, String conceptID);
 
   boolean isValid();
 }

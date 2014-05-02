@@ -24,11 +24,13 @@ import org.apache.commons.lang.StringUtils;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.ValidationException;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.Validator;
+import org.psikeds.resolutionengine.datalayer.vo.Event;
 import org.psikeds.resolutionengine.datalayer.vo.Feature;
+import org.psikeds.resolutionengine.datalayer.vo.FeatureValue;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
 import org.psikeds.resolutionengine.datalayer.vo.Relation;
 import org.psikeds.resolutionengine.datalayer.vo.RelationOperator;
-import org.psikeds.resolutionengine.datalayer.vo.RelationPartner;
+import org.psikeds.resolutionengine.datalayer.vo.RelationParameter;
 import org.psikeds.resolutionengine.datalayer.vo.Relations;
 import org.psikeds.resolutionengine.datalayer.vo.Variant;
 
@@ -96,23 +98,20 @@ public class RelationValidator implements Validator {
             valid = false;
             LOGGER.warn("Relation {} contains no Relation-Operator!", rid);
           }
+          final String ceid = r.getConditionalEventID();
+          if (!StringUtils.isEmpty(ceid)) {
+            final Event e = kb.getEvent(ceid);
+            if ((e == null) || !ceid.equals(e.getEventID())) {
+              valid = false;
+              LOGGER.warn("Conditional-Event-ID {} referenced by Relation {} does not exists.", ceid, rid);
+            }
+          }
           // --- Step 2: check left and right relation partner ---
-          final RelationPartner left = r.getLeftSide();
-          final RelationPartner right = r.getRightSide();
+          final RelationParameter left = r.getLeftSide();
+          final RelationParameter right = r.getRightSide();
           if (!checkRelationPartner(kb, rid, vid, left) || !checkRelationPartner(kb, rid, vid, right)) {
             valid = false;
             continue;
-          }
-          // --- Step 3: check that both sides of the relation are features of the same type
-          final String leftFeatureId = left.getFeatureID();
-          final Feature<?> leftFeature = (StringUtils.isEmpty(leftFeatureId) ? null : kb.getFeature(leftFeatureId));
-          final String leftValueType = (leftFeature == null ? null : leftFeature.getValueType());
-          final String rightFeatureId = right.getFeatureID();
-          final Feature<?> rightFeature = (StringUtils.isEmpty(rightFeatureId) ? null : kb.getFeature(rightFeatureId));
-          final String rightValueType = (rightFeature == null ? null : rightFeature.getValueType());
-          if (StringUtils.isEmpty(leftValueType) || StringUtils.isEmpty(rightValueType) || !rightValueType.equals(leftValueType)) {
-            valid = false;
-            LOGGER.warn("Left and right side of Relation {} have incompatible Types: {} vs. {}", rid, leftValueType, rightValueType);
           }
         }
       }
@@ -128,28 +127,43 @@ public class RelationValidator implements Validator {
 
   //----------------------------------------------------------------
 
-  private boolean checkRelationPartner(final KnowledgeBase kb, final String relationId, final String rootVariantId, final RelationPartner rp) {
-    if (rp == null) {
-      LOGGER.warn("Relation-Partner of Relation {} is missing.", relationId);
+  private boolean checkRelationPartner(final KnowledgeBase kb, final String relationId, final String rootVariantId, final RelationParameter rp) {
+    final String parameterID = (rp == null ? null : rp.getParameterID());
+    if (StringUtils.isEmpty(parameterID)) {
+      LOGGER.warn("Relation-Parameter of Relation {} is missing.", relationId);
       return false;
     }
-    final String featureId = rp.getFeatureID();
-    final Feature<?> feature = (StringUtils.isEmpty(featureId) ? null : kb.getFeature(featureId));
-    if (feature == null) {
-      LOGGER.warn("Feature {} referenced by Relation-Partner of Relation {} does not exist!", featureId, relationId);
+    final RelationParameter lookup = kb.getRelationParameter(parameterID);
+    if ((lookup == null) || !parameterID.equals(lookup.getParameterID())) {
+      LOGGER.warn("Relation-Parameter {} referenced by Relation {} does not exist!", parameterID, relationId);
       return false;
     }
-    final String type = feature.getValueType();
-    if (StringUtils.isEmpty(type)) {
-      LOGGER.warn("Feature {} referenced by Relation-Partner of Relation {} has no Value-Type!", featureId, relationId);
+    final String paramValue = rp.getParameterValue();
+    if (StringUtils.isEmpty(paramValue)) {
+      LOGGER.warn("Relation-Parameter {} of Relation {} has no Value.", paramValue, relationId);
       return false;
     }
-    final List<String> ctx = rp.getContext();
-    if ((ctx == null) || ctx.isEmpty()) {
-      LOGGER.warn("Relation-Partner of Relation {} has no Context.", relationId);
-      return false;
+    if (rp.isConstant()) {
+      final FeatureValue fv = kb.getFeatureValue(paramValue);
+      if ((fv == null) || !paramValue.equals(fv.getFeatureValueID())) {
+        LOGGER.warn("Feature-Value {} referenced by Relation-Parameter {} of Relation {} does not exist!", paramValue, parameterID, relationId);
+        return false;
+      }
+      return true;
     }
-    return checkContextPath(kb, relationId, rootVariantId, ctx, featureId);
+    else {
+      final Feature f = kb.getFeature(paramValue);
+      if ((f == null) || !paramValue.equals(f.getFeatureID())) {
+        LOGGER.warn("Feature-ID {} referenced by Relation-Parameter {} of Relation {} does not exist!", paramValue, parameterID, relationId);
+        return false;
+      }
+      final List<String> ctx = rp.getContext();
+      if ((ctx == null) || ctx.isEmpty()) {
+        LOGGER.warn("Relation-Parameter {} of Relation {} has no Context-Path.", parameterID, relationId);
+        return false;
+      }
+      return checkContextPath(kb, relationId, rootVariantId, ctx, paramValue);
+    }
   }
 
   private boolean checkContextPath(final KnowledgeBase kb, final String relationId, final String rootVariantId, final List<String> ctx, final String featureId) {

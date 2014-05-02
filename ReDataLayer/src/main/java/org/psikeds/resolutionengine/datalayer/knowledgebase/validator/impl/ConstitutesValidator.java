@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.ValidationException;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.Validator;
+import org.psikeds.resolutionengine.datalayer.vo.Component;
 import org.psikeds.resolutionengine.datalayer.vo.Constituents;
 import org.psikeds.resolutionengine.datalayer.vo.Constitutes;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
@@ -68,16 +69,18 @@ public class ConstitutesValidator implements Validator {
               LOGGER.warn("Variant {} has no Label!", vid);
             }
           }
-          final List<String> purpids = c.getPurposeID();
-          if ((purpids == null) || purpids.isEmpty()) {
+
+          final List<Component> components = c.getComponents();
+          if ((components == null) || components.isEmpty()) {
             valid = false;
-            LOGGER.warn("No constituting Purposes of VariantID: {}", vid);
+            LOGGER.warn("No constituting Components/Purposes for VariantID: {}", vid);
           }
           else {
-            for (final String pid : purpids) {
+            for (final Component comp : components) {
+              final String pid = (comp == null ? null : comp.getPurposeID());
               if (StringUtils.isEmpty(pid)) {
                 valid = false;
-                LOGGER.warn("Empty PurposeID for VariantID: {}", vid);
+                LOGGER.warn("Empty PurposeID within Component for VariantID: {}", vid);
               }
               else {
                 final Purpose p = kb.getPurpose(pid);
@@ -94,6 +97,11 @@ public class ConstitutesValidator implements Validator {
                     valid = false;
                     LOGGER.warn("Purpose {} is marked as Root-Purpose but constituting Variant {}", pid, vid);
                   }
+                }
+                final long qty = comp.getQuantity();
+                if (qty < Component.MINIMUM_QUANTITY) {
+                  valid = false;
+                  LOGGER.warn("Illegal Quantity: " + qty);
                 }
               }
             }

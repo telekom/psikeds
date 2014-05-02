@@ -96,11 +96,6 @@ public class FulfillsValidator implements Validator {
               }
             }
           }
-          final long qty = f.getQuantity();
-          if (qty < Fulfills.MINIMUM_QUANTITY) {
-            valid = false;
-            LOGGER.warn("Illegal Quantity: " + qty);
-          }
         }
       }
       if (!valid) {
