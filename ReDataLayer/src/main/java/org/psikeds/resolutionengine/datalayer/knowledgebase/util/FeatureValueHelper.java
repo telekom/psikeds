@@ -58,7 +58,7 @@ public abstract class FeatureValueHelper {
     }
     else if (Feature.VALUE_TYPE_INTEGER.equalsIgnoreCase(fv.getType())) {
       try {
-        final int i = Integer.parseInt(fv.getValue());
+        final long l = Long.parseLong(fv.getValue());
         return true;
       }
       catch (final Exception ex) {
@@ -125,28 +125,28 @@ public abstract class FeatureValueHelper {
 
   public static List<FeatureValue> calculateRange(final String featureID, final String rangeID, final String type, final String min, final String max, final String inc, final int maxSize) {
     if (Feature.VALUE_TYPE_INTEGER.equalsIgnoreCase(type)) {
-      int iInc;
-      int iMin;
-      int iMax;
+      long lInc;
+      long lMin;
+      long lMax;
       try {
-        iInc = Integer.parseInt(inc.trim());
+        lInc = Long.parseLong(inc.trim());
       }
       catch (final Exception ex) {
-        iInc = DEFAULT_RANGE_STEP;
+        lInc = DEFAULT_RANGE_STEP;
       }
       try {
-        iMin = Integer.parseInt(min.trim());
+        lMin = Long.parseLong(min.trim());
       }
       catch (final Exception ex) {
         throw new IllegalArgumentException("Not an Integer Value: " + min, ex);
       }
       try {
-        iMax = Integer.parseInt(max.trim());
+        lMax = Long.parseLong(max.trim());
       }
       catch (final Exception ex) {
         throw new IllegalArgumentException("Not an Integer Value: " + max, ex);
       }
-      return calculateIntegerRange(featureID, rangeID, iMin, iMax, iInc, maxSize);
+      return calculateIntegerRange(featureID, rangeID, lMin, lMax, lInc, maxSize);
     }
     else if (Feature.VALUE_TYPE_FLOAT.equalsIgnoreCase(type)) {
       float fInc;
@@ -182,11 +182,11 @@ public abstract class FeatureValueHelper {
 
   // ----------------------------------------------------------------
 
-  public static List<FeatureValue> calculateIntegerRange(final String featureID, final String rangeID, final int min, final int max, final int inc) {
+  public static List<FeatureValue> calculateIntegerRange(final String featureID, final String rangeID, final long min, final long max, final long inc) {
     return calculateIntegerRange(featureID, rangeID, min, max, inc, MAXIMUM_RANGE_SIZE);
   }
 
-  public static List<FeatureValue> calculateIntegerRange(final String featureID, final String rangeID, final int min, final int max, final int inc, final int maxSize) {
+  public static List<FeatureValue> calculateIntegerRange(final String featureID, final String rangeID, final long min, final long max, final long inc, final long maxSize) {
     if (maxSize > MAXIMUM_RANGE_SIZE) {
       throw new IllegalArgumentException("Max-Size of Range must not be larger than: " + MAXIMUM_RANGE_SIZE);
     }
@@ -197,11 +197,11 @@ public abstract class FeatureValueHelper {
       throw new IllegalArgumentException("Inc must be larger than: " + MINIMUM_RANGE_STEP);
     }
     final List<FeatureValue> lst = new ArrayList<FeatureValue>();
-    int count = 1;
-    for (int i = min; (i <= max) && (count <= maxSize); i = i + inc) {
-      final String val = String.valueOf(i);
+    long count = 1;
+    for (long l = min; (l <= max) && (count <= maxSize); l = l + inc) {
+      final String val = String.valueOf(l);
       final String num = String.valueOf(count);
-      final String featureValueID = rangeID + "i" + num;
+      final String featureValueID = rangeID + "I" + num;
       final FeatureValue fv = new FeatureValue(featureID, featureValueID, Feature.VALUE_TYPE_INTEGER, val);
       lst.add(fv);
       count++;
@@ -230,11 +230,21 @@ public abstract class FeatureValueHelper {
     for (float f = min; (f <= max) && (count <= maxSize); f = f + inc) {
       final String val = String.valueOf(f);
       final String num = String.valueOf(count);
-      final String featureValueID = rangeID + "f" + num;
+      final String featureValueID = rangeID + "F" + num;
       final FeatureValue fv = new FeatureValue(featureID, featureValueID, Feature.VALUE_TYPE_FLOAT, val);
       lst.add(fv);
       count++;
     }
     return lst;
+  }
+
+  // ----------------------------------------------------------------
+
+  public static boolean isWithinRange(final String featureId, final String rangeID, final FeatureValue val) {
+    if ((val == null) || StringUtils.isEmpty(featureId) || StringUtils.isEmpty(rangeID) || StringUtils.isEmpty(val.getFeatureValueID())) {
+      return false;
+    }
+    // when we generate values for ranges the feature-value-id will always start with the correpsonding range-id
+    return (featureId.equals(val.getFeatureID()) && val.getFeatureValueID().startsWith(rangeID));
   }
 }
