@@ -21,6 +21,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -31,6 +33,11 @@ import org.apache.commons.lang.StringUtils;
  * 
  * Note 2: Variant-ID, Premise-Event-IDs and Conclusion-Event-ID must point to
  * existing Objects!
+ * 
+ * IMPORTANT!!!
+ * If there is exactly one Premise and this single Premise is identical to the
+ * Nexus/Variant-ID, then this Premise is self-fulfilling and must not be interpreted
+ * as an Event!!!
  * 
  * @author marco@juliano.de
  * 
@@ -125,5 +132,16 @@ public class Rule extends ValueObject implements Serializable {
 
   public void setPremiseEventID(final List<String> premiseEventID) {
     this.premiseEventID = premiseEventID;
+  }
+
+  @JsonIgnore
+  public boolean isSelfFulfilling() {
+    if ((this.premiseEventID != null) && (this.premiseEventID.size() == 1)) {
+      final String premise = this.premiseEventID.get(0);
+      if (!StringUtils.isEmpty(premise) && premise.equals(this.variantID)) {
+        return true;
+      }
+    }
+    return false;
   }
 }
