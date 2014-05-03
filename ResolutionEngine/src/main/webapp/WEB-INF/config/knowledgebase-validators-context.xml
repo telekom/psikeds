@@ -23,6 +23,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
   <bean id="FeatureValidator" class="org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.FeatureValidator" />
+  <bean id="ConceptValidator" class="org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.ConceptValidator" />
   <bean id="FulfillsValidator" class="org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.FulfillsValidator" />
   <bean id="ConstitutesValidator" class="org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.ConstitutesValidator" />
   <bean id="VariantValidator" class="org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.VariantValidator" />
@@ -32,6 +33,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 
   <util:list id="ValidatorChain">
     <ref bean="FeatureValidator" />
+    <ref bean="ConceptValidator" />
     <ref bean="FulfillsValidator" />
     <ref bean="ConstitutesValidator" />
     <ref bean="VariantValidator" />
