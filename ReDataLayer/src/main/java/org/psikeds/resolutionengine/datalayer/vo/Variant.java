@@ -45,7 +45,7 @@ public class Variant extends ValueObject implements Serializable {
   private String description;
   private boolean singleton;
   private boolean implicit;
-  private List<String> featureIds;
+  private List<String> featureIds; // distinct features referenced by all values and concepts
   private List<FeatureValue> featureValues;
   private List<Concept> concepts;
 
@@ -82,6 +82,7 @@ public class Variant extends ValueObject implements Serializable {
     setImplicit(implicit);
     setFeatureIds(featureIds);
     setFeatureValues(featureValues);
+    setConcepts(concepts);
   }
 
   // ----------------------------------------------------------------
