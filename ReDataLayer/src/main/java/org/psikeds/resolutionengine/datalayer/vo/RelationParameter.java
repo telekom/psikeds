@@ -40,8 +40,8 @@ public class RelationParameter extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  public static final String PARAMETER_TYPE_FEATURE = "feature";
-  public static final String PARAMETER_TYPE_CONST_VALUE = "value";
+  public static final String PARAMETER_TYPE_FEATURE_VALUE = "feature";
+  public static final String PARAMETER_TYPE_CONSTANT_VALUE = "constant";
 
   private String label;
   private String description;
@@ -55,13 +55,13 @@ public class RelationParameter extends ValueObject implements Serializable {
   }
 
   public RelationParameter(final String variantID, final String featureValueID) {
-    this(null, null, null, variantID, null, PARAMETER_TYPE_CONST_VALUE, featureValueID);
+    this(null, null, null, variantID, null, PARAMETER_TYPE_CONSTANT_VALUE, featureValueID);
     setId(variantID, featureValueID);
   }
 
   public RelationParameter(final String label, final String description, final String parameterID, final String variantID,
       final List<String> context, final String featureID) {
-    this(label, description, parameterID, variantID, context, PARAMETER_TYPE_FEATURE, featureID);
+    this(label, description, parameterID, variantID, context, PARAMETER_TYPE_FEATURE_VALUE, featureID);
   }
 
   public RelationParameter(final String label, final String description, final String parameterID, final String variantID,
@@ -112,17 +112,17 @@ public class RelationParameter extends ValueObject implements Serializable {
   }
 
   public void setParameterType(final String parameterType) {
-    if (PARAMETER_TYPE_FEATURE.equalsIgnoreCase(parameterType)) {
-      this.parameterType = PARAMETER_TYPE_FEATURE;
+    if (PARAMETER_TYPE_FEATURE_VALUE.equalsIgnoreCase(parameterType)) {
+      this.parameterType = PARAMETER_TYPE_FEATURE_VALUE;
     }
     else {
-      this.parameterType = PARAMETER_TYPE_CONST_VALUE;
+      this.parameterType = PARAMETER_TYPE_CONSTANT_VALUE;
     }
   }
 
   @JsonIgnore
   public boolean isConstant() {
-    return PARAMETER_TYPE_CONST_VALUE.equals(getParameterType());
+    return PARAMETER_TYPE_CONSTANT_VALUE.equals(getParameterType());
   }
 
   public String getParameterValue() {
