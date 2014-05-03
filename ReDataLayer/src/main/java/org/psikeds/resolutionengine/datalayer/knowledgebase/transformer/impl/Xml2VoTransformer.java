@@ -68,6 +68,7 @@ public class Xml2VoTransformer implements Transformer {
       for (final org.psikeds.knowledgebase.jaxb.Fulfills f : lst) {
         vo.addFulfills(xml2ValueObject(f));
       }
+      LOGGER.trace("xml2ValueObject: xml = {}\n--> vo = {}", xml, vo);
     }
     return vo;
   }
@@ -101,6 +102,7 @@ public class Xml2VoTransformer implements Transformer {
           vo.addComponent(xml2ValueObject(comp));
         }
       }
+      LOGGER.trace("xml2ValueObject: xml = {}\n--> vo = {}", xml, vo);
     }
     return vo;
   }
@@ -145,6 +147,7 @@ public class Xml2VoTransformer implements Transformer {
           vo.addComponent(new Component(purposeID, quantity));
         }
       }
+      LOGGER.trace("xml2ValueObject: xml = {}\n--> vo = {}", xml, vo);
     }
     return vo;
   }
@@ -228,20 +231,20 @@ public class Xml2VoTransformer implements Transformer {
       vo = new Feature(label, description, featureID, unit);
       final org.psikeds.knowledgebase.jaxb.Values values = xml.getValues();
       if (values != null) {
-        if (values.getStrValue() != null) {
-          vo.setType(Feature.VALUE_TYPE_STRING);
+        if ((values.getStrValue() != null) && !values.getStrValue().isEmpty()) {
           for (final org.psikeds.knowledgebase.jaxb.SensedStringValue strval : values.getStrValue()) {
             if (strval != null) {
+              vo.setType(Feature.VALUE_TYPE_STRING);
               vo.addValue(strval.getId(), strval.getValue());
             }
           }
         }
-        if (values.getIntValueOrIntRange() != null) {
-          vo.setType(Feature.VALUE_TYPE_INTEGER);
+        if ((values.getIntValueOrIntRange() != null) && !values.getIntValueOrIntRange().isEmpty()) {
           for (final Serializable serial : values.getIntValueOrIntRange()) {
             if (serial instanceof org.psikeds.knowledgebase.jaxb.SensedIntValue) {
               final org.psikeds.knowledgebase.jaxb.SensedIntValue intval = (org.psikeds.knowledgebase.jaxb.SensedIntValue) serial;
               final long val = (intval.getValue() == null ? 0 : intval.getValue().longValue());
+              vo.setType(Feature.VALUE_TYPE_INTEGER);
               vo.addValue(intval.getId(), String.valueOf(val));
             }
             else if (serial instanceof org.psikeds.knowledgebase.jaxb.IntRange) {
@@ -251,6 +254,7 @@ public class Xml2VoTransformer implements Transformer {
               final long max = (intrange.getMax() == null ? 0 : intrange.getMax().longValue());
               final long inc = (intrange.getInc() == null ? FeatureValueHelper.DEFAULT_RANGE_STEP : intrange.getInc().longValue());
               final List<FeatureValue> intvallst = FeatureValueHelper.calculateIntegerRange(featureID, rangeID, min, max, inc);
+              vo.setType(Feature.VALUE_TYPE_INTEGER);
               vo.addValue(intvallst);
             }
             else {
@@ -258,11 +262,11 @@ public class Xml2VoTransformer implements Transformer {
             }
           }
         }
-        if (values.getFloatValueOrFloatRange() != null) {
-          vo.setType(Feature.VALUE_TYPE_FLOAT);
+        if ((values.getFloatValueOrFloatRange() != null) && !values.getFloatValueOrFloatRange().isEmpty()) {
           for (final Serializable serial : values.getFloatValueOrFloatRange()) {
             if (serial instanceof org.psikeds.knowledgebase.jaxb.SensedFloatValue) {
               final org.psikeds.knowledgebase.jaxb.SensedFloatValue floatval = (org.psikeds.knowledgebase.jaxb.SensedFloatValue) serial;
+              vo.setType(Feature.VALUE_TYPE_FLOAT);
               vo.addValue(floatval.getId(), String.valueOf(floatval.getValue()));
             }
             else if (serial instanceof org.psikeds.knowledgebase.jaxb.FloatRange) {
@@ -272,6 +276,7 @@ public class Xml2VoTransformer implements Transformer {
               final float max = (floatrange.getMax() == null ? 0 : floatrange.getMax().floatValue());
               final float inc = (floatrange.getInc() == null ? FeatureValueHelper.DEFAULT_RANGE_STEP : floatrange.getInc().floatValue());
               final List<FeatureValue> floatvallst = FeatureValueHelper.calculateFloatRange(featureID, rangeID, min, max, inc);
+              vo.setType(Feature.VALUE_TYPE_FLOAT);
               vo.addValue(floatvallst);
             }
             else {
@@ -343,22 +348,6 @@ public class Xml2VoTransformer implements Transformer {
     return vo;
   }
 
-//  /**
-//   * @param xml
-//   * @return vo
-//   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer#xml2ValueObject(org.psikeds.knowledgebase.jaxb.Relation)
-//   */
-//  @Override
-//  public Relation xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Relation xml) {
-//    Relation vo = null;
-//    if (xml != null) {
-//      vo = new Relation(xml.getLabel(), xml.getDescription(), xml.getId(), xml.getVariantID(),
-//          xml2ValueObject(xml.getLeft()), xml2ValueObject(xml.getRight()), xml2ValueObject(xml.getOperator()));
-//      LOGGER.trace("xml2ValueObject: xml = {}\n--> vo = {}", xml, vo);
-//    }
-//    return vo;
-//  }
-
   /**
    * @param xml
    * @return vo
@@ -400,32 +389,13 @@ public class Xml2VoTransformer implements Transformer {
   public String xml2ValueObject(final org.psikeds.knowledgebase.jaxb.RelParamType xml) {
     String type;
     if ((xml != null) && org.psikeds.knowledgebase.jaxb.RelParamType.V_VAL.value().equals(xml.value())) {
-      type = RelationParameter.PARAMETER_TYPE_CONST_VALUE;
+      type = RelationParameter.PARAMETER_TYPE_FEATURE_VALUE;
     }
     else {
-      type = RelationParameter.PARAMETER_TYPE_CONST_VALUE;
+      type = RelationParameter.PARAMETER_TYPE_CONSTANT_VALUE;
     }
     return type;
   }
-
-//  /**
-//   * @param xml
-//   * @return vo
-//   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer#xml2ValueObject(org.psikeds.knowledgebase.jaxb.Relations)
-//   */
-//  @Override
-//  public Relations xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Relations xml) {
-//    Relations vo = null;
-//    if (xml != null) {
-//      vo = new Relations();
-//      final List<org.psikeds.knowledgebase.jaxb.Relation> lst = xml.getRelation();
-//      for (final org.psikeds.knowledgebase.jaxb.Relation r : lst) {
-//        vo.addRelation(xml2ValueObject(r));
-//      }
-//      LOGGER.trace("xml2ValueObject: xml = {}\n--> vo = {}", xml, vo);
-//    }
-//    return vo;
-//  }
 
   /**
    * @param xml
@@ -455,33 +425,4 @@ public class Xml2VoTransformer implements Transformer {
     }
     return vo;
   }
-
-//  /**
-//   * @param xml
-//   * @return vo
-//   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer#xml2ValueObject(org.psikeds.knowledgebase.jaxb.Variant)
-//   */
-//  @Override
-//  public Variant xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Variant xml) {
-//    return (xml == null ? null : new Variant(xml.getLabel(), xml.getDescription(), xml.getId(), xml.getHasFeatures(), xml.getDefaultValue()));
-//  }
-//
-//  /**
-//   * @param xml
-//   * @return vo
-//   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer#xml2ValueObject(org.psikeds.knowledgebase.jaxb.Variants)
-//   */
-//  @Override
-//  public Variants xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Variants xml) {
-//    Variants vo = null;
-//    if (xml != null) {
-//      vo = new Variants();
-//      final List<org.psikeds.knowledgebase.jaxb.Variant> lst = xml.getVariant();
-//      for (final org.psikeds.knowledgebase.jaxb.Variant v : lst) {
-//        vo.addVariant(xml2ValueObject(v));
-//      }
-//      LOGGER.trace("xml2ValueObject: xml = {}\n--> vo = {}", xml, vo);
-//    }
-//    return vo;
-//  }
 }

@@ -111,6 +111,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   private boolean valid;
   private boolean failOnUnexpected;
   private boolean ignoreImplicitVariants;
+  private boolean ignoreDerivations;
   private boolean ignoreSecondaryConcepts;
 
   public XmlKnowledgeBase() {
@@ -122,16 +123,18 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   }
 
   public XmlKnowledgeBase(final Transformer trans, final Map<String, Object> knowledge) {
-    this(trans, knowledge, false, true, true, true);
+    this(trans, knowledge, false, true, false, true, true);
   }
 
-  public XmlKnowledgeBase(final Transformer trans, final Map<String, Object> knowledge, final boolean valid, final boolean failOnUnexpected, final boolean ignoreImplicitVariants,
-      final boolean ignoreSecondaryConcepts) {
+  public XmlKnowledgeBase(final Transformer trans, final Map<String, Object> knowledge,
+      final boolean valid, final boolean failOnUnexpected,
+      final boolean ignoreImplicitVariants, final boolean ignoreDerivations, final boolean ignoreSecondaryConcepts) {
     setTransformer(trans);
     setKnowledge(knowledge);
     setValid(valid);
     setFailOnUnexpected(failOnUnexpected);
     setIgnoreImplicitVariants(ignoreImplicitVariants);
+    setIgnoreDerivations(ignoreDerivations);
     setIgnoreSecondaryConcepts(ignoreSecondaryConcepts);
   }
 
@@ -161,6 +164,10 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
 
   public void setIgnoreImplicitVariants(final boolean ignoreImplicitVariants) {
     this.ignoreImplicitVariants = ignoreImplicitVariants;
+  }
+
+  public void setIgnoreDerivations(final boolean ignoreDerivations) {
+    this.ignoreDerivations = ignoreDerivations;
   }
 
   public void setIgnoreSecondaryConcepts(final boolean ignoreSecondaryConcepts) {
@@ -617,6 +624,29 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
 
   /**
    * @param variantId
+   * @param conceptID
+   * @return true if variant has this concept
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#hasConcept(java.lang.String,
+   *      java.lang.String)
+   */
+  @Override
+  public boolean hasConcept(final String variantId, final String conceptID) {
+    if (!StringUtils.isEmpty(variantId) && !StringUtils.isEmpty(conceptID)) {
+      final Variant var = getVariant(variantId);
+      final List<Concept> lst = (var == null ? null : var.getConcepts());
+      if ((lst != null) && !lst.isEmpty()) {
+        for (final Concept idx : lst) {
+          if ((idx != null) && conceptID.equals(idx.getConceptID())) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * @param variantId
    * @param featureId
    * @return true if variant has this feature
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#hasFeature(java.lang.String,
@@ -624,11 +654,15 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
    */
   @Override
   public boolean hasFeature(final String variantId, final String featureId) {
-    final Features feats = getFeatures(variantId);
-    final List<Feature> lst = feats.getFeature();
-    for (final Feature idx : lst) {
-      if ((idx != null) && featureId.equals(idx.getFeatureID())) {
-        return true;
+    if (!StringUtils.isEmpty(variantId) && !StringUtils.isEmpty(featureId)) {
+      final Features feats = getFeatures(variantId);
+      final List<Feature> lst = (feats == null ? null : feats.getFeature());
+      if ((lst != null) && !lst.isEmpty()) {
+        for (final Feature idx : lst) {
+          if ((idx != null) && featureId.equals(idx.getFeatureID())) {
+            return true;
+          }
+        }
       }
     }
     return false;
@@ -843,9 +877,11 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
               if (StringUtils.isEmpty(featureID) || !featureID.equals(fv.getFeatureID())) {
                 throw new IllegalArgumentException("Illegal Reference from Concept " + cid + " to Feature-ID " + featureID);
               }
+              c.addFeatureId(featureID);
               c.addValue(fv); // do not create a new object but save existing reference
             }
           }
+          allConcepts.addConcept(c);
           save(KEY_PREFIX_CONCEPT, cid, c);
         }
       }
@@ -945,6 +981,9 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
                   throw new IllegalArgumentException("Illegal Reference from Variant " + vid + " to primary Concept " + conceptID);
                 }
                 v.addConcept(c);
+                for (final String fid : c.getFeatureIds()) {
+                  v.addFeatureId(fid);
+                }
               }
             }
           }
@@ -964,6 +1003,9 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
                   throw new IllegalArgumentException("Illegal Reference from Variant " + vid + " to secondary Concept " + conceptID);
                 }
                 v.addConcept(c);
+                for (final String fid : c.getFeatureIds()) {
+                  v.addFeatureId(fid);
+                }
               }
             }
           }
@@ -1017,7 +1059,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
       final List<Constitutes> lst = cons.getConstitutes();
       for (final Constitutes c : lst) {
         final String variantId = (c == null ? null : c.getVariantID());
-        save(KEY_PREFIX_CONSTITUTES, variantId, cons);
+        save(KEY_PREFIX_CONSTITUTES, variantId, c);
       }
     }
   }
@@ -1025,7 +1067,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   private void setDerivations(final org.psikeds.knowledgebase.jaxb.Derivations derivations) {
     final List<org.psikeds.knowledgebase.jaxb.Setup> setup = (derivations == null ? null : derivations.getSetup());
     if ((setup != null) && !setup.isEmpty()) {
-      if (this.ignoreImplicitVariants) {
+      if (this.ignoreDerivations || this.ignoreImplicitVariants) {
         LOGGER.info("Implicit Variants and Derivations currently not supported, ignoring this XML-Section!");
       }
       else {
@@ -1092,35 +1134,43 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
 
   private void setRelations(final org.psikeds.knowledgebase.jaxb.Relations relations) {
     final Relations allRelations = new Relations();
-    final List<org.psikeds.knowledgebase.jaxb.Relation> rellst = (relations == null ? null : relations.getRelation());
-    if ((rellst != null) && !rellst.isEmpty()) {
-      for (final org.psikeds.knowledgebase.jaxb.Relation rel : rellst) {
-        final String relationID = (rel == null ? null : rel.getId());
-        if (!StringUtils.isEmpty(relationID)) {
-          final String label = rel.getLabel();
-          final String description = rel.getDescription();
-          final String variantID = rel.getNexusRef();
-          final String conditionalEventID = rel.getCondRef();
-          final RelationOperator operator = this.trans.xml2ValueObject(rel.getRelType());
-          final RelationParameter leftSide = createRelationParameter(variantID, this.trans.xml2ValueObject(rel.getLpType()), rel.getLpRef());
-          final RelationParameter rightSide = createRelationParameter(variantID, this.trans.xml2ValueObject(rel.getRpType()), rel.getRpRef());
-          final Relation r = new Relation(label, description, relationID, variantID, leftSide, rightSide, operator, conditionalEventID);
-          save(KEY_PREFIX_RELATION, relationID, r);
-          attachRelation(r);
+    try {
+      LOGGER.trace("--> setRelations()");
+      final List<org.psikeds.knowledgebase.jaxb.Relation> rellst = (relations == null ? null : relations.getRelation());
+      if ((rellst != null) && !rellst.isEmpty()) {
+        for (final org.psikeds.knowledgebase.jaxb.Relation rel : rellst) {
+          final String relationID = (rel == null ? null : rel.getId());
+          if (!StringUtils.isEmpty(relationID)) {
+            final String label = rel.getLabel();
+            final String description = rel.getDescription();
+            final String variantID = rel.getNexusRef();
+            final String conditionalEventID = rel.getCondRef();
+            final RelationOperator operator = this.trans.xml2ValueObject(rel.getRelType());
+            final RelationParameter leftSide = createRelationParameter(variantID, this.trans.xml2ValueObject(rel.getLpType()), rel.getLpRef());
+            final RelationParameter rightSide = createRelationParameter(variantID, this.trans.xml2ValueObject(rel.getRpType()), rel.getRpRef());
+            final Relation r = new Relation(label, description, relationID, variantID, leftSide, rightSide, operator, conditionalEventID);
+            allRelations.addRelation(r);
+            save(KEY_PREFIX_RELATION, relationID, r);
+            attachRelation(r);
+          }
         }
       }
+      save(KEY_ALL_RELATIONS, allRelations);
     }
-    save(KEY_ALL_RELATIONS, allRelations);
+    finally {
+      LOGGER.trace("<-- setRelations(); Relations =\n{}", allRelations);
+    }
   }
 
   private RelationParameter createRelationParameter(final String variantID, final String parameterType, final String parameterValue) {
     RelationParameter param = null;
-    if (!StringUtils.isEmpty(variantID)) {
-      if (RelationParameter.PARAMETER_TYPE_FEATURE.equals(parameterType)) {
+    try {
+      LOGGER.trace("--> createRelationParameter(); variantID = {}; parameterType = {}; parameterValue = {}", variantID, parameterType, parameterValue);
+      if (RelationParameter.PARAMETER_TYPE_FEATURE_VALUE.equals(parameterType)) {
         // value is reference to a parameter which is a reference to a feature
         param = getRelationParameter(parameterValue);
       }
-      else {
+      else if (RelationParameter.PARAMETER_TYPE_CONSTANT_VALUE.equals(parameterType)) {
         // value is reference to a feature value, i.e. a constant
         final FeatureValue fv = getFeatureValue(parameterValue);
         final String featureValueID = (fv == null ? null : fv.getFeatureValueID());
@@ -1138,8 +1188,14 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
           attachRelationParameter(param);
         }
       }
+      else {
+        throw new IllegalArgumentException("Unexpected Type of Relation-Parameter: " + String.valueOf(parameterType));
+      }
+      return param;
     }
-    return param;
+    finally {
+      LOGGER.trace("<-- createRelationParameter(); param = {}", param);
+    }
   }
 
   // ----------------------------------------------------------------
