@@ -21,6 +21,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * This is a Concept-Definition/Declaration, i.e. a Combination/Bundle of
  * different Values for different Features.
@@ -41,6 +43,7 @@ public class Concept extends ValueObject implements Serializable {
 
   private String label;
   private String description;
+  private List<String> featureIds; // distinct features referenced by all values
   private List<FeatureValue> values;
 
   public Concept() {
@@ -52,13 +55,14 @@ public class Concept extends ValueObject implements Serializable {
   }
 
   public Concept(final String label, final String description, final String conceptID) {
-    this(label, description, conceptID, null);
+    this(label, description, conceptID, null, null);
   }
 
-  public Concept(final String label, final String description, final String conceptID, final List<FeatureValue> values) {
+  public Concept(final String label, final String description, final String conceptID, final List<String> featureIds, final List<FeatureValue> values) {
     super(conceptID);
     setLabel(label);
     setDescription(description);
+    setFeatureIds(featureIds);
     setValues(values);
   }
 
@@ -86,6 +90,30 @@ public class Concept extends ValueObject implements Serializable {
 
   public void setConceptID(final String conceptID) {
     setId(conceptID);
+  }
+
+  // ----------------------------------------------------------------
+
+  public List<String> getFeatureIds() {
+    if (this.featureIds == null) {
+      this.featureIds = new ArrayList<String>();
+    }
+    return this.featureIds;
+  }
+
+  public void setFeatureIds(final List<String> featureIds) {
+    this.featureIds = featureIds;
+  }
+
+  public boolean addFeatureId(final String featureId) {
+    return (!StringUtils.isEmpty(featureId) && !getFeatureIds().contains(featureId) && getFeatureIds().add(featureId));
+  }
+
+  public void clearFeatureIds() {
+    if (this.featureIds != null) {
+      this.featureIds.clear();
+      this.featureIds = null;
+    }
   }
 
   // ----------------------------------------------------------------
