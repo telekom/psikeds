@@ -128,6 +128,8 @@ public interface KnowledgeBase {
 
   boolean isConstitutedBy(String variantId, String purposeId);
 
+  boolean hasConcept(String variantId, String conceptID);
+
   boolean hasFeature(String variantId, String featureId);
 
   boolean hasFeatureValue(String featureID, String featureValueID);
