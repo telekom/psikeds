@@ -37,6 +37,7 @@ import org.psikeds.common.util.JSONHelper;
 import org.psikeds.knowledgebase.xml.impl.XMLParser;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.impl.XmlKnowledgeBaseFactory;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.Validator;
+import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.ConceptValidator;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.ConstitutesValidator;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.EventValidator;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.FeatureValidator;
@@ -45,11 +46,15 @@ import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.Relat
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.RuleValidator;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.VariantValidator;
 import org.psikeds.resolutionengine.datalayer.vo.Alternatives;
+import org.psikeds.resolutionengine.datalayer.vo.Concept;
+import org.psikeds.resolutionengine.datalayer.vo.Concepts;
 import org.psikeds.resolutionengine.datalayer.vo.Constituents;
 import org.psikeds.resolutionengine.datalayer.vo.Constitutes;
 import org.psikeds.resolutionengine.datalayer.vo.Event;
 import org.psikeds.resolutionengine.datalayer.vo.Events;
 import org.psikeds.resolutionengine.datalayer.vo.Feature;
+import org.psikeds.resolutionengine.datalayer.vo.FeatureValue;
+import org.psikeds.resolutionengine.datalayer.vo.FeatureValues;
 import org.psikeds.resolutionengine.datalayer.vo.Features;
 import org.psikeds.resolutionengine.datalayer.vo.Fulfills;
 import org.psikeds.resolutionengine.datalayer.vo.KnowledgeData;
@@ -57,6 +62,8 @@ import org.psikeds.resolutionengine.datalayer.vo.MetaData;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
 import org.psikeds.resolutionengine.datalayer.vo.Purposes;
 import org.psikeds.resolutionengine.datalayer.vo.Relation;
+import org.psikeds.resolutionengine.datalayer.vo.RelationParameter;
+import org.psikeds.resolutionengine.datalayer.vo.RelationParameters;
 import org.psikeds.resolutionengine.datalayer.vo.Relations;
 import org.psikeds.resolutionengine.datalayer.vo.Rule;
 import org.psikeds.resolutionengine.datalayer.vo.Rules;
@@ -102,6 +109,7 @@ public class KnowledgeBaseTest {
       final XMLParser parser = new XMLParser(XML);
       final List<Validator> validators = new ArrayList<Validator>();
       validators.add(new FeatureValidator());
+      validators.add(new ConceptValidator());
       validators.add(new FulfillsValidator());
       validators.add(new ConstitutesValidator());
       validators.add(new VariantValidator());
@@ -117,11 +125,31 @@ public class KnowledgeBaseTest {
       final Features allFeatures = kb.getFeatures();
       LOGGER.trace("All Features = {}", allFeatures);
       assertNotNull("No Features!", allFeatures);
-      final List<Feature<?>> flst = allFeatures.getFeature();
+      final List<Feature> flst = allFeatures.getFeature();
       assertNotNull("No List of Features!", flst);
       int result = flst.size();
-      int expected = 4;
+      int expected = 10;
       assertEquals("KB has " + result + " Features total, not expected " + expected, expected, result);
+
+      LOGGER.info("... checking FeatureValues ...");
+      final FeatureValues allFeatureValues = kb.getFeatureValues();
+      LOGGER.trace("All FeatureValues = {}", allFeatureValues);
+      assertNotNull("No FeatureValues!", allFeatureValues);
+      final List<FeatureValue> fvlst = allFeatureValues.getValue();
+      assertNotNull("No List of FeatureValues!", fvlst);
+      result = fvlst.size();
+      expected = 397;
+      assertEquals("KB has " + result + " FeatureValues total, not expected " + expected, expected, result);
+
+      LOGGER.info("... checking Concepts ...");
+      final Concepts allConcepts = kb.getConcepts();
+      LOGGER.trace("All Concepts = {}", allConcepts);
+      assertNotNull("No Concepts!", allConcepts);
+      final List<Concept> conlst = allConcepts.getConcept();
+      assertNotNull("No List of Concepts!", conlst);
+      result = conlst.size();
+      expected = 12;
+      assertEquals("KB has " + result + " Concepts total, not expected " + expected, expected, result);
 
       LOGGER.info("... checking Alternatives ...");
       final Alternatives allAlternatives = kb.getAlternatives();
@@ -130,7 +158,7 @@ public class KnowledgeBaseTest {
       final List<Fulfills> fflst = allAlternatives.getFulfills();
       assertNotNull("No List of Fulfills!", fflst);
       result = fflst.size();
-      expected = 5;
+      expected = 6;
       assertEquals("KB has " + result + " Alternatives / Fulfills total, not expected " + expected, expected, result);
 
       LOGGER.info("... checking Constituents ...");
@@ -150,7 +178,7 @@ public class KnowledgeBaseTest {
       final List<Event> elst = allEvents.getEvent();
       assertNotNull("No List of Events!", elst);
       result = elst.size();
-      expected = 6;
+      expected = 30;
       assertEquals("KB has " + result + " Events total, not expected " + expected, expected, result);
 
       LOGGER.info("... checking Rules ...");
@@ -160,8 +188,18 @@ public class KnowledgeBaseTest {
       final List<Rule> rlst = allRules.getRule();
       assertNotNull("No List of Rules!", rlst);
       result = rlst.size();
-      expected = 3;
+      expected = 24;
       assertEquals("KB has " + result + " Rules total, not expected " + expected, expected, result);
+
+      LOGGER.info("... checking RelationParameters ...");
+      final RelationParameters allRelationParameters = kb.getRelationParameters();
+      LOGGER.trace("All RelationParameters = {}", allRelationParameters);
+      assertNotNull("No RelationParameters!", allRelationParameters);
+      final List<RelationParameter> params = allRelationParameters.getParameter();
+      assertNotNull("No List of RelationParameters!", params);
+      result = params.size();
+      expected = 16;
+      assertEquals("KB has " + result + " RelationParameters total, not expected " + expected, expected, result);
 
       LOGGER.info("... checking Relations ...");
       final Relations allRelations = kb.getRelations();
@@ -170,7 +208,7 @@ public class KnowledgeBaseTest {
       final List<Relation> rels = allRelations.getRelation();
       assertNotNull("No List of Relations!", rels);
       result = rels.size();
-      expected = 1;
+      expected = 11;
       assertEquals("KB has " + result + " Relations total, not expected " + expected, expected, result);
 
       LOGGER.info("... checking Root-Purposes ...");
@@ -180,7 +218,7 @@ public class KnowledgeBaseTest {
       List<Purpose> plst = rootPurposes.getPurpose();
       assertNotNull("No List of Root-Purposes!", plst);
       result = plst.size();
-      expected = 3;
+      expected = 1;
       assertEquals("KB has " + result + " Root-Purposes, not expected " + expected, expected, result);
 
       LOGGER.info("... checking all Purposes ...");
@@ -190,7 +228,7 @@ public class KnowledgeBaseTest {
       plst = allPurposes.getPurpose();
       assertNotNull("No List of all Purposes!", plst);
       result = plst.size();
-      expected = 5;
+      expected = 6;
       assertEquals("KB has " + result + " overall Purposes, not expected " + expected, expected, result);
 
       LOGGER.info("... checking fulfilling Variants ...");
@@ -211,7 +249,7 @@ public class KnowledgeBaseTest {
       final List<Variant> vlst = allVariants.getVariant();
       assertNotNull("No List of all Variants!", vlst);
       result = vlst.size();
-      expected = 22;
+      expected = 11;
       assertEquals("KB has " + result + " Variants total, not expected " + expected, expected, result);
 
       LOGGER.info("... Features, Rules and Events of each Variant ...");
@@ -230,12 +268,15 @@ public class KnowledgeBaseTest {
 
       LOGGER.info("... testing Serialization and writing all Knowledge-Base-Data to JSON-File ...");
       final MetaData metadata = kb.getMetaData();
-      KnowledgeData kd = new KnowledgeData(metadata, allFeatures, allPurposes, allVariants, allAlternatives, allConstituents, allEvents, allRules, allRelations);
+      KnowledgeData kd = new KnowledgeData(metadata, allFeatures, allFeatureValues, allConcepts, allPurposes, allVariants, allAlternatives, allConstituents, allEvents, allRules,
+          allRelationParameters, allRelations);
       JSONHelper.writeObjectToJsonFile(JSON, kd);
 
       LOGGER.info("... testing Deserialization and reading all Knowledge-Base-Data back from JSON-File ...");
       kd = JSONHelper.readObjectFromJsonFile(JSON, KnowledgeData.class);
+      assertNotNull("Cannot read Knowledge-Base-Data back from JSON-File!", kd);
 
+      LOGGER.trace("Knowledge-Base-Data =\n{}", kd);
       ok = true;
     }
     catch (final AssertionError ae) {
@@ -249,7 +290,7 @@ public class KnowledgeBaseTest {
       fail(t.getMessage());
     }
     finally {
-      LOGGER.info("... test of KnowledgeBase finished " + (ok ? "without problems." : "with Errors!"));
+      LOGGER.info("... test of KnowledgeBase finished " + (ok ? "without problems." : "with ERRORS!!!"));
     }
   }
 }
