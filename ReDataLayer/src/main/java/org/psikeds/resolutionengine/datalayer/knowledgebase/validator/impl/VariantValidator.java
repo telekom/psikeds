@@ -24,7 +24,9 @@ import org.apache.commons.lang.StringUtils;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.ValidationException;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.Validator;
+import org.psikeds.resolutionengine.datalayer.vo.Concept;
 import org.psikeds.resolutionengine.datalayer.vo.Feature;
+import org.psikeds.resolutionengine.datalayer.vo.FeatureValue;
 import org.psikeds.resolutionengine.datalayer.vo.Variant;
 import org.psikeds.resolutionengine.datalayer.vo.Variants;
 
@@ -55,42 +57,106 @@ public class VariantValidator implements Validator {
       else {
         for (final Variant v : lst) {
           final String vid = (v == null ? null : v.getVariantID());
+          // 1. check basic properties
           if (StringUtils.isEmpty(vid)) {
             valid = false;
             LOGGER.warn("No VariantID: {}", v);
             continue;
           }
+          if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Checking Variant: {}", v);
+          }
           if (StringUtils.isEmpty(v.getLabel())) {
             valid = false;
             LOGGER.warn("Variant {} has no Label!", vid);
           }
-          String firstFID = null;
+          // 2. check features
+          boolean hasFeatures = false;
+          boolean hasValues = false;
+          boolean hasConcepts = false;
           final List<String> fids = v.getFeatureIds();
           if ((fids != null) && !fids.isEmpty()) {
-            firstFID = fids.get(0);
+            hasFeatures = true;
             for (final String id : fids) {
-              final Feature<?> f = kb.getFeature(id);
+              final Feature f = kb.getFeature(id);
               final String fid = (f == null ? null : f.getFeatureID());
-              if (StringUtils.isEmpty(fid)) {
+              if (StringUtils.isEmpty(fid) || !fid.equals(id)) {
                 valid = false;
                 LOGGER.warn("Feature {} referenced by Variant {} does not exist!", id, vid);
               }
             }
           }
-          final String defaultValue = v.getDefaultFeatureValue();
-          if (!StringUtils.isEmpty(defaultValue)) {
-            if (StringUtils.isEmpty(firstFID)) {
+          // 3. check feature values
+          final List<FeatureValue> values = v.getFeatureValues();
+          if ((values != null) && !values.isEmpty()) {
+            hasValues = true;
+            if (!hasFeatures) {
               valid = false;
-              LOGGER.warn("Variant {} has no Features but defines a Default-Value: {}", vid, defaultValue);
+              LOGGER.warn("Variant {} defines no Features but has Feature-Values.", vid);
             }
             else {
-              final Feature<?> f = kb.getFeature(firstFID);
-              final List<String> values = (f == null ? null : f.getValuesAsStrings());
-              if ((values == null) || values.isEmpty() || !values.contains(defaultValue)) {
-                valid = false;
-                LOGGER.warn("Variant {} defines for Feature {} a Default-Value that is not allowed: {}", vid, firstFID, defaultValue);
+              for (final FeatureValue fv : values) {
+                final String featureId = (fv == null ? null : fv.getFeatureID());
+                final Feature f = (StringUtils.isEmpty(featureId) ? null : kb.getFeature(featureId));
+                if ((f == null) || !featureId.equals(f.getFeatureID())) {
+                  valid = false;
+                  LOGGER.warn("Feature {} referenced by Variant {} does not exist!", featureId, vid);
+                }
+                else {
+                  final String featureValueID = fv.getFeatureValueID();
+                  final FeatureValue val = (StringUtils.isEmpty(featureValueID) ? null : kb.getFeatureValue(featureValueID));
+                  if ((val == null) || !featureId.equals(val.getFeatureID()) || !featureValueID.equals(val.getFeatureValueID())) {
+                    valid = false;
+                    LOGGER.warn("Feature-Value {} of Feature {} referenced by Variant {} does not exist!", featureValueID, featureId, vid);
+                  }
+                  if (!v.getFeatureIds().contains(featureId)) {
+                    valid = false;
+                    LOGGER.warn("Feature-ID {} of Feature-Value {} is not within Feature-ID-List of Variant {}", featureId, featureValueID, vid);
+                  }
+                }
               }
             }
+          }
+          // 4. check concepts
+          final List<Concept> concepts = v.getConcepts();
+          if ((concepts != null) && !concepts.isEmpty()) {
+            hasConcepts = true;
+            if (!hasFeatures) {
+              valid = false;
+              LOGGER.warn("Variant {} defines no Features but has Concepts.", vid);
+            }
+            else {
+              for (final Concept c : concepts) {
+                final String cid = (c == null ? null : c.getConceptID());
+                if (StringUtils.isEmpty(cid)) {
+                  valid = false;
+                  LOGGER.warn("Variant {} contains illegal Concept: {}", vid, c);
+                  continue;
+                }
+                final Concept lookup = kb.getConcept(cid);
+                if ((lookup == null) || !cid.equals(lookup.getConceptID())) {
+                  valid = false;
+                  LOGGER.warn("Concept {} referenced by Variant {} does not exist!", cid, vid);
+                }
+                final List<String> featlst = c.getFeatureIds();
+                if ((featlst == null) || featlst.isEmpty()) {
+                  valid = false;
+                  LOGGER.warn("Concept {} referenced by Variant {} does not have any Features!", cid, vid);
+                  continue;
+                }
+                for (final String featid : featlst) {
+                  if (StringUtils.isEmpty(featid) || !fids.contains(featid)) {
+                    valid = false;
+                    LOGGER.warn("Concept {} referenced by Variant {} contains illegal Feature-ID: {}", cid, vid, featid);
+                  }
+                }
+              }
+            }
+          }
+          // final consistency check
+          if (hasFeatures && !hasValues && !hasConcepts) {
+            valid = false;
+            LOGGER.warn("Variant {} defines Features but has neither Concepts nor Feature-Values.", vid);
           }
         }
       }

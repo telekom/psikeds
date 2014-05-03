@@ -88,18 +88,28 @@ public class RuleValidator implements Validator {
             valid = false;
             LOGGER.warn("Variant {} referenced by Rule {} does not exists.", vid, rid);
           }
-          // --- Step 2: check premise ---
-          final String peid = (r == null ? null : r.getPremiseEventID());
-          final Event pe = (StringUtils.isEmpty(peid) ? null : kb.getEvent(peid));
-          if ((pe == null) || !peid.equals(pe.getEventID())) {
+          // --- Step 2: check premise(s) ---
+          final List<String> premLst = (r == null ? null : r.getPremiseEventID());
+          if ((premLst == null) || premLst.isEmpty()) {
             valid = false;
-            LOGGER.warn("Premise-Event {} referenced by Rule {} does not exists.", peid, rid);
+            LOGGER.warn("Rule {} has no Premise(s).", rid);
+          }
+          else if (r.isSelfFulfilling()) {
+            LOGGER.debug("Rule {} is self-fulfilling, i.e. Premise is not an Event but the Variant-ID: {}", rid, vid);
           }
           else {
-            final String pevid = pe.getVariantID();
-            if (StringUtils.isEmpty(pevid) || !vid.equals(pevid)) {
-              valid = false;
-              LOGGER.warn("Premise-Event {} and Rule {} are not attached to the same Variant: {} vs. {}", peid, rid, pevid, vid);
+            for (final String peid : premLst) {
+              final Event pe = (StringUtils.isEmpty(peid) ? null : kb.getEvent(peid));
+              if ((pe == null) || !peid.equals(pe.getEventID())) {
+                valid = false;
+                LOGGER.warn("Premise-Event {} referenced by Rule {} does not exists.", peid, rid);
+                continue;
+              }
+              final String pevid = pe.getVariantID();
+              if (StringUtils.isEmpty(pevid) || !vid.equals(pevid)) {
+                valid = false;
+                LOGGER.warn("Premise-Event {} and Rule {} are not attached to the same Variant: {} vs. {}", peid, rid, pevid, vid);
+              }
             }
           }
           // --- Step 3: check conclusion ---

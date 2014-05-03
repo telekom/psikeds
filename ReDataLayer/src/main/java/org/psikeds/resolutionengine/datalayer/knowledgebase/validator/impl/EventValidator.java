@@ -24,16 +24,12 @@ import org.apache.commons.lang.StringUtils;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.ValidationException;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.Validator;
+import org.psikeds.resolutionengine.datalayer.vo.Concept;
 import org.psikeds.resolutionengine.datalayer.vo.Event;
 import org.psikeds.resolutionengine.datalayer.vo.Events;
-import org.psikeds.resolutionengine.datalayer.vo.Feature;
-import org.psikeds.resolutionengine.datalayer.vo.FeatureEvent;
-import org.psikeds.resolutionengine.datalayer.vo.FloatFeature;
-import org.psikeds.resolutionengine.datalayer.vo.IntegerFeature;
+import org.psikeds.resolutionengine.datalayer.vo.FeatureValue;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
-import org.psikeds.resolutionengine.datalayer.vo.StringFeature;
 import org.psikeds.resolutionengine.datalayer.vo.Variant;
-import org.psikeds.resolutionengine.datalayer.vo.VariantEvent;
 import org.psikeds.resolutionengine.datalayer.vo.Variants;
 
 /**
@@ -73,118 +69,72 @@ public class EventValidator implements Validator {
       final Events events = (kb == null ? null : kb.getEvents());
       final List<Event> lst = (events == null ? null : events.getEvent());
       if ((lst != null) && !lst.isEmpty()) {
+        long count = 0;
         for (final Event e : lst) {
-          // --- Step 1: check basics ---
+          count++;
+          // --- Step 1: lookup and double check ---
           final String eid = (e == null ? null : e.getEventID());
           if (StringUtils.isEmpty(eid)) {
             valid = false;
-            LOGGER.warn("Event has no ID: {}", e);
+            LOGGER.warn("Illegal Event: {}", e);
             continue;
           }
-          final String vid = (e == null ? null : e.getVariantID());
-          if (StringUtils.isEmpty(vid)) {
+          final Event lookup = kb.getEvent(eid);
+          if ((lookup == null) || !eid.equals(lookup.getEventID())) {
             valid = false;
-            LOGGER.warn("Event is not attached to a Variant: {}", e);
+            LOGGER.warn("Event not found: {}", e);
             continue;
           }
           if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("Checking Event: {}", e);
           }
-          final Variant v = kb.getVariant(vid);
+          // --- Step 2: check basics ---
+          if (StringUtils.isEmpty(e.getLabel()) || !e.getLabel().equals(lookup.getLabel())) {
+            valid = false;
+            LOGGER.warn("Event {} has no Label.", eid);
+          }
+          final String vid = e.getVariantID();
+          final Variant v = (StringUtils.isEmpty(vid) ? null : kb.getVariant(vid));
           if ((v == null) || !vid.equals(v.getVariantID())) {
             valid = false;
             LOGGER.warn("Variant {} referenced by Event {} does not exists!", vid, eid);
+            continue;
           }
           final List<String> ctx = e.getContext();
           if ((ctx == null) || ctx.isEmpty()) {
             valid = false;
-            LOGGER.warn("Event has no Context: {}", e);
+            LOGGER.warn("Event {} has no Context-Path!", eid);
             continue;
           }
-          if (e instanceof VariantEvent) {
-            // --- Step 2a: check variant trigger ---
-            final VariantEvent ve = (VariantEvent) e;
-            final String triggerID = ve.getTriggeringVariantId();
-            final Variant trigger = (StringUtils.isEmpty(triggerID) ? null : kb.getVariant(triggerID));
-            if ((trigger == null) || !triggerID.equals(trigger.getVariantID())) {
+          final String trigger = e.getTriggerID();
+          if (StringUtils.isEmpty(trigger)) {
+            valid = false;
+            LOGGER.warn("Event {} has no Trigger!", eid);
+            continue;
+          }
+          // --- Step 3: check trigger ---
+          final String type = e.getTriggerType();
+          if (Event.TRIGGER_TYPE_VARIANT.equals(type)) {
+            if (!checkVariantTriggerAndContextPath(kb, eid, vid, ctx, trigger)) {
               valid = false;
-              LOGGER.warn("Triggering Variant {} referenced by Event {} does not exists!", triggerID, eid);
-            }
-            else {
-              // --- Step 3a: check context path and variant ---
-              valid = valid && checkContextPathAndVariant(kb, eid, vid, ctx, triggerID);
             }
           }
-          else if (e instanceof FeatureEvent) {
-            // --- Step 2b: check feature trigger ---
-            final FeatureEvent fe = (FeatureEvent) e;
-            final String featureID = fe.getTriggeringFeatureID();
-            final Feature<?> feature = (StringUtils.isEmpty(featureID) ? null : kb.getFeature(featureID));
-            if ((feature == null) || !featureID.equals(feature.getFeatureID())) {
+          else if (Event.TRIGGER_TYPE_FEATURE_VALUE.equals(type)) {
+            if (!checkFeatureValueTriggerAndContextPath(kb, eid, vid, ctx, trigger)) {
               valid = false;
-              LOGGER.warn("Triggering Feature {} referenced by Event {} does not exists!", featureID, eid);
             }
-            else {
-              final String value = fe.getTriggeringFeatureValue();
-              if (StringUtils.isEmpty(value)) {
-                if (fe.isNotEvent()) {
-                  LOGGER.info("Event {} is triggered by NOT an EMPTY value, i.e. whenever any Value is selected. Intention or mistake?!?", eid);
-                }
-                else {
-                  valid = false;
-                  LOGGER.warn("Triggering Value of Event {} is empty!", eid);
-                }
-              }
-              else {
-                if (feature instanceof StringFeature) {
-                  final StringFeature strf = (StringFeature) feature;
-                  final List<String> values = strf.getValues();
-                  if ((values == null) || !values.contains(value)) {
-                    valid = false;
-                    LOGGER.warn("Triggering Value {} of Event {} is not a possible String-Value of triggering Feature {}", value, eid, featureID);
-                  }
-                }
-                else if (feature instanceof IntegerFeature) {
-                  try {
-                    final IntegerFeature intf = (IntegerFeature) feature;
-                    final Integer ival = new Integer(Integer.parseInt(value));
-                    final List<Integer> values = intf.getValues();
-                    if ((values == null) || !values.contains(ival)) {
-                      valid = false;
-                      LOGGER.warn("Triggering Value {} of Event {} is not a possible Integer-Value of triggering Feature {}", value, eid, featureID);
-                    }
-                  }
-                  catch (final Exception ex) {
-                    valid = false;
-                    LOGGER.warn("Cannot check triggering Value {} of Feature-Event {} - {}", value, eid, ex.getMessage());
-                  }
-                }
-                else if (feature instanceof FloatFeature) {
-                  try {
-                    final FloatFeature fltf = (FloatFeature) feature;
-                    final Float fval = new Float(Float.parseFloat(value));
-                    final List<Float> values = fltf.getValues();
-                    if ((values == null) || !values.contains(fval)) {
-                      valid = false;
-                      LOGGER.warn("Triggering Value {} of Event {} is not a possible Float-Value of triggering Feature {}", value, eid, featureID);
-                    }
-                  }
-                  catch (final Exception ex) {
-                    valid = false;
-                    LOGGER.warn("Cannot check triggering Value {} of Feature-Event {} - {}", value, eid, ex.getMessage());
-                  }
-                }
-                // --- Step 3b: check context path ---
-                valid = valid && checkContextPathAndFeature(kb, eid, vid, ctx, featureID);
-              }
+          }
+          else if (Event.TRIGGER_TYPE_CONCEPT.equals(type)) {
+            if (!checkConceptTriggerAndContextPath(kb, eid, vid, ctx, trigger)) {
+              valid = false;
             }
           }
           else {
-            // most probably null
             valid = false;
-            LOGGER.warn("Unexpected type of Event, neither Variant-Event nor Feature-Value-Event: {}", e);
+            LOGGER.warn("Event {} has illegal Trigger-Type: {}", eid, type);
           }
         }
+        LOGGER.debug("Checked {} Events.", count);
       }
     }
     catch (final Exception ex) {
@@ -198,25 +148,12 @@ public class EventValidator implements Validator {
 
   // ----------------------------------------------------------------
 
-  private boolean checkContextPathAndFeature(final KnowledgeBase kb, final String eventId, final String rootVariantId, final List<String> ctx, final String triggeringFeatureId) {
-    final String lastPathElement = checkContextPath(kb, eventId, rootVariantId, ctx);
-    if (StringUtils.isEmpty(lastPathElement)) {
+  private boolean checkVariantTriggerAndContextPath(final KnowledgeBase kb, final String eventId, final String rootVariantId, final List<String> ctx, final String triggeringVariantId) {
+    final Variant trigVar = kb.getVariant(triggeringVariantId);
+    if ((trigVar == null) || !triggeringVariantId.equals(trigVar.getVariantID())) {
+      LOGGER.warn("Triggering Variant {} referenced by Event {} does not exists!", triggeringVariantId, eventId);
       return false;
     }
-    final Variant v = kb.getVariant(lastPathElement);
-    if (v == null) {
-      LOGGER.warn("Last Element {} of Context of Feature-Event {} is not a Variant!", lastPathElement, eventId);
-      return false;
-    }
-    final List<String> feats = v.getFeatureIds();
-    if ((feats == null) || !feats.contains(triggeringFeatureId)) {
-      LOGGER.warn("Triggering Feature {} is not a valid Feature for Variant {} in the Context of Event {}", triggeringFeatureId, lastPathElement, eventId);
-      return false;
-    }
-    return true;
-  }
-
-  private boolean checkContextPathAndVariant(final KnowledgeBase kb, final String eventId, final String rootVariantId, final List<String> ctx, final String triggeringVariantId) {
     final String lastPathElement = checkContextPath(kb, eventId, rootVariantId, ctx);
     if (StringUtils.isEmpty(lastPathElement)) {
       return false;
@@ -227,7 +164,7 @@ public class EventValidator implements Validator {
       return true;
     }
     final Purpose p = kb.getPurpose(lastPathElement);
-    if (p == null) {
+    if ((p == null) || !lastPathElement.equals(p.getPurposeID())) {
       LOGGER.warn("Last Element {} of Context of Variant-Event {} is not a Purpose!", lastPathElement, eventId);
       return false;
     }
@@ -245,6 +182,54 @@ public class EventValidator implements Validator {
     LOGGER.warn("Triggering Variant {} is not a fulfilling Variant for Purpose {} in the Context of Event {}", triggeringVariantId, lastPathElement, eventId);
     return false;
   }
+
+  private boolean checkFeatureValueTriggerAndContextPath(final KnowledgeBase kb, final String eventId, final String rootVariantId, final List<String> ctx, final String triggeringFeatureValueId) {
+    final FeatureValue trigVal = kb.getFeatureValue(triggeringFeatureValueId);
+    if ((trigVal == null) || !triggeringFeatureValueId.equals(trigVal.getFeatureValueID())) {
+      LOGGER.warn("Triggering Feature-Value {} referenced by Event {} does not exists!", triggeringFeatureValueId, eventId);
+      return false;
+    }
+    final String lastPathElement = checkContextPath(kb, eventId, rootVariantId, ctx);
+    if (StringUtils.isEmpty(lastPathElement)) {
+      return false;
+    }
+    final Variant v = kb.getVariant(lastPathElement);
+    if ((v == null) || !lastPathElement.equals(v.getVariantID())) {
+      LOGGER.warn("Last Element {} of Context of Feature-Value-Event {} is not a Variant!", lastPathElement, eventId);
+      return false;
+    }
+    final String featureId = trigVal.getFeatureID();
+    if (!kb.hasFeature(lastPathElement, featureId)) {
+      LOGGER.warn("Triggering Feature-Value {} is not a valid for Variant {} in the Context of Event {}", triggeringFeatureValueId, lastPathElement, eventId);
+      return false;
+    }
+    return true;
+  }
+
+  private boolean checkConceptTriggerAndContextPath(final KnowledgeBase kb, final String eventId, final String rootVariantId, final List<String> ctx, final String triggeringConceptId) {
+    final Concept trigCon = kb.getConcept(triggeringConceptId);
+    if ((trigCon == null) || !triggeringConceptId.equals(trigCon.getConceptID())) {
+      LOGGER.warn("Triggering Concept {} referenced by Event {} does not exists!", triggeringConceptId, eventId);
+      return false;
+    }
+    final String lastPathElement = checkContextPath(kb, eventId, rootVariantId, ctx);
+    if (StringUtils.isEmpty(lastPathElement)) {
+      return false;
+    }
+    final Variant v = kb.getVariant(lastPathElement);
+    if ((v == null) || !lastPathElement.equals(v.getVariantID())) {
+      LOGGER.warn("Last Element {} of Context of Concept-Event {} is not a Variant!", lastPathElement, eventId);
+      return false;
+    }
+    final String conceptID = trigCon.getConceptID();
+    if (!kb.hasConcept(lastPathElement, conceptID)) {
+      LOGGER.warn("Triggering Concept {} is not a valid for Variant {} in the Context of Event {}", triggeringConceptId, lastPathElement, eventId);
+      return false;
+    }
+    return true;
+  }
+
+  // ----------------------------------------------------------------
 
   private String checkContextPath(final KnowledgeBase kb, final String eventId, final String rootVariantId, final List<String> ctx) {
     // --- Step A: check that first element of context matches to root/parent-variant ---

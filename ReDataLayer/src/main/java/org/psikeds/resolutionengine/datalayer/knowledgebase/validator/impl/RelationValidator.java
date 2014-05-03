@@ -71,7 +71,9 @@ public class RelationValidator implements Validator {
       final Relations relations = (kb == null ? null : kb.getRelations());
       final List<Relation> lst = (relations == null ? null : relations.getRelation());
       if ((lst != null) && !lst.isEmpty()) {
+        long count = 0;
         for (final Relation r : lst) {
+          count++;
           // --- Step 1: check basics ---
           final String rid = (r == null ? null : r.getRelationID());
           if (StringUtils.isEmpty(rid)) {
@@ -113,7 +115,9 @@ public class RelationValidator implements Validator {
             valid = false;
             continue;
           }
+          // TODO: check compatibility of both parameters
         }
+        LOGGER.debug("Checked {} Relations.", count);
       }
     }
     catch (final Exception ex) {
@@ -130,7 +134,7 @@ public class RelationValidator implements Validator {
   private boolean checkRelationPartner(final KnowledgeBase kb, final String relationId, final String rootVariantId, final RelationParameter rp) {
     final String parameterID = (rp == null ? null : rp.getParameterID());
     if (StringUtils.isEmpty(parameterID)) {
-      LOGGER.warn("Relation-Parameter of Relation {} is missing.", relationId);
+      LOGGER.warn("Relation {} has illegal Relation-Parameter: {}", relationId, rp);
       return false;
     }
     final RelationParameter lookup = kb.getRelationParameter(parameterID);
