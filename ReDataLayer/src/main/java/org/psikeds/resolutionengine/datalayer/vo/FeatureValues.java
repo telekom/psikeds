@@ -16,6 +16,7 @@ package org.psikeds.resolutionengine.datalayer.vo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -51,6 +52,10 @@ public class FeatureValues extends ValueObject implements Serializable {
 
   public boolean addValue(final FeatureValue value) {
     return ((value != null) && getValue().add(value));
+  }
+
+  public boolean addValue(final Collection<? extends FeatureValue> c) {
+    return ((c != null) && !c.isEmpty() && getValue().addAll(c));
   }
 
   public void setValue(final List<FeatureValue> lst) {

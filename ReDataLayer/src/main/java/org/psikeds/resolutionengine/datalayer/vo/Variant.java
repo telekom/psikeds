@@ -16,6 +16,7 @@ package org.psikeds.resolutionengine.datalayer.vo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -168,6 +169,10 @@ public class Variant extends ValueObject implements Serializable {
     return ((value != null) && getFeatureValues().add(value));
   }
 
+  public boolean addFeatureValue(final Collection<? extends FeatureValue> c) {
+    return ((c != null) && !c.isEmpty() && getFeatureValues().addAll(c));
+  }
+
   public void clearFeatureValues() {
     if (this.featureValues != null) {
       this.featureValues.clear();
@@ -188,8 +193,12 @@ public class Variant extends ValueObject implements Serializable {
     this.concepts = concepts;
   }
 
-  public boolean addConcept(final Concept value) {
-    return ((value != null) && getConcepts().add(value));
+  public boolean addConcept(final Concept concept) {
+    return ((concept != null) && getConcepts().add(concept));
+  }
+
+  public boolean addConcept(final Collection<? extends Concept> c) {
+    return ((c != null) && !c.isEmpty() && getConcepts().addAll(c));
   }
 
   public void clearConcepts() {

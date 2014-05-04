@@ -16,6 +16,7 @@ package org.psikeds.resolutionengine.datalayer.vo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -73,6 +74,10 @@ public class Constitutes extends ValueObject implements Serializable {
 
   public boolean addComponent(final Component comp) {
     return ((comp != null) && getComponents().add(comp));
+  }
+
+  public boolean addComponent(final Collection<? extends Component> c) {
+    return ((c != null) && !c.isEmpty() && getComponents().addAll(c));
   }
 
   public void setComponents(final List<Component> components) {
