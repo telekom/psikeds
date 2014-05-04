@@ -24,12 +24,14 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 /**
  * Interface object representing a Knowledge-Entity, i.e. "one piece" of
  * Knowledge. A Knowledge-Entity is always a selected Variant for a certain
- * Purpose, optionally also specifying a Quantity if more than one Variant
- * is required to fulfill the Purpose (e.g. 4 wheels for driving)
+ * Purpose. Optionally a Quantity can be specified (e.g. 4 wheels for driving)
  * 
  * A Knowledge-Entity may also have Features if the selected Variant declares
  * them. Initially only possible Feature-Choices exist being transformed
  * into Feature-Values with every Decission of the Client.
+ * 
+ * Also Concepts can be choosen. A Concept is a subsumption of Feature-Values,
+ * i.e. selecting a Concept is like selecting several Feature-Values.
  * 
  * Additionally a KE may have Children, i.e. other KEs constituting this KE.
  * Initially these are possible Variant-Choices, i.e. Purposes for which a
@@ -53,9 +55,10 @@ public class KnowledgeEntity extends POJO implements Serializable {
   private KnowledgeEntities children;
   private VariantChoices possibleVariants;
   private FeatureChoices possibleFeatures;
+  private ConceptChoices possibleConcepts;
 
   public KnowledgeEntity() {
-    this(MINIMUM_QUANTITY, null, null, null, null, null, null);
+    this(MINIMUM_QUANTITY, null, null, null, null, null, null, null);
   }
 
   public KnowledgeEntity(final Purpose purpose, final Variant variant) {
@@ -63,19 +66,22 @@ public class KnowledgeEntity extends POJO implements Serializable {
   }
 
   public KnowledgeEntity(final long qty, final Purpose purpose, final Variant variant) {
-    this(qty, purpose, variant, null, null, null, null);
+    this(qty, purpose, variant, null, null, null, null, null);
   }
 
-  public KnowledgeEntity(final Purpose purpose, final Variant variant, final VariantChoices possibleVariants, final FeatureChoices possibleFeatures) {
-    this(DEFAULT_QUANTITY, purpose, variant, possibleVariants, possibleFeatures);
+  public KnowledgeEntity(final Purpose purpose, final Variant variant,
+      final VariantChoices possibleVariants, final FeatureChoices possibleFeatures, final ConceptChoices possibleConcepts) {
+    this(DEFAULT_QUANTITY, purpose, variant, possibleVariants, possibleFeatures, possibleConcepts);
   }
 
-  public KnowledgeEntity(final long qty, final Purpose purpose, final Variant variant, final VariantChoices possibleVariants, final FeatureChoices possibleFeatures) {
-    this(qty, purpose, variant, null, null, possibleVariants, possibleFeatures);
+  public KnowledgeEntity(final long qty, final Purpose purpose, final Variant variant,
+      final VariantChoices possibleVariants, final FeatureChoices possibleFeatures, final ConceptChoices possibleConcepts) {
+    this(qty, purpose, variant, null, null, possibleVariants, possibleFeatures, possibleConcepts);
   }
 
-  public KnowledgeEntity(final long qty, final Purpose purpose, final Variant variant, final FeatureValues features, final KnowledgeEntities children, final VariantChoices possibleVariants,
-      final FeatureChoices possibleFeatures) {
+  public KnowledgeEntity(final long qty, final Purpose purpose, final Variant variant,
+      final FeatureValues features, final KnowledgeEntities children,
+      final VariantChoices possibleVariants, final FeatureChoices possibleFeatures, final ConceptChoices possibleConcepts) {
     super(purpose, variant);
     setPurpose(purpose);
     setVariant(variant);
@@ -84,6 +90,7 @@ public class KnowledgeEntity extends POJO implements Serializable {
     setChildren(children);
     setPossibleVariants(possibleVariants);
     setPossibleFeatures(possibleFeatures);
+    setPossibleConcepts(possibleConcepts);
   }
 
   public Purpose getPurpose() {
@@ -103,7 +110,7 @@ public class KnowledgeEntity extends POJO implements Serializable {
   }
 
   public long getQuantity() {
-    return (this.variant == null ? MINIMUM_QUANTITY : this.quantity); // no variant, no quantity
+    return (((this.variant == null) || (this.purpose == null)) ? MINIMUM_QUANTITY : this.quantity); // nothing selected, no quantity
   }
 
   public void setQuantity(final long qty) {
@@ -250,12 +257,47 @@ public class KnowledgeEntity extends POJO implements Serializable {
 
   // ----------------------------------------------------------------
 
+  public ConceptChoices getPossibleConcepts() {
+    if (this.possibleConcepts == null) {
+      this.possibleConcepts = new ConceptChoices();
+    }
+    return this.possibleConcepts;
+  }
+
+  public void setPossibleConcepts(final ConceptChoices choices) {
+    clearPossibleConcepts();
+    this.possibleConcepts = choices;
+  }
+
+  public void addPossibleConcept(final ConceptChoice choice) {
+    if (choice != null) {
+      getPossibleConcepts().add(choice);
+    }
+  }
+
+  public void addAllPossibleConcepts(final Collection<? extends ConceptChoice> c) {
+    if ((c != null) && !c.isEmpty()) {
+      getPossibleConcepts().addAll(c);
+    }
+  }
+
+  public void clearPossibleConcepts() {
+    if (this.possibleConcepts != null) {
+      this.possibleConcepts.clear();
+      this.possibleConcepts = null;
+    }
+  }
+
+  // ----------------------------------------------------------------
+
   @JsonIgnore
   public boolean isResolved() {
     return ((this.purpose != null)
         && (this.variant != null)
-        && ((this.possibleVariants == null) || this.possibleVariants.isEmpty())
-        && ((this.possibleFeatures == null) || this.possibleFeatures.isEmpty()));
+        // TODO: enable features and concepts here
+//        && ((this.possibleConcepts == null) || this.possibleConcepts.isEmpty())
+//        && ((this.possibleFeatures == null) || this.possibleFeatures.isEmpty())
+        && ((this.possibleVariants == null) || this.possibleVariants.isEmpty()));
   }
 
   @JsonIgnore

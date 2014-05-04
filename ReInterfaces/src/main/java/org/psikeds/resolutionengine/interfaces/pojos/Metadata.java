@@ -34,6 +34,7 @@ public class Metadata extends POJO implements Serializable {
   // Metadata is acutally just a Map and can contain any
   // serializable Object. However here are some Keys for
   // your convenience and for keeping the Map consistent.
+  public static final String KB_NAME = "KB_NAME";
   public static final String KB_CREATED = "KB_CREATED";
   public static final String KB_LOADED = "KB_LOADED";
   public static final String KB_LANGUAGE = "KB_LANGUAGE";

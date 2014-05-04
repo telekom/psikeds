@@ -19,13 +19,15 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
- * A general Decission, either VariantDecission and FeatureDecission
+ * A general Decission, either VariantDecission, FeatureDecission or ConceptDecission
  * 
  * @author marco@juliano.de
  * 
  */
-@XmlSeeAlso({ FeatureDecission.class, VariantDecission.class })
-@JsonSubTypes({ @JsonSubTypes.Type(value = FeatureDecission.class, name = "FeatureDecission"), @JsonSubTypes.Type(value = VariantDecission.class, name = "VariantDecission"), })
+@XmlSeeAlso({ ConceptDecission.class, FeatureDecission.class, VariantDecission.class })
+@JsonSubTypes({ @JsonSubTypes.Type(value = ConceptDecission.class, name = "ConceptDecission"),
+    @JsonSubTypes.Type(value = FeatureDecission.class, name = "FeatureDecission"),
+    @JsonSubTypes.Type(value = VariantDecission.class, name = "VariantDecission"), })
 public abstract class Decission extends POJO {
 
   private static final long serialVersionUID = 1L;

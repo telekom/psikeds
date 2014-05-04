@@ -23,14 +23,14 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  * Response-Object representing the current Context of a Resolution
- * sent by the Server/Query-Agent back to the Client/Browser.
+ * sent by the Server back to the Client.
  * 
  * A Response contains either the current Knowledge or one or more Errors,
  * but never both! In both cases some Warnings could be present.
  * 
  * Note: The Choices in this Response-Object is a summary of all still open
  * Choices for both Variants and Features spread over the Knowledge-Tree.
- * This is for convenience of the Client/Browser only.
+ * This is for convenience of the Client only.
  * 
  * @author marco@juliano.de
  * 
@@ -181,7 +181,7 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
     }
   }
 
-  private void addChoices(final KnowledgeEntities entities) {
+  private void addChoices(final Collection<? extends KnowledgeEntity> entities) {
     if ((entities != null) && !entities.isEmpty()) {
       for (final KnowledgeEntity ke : entities) {
         addChoices(ke);
@@ -192,7 +192,9 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
   private void addChoices(final KnowledgeEntity ke) {
     if (ke != null) {
       addAllChoices(ke.getPossibleVariants());
-      addAllChoices(ke.getPossibleFeatures());
+      // TODO: enable features and concepts here
+//      addAllChoices(ke.getPossibleFeatures());
+//      addAllChoices(ke.getPossibleConcepts());
       addChoices(ke.getChildren());
     }
   }

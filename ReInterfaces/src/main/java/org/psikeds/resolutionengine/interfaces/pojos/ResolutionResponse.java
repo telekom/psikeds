@@ -181,7 +181,7 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
     }
   }
 
-  private void addChoices(final KnowledgeEntities entities) {
+  private void addChoices(final Collection<? extends KnowledgeEntity> entities) {
     if ((entities != null) && !entities.isEmpty()) {
       for (final KnowledgeEntity ke : entities) {
         addChoices(ke);
@@ -192,7 +192,9 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
   private void addChoices(final KnowledgeEntity ke) {
     if (ke != null) {
       addAllChoices(ke.getPossibleVariants());
-      addAllChoices(ke.getPossibleFeatures());
+      // TODO: enable features and concepts here
+//      addAllChoices(ke.getPossibleFeatures());
+//      addAllChoices(ke.getPossibleConcepts());
       addChoices(ke.getChildren());
     }
   }
