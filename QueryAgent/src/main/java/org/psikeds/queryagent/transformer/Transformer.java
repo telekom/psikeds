@@ -16,6 +16,11 @@ package org.psikeds.queryagent.transformer;
 
 import org.psikeds.queryagent.interfaces.presenter.pojos.Choice;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Choices;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Concept;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ConceptChoice;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ConceptChoices;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ConceptDecission;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Concepts;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Decission;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Decissions;
 import org.psikeds.queryagent.interfaces.presenter.pojos.ErrorMessage;
@@ -24,7 +29,6 @@ import org.psikeds.queryagent.interfaces.presenter.pojos.Feature;
 import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureChoice;
 import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureChoices;
 import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureDecission;
-import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureDescription;
 import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureValue;
 import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureValues;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Features;
@@ -40,6 +44,7 @@ import org.psikeds.queryagent.interfaces.presenter.pojos.Variant;
 import org.psikeds.queryagent.interfaces.presenter.pojos.VariantChoice;
 import org.psikeds.queryagent.interfaces.presenter.pojos.VariantChoices;
 import org.psikeds.queryagent.interfaces.presenter.pojos.VariantDecission;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Variants;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Warning;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Warnings;
 
@@ -59,115 +64,135 @@ import org.psikeds.queryagent.interfaces.presenter.pojos.Warnings;
  */
 public interface Transformer {
 
-  Choice re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Choice re);
+  Choice re2qa(org.psikeds.resolutionengine.interfaces.pojos.Choice re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.Choice qa2re(final Choice qa);
+  org.psikeds.resolutionengine.interfaces.pojos.Choice qa2re(Choice qa);
 
-  Choices re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Choices re);
+  Choices re2qa(org.psikeds.resolutionengine.interfaces.pojos.Choices re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.Choices qa2re(final Choices qa);
+  org.psikeds.resolutionengine.interfaces.pojos.Choices qa2re(Choices qa);
 
-  Decission re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Decission re);
+  org.psikeds.resolutionengine.interfaces.pojos.Concept qa2re(Concept qa);
 
-  org.psikeds.resolutionengine.interfaces.pojos.Decission qa2re(final Decission qa);
+  Concept re2qa(org.psikeds.resolutionengine.interfaces.pojos.Concept re);
 
-  Decissions re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Decissions re);
+  org.psikeds.resolutionengine.interfaces.pojos.ConceptChoice qa2re(ConceptChoice qa);
 
-  org.psikeds.resolutionengine.interfaces.pojos.Decissions qa2re(final Decissions qa);
+  ConceptChoice re2qa(org.psikeds.resolutionengine.interfaces.pojos.ConceptChoice re);
 
-  ErrorMessage re2qa(final org.psikeds.resolutionengine.interfaces.pojos.ErrorMessage re);
+  org.psikeds.resolutionengine.interfaces.pojos.ConceptChoices qa2re(ConceptChoices qa);
 
-  org.psikeds.resolutionengine.interfaces.pojos.ErrorMessage qa2re(final ErrorMessage qa);
+  ConceptChoices re2qa(org.psikeds.resolutionengine.interfaces.pojos.ConceptChoices re);
 
-  Errors re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Errors re);
+  org.psikeds.resolutionengine.interfaces.pojos.ConceptDecission qa2re(ConceptDecission qa);
 
-  org.psikeds.resolutionengine.interfaces.pojos.Errors qa2re(final Errors qa);
+  ConceptDecission re2qa(org.psikeds.resolutionengine.interfaces.pojos.ConceptDecission re);
 
-  Feature re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Feature re);
+  org.psikeds.resolutionengine.interfaces.pojos.Concepts qa2re(Concepts qa);
 
-  org.psikeds.resolutionengine.interfaces.pojos.Feature qa2re(final Feature qa);
+  Concepts re2qa(org.psikeds.resolutionengine.interfaces.pojos.Concepts re);
 
-  FeatureChoice re2qa(final org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice re);
+  Decission re2qa(org.psikeds.resolutionengine.interfaces.pojos.Decission re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice qa2re(final FeatureChoice qa);
+  org.psikeds.resolutionengine.interfaces.pojos.Decission qa2re(Decission qa);
 
-  FeatureChoices re2qa(final org.psikeds.resolutionengine.interfaces.pojos.FeatureChoices re);
+  Decissions re2qa(org.psikeds.resolutionengine.interfaces.pojos.Decissions re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.FeatureChoices qa2re(final FeatureChoices qa);
+  org.psikeds.resolutionengine.interfaces.pojos.Decissions qa2re(Decissions qa);
 
-  FeatureDecission re2qa(final org.psikeds.resolutionengine.interfaces.pojos.FeatureDecission re);
+  ErrorMessage re2qa(org.psikeds.resolutionengine.interfaces.pojos.ErrorMessage re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.FeatureDecission qa2re(final FeatureDecission qa);
+  org.psikeds.resolutionengine.interfaces.pojos.ErrorMessage qa2re(ErrorMessage qa);
 
-  FeatureDescription re2qa(final org.psikeds.resolutionengine.interfaces.pojos.FeatureDescription re);
+  Errors re2qa(org.psikeds.resolutionengine.interfaces.pojos.Errors re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.FeatureDescription qa2re(final FeatureDescription qa);
+  org.psikeds.resolutionengine.interfaces.pojos.Errors qa2re(Errors qa);
 
-  Features re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Features re);
+  Feature re2qa(org.psikeds.resolutionengine.interfaces.pojos.Feature re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.Features qa2re(final Features qa);
+  org.psikeds.resolutionengine.interfaces.pojos.Feature qa2re(Feature qa);
 
-  FeatureValue re2qa(final org.psikeds.resolutionengine.interfaces.pojos.FeatureValue re);
+  FeatureChoice re2qa(org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.FeatureValue qa2re(final FeatureValue qa);
+  org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice qa2re(FeatureChoice qa);
 
-  FeatureValues re2qa(final org.psikeds.resolutionengine.interfaces.pojos.FeatureValues re);
+  FeatureChoices re2qa(org.psikeds.resolutionengine.interfaces.pojos.FeatureChoices re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.FeatureValues qa2re(final FeatureValues qa);
+  org.psikeds.resolutionengine.interfaces.pojos.FeatureChoices qa2re(FeatureChoices qa);
 
-  Knowledge re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Knowledge re);
+  FeatureDecission re2qa(org.psikeds.resolutionengine.interfaces.pojos.FeatureDecission re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.Knowledge qa2re(final Knowledge qa);
+  org.psikeds.resolutionengine.interfaces.pojos.FeatureDecission qa2re(FeatureDecission qa);
 
-  KnowledgeEntities re2qa(final org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntities re);
+  Features re2qa(org.psikeds.resolutionengine.interfaces.pojos.Features re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntities qa2re(final KnowledgeEntities qa);
+  org.psikeds.resolutionengine.interfaces.pojos.Features qa2re(Features qa);
 
-  KnowledgeEntity re2qa(final org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity re);
+  FeatureValue re2qa(org.psikeds.resolutionengine.interfaces.pojos.FeatureValue re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity qa2re(final KnowledgeEntity qa);
+  org.psikeds.resolutionengine.interfaces.pojos.FeatureValue qa2re(FeatureValue qa);
 
-  Metadata re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Metadata re);
+  FeatureValues re2qa(org.psikeds.resolutionengine.interfaces.pojos.FeatureValues re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.Metadata qa2re(final Metadata qa);
+  org.psikeds.resolutionengine.interfaces.pojos.FeatureValues qa2re(FeatureValues qa);
 
-  Purpose re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Purpose re);
+  Knowledge re2qa(org.psikeds.resolutionengine.interfaces.pojos.Knowledge re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.Purpose qa2re(final Purpose qa);
+  org.psikeds.resolutionengine.interfaces.pojos.Knowledge qa2re(Knowledge qa);
 
-  ResolutionMessage re2qa(final org.psikeds.resolutionengine.interfaces.pojos.ResolutionMessage re);
+  KnowledgeEntities re2qa(org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntities re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.ResolutionMessage qa2re(final ResolutionMessage qa);
+  org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntities qa2re(KnowledgeEntities qa);
 
-  ResolutionRequest re2qa(final org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest re);
+  KnowledgeEntity re2qa(org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest qa2re(final ResolutionRequest qa);
+  org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity qa2re(KnowledgeEntity qa);
 
-  ResolutionResponse re2qa(final org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse re);
+  Metadata re2qa(org.psikeds.resolutionengine.interfaces.pojos.Metadata re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse qa2re(final ResolutionResponse qa);
+  org.psikeds.resolutionengine.interfaces.pojos.Metadata qa2re(Metadata qa);
 
-  Variant re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Variant re);
+  Purpose re2qa(org.psikeds.resolutionengine.interfaces.pojos.Purpose re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.Variant qa2re(final Variant qa);
+  org.psikeds.resolutionengine.interfaces.pojos.Purpose qa2re(Purpose qa);
 
-  VariantChoice re2qa(final org.psikeds.resolutionengine.interfaces.pojos.VariantChoice re);
+  ResolutionMessage re2qa(org.psikeds.resolutionengine.interfaces.pojos.ResolutionMessage re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.VariantChoice qa2re(final VariantChoice qa);
+  org.psikeds.resolutionengine.interfaces.pojos.ResolutionMessage qa2re(ResolutionMessage qa);
 
-  VariantChoices re2qa(final org.psikeds.resolutionengine.interfaces.pojos.VariantChoices re);
+  ResolutionRequest re2qa(org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.VariantChoices qa2re(final VariantChoices qa);
+  org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest qa2re(ResolutionRequest qa);
 
-  VariantDecission re2qa(final org.psikeds.resolutionengine.interfaces.pojos.VariantDecission re);
+  ResolutionResponse re2qa(org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.VariantDecission qa2re(final VariantDecission qa);
+  org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse qa2re(ResolutionResponse qa);
 
-  Warning re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Warning re);
+  Variant re2qa(org.psikeds.resolutionengine.interfaces.pojos.Variant re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.Warning qa2re(final Warning qa);
+  org.psikeds.resolutionengine.interfaces.pojos.Variant qa2re(Variant qa);
 
-  Warnings re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Warnings re);
+  VariantChoice re2qa(org.psikeds.resolutionengine.interfaces.pojos.VariantChoice re);
 
-  org.psikeds.resolutionengine.interfaces.pojos.Warnings qa2re(final Warnings qa);
+  org.psikeds.resolutionengine.interfaces.pojos.VariantChoice qa2re(VariantChoice qa);
+
+  VariantChoices re2qa(org.psikeds.resolutionengine.interfaces.pojos.VariantChoices re);
+
+  org.psikeds.resolutionengine.interfaces.pojos.VariantChoices qa2re(VariantChoices qa);
+
+  VariantDecission re2qa(org.psikeds.resolutionengine.interfaces.pojos.VariantDecission re);
+
+  org.psikeds.resolutionengine.interfaces.pojos.VariantDecission qa2re(VariantDecission qa);
+
+  Variants re2qa(org.psikeds.resolutionengine.interfaces.pojos.Variants re);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Variants qa2re(Variants qa);
+
+  Warning re2qa(org.psikeds.resolutionengine.interfaces.pojos.Warning re);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Warning qa2re(Warning qa);
+
+  Warnings re2qa(org.psikeds.resolutionengine.interfaces.pojos.Warnings re);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Warnings qa2re(Warnings qa);
 }
