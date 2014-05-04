@@ -23,17 +23,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
- * A List of FeatureDescriptions ... unfortunately we have to create a Sub-Class
- * of ArrayList<FeatureDescription> because a simple List will loose all of its
- * Type-Information due to Java-Type-Erasure resulting in ugly errors during
- * JSON-Deserialization!
+ * A List of Features ... unfortunately we have to create a Sub-Class
+ * of ArrayList<Feature> because a simple List will loose all of its
+ * Type-Information due to Java-Type-Erasure resulting in ugly errors
+ * during JSON-Deserialization!
  * 
  * @author marco@juliano.de
  * 
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@type")
 @XmlRootElement(name = "Features")
-public class Features extends ArrayList<FeatureDescription> implements Serializable {
+public class Features extends ArrayList<Feature> implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -41,7 +41,7 @@ public class Features extends ArrayList<FeatureDescription> implements Serializa
     super();
   }
 
-  public Features(final Collection<? extends FeatureDescription> c) {
+  public Features(final Collection<? extends Feature> c) {
     super(c);
   }
 

@@ -15,12 +15,10 @@
 package org.psikeds.queryagent.interfaces.presenter.pojos;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.cxf.common.util.StringUtils;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  * A possible Choice: Which Values can be choosen for a Feature
@@ -40,28 +38,29 @@ public class FeatureChoice extends Choice implements Serializable {
   private static final long serialVersionUID = 1L;
 
   private String featureID;
-  private List<String> possibleValues;
+  private FeatureValues possibleValues;
 
   public FeatureChoice() {
-    this((String) null, (String) null);
+    this(null, null, null);
   }
 
-  public FeatureChoice(final Variant parentVariant, final FeatureDescription featureDescription) {
-    this(parentVariant, featureDescription, null);
+  public FeatureChoice(final Variant parentVariant, final Feature feature) {
+    this(parentVariant.getVariantID(), feature.getFeatureID());
   }
 
-  public FeatureChoice(final Variant parentVariant, final FeatureDescription featureDescription, final List<String> possibleValues) {
-    this((parentVariant == null ? null : parentVariant.getVariantID()), (featureDescription == null ? null : featureDescription.getFeatureID()), possibleValues);
+  public FeatureChoice(final Variant parentVariant, final FeatureValue value) {
+    this(parentVariant.getVariantID(), value.getFeatureID());
+    setValue(value);
   }
 
   public FeatureChoice(final String parentVariantID, final String featureID) {
     this(parentVariantID, featureID, null);
   }
 
-  public FeatureChoice(final String parentVariantID, final String featureID, final List<String> possibleValues) {
+  public FeatureChoice(final String parentVariantID, final String featureID, final FeatureValues possibleValues) {
     super(parentVariantID);
-    this.featureID = featureID;
-    this.possibleValues = possibleValues;
+    setFeatureID(featureID);
+    setPossibleValues(possibleValues);
   }
 
   public String getFeatureID() {
@@ -72,20 +71,21 @@ public class FeatureChoice extends Choice implements Serializable {
     this.featureID = featureID;
   }
 
-  public List<String> getPossibleValues() {
+  public FeatureValues getPossibleValues() {
     if (this.possibleValues == null) {
-      this.possibleValues = new ArrayList<String>();
+      this.possibleValues = new FeatureValues();
     }
     return this.possibleValues;
   }
 
-  public void setPossibleValues(final List<String> possibleValues) {
+  public void setPossibleValues(final FeatureValues possibleValues) {
     this.possibleValues = possibleValues;
   }
 
-  public void addPossibleValue(final String value) {
-    if (!StringUtils.isEmpty(value)) {
+  public void addPossibleValue(final FeatureValue value) {
+    if (value != null) {
       getPossibleValues().add(value);
+      setFeatureID(value.getFeatureID());
     }
   }
 
@@ -94,5 +94,11 @@ public class FeatureChoice extends Choice implements Serializable {
       this.possibleValues.clear();
       this.possibleValues = null;
     }
+  }
+
+  @JsonIgnore
+  public void setValue(final FeatureValue value) {
+    clearPossibleValues();
+    addPossibleValue(value);
   }
 }

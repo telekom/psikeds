@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * 
  * Note 1: VariantID and FeatureID must reference existing Objects!
  * 
- * Note 2: Value must be a allowed one matching the Type of Feature.
+ * Note 2: FeatureValueID must be one of the allowed Values of the Feature.
  * 
  * @author marco@juliano.de
  * 
@@ -35,29 +35,29 @@ public class FeatureDecission extends Decission implements Serializable {
 
   private String variantID;
   private String featureID;
-  private String featureValue;
+  private String featureValueID;
 
   public FeatureDecission() {
     this((String) null, (String) null, (String) null);
   }
 
   public FeatureDecission(final FeatureChoice choice, final int index) {
-    this(choice, choice.getPossibleValues().get(index));
+    this(choice, choice.getPossibleValues().get(index).getFeatureValueID());
   }
 
-  public FeatureDecission(final FeatureChoice choice, final String featureValue) {
-    this(choice.getParentVariantID(), choice.getFeatureID(), featureValue);
+  public FeatureDecission(final FeatureChoice choice, final String featureValueID) {
+    this(choice.getParentVariantID(), choice.getFeatureID(), featureValueID);
   }
 
-  public FeatureDecission(final Variant variant, final Feature feature, final String featureValue) {
-    this(variant.getVariantID(), feature.getFeatureID(), featureValue);
+  public FeatureDecission(final Variant variant, final FeatureValue value) {
+    this(variant.getVariantID(), value.getFeatureID(), value.getFeatureValueID());
   }
 
-  public FeatureDecission(final String variantID, final String featureID, final String featureValue) {
+  public FeatureDecission(final String variantID, final String featureID, final String featureValueID) {
     super(variantID, featureID);
     setVariantID(variantID);
     setFeatureID(featureID);
-    setFeatureValue(featureValue);
+    setFeatureValueID(featureValueID);
   }
 
   public String getVariantID() {
@@ -76,11 +76,11 @@ public class FeatureDecission extends Decission implements Serializable {
     this.featureID = featureID;
   }
 
-  public String getFeatureValue() {
-    return this.featureValue;
+  public String getFeatureValueID() {
+    return this.featureValueID;
   }
 
-  public void setFeatureValue(final String featureValue) {
-    this.featureValue = featureValue;
+  public void setFeatureValueID(final String featureValueID) {
+    this.featureValueID = featureValueID;
   }
 }

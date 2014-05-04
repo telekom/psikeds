@@ -19,47 +19,48 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Interface object representing a resolved Feature, i.e.
- * ID, Label, Description ... and also an assigned Value!
+ * Interface object representing a Feature-Value, i.e.
+ * an assigned Value for a Feature.
  * 
- * Note 1: Feature-ID must be globally unique!
+ * Note 1: Feature-ID and Feature-Value-ID must be globally unique!
  * 
- * Note 2: Value must be a allowed one matching the Type.
+ * Note 2: Value must be allowed for Feature.
  * 
  * @author marco@juliano.de
  * 
  */
 @XmlRootElement(name = "FeatureValue")
-public class FeatureValue extends Feature implements Serializable {
+public class FeatureValue extends POJO implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
+  private String featureID;
   private String value;
 
   public FeatureValue() {
-    super();
-    this.value = null;
+    this(null, null, null);
   }
 
-  public FeatureValue(final String featureID, final String valueType, final String value) {
-    this(featureID, null, featureID, valueType, value);
+  public FeatureValue(final String featureID, final String featureValueID, final String value) {
+    super(featureValueID);
+    setFeatureID(featureID);
+    setValue(value);
   }
 
-  public FeatureValue(final String label, final String description, final String featureID, final String valueType, final String value) {
-    super(label, description, featureID, valueType);
-    this.value = value;
+  public String getFeatureID() {
+    return this.featureID;
   }
 
-  public FeatureValue(final Feature feature, final String value) {
-    super(feature);
-    this.value = value;
+  public void setFeatureID(final String featureID) {
+    this.featureID = featureID;
   }
 
-  public FeatureValue(final Feature feature, final FeatureDecission decission) {
-    this(feature, decission.getFeatureValue());
-    if (!this.getFeatureID().equals(decission.getFeatureID())) {
-      throw new IllegalArgumentException("Feature and Decission are not matching to each other!");
-    }
+  public String getFeatureValueID() {
+    return getId();
+  }
+
+  public void setFeatureValueID(final String featureValueID) {
+    setId(featureValueID);
   }
 
   public String getValue() {
