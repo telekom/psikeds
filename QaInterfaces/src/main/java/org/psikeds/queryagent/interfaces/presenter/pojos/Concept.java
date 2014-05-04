@@ -15,7 +15,6 @@
 package org.psikeds.queryagent.interfaces.presenter.pojos;
 
 import java.io.Serializable;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -54,7 +53,7 @@ public class Concept extends POJO implements Serializable {
     setId(conceptID);
   }
 
-  public List<FeatureValue> getValues() {
+  public FeatureValues getValues() {
     if (this.values == null) {
       this.values = new FeatureValues();
     }
