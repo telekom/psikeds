@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Wrapper for all Knowledge-Base-Data. Used for testing (De-)Serialization
- * of Value-Objects.
+ * of Value-Objects of the Data-Layer.
  * 
  * @author marco@juliano.de
  * 
@@ -32,29 +32,37 @@ public class KnowledgeData extends ValueObject implements Serializable {
 
   private MetaData metadata;
   private Features features;
+  private FeatureValues featureValues;
+  private Concepts concepts;
   private Purposes purposes;
   private Variants variants;
   private Alternatives alternatives;
   private Constituents constituents;
   private Events events;
   private Rules rules;
+  private RelationParameters relationParameters;
   private Relations relations;
 
   public KnowledgeData() {
-    this(null, null, null, null, null, null, null, null, null);
+    this(null, null, null, null, null, null, null, null, null, null, null, null);
   }
 
-  public KnowledgeData(final MetaData metadata, final Features features, final Purposes purposes, final Variants variants, final Alternatives alternatives, final Constituents constituents,
-      final Events events, final Rules rules, final Relations relations) {
+  public KnowledgeData(final MetaData metadata,
+      final Features features, final FeatureValues featureValues, final Concepts concepts,
+      final Purposes purposes, final Variants variants, final Alternatives alternatives, final Constituents constituents,
+      final Events events, final Rules rules, final RelationParameters relationParameters, final Relations relations) {
     super();
     this.metadata = metadata;
     this.features = features;
+    this.featureValues = featureValues;
+    this.concepts = concepts;
     this.purposes = purposes;
     this.variants = variants;
     this.alternatives = alternatives;
     this.constituents = constituents;
     this.events = events;
     this.rules = rules;
+    this.relationParameters = relationParameters;
     this.relations = relations;
   }
 
@@ -78,6 +86,28 @@ public class KnowledgeData extends ValueObject implements Serializable {
 
   public void setFeatures(final Features features) {
     this.features = features;
+  }
+
+  public FeatureValues getFeatureValues() {
+    if (this.featureValues == null) {
+      this.featureValues = new FeatureValues();
+    }
+    return this.featureValues;
+  }
+
+  public void setFeatureValues(final FeatureValues featureValues) {
+    this.featureValues = featureValues;
+  }
+
+  public Concepts getConcepts() {
+    if (this.concepts == null) {
+      this.concepts = new Concepts();
+    }
+    return this.concepts;
+  }
+
+  public void setConcepts(final Concepts concepts) {
+    this.concepts = concepts;
   }
 
   public Purposes getPurposes() {
@@ -144,6 +174,17 @@ public class KnowledgeData extends ValueObject implements Serializable {
 
   public void setRules(final Rules rules) {
     this.rules = rules;
+  }
+
+  public RelationParameters getRelationParameters() {
+    if (this.relationParameters == null) {
+      this.relationParameters = new RelationParameters();
+    }
+    return this.relationParameters;
+  }
+
+  public void setRelationParameters(final RelationParameters relationParameters) {
+    this.relationParameters = relationParameters;
   }
 
   public Relations getRelations() {
