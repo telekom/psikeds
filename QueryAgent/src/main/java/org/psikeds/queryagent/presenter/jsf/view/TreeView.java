@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 
 import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureChoice;
 import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureChoices;
+import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureValue;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Knowledge;
 import org.psikeds.queryagent.interfaces.presenter.pojos.KnowledgeEntity;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Purpose;
@@ -126,12 +127,14 @@ public class TreeView extends BaseView {
         final DisplayItem df = new DisplayItem(fid, fid, null, DisplayItem.TYPE_FEATURE);
         lst.add(df);
         LOGGER.trace("Added F: {}", df);
-        for (final String value : fc.getPossibleValues()) {
-          final DisplayItem dv = new DisplayItem(value, value, null, DisplayItem.TYPE_CHOICE);
-          dv.setSelectionKey(SelectionHelper.createSelectionString(vid, fid, value));
-          df.addChild(dv);
-          lst.add(dv);
-          LOGGER.trace("Added V: {}", dv);
+        for (final FeatureValue fv : fc.getPossibleValues()) {
+          final String fvid = fv.getFeatureValueID();
+          final String value = fv.getValue();
+          final DisplayItem dfv = new DisplayItem(fvid, value, null, DisplayItem.TYPE_CHOICE);
+          dfv.setSelectionKey(SelectionHelper.createSelectionString(vid, fid, fvid));
+          df.addChild(dfv);
+          lst.add(dfv);
+          LOGGER.trace("Added V: {}", dfv);
         }
       }
     }

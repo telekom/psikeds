@@ -85,8 +85,8 @@ public final class SelectionHelper {
     try {
       final String variantID = parts[0].trim();
       final String featureID = parts[1].trim();
-      final String featureValue = parts[2].trim();
-      fd = new FeatureDecission(variantID, featureID, featureValue);
+      final String featureValueID = parts[2].trim();
+      fd = new FeatureDecission(variantID, featureID, featureValueID);
     }
     catch (final Exception ex) {
       // string is null or not in the expected format
