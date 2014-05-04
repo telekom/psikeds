@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 
 import org.psikeds.common.idgen.IdGenerator;
 import org.psikeds.common.idgen.impl.SessionIdGenerator;
+import org.psikeds.resolutionengine.interfaces.pojos.ConceptDecission;
 import org.psikeds.resolutionengine.interfaces.pojos.Decission;
 import org.psikeds.resolutionengine.interfaces.pojos.ErrorMessage;
 import org.psikeds.resolutionengine.interfaces.pojos.Errors;
@@ -175,8 +176,12 @@ public class ResolutionServiceMock implements ResolutionService {
           this.lastReturnedKnowledge = this.selectFeatureKnowledge;
           resp = new ResolutionResponse(sessionID, this.metadata, this.selectFeatureKnowledge);
         }
+        else if (decission instanceof ConceptDecission) {
+          resp = current(sessionID);
+          resp.addWarning(new Warning("Concept-Decission is not supported by Mock! Returning current State of Resolution."));
+        }
         else {
-          // decission is null
+          // decission is probably null
           final Errors error = new Errors();
           error.add(new ErrorMessage(Status.BAD_REQUEST.getStatusCode(), "Request does not contain a valid Decission!"));
           resp = new ResolutionResponse(sessionID, this.metadata, error);

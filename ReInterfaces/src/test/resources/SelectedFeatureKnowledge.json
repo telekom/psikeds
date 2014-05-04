@@ -5,12 +5,12 @@
     "purpose" : {
       "@type" : "Purpose",
       "purposeID" : "P3",
+      "root" : true,
       "label" : "P3",
-      "description" : null,
-      "root" : true
+      "description" : null
     },
     "quantity" : 1,
-    "variants" : [ {
+    "variants" : [ "Variants", [ {
       "@type" : "Variant",
       "variantID" : "V31",
       "label" : "V31",
@@ -28,13 +28,14 @@
       "label" : "V33",
       "description" : null,
       "features" : [ "Features", [ {
-        "@type" : "FeatureDescription",
+        "@type" : "Feature",
         "featureID" : "F3",
         "label" : "F3",
         "description" : null,
+        "unit" : null,
         "valueType" : "string"
       } ] ]
-    } ],
+    } ] ],
     "parentVariantID" : null
   } ] ],
   "entities" : [ "KnowledgeEntities", [ {
@@ -45,10 +46,11 @@
       "label" : "V11",
       "description" : null,
       "features" : [ "Features", [ {
-        "@type" : "FeatureDescription",
+        "@type" : "Feature",
         "featureID" : "F1",
         "label" : "F1",
         "description" : null,
+        "unit" : null,
         "valueType" : "integer"
       } ] ]
     },
@@ -56,21 +58,20 @@
       "@type" : "FeatureValue",
       "value" : "42",
       "featureID" : "F1",
-      "label" : "F1",
-      "description" : null,
-      "valueType" : "integer"
+      "featureValueID" : "FV11"
     } ] ],
     "purpose" : {
       "@type" : "Purpose",
       "purposeID" : "P1",
+      "root" : true,
       "label" : "P1",
-      "description" : null,
-      "root" : true
+      "description" : null
     },
     "quantity" : 1,
     "children" : [ "KnowledgeEntities", [ ] ],
     "possibleVariants" : [ "VariantChoices", [ ] ],
-    "possibleFeatures" : [ "FeatureChoices", [ ] ]
+    "possibleFeatures" : [ "FeatureChoices", [ ] ],
+    "possibleConcepts" : [ "ConceptChoices", [ ] ]
   }, {
     "@type" : "KnowledgeEntity",
     "variant" : {
@@ -79,10 +80,11 @@
       "label" : "V22",
       "description" : null,
       "features" : [ "Features", [ {
-        "@type" : "FeatureDescription",
+        "@type" : "Feature",
         "featureID" : "F2",
         "label" : "F2",
         "description" : null,
+        "unit" : null,
         "valueType" : "float"
       } ] ]
     },
@@ -90,21 +92,20 @@
       "@type" : "FeatureValue",
       "value" : "2.0",
       "featureID" : "F2",
-      "label" : "F2",
-      "description" : null,
-      "valueType" : "float"
+      "featureValueID" : "FV22"
     } ] ],
     "purpose" : {
       "@type" : "Purpose",
       "purposeID" : "P2",
+      "root" : true,
       "label" : "P2",
-      "description" : null,
-      "root" : true
+      "description" : null
     },
     "quantity" : 1,
     "children" : [ "KnowledgeEntities", [ ] ],
     "possibleVariants" : [ "VariantChoices", [ ] ],
-    "possibleFeatures" : [ "FeatureChoices", [ ] ]
+    "possibleFeatures" : [ "FeatureChoices", [ ] ],
+    "possibleConcepts" : [ "ConceptChoices", [ ] ]
   } ] ],
   "stable" : true
 }

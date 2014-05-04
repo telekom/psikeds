@@ -21,9 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 import org.codehaus.jackson.JsonProcessingException;
 import org.junit.AfterClass;
@@ -41,7 +39,6 @@ import org.psikeds.common.util.JSONHelper;
 import org.psikeds.resolutionengine.interfaces.pojos.Feature;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureDecission;
-import org.psikeds.resolutionengine.interfaces.pojos.FeatureDescription;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureValue;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
 import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity;
@@ -234,6 +231,8 @@ public class ResolutionServiceTest {
       assertFalse("No current Choices!", choices3.isEmpty());
       assertFalse("Current Knowledge is already resolved!?!?", cres2.isResolved());
 
+      // TODO: additional tests for concepts and features
+
       LOGGER.info("... done. Handling of POJOs for Resolution worked as expected.");
     }
     catch (final Exception ex) {
@@ -245,9 +244,16 @@ public class ResolutionServiceTest {
   private static void generateTestData(final boolean force) throws JsonProcessingException, IOException {
     LOGGER.info("Start generating Test-Data ... ");
 
-    final FeatureDescription f1 = new FeatureDescription("F1", Feature.VALUE_TYPE_INTEGER);
-    final FeatureDescription f2 = new FeatureDescription("F2", Feature.VALUE_TYPE_FLOAT);
-    final FeatureDescription f3 = new FeatureDescription("F3", Feature.VALUE_TYPE_STRING);
+    final Feature f1 = new Feature("F1", Feature.VALUE_TYPE_INTEGER);
+    final Feature f2 = new Feature("F2", Feature.VALUE_TYPE_FLOAT);
+    final Feature f3 = new Feature("F3", Feature.VALUE_TYPE_STRING);
+
+    final FeatureValue fv11 = new FeatureValue(f1.getFeatureID(), "FV11", "42");
+    final FeatureValue fv21 = new FeatureValue(f2.getFeatureID(), "FV21", "1.0");
+    final FeatureValue fv22 = new FeatureValue(f2.getFeatureID(), "FV22", "2.0");
+    final FeatureValue fv23 = new FeatureValue(f2.getFeatureID(), "FV23", "3.0");
+    final FeatureValue fv31 = new FeatureValue(f3.getFeatureID(), "FV31", "foo");
+    final FeatureValue fv32 = new FeatureValue(f3.getFeatureID(), "FV32", "bar");
 
     final Purpose p1 = new Purpose("P1", true);
     final Purpose p2 = new Purpose("P2", true);
@@ -264,10 +270,8 @@ public class ResolutionServiceTest {
     final Variant v33 = new Variant("V33");
     v33.addFeature(f3);
 
-    final FeatureValue fv1 = new FeatureValue(f1, "42");
-
     final KnowledgeEntity ke1 = new KnowledgeEntity(p1, v11);
-    ke1.addFeature(fv1);
+    ke1.addFeature(fv11);
 
     final Knowledge initialKnowledge = new Knowledge();
     initialKnowledge.addKnowledgeEntity(ke1);
@@ -295,11 +299,10 @@ public class ResolutionServiceTest {
       JSONHelper.writeObjectToJsonFile(VARIANT_DECISSION, vd);
     }
 
-    final List<String> floatValues = new ArrayList<String>();
-    floatValues.add("1.0");
-    floatValues.add("2.0");
-    floatValues.add("3.0");
-    final FeatureChoice fc2 = new FeatureChoice(v22, f2, floatValues);
+    final FeatureChoice fc2 = new FeatureChoice(v22, f2);
+    fc2.addPossibleValue(fv21);
+    fc2.addPossibleValue(fv22);
+    fc2.addPossibleValue(fv23);
 
     final KnowledgeEntity ke2 = new KnowledgeEntity(p2, v22);
     ke2.addPossibleFeature(fc2);
@@ -322,9 +325,9 @@ public class ResolutionServiceTest {
 
     final Knowledge selectFeatureKnowledge = new Knowledge();
     selectFeatureKnowledge.addKnowledgeEntity(ke1);
-    final FeatureValue fv2 = new FeatureValue(f2, fd);
+    final FeatureValue fv = fc2.matches(fd);
     ke2.clearPossibleFeatures();
-    ke2.addFeature(fv2);
+    ke2.addFeature(fv);
     selectFeatureKnowledge.addKnowledgeEntity(ke2);
     selectFeatureKnowledge.addChoice(vc2);
 
@@ -332,6 +335,8 @@ public class ResolutionServiceTest {
     if (force || !SELECT_FEATURE_KNOWLEDGE.exists()) {
       JSONHelper.writeObjectToJsonFile(SELECT_FEATURE_KNOWLEDGE, selectFeatureKnowledge);
     }
+
+    // TODO: add data for concepts
 
     LOGGER.info("... finished generating Test-Data. ");
   }
