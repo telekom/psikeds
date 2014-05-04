@@ -94,13 +94,13 @@ public class Variant extends POJO implements Serializable {
     this.features = features;
   }
 
-  public void addFeature(final FeatureDescription feature) {
+  public void addFeature(final Feature feature) {
     if (feature != null) {
       getFeatures().add(feature);
     }
   }
 
-  public void addAllFeatures(final Collection<? extends FeatureDescription> c) {
+  public void addAllFeatures(final Collection<? extends Feature> c) {
     if ((c != null) && !c.isEmpty()) {
       getFeatures().addAll(c);
     }

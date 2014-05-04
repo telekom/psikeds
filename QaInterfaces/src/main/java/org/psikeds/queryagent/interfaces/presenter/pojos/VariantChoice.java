@@ -15,8 +15,6 @@
 package org.psikeds.queryagent.interfaces.presenter.pojos;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -42,7 +40,7 @@ public class VariantChoice extends Choice implements Serializable {
   public static final long DEFAULT_QUANTITY = MINIMUM_QUANTITY;
 
   private Purpose purpose;
-  private List<Variant> variants;
+  private Variants variants;
   private long quantity;
 
   public VariantChoice() {
@@ -65,7 +63,7 @@ public class VariantChoice extends Choice implements Serializable {
     this(parentVariantID, purpose, null, qty);
   }
 
-  public VariantChoice(final String parentVariantID, final Purpose purpose, final List<Variant> variants, final long qty) {
+  public VariantChoice(final String parentVariantID, final Purpose purpose, final Variants variants, final long qty) {
     super(parentVariantID);
     setPurpose(purpose);
     setVariants(variants);
@@ -80,14 +78,14 @@ public class VariantChoice extends Choice implements Serializable {
     this.purpose = purpose;
   }
 
-  public List<Variant> getVariants() {
+  public Variants getVariants() {
     if (this.variants == null) {
-      this.variants = new ArrayList<Variant>();
+      this.variants = new Variants();
     }
     return this.variants;
   }
 
-  public void setVariants(final List<Variant> variants) {
+  public void setVariants(final Variants variants) {
     this.variants = variants;
   }
 
