@@ -43,11 +43,13 @@ public class Constitutes extends ValueObject implements Serializable {
   public Constitutes(final String variantID, final String purposeID) {
     super();
     setVariantID(variantID);
+    addComponent(purposeID);
   }
 
   public Constitutes(final String variantID, final List<Component> components) {
     super();
     setVariantID(variantID);
+    setComponents(components);
   }
 
   public String getVariantID() {
