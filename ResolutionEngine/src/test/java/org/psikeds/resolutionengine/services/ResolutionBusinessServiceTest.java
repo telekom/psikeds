@@ -39,9 +39,15 @@ import org.psikeds.resolutionengine.cache.ResolutionCache;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.interfaces.pojos.Choice;
 import org.psikeds.resolutionengine.interfaces.pojos.Choices;
+import org.psikeds.resolutionengine.interfaces.pojos.Concept;
+import org.psikeds.resolutionengine.interfaces.pojos.ConceptChoice;
+import org.psikeds.resolutionengine.interfaces.pojos.ConceptDecission;
+import org.psikeds.resolutionengine.interfaces.pojos.Concepts;
 import org.psikeds.resolutionengine.interfaces.pojos.Decission;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureDecission;
+import org.psikeds.resolutionengine.interfaces.pojos.FeatureValue;
+import org.psikeds.resolutionengine.interfaces.pojos.FeatureValues;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
 import org.psikeds.resolutionengine.interfaces.pojos.Purpose;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest;
@@ -49,6 +55,7 @@ import org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse;
 import org.psikeds.resolutionengine.interfaces.pojos.Variant;
 import org.psikeds.resolutionengine.interfaces.pojos.VariantChoice;
 import org.psikeds.resolutionengine.interfaces.pojos.VariantDecission;
+import org.psikeds.resolutionengine.interfaces.pojos.Variants;
 import org.psikeds.resolutionengine.interfaces.services.ResolutionService;
 import org.psikeds.resolutionengine.resolver.Resolver;
 import org.psikeds.resolutionengine.resolver.impl.AutoCompletion;
@@ -101,8 +108,7 @@ public class ResolutionBusinessServiceTest {
         this.resolvers,
         this.cache,
         this.trans,
-        new SessionIdGenerator("MOCK")
-        );
+        new SessionIdGenerator("MOCK"));
   }
 
   @After
@@ -122,6 +128,7 @@ public class ResolutionBusinessServiceTest {
   public void testResolutionService() throws Exception {
     try {
       LOGGER.info("Testing Resolution-Business-Service ...");
+      assertNotNull("KnowledgeBase is null!", this.kb);
       assertNotNull("ResolutionCache is null!", this.cache);
       assertNotNull("ResolutionService is null!", this.srvc);
 
@@ -153,7 +160,7 @@ public class ResolutionBusinessServiceTest {
           final Purpose p = vc.getPurpose();
           assertNotNull("No Purpose in Choice!", p);
           assertTrue("Initial choice contains a Purpose which is not a Root-Purpose: " + p, p.isRoot());
-          final List<Variant> vars = vc.getVariants();
+          final Variants vars = vc.getVariants();
           assertNotNull("No Variants in Choice!", vars);
           assertFalse("No Variants in Choice!", vars.isEmpty());
           final Variant v = vars.get(0);
@@ -166,15 +173,32 @@ public class ResolutionBusinessServiceTest {
           assertFalse("No Feature in Choice!", StringUtils.isEmpty(fid));
           final String vid = fc.getParentVariantID();
           assertFalse("No Parent-Variant in Choice!", StringUtils.isEmpty(vid));
-          final List<String> lst = fc.getPossibleValues();
-          assertNotNull("No possible Values in Choice!", lst);
-          assertFalse("No possible Values in Choice!", lst.isEmpty());
-          final String val = lst.get(0);
-          assertFalse("First Value of Choice is empty!", StringUtils.isEmpty(val));
-          decission = new FeatureDecission(vid, fid, val);
+          final FeatureValues fvs = fc.getPossibleValues();
+          assertNotNull("No possible Values in Choice!", fvs);
+          assertFalse("No possible Values in Choice!", fvs.isEmpty());
+          final FeatureValue val = fvs.get(0);
+          assertNotNull("First Value of Choice is null!", val);
+          final String fvid = val.getFeatureValueID();
+          assertFalse("ID of first Feature-Value in Choice is empty!", StringUtils.isEmpty(fvid));
+          assertEquals("Feature-ID of FeatureChoice and FeatureValue are not the same", fid, val.getFeatureID());
+          decission = new FeatureDecission(vid, fid, fvid);
+        }
+        else if (c instanceof ConceptChoice) {
+          final ConceptChoice cc = (ConceptChoice) c;
+          final String vid = cc.getParentVariantID();
+          assertFalse("No Parent-Variant in Choice!", StringUtils.isEmpty(vid));
+          final Concepts cons = cc.getConcepts();
+          assertNotNull("No Concepts in Choice!", cons);
+          assertFalse("No Concepts in Choice!", cons.isEmpty());
+          final Concept con = cons.get(0);
+          assertNotNull("First Concept of Choice is null!", con);
+          final String cid = con.getConceptID();
+          assertFalse("ID of first Concept in Choice is empty!", StringUtils.isEmpty(cid));
+          decission = new ConceptDecission(vid, cid);
         }
         else {
-          fail("Unexpected Object: " + c.getClass().getName());
+          decission = null;
+          fail("Unexpected Object: " + String.valueOf(c));
         }
       }
       assertNotNull("No Decission possible!", decission);
