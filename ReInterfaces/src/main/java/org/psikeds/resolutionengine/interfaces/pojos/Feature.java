@@ -14,24 +14,21 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.interfaces.pojos;
 
-import javax.xml.bind.annotation.XmlSeeAlso;
+import java.io.Serializable;
 
-import org.codehaus.jackson.annotate.JsonSubTypes;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Base-Object representing a Feature, either FeatureDescription or FeatureValue.
+ * Interface object representing a Description of a Feature, i.e.
+ * ID, Label, Description, Type, Unit ... but no Values!!
  * 
- * Note 1: Feature-ID must be globally unique!
- * 
- * Note 2: Reading from and writing to JSON works out of the box.
- * However for XML the XmlRootElement annotation is required.
+ * Note: Feature-ID must be globally unique!
  * 
  * @author marco@juliano.de
  * 
  */
-@XmlSeeAlso({ FeatureValue.class, FeatureDescription.class })
-@JsonSubTypes({ @JsonSubTypes.Type(value = FeatureValue.class, name = "FeatureValue"), @JsonSubTypes.Type(value = FeatureDescription.class, name = "FeatureDescription"), })
-public abstract class Feature extends POJO {
+@XmlRootElement(name = "Feature")
+public class Feature extends POJO implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -42,20 +39,22 @@ public abstract class Feature extends POJO {
   private String label;
   private String description;
   private String valueType;
+  private String unit;
 
   public Feature() {
-    this(null, null, null, null);
+    this(null, null);
   }
 
-  public Feature(final Feature feature) {
-    this(feature.getLabel(), feature.getDescription(), feature.getFeatureID(), feature.getValueType());
+  public Feature(final String featureID, final String valueType) {
+    this(featureID, null, featureID, valueType, null);
   }
 
-  public Feature(final String label, final String description, final String featureID, final String valueType) {
+  public Feature(final String label, final String description, final String featureID, final String valueType, final String unit) {
     super(featureID);
     setLabel(label);
     setDescription(description);
     setValueType(valueType);
+    setUnit(unit);
   }
 
   public String getLabel() {
@@ -72,6 +71,14 @@ public abstract class Feature extends POJO {
 
   public void setDescription(final String description) {
     this.description = description;
+  }
+
+  public String getUnit() {
+    return this.unit;
+  }
+
+  public void setUnit(final String unit) {
+    this.unit = unit;
   }
 
   public String getValueType() {

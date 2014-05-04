@@ -15,14 +15,10 @@
 package org.psikeds.resolutionengine.interfaces.pojos;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
-
-import org.apache.cxf.common.util.StringUtils;
 
 /**
  * A possible Choice: Which Values can be choosen for a Feature
@@ -42,28 +38,29 @@ public class FeatureChoice extends Choice implements Serializable {
   private static final long serialVersionUID = 1L;
 
   private String featureID;
-  private List<String> possibleValues;
+  private FeatureValues possibleValues;
 
   public FeatureChoice() {
-    this((String) null, (String) null);
+    this(null, null, null);
   }
 
-  public FeatureChoice(final Variant parentVariant, final FeatureDescription featureDescription) {
-    this(parentVariant, featureDescription, null);
+  public FeatureChoice(final Variant parentVariant, final Feature feature) {
+    this(parentVariant.getVariantID(), feature.getFeatureID());
   }
 
-  public FeatureChoice(final Variant parentVariant, final FeatureDescription featureDescription, final List<String> possibleValues) {
-    this((parentVariant == null ? null : parentVariant.getVariantID()), (featureDescription == null ? null : featureDescription.getFeatureID()), possibleValues);
+  public FeatureChoice(final Variant parentVariant, final FeatureValue value) {
+    this(parentVariant.getVariantID(), value.getFeatureID());
+    setValue(value);
   }
 
   public FeatureChoice(final String parentVariantID, final String featureID) {
     this(parentVariantID, featureID, null);
   }
 
-  public FeatureChoice(final String parentVariantID, final String featureID, final List<String> possibleValues) {
+  public FeatureChoice(final String parentVariantID, final String featureID, final FeatureValues possibleValues) {
     super(parentVariantID);
-    this.featureID = featureID;
-    this.possibleValues = possibleValues;
+    setFeatureID(featureID);
+    setPossibleValues(possibleValues);
   }
 
   public String getFeatureID() {
@@ -74,20 +71,21 @@ public class FeatureChoice extends Choice implements Serializable {
     this.featureID = featureID;
   }
 
-  public List<String> getPossibleValues() {
+  public FeatureValues getPossibleValues() {
     if (this.possibleValues == null) {
-      this.possibleValues = new ArrayList<String>();
+      this.possibleValues = new FeatureValues();
     }
     return this.possibleValues;
   }
 
-  public void setPossibleValues(final List<String> possibleValues) {
+  public void setPossibleValues(final FeatureValues possibleValues) {
     this.possibleValues = possibleValues;
   }
 
-  public void addPossibleValue(final String value) {
-    if (!StringUtils.isEmpty(value)) {
+  public void addPossibleValue(final FeatureValue value) {
+    if (value != null) {
       getPossibleValues().add(value);
+      setFeatureID(value.getFeatureID());
     }
   }
 
@@ -99,15 +97,9 @@ public class FeatureChoice extends Choice implements Serializable {
   }
 
   @JsonIgnore
-  public void setValue(final String value) {
+  public void setValue(final FeatureValue value) {
     clearPossibleValues();
     addPossibleValue(value);
-  }
-
-  @JsonIgnore
-  public void setValue(final FeatureValue fv) {
-    final String value = (fv == null ? null : fv.getValue());
-    setValue(value);
   }
 
   /**
@@ -120,15 +112,39 @@ public class FeatureChoice extends Choice implements Serializable {
   @JsonIgnore
   @Override
   public boolean matches(final Decission decission) {
-    boolean ret;
+    FeatureValue fv;
     try {
       final FeatureDecission fd = (FeatureDecission) decission;
-      ret = (this.parentVariantID.equals(fd.getVariantID()) && this.featureID.equals(fd.getFeatureID()) && this.possibleValues.contains(fd.getFeatureValue()));
+      fv = matches(fd);
     }
     catch (final Exception ex) {
-      // Probably not a FeatureDecission or one of the Objects was NULL
-      ret = false;
+      // Probably not a FeatureDecission
+      fv = null;
     }
-    return ret;
+    return (fv != null);
+  }
+
+  /**
+   * Check whether some FeatureDecission matches to this Choice, i.e. whether
+   * the Client selected one of the allowed Values for this Feature.
+   * 
+   * @param fd
+   * @return FeatureValue if matching, null else
+   */
+  @JsonIgnore
+  public FeatureValue matches(final FeatureDecission fd) {
+    try {
+      if (this.parentVariantID.equals(fd.getVariantID()) && this.featureID.equals(fd.getFeatureID())) {
+        for (final FeatureValue fv : this.possibleValues) {
+          if (fv.getFeatureID().equals(fd.getFeatureID()) && fv.getFeatureValueID().equals(fd.getFeatureValueID())) {
+            return fv;
+          }
+        }
+      }
+    }
+    catch (final Exception ex) {
+      // one of the Objects was NULL
+    }
+    return null;
   }
 }
