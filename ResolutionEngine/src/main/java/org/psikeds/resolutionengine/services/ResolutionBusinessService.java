@@ -361,7 +361,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
       final String purposeId = (p == null ? null : p.getPurposeID());
       final Fulfills ff = (StringUtils.isEmpty(purposeId) ? null : this.kb.getFulfills(purposeId));
       if (ff != null) {
-        final VariantChoice vc = new VariantChoice(this.trans.valueObject2Pojo(p), ff.getQuantity());
+        final VariantChoice vc = new VariantChoice(this.trans.valueObject2Pojo(p)); // root purposes have default quantity
         for (final String vid : ff.getVariantID()) {
           final Variant v = this.kb.getVariant(vid);
           if (v != null) {
