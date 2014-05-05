@@ -127,12 +127,12 @@ public class Re2QaTransformer implements Transformer {
 
   @Override
   public org.psikeds.resolutionengine.interfaces.pojos.Concept qa2re(final Concept qa) {
-    return (qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Concept(qa.getConceptID(), qa2re(qa.getValues())));
+    return (qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Concept(qa.getLabel(), qa.getDescription(), qa.getConceptID(), qa.getFeatureIds(), qa2re(qa.getValues())));
   }
 
   @Override
   public Concept re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Concept re) {
-    return (re == null ? null : new Concept(re.getConceptID(), re2qa(re.getValues())));
+    return (re == null ? null : new Concept(re.getLabel(), re.getDescription(), re.getConceptID(), re.getFeatureIds(), re2qa(re.getValues())));
   }
 
   @Override
