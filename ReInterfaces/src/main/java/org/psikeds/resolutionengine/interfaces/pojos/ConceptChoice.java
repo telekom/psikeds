@@ -15,6 +15,7 @@
 package org.psikeds.resolutionengine.interfaces.pojos;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -40,19 +41,29 @@ public class ConceptChoice extends Choice implements Serializable {
     this(null);
   }
 
-  public ConceptChoice(final Variant parentVariant) {
-    this(parentVariant, null);
+  public ConceptChoice(final String parentVariantID) {
+    this(parentVariantID, (Concepts) null);
   }
 
   public ConceptChoice(final Variant parentVariant, final Concept con) {
-    this((parentVariant == null ? null : parentVariant.getVariantID()), null);
+    this((parentVariant == null ? null : parentVariant.getVariantID()), con);
+  }
+
+  public ConceptChoice(final String parentVariantID, final Concept con) {
+    super(parentVariantID);
     setConcept(con);
+  }
+
+  public ConceptChoice(final Variant parentVariant, final Concepts concepts) {
+    this((parentVariant == null ? null : parentVariant.getVariantID()), concepts);
   }
 
   public ConceptChoice(final String parentVariantID, final Concepts concepts) {
     super(parentVariantID);
     setConcepts(concepts);
   }
+
+  // ----------------------------------------------------------------
 
   public Concepts getConcepts() {
     if (this.concepts == null) {
@@ -69,6 +80,10 @@ public class ConceptChoice extends Choice implements Serializable {
     return ((con != null) && getConcepts().add(con));
   }
 
+  public boolean addConcept(final Collection<? extends Concept> c) {
+    return ((c != null) && !c.isEmpty() && getConcepts().addAll(c));
+  }
+
   public void clearConcepts() {
     if (this.concepts != null) {
       this.concepts.clear();
@@ -81,6 +96,8 @@ public class ConceptChoice extends Choice implements Serializable {
     clearConcepts();
     addConcept(con);
   }
+
+  // ----------------------------------------------------------------
 
   /**
    * Check whether some made Decission matches to this Choice, i.e. whether

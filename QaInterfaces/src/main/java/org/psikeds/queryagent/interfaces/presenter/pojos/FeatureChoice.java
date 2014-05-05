@@ -15,6 +15,7 @@
 package org.psikeds.queryagent.interfaces.presenter.pojos;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -44,13 +45,8 @@ public class FeatureChoice extends Choice implements Serializable {
     this(null, null, null);
   }
 
-  public FeatureChoice(final Variant parentVariant, final Feature feature) {
-    this(parentVariant.getVariantID(), feature.getFeatureID());
-  }
-
-  public FeatureChoice(final Variant parentVariant, final FeatureValue value) {
-    this(parentVariant.getVariantID(), value.getFeatureID());
-    setValue(value);
+  public FeatureChoice(final String parentVariantID) {
+    this(parentVariantID, null, null);
   }
 
   public FeatureChoice(final String parentVariantID, final String featureID) {
@@ -61,6 +57,15 @@ public class FeatureChoice extends Choice implements Serializable {
     super(parentVariantID);
     setFeatureID(featureID);
     setPossibleValues(possibleValues);
+  }
+
+  public FeatureChoice(final Variant parentVariant, final Feature feature) {
+    this(parentVariant.getVariantID(), feature.getFeatureID());
+  }
+
+  public FeatureChoice(final String parentVariantID, final FeatureValue value) {
+    this(parentVariantID);
+    setValue(value);
   }
 
   public String getFeatureID() {
@@ -80,6 +85,14 @@ public class FeatureChoice extends Choice implements Serializable {
 
   public void setPossibleValues(final FeatureValues possibleValues) {
     this.possibleValues = possibleValues;
+  }
+
+  public void addPossibleValues(final Collection<? extends FeatureValue> col) {
+    if ((col != null) && !col.isEmpty()) {
+      for (final FeatureValue fv : col) {
+        addPossibleValue(fv);
+      }
+    }
   }
 
   public void addPossibleValue(final FeatureValue value) {
