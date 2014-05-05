@@ -105,6 +105,14 @@ public class Concept extends ValueObject implements Serializable {
     this.featureIds = featureIds;
   }
 
+  public void addFeatureIds(final List<String> featureIds) {
+    if ((featureIds != null) && !featureIds.isEmpty()) {
+      for (final String fid : featureIds) {
+        addFeatureId(fid);
+      }
+    }
+  }
+
   public boolean addFeatureId(final String featureId) {
     return (!StringUtils.isEmpty(featureId) && !getFeatureIds().contains(featureId) && getFeatureIds().add(featureId));
   }

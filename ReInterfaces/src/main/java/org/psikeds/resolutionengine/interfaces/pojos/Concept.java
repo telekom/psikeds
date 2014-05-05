@@ -15,6 +15,9 @@
 package org.psikeds.resolutionengine.interfaces.pojos;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -34,15 +37,48 @@ public class Concept extends POJO implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
+  private String label;
+  private String description;
+  private List<String> featureIds; // distinct features referenced by all values
   private FeatureValues values;
 
   public Concept() {
-    this(null, null);
+    this(null);
   }
 
-  public Concept(final String conceptID, final FeatureValues values) {
+  public Concept(final String conceptID) {
+    this(conceptID, null, conceptID);
+  }
+
+  public Concept(final String label, final String description, final String conceptID) {
+    this(label, description, conceptID, null, null);
+  }
+
+  public Concept(final String label, final String description, final String conceptID, final List<String> featureIds, final FeatureValues values) {
     super(conceptID);
     setValues(values);
+    setLabel(label);
+    setDescription(description);
+    setFeatureIds(featureIds);
+    setValues(values);
+  }
+
+  // ----------------------------------------------------------------
+
+  public String getLabel() {
+    return this.label;
+  }
+
+  public void setLabel(final String label) {
+    this.label = label;
+  }
+
+  public String getDescription() {
+    return this.description;
+  }
+
+  public void setDescription(final String description) {
+    this.description = description;
   }
 
   public String getConceptID() {
@@ -52,6 +88,40 @@ public class Concept extends POJO implements Serializable {
   public void setConceptID(final String conceptID) {
     setId(conceptID);
   }
+
+  // ----------------------------------------------------------------
+
+  public List<String> getFeatureIds() {
+    if (this.featureIds == null) {
+      this.featureIds = new ArrayList<String>();
+    }
+    return this.featureIds;
+  }
+
+  public void setFeatureIds(final List<String> featureIds) {
+    this.featureIds = featureIds;
+  }
+
+  public void addFeatureIds(final List<String> featureIds) {
+    if ((featureIds != null) && !featureIds.isEmpty()) {
+      for (final String fid : featureIds) {
+        addFeatureId(fid);
+      }
+    }
+  }
+
+  public boolean addFeatureId(final String featureId) {
+    return ((featureId != null) && !getFeatureIds().contains(featureId) && getFeatureIds().add(featureId));
+  }
+
+  public void clearFeatureIds() {
+    if (this.featureIds != null) {
+      this.featureIds.clear();
+      this.featureIds = null;
+    }
+  }
+
+  // ----------------------------------------------------------------
 
   public FeatureValues getValues() {
     if (this.values == null) {
@@ -66,6 +136,10 @@ public class Concept extends POJO implements Serializable {
 
   public boolean addValue(final FeatureValue value) {
     return ((value != null) && getValues().add(value));
+  }
+
+  public boolean addValue(final Collection<? extends FeatureValue> values) {
+    return ((values != null) && !values.isEmpty() && getValues().addAll(values));
   }
 
   public void clearValues() {
