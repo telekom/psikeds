@@ -93,6 +93,8 @@ public class KnowledgeEntity extends POJO implements Serializable {
     setPossibleConcepts(possibleConcepts);
   }
 
+  // ----------------------------------------------------------------
+
   public Purpose getPurpose() {
     return this.purpose;
   }
@@ -131,16 +133,12 @@ public class KnowledgeEntity extends POJO implements Serializable {
     this.children = children;
   }
 
-  public void addChild(final KnowledgeEntity child) {
-    if (child != null) {
-      getChildren().add(child);
-    }
+  public boolean addChild(final KnowledgeEntity child) {
+    return ((child != null) && getChildren().add(child));
   }
 
-  public void addAllChildren(final Collection<? extends KnowledgeEntity> c) {
-    if ((c != null) && !c.isEmpty()) {
-      getChildren().addAll(c);
-    }
+  public boolean addAllChildren(final Collection<? extends KnowledgeEntity> c) {
+    return ((c != null) && !c.isEmpty() && getChildren().addAll(c));
   }
 
   public void clearChildren() {
@@ -164,15 +162,15 @@ public class KnowledgeEntity extends POJO implements Serializable {
     this.features = features;
   }
 
-  public void addFeature(final FeatureValue feature) {
-    if (feature != null) {
-      getFeatures().add(feature);
-    }
+  public boolean addFeature(final FeatureValue feature) {
+    return ((feature != null) && !getFeatures().contains(feature) && getFeatures().add(feature));
   }
 
-  public void addAllFeature(final Collection<? extends FeatureValue> c) {
+  public void addAllFeatures(final Collection<? extends FeatureValue> c) {
     if ((c != null) && !c.isEmpty()) {
-      getFeatures().addAll(c);
+      for (final FeatureValue feature : c) {
+        addFeature(feature);
+      }
     }
   }
 
@@ -236,16 +234,12 @@ public class KnowledgeEntity extends POJO implements Serializable {
     this.possibleFeatures = choices;
   }
 
-  public void addPossibleFeature(final FeatureChoice choice) {
-    if (choice != null) {
-      getPossibleFeatures().add(choice);
-    }
+  public boolean addPossibleFeature(final FeatureChoice choice) {
+    return ((choice != null) && getPossibleFeatures().add(choice));
   }
 
-  public void addAllPossibleFeatures(final Collection<? extends FeatureChoice> c) {
-    if ((c != null) && !c.isEmpty()) {
-      getPossibleFeatures().addAll(c);
-    }
+  public boolean addAllPossibleFeatures(final Collection<? extends FeatureChoice> c) {
+    return ((c != null) && !c.isEmpty() && getPossibleFeatures().addAll(c));
   }
 
   public void clearPossibleFeatures() {
@@ -269,16 +263,12 @@ public class KnowledgeEntity extends POJO implements Serializable {
     this.possibleConcepts = choices;
   }
 
-  public void addPossibleConcept(final ConceptChoice choice) {
-    if (choice != null) {
-      getPossibleConcepts().add(choice);
-    }
+  public boolean addPossibleConcept(final ConceptChoice choice) {
+    return ((choice != null) && getPossibleConcepts().add(choice));
   }
 
-  public void addAllPossibleConcepts(final Collection<? extends ConceptChoice> c) {
-    if ((c != null) && !c.isEmpty()) {
-      getPossibleConcepts().addAll(c);
-    }
+  public boolean addAllPossibleConcepts(final Collection<? extends ConceptChoice> c) {
+    return ((c != null) && !c.isEmpty() && getPossibleConcepts().addAll(c));
   }
 
   public void clearPossibleConcepts() {
