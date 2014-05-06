@@ -30,6 +30,7 @@ import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.datalayer.vo.Event;
 import org.psikeds.resolutionengine.datalayer.vo.Rule;
 import org.psikeds.resolutionengine.interfaces.pojos.Choice;
+import org.psikeds.resolutionengine.interfaces.pojos.ConceptChoices;
 import org.psikeds.resolutionengine.interfaces.pojos.Decission;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoices;
@@ -654,7 +655,9 @@ public class RulesEvaluator implements InitializingBean, Resolver {
 
           // Part 2 - Step A: For each Rule check State of Premise- and Conclusion-Event
           // premise
-          final String peid = r.getPremiseEventID();
+          // TODO handle list of premises
+          // TODO handle self-fulfilling rules
+          final String peid = r.getPremiseEventID().get(0);
           final boolean premiseObsolete = raeh.isObsolete(peid);
           final boolean premiseTriggered = raeh.isTriggered(peid);
           // conclusion
@@ -901,9 +904,10 @@ public class RulesEvaluator implements InitializingBean, Resolver {
     // get next choices for new KE
     final VariantChoices newVariantChoices = getNewVariantChoices(variant);
     final FeatureChoices newFeatureChoices = getNewFeatureChoices(variant);
+    final ConceptChoices newConceptChoices = getNewConceptChoices(variant);
 
     // create new KE including choices
-    final KnowledgeEntity nextKE = new KnowledgeEntity(qty, purp, var, newVariantChoices, newFeatureChoices);
+    final KnowledgeEntity nextKE = new KnowledgeEntity(qty, purp, var, newVariantChoices, newFeatureChoices, newConceptChoices);
     // create new KE including choices
     // attach new KE to parent KE
     addNewKnowledgeEntity(parent, nextKE);
@@ -941,29 +945,34 @@ public class RulesEvaluator implements InitializingBean, Resolver {
     }
   }
 
-  private VariantChoices getNewVariantChoices(final org.psikeds.resolutionengine.datalayer.vo.Variant parentVariant) {
+  private VariantChoices getNewVariantChoices(final org.psikeds.resolutionengine.datalayer.vo.Variant v) {
     final VariantChoices choices = new VariantChoices();
-    final String parentVariantID = (parentVariant == null ? null : parentVariant.getVariantID());
+    final String parentVariantID = (v == null ? null : v.getVariantID());
     try {
       LOGGER.trace("--> getNewVariantChoices(); Variant = {}", parentVariantID);
-      // get all purposes constituting parent-variant ...
-      final org.psikeds.resolutionengine.datalayer.vo.Purposes newpurps = this.kb.getConstitutingPurposes(parentVariantID);
-      // ... and create for every purpose ...
-      for (final org.psikeds.resolutionengine.datalayer.vo.Purpose p : newpurps.getPurpose()) {
-        // ... a new VariantChoice-POJO for the Client
-        final org.psikeds.resolutionengine.datalayer.vo.Fulfills ff = this.kb.getFulfills(p.getPurposeID());
-        final long qty = ff.getQuantity();
-        final List<Variant> variants = new ArrayList<Variant>();
-        for (final String vid : ff.getVariantID()) {
-          final org.psikeds.resolutionengine.datalayer.vo.Variant v = this.kb.getVariant(vid);
-          final org.psikeds.resolutionengine.datalayer.vo.Features feats = this.kb.getFeatures(vid);
-          variants.add(this.trans.valueObject2Pojo(v, feats));
+      // get all components/purposes constituting parent-variant ...
+      final org.psikeds.resolutionengine.datalayer.vo.Constitutes consts = this.kb.getConstitutes(parentVariantID);
+      final List<org.psikeds.resolutionengine.datalayer.vo.Component> comps = (consts == null ? null : consts.getComponents());
+      if ((comps != null) && !comps.isEmpty()) {
+        // ... and create for every existing component/purpose ...
+        for (final org.psikeds.resolutionengine.datalayer.vo.Component c : comps) {
+          if (c != null) {
+            final long qty = c.getQuantity();
+            final String pid = c.getPurposeID();
+            final org.psikeds.resolutionengine.datalayer.vo.Purpose p = this.kb.getPurpose(pid);
+            // ... a new VariantChoice-POJO for the Client
+            final org.psikeds.resolutionengine.datalayer.vo.Fulfills ff = this.kb.getFulfills(pid);
+            final org.psikeds.resolutionengine.datalayer.vo.Variants variants = new org.psikeds.resolutionengine.datalayer.vo.Variants();
+            for (final String vid : ff.getVariantID()) {
+              variants.addVariant(this.kb.getVariant(vid));
+            }
+            final VariantChoice vc = this.trans.valueObject2Pojo(parentVariantID, p, variants, qty);
+            LOGGER.trace("Adding new Variant-Choice: {}", vc);
+            choices.add(vc);
+          }
         }
-        final VariantChoice vc = this.trans.valueObject2Pojo(parentVariantID, p, variants, qty);
-        LOGGER.trace("Adding new Variant-Choice: {}", vc);
-        choices.add(vc);
       }
-      // return list of all new choices
+      // return list of all new variant choices
       return choices;
     }
     finally {
@@ -973,24 +982,33 @@ public class RulesEvaluator implements InitializingBean, Resolver {
 
   private FeatureChoices getNewFeatureChoices(final org.psikeds.resolutionengine.datalayer.vo.Variant v) {
     final FeatureChoices choices = new FeatureChoices();
-    final String variantId = (v == null ? null : v.getVariantID());
+    final String parentVariantID = (v == null ? null : v.getVariantID());
     try {
-      LOGGER.trace("--> getNewFeatureChoices(); Variant = {}", v);
+      LOGGER.trace("--> getNewFeatureChoices(); Variant = {}", parentVariantID);
       // get all features of this variant ...
-      final org.psikeds.resolutionengine.datalayer.vo.Features feats = this.kb.getFeatures(variantId);
-      // ... and create for every feature ...
-      for (final org.psikeds.resolutionengine.datalayer.vo.Feature<?> f : feats.getFeature()) {
-        // ... a new FeatureChoice-POJO for the Client
-        final FeatureChoice fc = this.trans.valueObject2Pojo(variantId, f);
-        LOGGER.trace("Adding new Feature-Choice: {}", fc);
-        choices.add(fc);
+      final org.psikeds.resolutionengine.datalayer.vo.Features newfeats = this.kb.getFeatures(parentVariantID);
+      final List<org.psikeds.resolutionengine.datalayer.vo.Feature> feats = (newfeats == null ? null : newfeats.getFeature());
+      if ((feats != null) && !feats.isEmpty()) {
+        // ... and create for every feature ...
+        for (final org.psikeds.resolutionengine.datalayer.vo.Feature f : feats) {
+          // ... a new FeatureChoice-POJO for the Client
+          // TODO this is wrong!!! we must get the values allowed for this variant, not all possible values of the feature!!!
+          final FeatureChoice fc = this.trans.valueObject2Pojo(parentVariantID, f.getValues());
+          LOGGER.trace("Adding new Feature-Choice: {}", fc);
+          choices.add(fc);
+        }
       }
-      // return list of all new choices
+      // return list of all new feature choices
       return choices;
     }
     finally {
-      LOGGER.trace("<-- getNewFeatureChoices(); Variant = {}\nChoices = {}", variantId, choices);
+      LOGGER.trace("<-- getNewFeatureChoices(); Variant = {}\nChoices = {}", parentVariantID, choices);
     }
+  }
+
+  private ConceptChoices getNewConceptChoices(final org.psikeds.resolutionengine.datalayer.vo.Variant v) {
+    // TODO implement!
+    return null;
   }
 
   private void addNewKnowledgeEntity(final KnowledgeEntity parent, final KnowledgeEntity newke) {
@@ -1021,7 +1039,9 @@ public class RulesEvaluator implements InitializingBean, Resolver {
   private void applyRuleModusTollens(final Rule r, final Knowledge knowledge, final RulesAndEventsHandler raeh, final Metadata metadata) {
     LOGGER.info("MODUS TOLLENS - disabling Trigger-Event of Rule: {}", r);
     final List<KnowledgeEntity> root = findRoot(r, knowledge);
-    final String eventId = r.getPremiseEventID();
+    // TODO handle list of premises
+    // TODO handle self-fulfilling rules
+    final String eventId = r.getPremiseEventID().get(0);
     if (disablePremiseEvent(root, eventId)) {
       triggerRule(r, raeh, metadata, "_modus_tollens");
     }
