@@ -56,7 +56,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <ref bean="VariantDecissionEvaluator" />
     <ref bean="FeatureDecissionEvaluator" />
     <ref bean="AutoCompletionResolver" />
-    <ref bean="RulesEvaluator" />
+<!--  <ref bean="RulesEvaluator" />  -->
   </util:list>
 
   <bean id="resolutionBusinessService" class="org.psikeds.resolutionengine.services.ResolutionBusinessService">
