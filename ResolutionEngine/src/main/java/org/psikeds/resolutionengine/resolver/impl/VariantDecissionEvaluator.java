@@ -37,7 +37,9 @@ import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
  * Based on the made Variant-Decission this Resolver will reduce the corresponding
  * Variant-Choice to just one single Variant so that afterwards new Knowledge-Entities
  * will be created by the AutoCompletion-Resolver.
- * If no Decission is supplied, nothing happens. Metadata is optional.
+ * 
+ * If no Decission is supplied, nothing happens.
+ * Metadata is optional.
  * 
  * Note: Must run before AutoCompletion-Resolver!
  * 
@@ -127,35 +129,39 @@ public class VariantDecissionEvaluator implements InitializingBean, Resolver {
     }
   }
 
-  //----------------------------------------------------------------------
+  // ----------------------------------------------------------------
 
   private boolean updateKnowledge(final Knowledge knowledge, final VariantDecission vd, final Metadata metadata) throws ResolutionException {
     boolean found = false;
     try {
-      LOGGER.trace("--> updateKnowledge(); Variant-Decission = {}\nKnowledge = {}", vd, knowledge);
+      LOGGER.trace("--> updateKnowledge()\nVariant-Decission = {}\nKnowledge = {}", vd, knowledge);
       found = updateVariantChoices(knowledge.getChoices(), vd, metadata);
       for (final KnowledgeEntity ke : knowledge.getEntities()) {
-        found = found | updateKnowledgeEntity(ke, vd, metadata);
+        if (updateKnowledgeEntity(ke, vd, metadata)) {
+          found = true;
+        }
       }
       return found;
     }
     finally {
-      LOGGER.trace("<-- updateKnowledge(); Found = {}; Knowledge = {}", found, knowledge);
+      LOGGER.trace("<-- updateKnowledge(); Found = {}\nKnowledge = {}", found, knowledge);
     }
   }
 
   private boolean updateKnowledgeEntity(final KnowledgeEntity ke, final VariantDecission vd, final Metadata metadata) throws ResolutionException {
     boolean found = false;
     try {
-      LOGGER.trace("--> updateKnowledgeEntity(); KnowledgeEntity = {}", ke);
+      LOGGER.trace("--> updateKnowledgeEntity()");
       found = updateVariantChoices(ke.getPossibleVariants(), vd, metadata);
       for (final KnowledgeEntity child : ke.getChildren()) {
-        found = found | updateKnowledgeEntity(child, vd, metadata);
+        if (updateKnowledgeEntity(child, vd, metadata)) {
+          found = true;
+        }
       }
       return found;
     }
     finally {
-      LOGGER.trace("<-- updateKnowledgeEntity(); Found = {}; KnowledgeEntity = {}", found, ke);
+      LOGGER.trace("<-- updateKnowledgeEntity(); Found = {}", found);
     }
   }
 
@@ -163,17 +169,18 @@ public class VariantDecissionEvaluator implements InitializingBean, Resolver {
     boolean found = false;
     boolean concernsRootPurpose = false;
     try {
-      LOGGER.trace("--> updateVariantChoices(); Variant-Decission = {}\nChoices = {}", vd, choices);
+      LOGGER.trace("--> updateVariantChoices()");
       for (final VariantChoice vc : choices) {
+        LOGGER.trace("Checking: {}", vc);
         final Variant v = (vc == null ? null : vc.matches(vd));
         if (v != null) {
-          // Found Variant matching our Decission!
+          LOGGER.debug("Found Variant {} of Choice {}", v.getVariantID(), vc);
+          found = true;
           vc.setVariant(v);
           final Purpose p = vc.getPurpose();
           if ((p != null) && p.isRoot()) {
             concernsRootPurpose = true;
           }
-          found = true;
           decissionMessage(metadata, vd, vc);
         }
       }
@@ -201,20 +208,15 @@ public class VariantDecissionEvaluator implements InitializingBean, Resolver {
       return found;
     }
     finally {
-      LOGGER.trace("<-- updateVariantChoices(); Found = {}; ConcernsRootPurpose = {}\nChoices = {}", found, concernsRootPurpose, choices);
+      LOGGER.trace("<-- updateVariantChoices(); Found = {}; ConcernsRootPurpose = {}", found, concernsRootPurpose);
     }
   }
 
   private void decissionMessage(final Metadata metadata, final VariantDecission vd, final VariantChoice vc) {
-    final String msg = String.format("Found Variant-Choice matching Decission.\nDecission = %s\nChoice = %s", vd, vc);
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug(msg);
-    }
-    else {
-      LOGGER.info("Applying Variant-Decission {}", vd);
-    }
+    LOGGER.info("Applying Decission for Variant {} for Purpose {}", vd.getVariantID(), vd.getPurposeID());
     if (metadata != null) {
       final String key = String.format("Decission_VD_%s_%s", vd.getPurposeID(), vd.getVariantID());
+      final String msg = String.format("Found Variant-Choice matching Decission.\nDecission = %s\nChoice = %s", vd, vc);
       metadata.addInfo(key, msg);
     }
   }

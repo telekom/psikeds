@@ -21,6 +21,7 @@ import org.psikeds.resolutionengine.interfaces.pojos.Decission;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoices;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureDecission;
+import org.psikeds.resolutionengine.interfaces.pojos.FeatureValue;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
 import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity;
 import org.psikeds.resolutionengine.interfaces.pojos.Metadata;
@@ -32,7 +33,9 @@ import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
  * Based on the made Feature-Decission this Resolver will reduce the corresponding
  * Feature-Choice to just one single Feature-Value so that afterwards new Knowledge-
  * Entities will be created by the AutoCompletion-Resolver.
- * If no Decission is supplied, nothing happens. Metadata is optional.
+ * 
+ * If no Decission is supplied, nothing happens.
+ * Metadata is optional.
  * 
  * Note: Must run before AutoCompletion-Resolver!
  * 
@@ -82,61 +85,62 @@ public class FeatureDecissionEvaluator implements Resolver {
   private boolean updateKnowledge(final Knowledge knowledge, final FeatureDecission fd, final Metadata metadata) throws ResolutionException {
     boolean found = false;
     try {
-      LOGGER.trace("--> updateKnowledge(); Feature-Decission = {}\nKnowledge = {}", fd, knowledge);
+      LOGGER.trace("--> updateKnowledge()\nFeature-Decission = {}\nKnowledge = {}", fd, knowledge);
       for (final KnowledgeEntity ke : knowledge.getEntities()) {
-        found = found | updateKnowledgeEntity(ke, fd, metadata);
+        if (updateKnowledgeEntity(ke, fd, metadata)) {
+          found = true;
+        }
       }
       return found;
     }
     finally {
-      LOGGER.trace("<-- updateKnowledge(); Found = {}; Knowledge = {}", found, knowledge);
+      LOGGER.trace("<-- updateKnowledge(); Found = {}\nKnowledge = {}", found, knowledge);
     }
   }
 
   private boolean updateKnowledgeEntity(final KnowledgeEntity ke, final FeatureDecission fd, final Metadata metadata) throws ResolutionException {
     boolean found = false;
     try {
-      LOGGER.trace("--> updateKnowledgeEntity(); KnowledgeEntity = {}", ke);
+      LOGGER.trace("--> updateKnowledgeEntity()");
       found = updateFeatureChoices(ke.getPossibleFeatures(), fd, metadata);
       for (final KnowledgeEntity child : ke.getChildren()) {
-        found = found | updateKnowledgeEntity(child, fd, metadata);
+        if (updateKnowledgeEntity(child, fd, metadata)) {
+          found = true;
+        }
       }
       return found;
     }
     finally {
-      LOGGER.trace("<-- updateKnowledgeEntity(); Found = {}; KnowledgeEntity = {}", found, ke);
+      LOGGER.trace("<-- updateKnowledgeEntity(); Found = {}", found);
     }
   }
 
   private boolean updateFeatureChoices(final FeatureChoices choices, final FeatureDecission fd, final Metadata metadata) throws ResolutionException {
     boolean found = false;
     try {
-      LOGGER.trace("--> updateFeatureChoices(); Feature-Decission = {}\nChoices = {}", fd, choices);
+      LOGGER.trace("--> updateFeatureChoices()");
       for (final FeatureChoice fc : choices) {
-        if ((fc != null) && fc.matches(fd)) {
-          // Found Feature-Value matching our Decission!
-          fc.setValue(fd.getFeatureValue());
+        LOGGER.trace("Checking: {}", fc);
+        final FeatureValue fv = (fc == null ? null : fc.matches(fd));
+        if (fv != null) {
+          LOGGER.debug("Found Feature-Value {} of Choice {}", fv.getFeatureValueID(), fc);
           found = true;
+          fc.setValue(fv);
           decissionMessage(metadata, fd, fc);
         }
       }
       return found;
     }
     finally {
-      LOGGER.trace("<-- updateFeatureChoices(); Found = {}; Choices = {}", found, choices);
+      LOGGER.trace("<-- updateFeatureChoices(); Found = {}", found);
     }
   }
 
   private void decissionMessage(final Metadata metadata, final FeatureDecission fd, final FeatureChoice fc) {
-    final String msg = String.format("Found Feature-Choice matching Decission.\nDecission = %s\nChoice = %s", fd, fc);
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug(msg);
-    }
-    else {
-      LOGGER.info("Applying Feature-Decission {}", fd);
-    }
+    LOGGER.info("Applying Decission for Feature-Value {} for Variant {}", fd.getFeatureValueID(), fd.getVariantID());
     if (metadata != null) {
       final String key = String.format("Decission_FD_%s_%s", fd.getVariantID(), fd.getFeatureID());
+      final String msg = String.format("Found Feature-Choice matching Decission.\nDecission = %s\nChoice = %s", fd, fc);
       metadata.addInfo(key, msg);
     }
   }
