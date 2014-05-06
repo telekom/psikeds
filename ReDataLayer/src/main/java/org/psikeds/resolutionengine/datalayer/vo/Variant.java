@@ -93,7 +93,7 @@ public class Variant extends ValueObject implements Serializable {
   }
 
   public void setLabel(final String value) {
-    this.label = value;
+    this.label = (value == null ? null : value.trim());
   }
 
   public String getDescription() {
@@ -101,7 +101,7 @@ public class Variant extends ValueObject implements Serializable {
   }
 
   public void setDescription(final String value) {
-    this.description = value;
+    this.description = (value == null ? null : value.trim());
   }
 
   public String getVariantID() {

@@ -67,7 +67,7 @@ public abstract class ValueObject implements Serializable, Comparable<Object> {
 
   @JsonIgnore
   protected void setId(final String id) {
-    this.id = id;
+    this.id = (id == null ? null : id.trim());
   }
 
   @JsonIgnore
@@ -156,7 +156,7 @@ public abstract class ValueObject implements Serializable, Comparable<Object> {
           if (sb.length() > 0) {
             sb.append(COMPOSE_ID_SEPARATOR);
           }
-          sb.append(vid);
+          sb.append(vid.trim());
         }
       }
     }
@@ -171,7 +171,7 @@ public abstract class ValueObject implements Serializable, Comparable<Object> {
           if (sb.length() > 0) {
             sb.append(COMPOSE_ID_SEPARATOR);
           }
-          sb.append(vid);
+          sb.append(vid.trim());
         }
       }
     }
