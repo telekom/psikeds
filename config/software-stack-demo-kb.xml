@@ -98,108 +98,101 @@ proprietary license: All rights are reserved. Feel free to contact:
       <kb:variant id="WeSeScriSoSt"
         type="explicit">
         <kb:label>Apache-Scripting-Software-Stack</kb:label>
-        <kb:description>
-        An Apache based web server software stack enriched by particular scripting 
-           modules for delivering dynamically composed web pages.
-        </kb:description>
       </kb:variant>
-      
+
       <kb:variant id="WeSeDbScriSoSt"
         type="explicit">
         <kb:label>Apache-Database-Scripting-Software-Stack</kb:label>
-        <kb:description>
-        An Apache based web server software stack being able to use database data
-           and being enriched by particular scripting modules for delivering 
-           dynamically composed web pages
-        </kb:description>
       </kb:variant>
-      
+
       <kb:variant id="JaEjbDbSoSt"
         type="explicit">
         <kb:label>Java-Ejb-Database-Software-Stack</kb:label>
-        <kb:description>
-        A java application server software stack being able to use database data
-           and to operate on java beans for offering web services etc.
-        </kb:description>
       </kb:variant>
-      
+
       <kb:variant id="JaWapDbSoSt"
         type="explicit">
         <kb:label>Java-Web-App-Database-Software-Stack</kb:label>
-        <kb:description>
-        A java application server software stacke being able to compute its output 
-           on the base of database data.
-        </kb:description>
       </kb:variant>
-      
+
       <kb:variant id="Apache"
         type="explicit">
         <kb:label>Apache</kb:label>
-        <kb:description>
-        The famous Apache Webserver
-        </kb:description>
+        <kb:description>apache2</kb:description>
       </kb:variant>
-      
+
       <kb:variant id="ModPhp"
         type="explicit">
         <kb:label>Apache-PHP-Module</kb:label>
+        <kb:description>libapache2-mod-php5</kb:description>
       </kb:variant>
-      
+
       <kb:variant id="ModPython"
         type="explicit">
         <kb:label>Apache-Python-Module</kb:label>
+        <kb:description>libapache2-mod-python</kb:description>
       </kb:variant>
-      
+
       <kb:variant id="MysqlPhpConnector"
         type="explicit">
         <kb:label>Mysql-PHP-Connector</kb:label>
+        <kb:description>php5-mysql</kb:description>
       </kb:variant>
-      
+
       <kb:variant id="MysqlPythonConnector"
         type="explicit">
         <kb:label>Mysql-Python-Connector</kb:label>
+        <kb:description>python-mysqldb</kb:description>
       </kb:variant>
-      
+
       <kb:variant id="MysqlJavaConnector"
         type="explicit">
         <kb:label>Mysql-JDBC-Connector</kb:label>
+        <kb:description>mysql-connector-java-5.1.27.tar.gz</kb:description>
       </kb:variant>
-      
+
       <kb:variant id="PostgresPhpConnector"
         type="explicit">
         <kb:label>Postgres-PHP-Connector</kb:label>
+        <kb:description>php5-pgsql</kb:description>
       </kb:variant>
-      
+
       <kb:variant id="PostgresPythonConnector"
         type="explicit">
         <kb:label>Postgres-Python-Connector</kb:label>
+        <kb:description>python-pygresql</kb:description>
       </kb:variant>
-      
+
       <kb:variant id="PostgresJavaConnector"
         type="explicit">
         <kb:label>Postgres-JDBC-Connector</kb:label>
+        <kb:description>postgresql-8.4-703.jdbc4.jar</kb:description>
       </kb:variant>
-      
+
       <kb:variant id="Postgres"
         type="explicit">
         <kb:label>Postgres</kb:label>
+        <kb:description>postgresql-8.4</kb:description>
       </kb:variant>
-      
+
       <kb:variant id="Mysql"
         type="explicit">
         <kb:label>Mysql</kb:label>
+        <kb:description>mysql-server</kb:description>
       </kb:variant>
-      
+
       <kb:variant id="Jboss"
         type="explicit">
         <kb:label>JBoss</kb:label>
+        <kb:description>jbossas4</kb:description>
       </kb:variant>
-      
+
       <kb:variant id="Tomcat"
         type="explicit">
         <kb:label>Tomcat</kb:label>
+        <kb:description>tomcat7</kb:description>
       </kb:variant>
-      
+
     </kb:variants>  
 
     <kb:alternatives>
