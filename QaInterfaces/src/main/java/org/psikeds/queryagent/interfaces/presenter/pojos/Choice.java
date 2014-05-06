@@ -19,20 +19,26 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
- * A general Choice, either VariantChoice and FeatureChoice
+ * A general Choice, either VariantChoice, FeatureChoice or ConceptChoice
  * 
  * @author marco@juliano.de
  * 
  */
-@XmlSeeAlso({ FeatureChoice.class, VariantChoice.class })
-@JsonSubTypes({ @JsonSubTypes.Type(value = FeatureChoice.class, name = "FeatureChoice"), @JsonSubTypes.Type(value = VariantChoice.class, name = "VariantChoice"), })
+@XmlSeeAlso({ ConceptChoice.class, FeatureChoice.class, VariantChoice.class })
+@JsonSubTypes({ @JsonSubTypes.Type(value = ConceptChoice.class, name = "ConceptChoice"),
+    @JsonSubTypes.Type(value = FeatureChoice.class, name = "FeatureChoice"),
+    @JsonSubTypes.Type(value = VariantChoice.class, name = "VariantChoice"), })
 public abstract class Choice extends POJO {
 
   private static final long serialVersionUID = 1L;
 
   protected String parentVariantID;
 
-  protected Choice(final String parentVariantID) {
+  public Choice() {
+    this(null);
+  }
+
+  public Choice(final String parentVariantID) {
     super();
     this.parentVariantID = parentVariantID;
   }

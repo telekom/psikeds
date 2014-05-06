@@ -34,7 +34,11 @@ public abstract class Choice extends POJO {
 
   protected String parentVariantID;
 
-  protected Choice(final String parentVariantID) {
+  public Choice() {
+    this(null);
+  }
+
+  public Choice(final String parentVariantID) {
     super();
     this.parentVariantID = parentVariantID;
   }
