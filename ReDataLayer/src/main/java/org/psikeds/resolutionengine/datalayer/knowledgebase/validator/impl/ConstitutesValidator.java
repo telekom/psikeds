@@ -53,23 +53,24 @@ public class ConstitutesValidator implements Validator {
       final List<Constitutes> lst = (cons == null ? null : cons.getConstitutes());
       if ((lst != null) && !lst.isEmpty()) {
         for (final Constitutes c : lst) {
-          final String vid = c.getVariantID();
+          final String vid = (c == null ? null : c.getVariantID());
           if (StringUtils.isEmpty(vid)) {
             valid = false;
-            LOGGER.warn("Empty VariantID!");
+            LOGGER.warn("No VariantID: {}", c);
+            continue;
           }
-          else {
-            final Variant v = kb.getVariant(vid);
-            if ((v == null) || !vid.equals(v.getVariantID())) {
-              valid = false;
-              LOGGER.warn("Unknown VariantID: {}", vid);
-            }
-            else if (StringUtils.isEmpty(v.getLabel())) {
-              valid = false;
-              LOGGER.warn("Variant {} has no Label!", vid);
-            }
+          if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Checking Constitutes: {}", c);
           }
-
+          final Variant v = kb.getVariant(vid);
+          if ((v == null) || !vid.equals(v.getVariantID())) {
+            valid = false;
+            LOGGER.warn("Unknown VariantID: {}", vid);
+          }
+          else if (StringUtils.isEmpty(v.getLabel())) {
+            valid = false;
+            LOGGER.warn("Variant {} has no Label!", vid);
+          }
           final List<Component> components = c.getComponents();
           if ((components == null) || components.isEmpty()) {
             valid = false;

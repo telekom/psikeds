@@ -56,22 +56,25 @@ public class FulfillsValidator implements Validator {
       }
       else {
         for (final Fulfills f : lst) {
-          final String pid = f.getPurposeID();
+          final String pid = (f == null ? null : f.getPurposeID());
           if (StringUtils.isEmpty(pid)) {
             valid = false;
-            LOGGER.warn("Empty PurposeID!");
+            LOGGER.warn("No PurposeID: {}", f);
+            continue;
           }
-          else {
-            final Purpose p = kb.getPurpose(pid);
-            if ((p == null) || !pid.equals(p.getPurposeID())) {
-              valid = false;
-              LOGGER.warn("Unknown PurposeID: {}", pid);
-            }
-            else if (StringUtils.isEmpty(p.getLabel())) {
-              valid = false;
-              LOGGER.warn("Purpose {} has no Label!", pid);
-            }
+          if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Checking Fulfills: {}", f);
           }
+          final Purpose p = kb.getPurpose(pid);
+          if ((p == null) || !pid.equals(p.getPurposeID())) {
+            valid = false;
+            LOGGER.warn("Unknown PurposeID: {}", pid);
+          }
+          else if (StringUtils.isEmpty(p.getLabel())) {
+            valid = false;
+            LOGGER.warn("Purpose {} has no Label!", pid);
+          }
+
           final List<String> varids = f.getVariantID();
           if ((varids == null) || varids.isEmpty()) {
             valid = false;
