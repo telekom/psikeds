@@ -193,7 +193,7 @@ public class KnowledgeEntity extends POJO implements Serializable {
   public void setPossibleVariants(final VariantChoices choices) {
     clearPossibleVariants();
     if (choices != null) {
-      choices.setParents((this.variant == null ? null : this.variant.getVariantID()), this.purpose);
+      choices.setParentVariantID(this.variant == null ? null : this.variant.getVariantID());
       this.possibleVariants = choices;
     }
   }
@@ -208,7 +208,7 @@ public class KnowledgeEntity extends POJO implements Serializable {
 
   public void addAllPossibleVariants(final VariantChoices choices) {
     if ((choices != null) && !choices.isEmpty()) {
-      choices.setParents((this.variant == null ? null : this.variant.getVariantID()), this.purpose);
+      choices.setParentVariantID(this.variant == null ? null : this.variant.getVariantID());
       getPossibleVariants().addAll(choices);
     }
   }

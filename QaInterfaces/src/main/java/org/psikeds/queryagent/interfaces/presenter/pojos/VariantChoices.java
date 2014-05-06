@@ -54,14 +54,12 @@ public class VariantChoices extends ArrayList<VariantChoice> implements Serializ
   }
 
   @JsonIgnore
-  public void setParents(final String parentVariantID, final Purpose purpose) {
+  public void setParentVariantID(final String parentVariantID) {
     if (!this.isEmpty()) {
       final Iterator<VariantChoice> iter = this.iterator();
       while ((iter != null) && iter.hasNext()) {
         final VariantChoice vc = iter.next();
-        // set both variant and purpose at once in order to avoid double iteration
         vc.setParentVariantID(parentVariantID);
-        vc.setPurpose(purpose);
       }
     }
   }
