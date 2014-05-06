@@ -277,8 +277,8 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
           initialKnowledge = true;
           this.cache.removeSession(sessionID); // new knowledge, clean state
           knowledge = createInitialKnowledge(metadata, sessionID);
-          if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("Created new initial Knowledge for SessionID {}:\n{}", sessionID, knowledge);
+          if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Created new initial Knowledge for SessionID {}:\n{}", sessionID, knowledge);
           }
           else {
             LOGGER.info("Created new initial Knowledge for SessionID {}.", sessionID);
@@ -352,44 +352,58 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
   }
 
   private Knowledge createInitialKnowledge(final Metadata metadata, final String sessionID) {
-    // initial knowledge consists of root-purposes and their
-    // fulfilling variants as first choices for the client
-    final Purposes purps = this.kb.getRootPurposes();
-    final VariantChoices choices = new VariantChoices();
-    final List<Purpose> plst = purps.getPurpose();
-    for (final Purpose p : plst) {
-      final String purposeId = (p == null ? null : p.getPurposeID());
-      final Fulfills ff = (StringUtils.isEmpty(purposeId) ? null : this.kb.getFulfills(purposeId));
-      if (ff != null) {
-        final VariantChoice vc = new VariantChoice(this.trans.valueObject2Pojo(p)); // root purposes have default quantity
-        for (final String vid : ff.getVariantID()) {
-          final Variant v = this.kb.getVariant(vid);
-          if (v != null) {
-            vc.addVariant(this.trans.valueObject2Pojo(v));
+    try {
+      LOGGER.trace("--> createInitialKnowledge()");
+      // initial knowledge consists of root-purposes and their
+      // fulfilling variants as first choices for the client
+      final Purposes purps = this.kb.getRootPurposes();
+      final VariantChoices choices = new VariantChoices();
+      final List<Purpose> plst = purps.getPurpose();
+      for (final Purpose p : plst) {
+        final String purposeId = (p == null ? null : p.getPurposeID());
+        final Fulfills ff = (StringUtils.isEmpty(purposeId) ? null : this.kb.getFulfills(purposeId));
+        if (ff != null) {
+          LOGGER.trace("Adding choices for Root-Purpose {}", purposeId);
+          final VariantChoice vc = new VariantChoice(this.trans.valueObject2Pojo(p)); // root purposes have default quantity
+          for (final String vid : ff.getVariantID()) {
+            final Variant v = this.kb.getVariant(vid);
+            if (v != null) {
+              vc.addVariant(this.trans.valueObject2Pojo(v));
+            }
           }
+          choices.add(vc);
         }
-        choices.add(vc);
       }
+      // Initially there are no Entities, only Variant-Choice for the Root-Purposes.
+      return new Knowledge(choices);
     }
-    // Initially there are no Entities, only Variant-Choice for the Root-Purposes.
-    return new Knowledge(choices);
+    finally {
+      LOGGER.trace("<-- createInitialKnowledge()");
+    }
   }
 
   // ----------------------------------------------------------------
 
   private Knowledge resolveDecissions(Knowledge knowledge, final List<Decission> decissions, final Metadata metadata, final String sessionID) {
-    if (knowledge == null) {
-      throw new ResolutionException("Cannot resolve Decissions, Knowledge is NULL!!!");
-    }
-    if ((decissions == null) || decissions.isEmpty()) {
-      knowledge = autoResolve(knowledge, metadata, sessionID);
-    }
-    else {
-      for (final Decission decission : decissions) {
-        knowledge = resolve(knowledge, decission, metadata, sessionID);
+    try {
+      LOGGER.trace("--> resolveDecissions()");
+      if (knowledge == null) {
+        throw new ResolutionException("Cannot resolve Decissions, Knowledge is NULL!!!");
       }
+      if ((decissions == null) || decissions.isEmpty()) {
+        knowledge = autoResolve(knowledge, metadata, sessionID);
+      }
+      else {
+        LOGGER.debug("Total of {} Decission(s)", decissions.size());
+        for (final Decission decission : decissions) {
+          knowledge = resolve(knowledge, decission, metadata, sessionID);
+        }
+      }
+      return knowledge;
     }
-    return knowledge;
+    finally {
+      LOGGER.trace("<-- resolveDecissions()");
+    }
   }
 
   private Knowledge autoResolve(final Knowledge knowledge, final Metadata metadata, final String sessionID) {
