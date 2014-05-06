@@ -277,8 +277,8 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
           initialKnowledge = true;
           this.cache.removeSession(sessionID); // new knowledge, clean state
           knowledge = createInitialKnowledge(metadata, sessionID);
-          if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Created new initial Knowledge for SessionID {}:\n{}", sessionID, knowledge);
+          if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Created new initial Knowledge for SessionID {}:\n{}", sessionID, knowledge);
           }
           else {
             LOGGER.info("Created new initial Knowledge for SessionID {}.", sessionID);
