@@ -706,17 +706,15 @@ You should have got a version of this license together with this file.
         </kb:description>
         <kb:trigger  type="attribute" ref="withPreprintedAddrField" />
       </kb:event>
-      <!--
       <kb:event id="stamp045AsPostcardEnabler"
         nexusRef="Postcard" 
-        contextPath="Postcard fileMessages WritingCard" >
+        contextPath="Postcard enableMessageTransport Stamp" >
         <kb:label>045-cent-stamp-as-postcard-transport-enabler</kb:label>
         <kb:description>
         45 cent stamp for enabling the transport of a postcard
         </kb:description>
         <kb:trigger  type="attribute" ref="Euro045" />
       </kb:event>
-      -->
       <kb:event id="uncompressedLetterWritingCardWithoutAddressField"
         nexusRef="UncompressedLetter" 
         contextPath="UncompressedLetter fileMessages WritingCard" >
@@ -1027,7 +1025,6 @@ You should have got a version of this license together with this file.
             a writing card with preprinted address field
         </kb:description>
       </kb:rule>
-      <!--
       <kb:rule id="IFpostcardTHENuse45CentStamp"
         nexusRef="Postcard"
         premiseRefs="Postcard"
@@ -1037,7 +1034,6 @@ You should have got a version of this license together with this file.
         Rule 1.C : if-then-rule : a postcard costs 45 cents
         </kb:description>
       </kb:rule>
-      -->
       <kb:rule id="IFuncompLetterTHENuseCardWithoutAddressField"
         nexusRef="UncompressedLetter"
         premiseRefs="UncompressedLetter"

@@ -178,7 +178,7 @@ public class KnowledgeBaseTest {
       final List<Event> elst = allEvents.getEvent();
       assertNotNull("No List of Events!", elst);
       result = elst.size();
-      expected = 30;
+      expected = 31;
       assertEquals("KB has " + result + " Events total, not expected " + expected, expected, result);
 
       LOGGER.info("... checking Rules ...");
@@ -188,7 +188,7 @@ public class KnowledgeBaseTest {
       final List<Rule> rlst = allRules.getRule();
       assertNotNull("No List of Rules!", rlst);
       result = rlst.size();
-      expected = 24;
+      expected = 25;
       assertEquals("KB has " + result + " Rules total, not expected " + expected, expected, result);
 
       LOGGER.info("... checking RelationParameters ...");
