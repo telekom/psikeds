@@ -708,7 +708,7 @@ You should have got a version of this license together with this file.
       </kb:event>
       <kb:event id="stamp045AsPostcardEnabler"
         nexusRef="Postcard" 
-        contextPath="Postcard fileMessages WritingCard" >
+        contextPath="Postcard enableMessageTransport Stamp" >
         <kb:label>045-cent-stamp-as-postcard-transport-enabler</kb:label>
         <kb:description>
         45 cent stamp for enabling the transport of a postcard

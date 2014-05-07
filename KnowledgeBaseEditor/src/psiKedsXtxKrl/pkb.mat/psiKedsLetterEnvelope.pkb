@@ -653,8 +653,8 @@ event.int stamp045AsPostcardEnabler (
   description "45 cent stamp for enabling the transport of a postcard"
   context [ 
     *pv> Postcard 
-    *ps> fileMessages 
-    *pv> WritingCard 
+    *ps> enableMessageTransport
+    *pv> Stamp
   ]
   fact *int> Euro045 
 )
