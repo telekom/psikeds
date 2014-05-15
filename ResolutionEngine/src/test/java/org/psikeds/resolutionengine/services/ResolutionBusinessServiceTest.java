@@ -59,6 +59,7 @@ import org.psikeds.resolutionengine.interfaces.pojos.Variants;
 import org.psikeds.resolutionengine.interfaces.services.ResolutionService;
 import org.psikeds.resolutionengine.resolver.Resolver;
 import org.psikeds.resolutionengine.resolver.impl.AutoCompletion;
+import org.psikeds.resolutionengine.resolver.impl.EventEvaluator;
 import org.psikeds.resolutionengine.resolver.impl.FeatureDecissionEvaluator;
 import org.psikeds.resolutionengine.resolver.impl.RulesEvaluator;
 import org.psikeds.resolutionengine.resolver.impl.VariantDecissionEvaluator;
@@ -101,6 +102,7 @@ public class ResolutionBusinessServiceTest {
     this.resolvers.add(new VariantDecissionEvaluator());
     this.resolvers.add(new FeatureDecissionEvaluator());
     this.resolvers.add(new AutoCompletion(this.kb, this.trans));
+    this.resolvers.add(new EventEvaluator());
     this.resolvers.add(new RulesEvaluator(this.kb, this.trans));
     this.cache = new ResolutionCache();
     this.srvc = new ResolutionBusinessService(
