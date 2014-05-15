@@ -43,20 +43,22 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <constructor-arg index="2" value="${resolutionengine.resolver.autocomplete.root.purposes}" />
   </bean>
 
+  <bean id="EventEvaluator" class="org.psikeds.resolutionengine.resolver.impl.EventEvaluator" />
+
   <bean id="RulesEvaluator" class="org.psikeds.resolutionengine.resolver.impl.RulesEvaluator">
     <constructor-arg index="0" type="org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase" ref="knowledgeBase" />  <!-- defined in knowledgebase-context.xml -->
     <constructor-arg index="1" type="org.psikeds.resolutionengine.transformer.Transformer" ref="PojoTransformer" />
     <constructor-arg index="2" value="${resolutionengine.resolver.rules.create.missing.conclusion.path}" />
     <constructor-arg index="3" value="${resolutionengine.resolver.rules.create.non.choosable.entities}" />
     <constructor-arg index="4" value="${resolutionengine.resolver.rules.keep.modus.tollens.for.later}" />
-    <constructor-arg index="5" value="${resolutionengine.resolver.rules.repeat.after.rules.applied}" />
   </bean>
 
   <util:list id="ResolverChain">
     <ref bean="VariantDecissionEvaluator" />
     <ref bean="FeatureDecissionEvaluator" />
     <ref bean="AutoCompletionResolver" />
-<!--  <ref bean="RulesEvaluator" />  -->
+    <ref bean="EventEvaluator" />
+    <ref bean="RulesEvaluator" />
   </util:list>
 
   <bean id="resolutionBusinessService" class="org.psikeds.resolutionengine.services.ResolutionBusinessService">
