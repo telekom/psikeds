@@ -240,13 +240,13 @@ public class RulesAndEventsHandler implements Serializable {
         sb.append(toString());
       }
       if (isKnowledgeDirty()) {
-        sb.append("State of Knowledge is dirty.");
+        sb.append("State of Knowledge is dirty.\n");
       }
       else {
-        sb.append("Knowledge is stable.");
+        sb.append("Knowledge is stable.\n");
       }
       if (verbose) {
-        sb.append("\n------------------------------------------------------------\n");
+        sb.append("------------------------------------------------------------\n");
       }
       dumpEvents(sb, verbose);
       if (verbose) {
