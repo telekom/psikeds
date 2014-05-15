@@ -47,5 +47,8 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
   <bean id="kbXmlSource" class="org.psikeds.common.config.FileSystemResource"> 
     <constructor-arg index="0" type="java.lang.String" value="software-stack-demo-kb.xml" />
   </bean>
+  <bean id="kbXmlSource" class="org.psikeds.common.config.FileSystemResource"> 
+    <constructor-arg index="0" type="java.lang.String" value="ldrewe.xml" />
+  </bean>
   -->
 </beans>
