@@ -41,7 +41,6 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
   </bean>
   -->
 
-<<<<<<< HEAD
   <!--
   This Definition will look for a custom Demo-KB within the
   psiKeds-Configuration-Directory using our own FileSystemResource
@@ -54,15 +53,4 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
   <bean id="kbXmlSource" class="org.psikeds.common.config.FileSystemResource"> 
     <constructor-arg index="0" type="java.lang.String" value="software-stack-demo-kb.xml" />
   </bean>
-=======
-  <!-- This Definition will look for a custom Demo-KB within the psiKeds-Configuration-Directory -->
-  <!--
-  <bean id="kbXmlSource" class="org.psikeds.common.config.FileSystemResource"> 
-    <constructor-arg index="0" type="java.lang.String" value="software-stack-demo-kb.xml" />
-  </bean>
-  -->
-  <bean id="kbXmlSource" class="org.psikeds.common.config.FileSystemResource"> 
-    <constructor-arg index="0" type="java.lang.String" value="ldrewe.xml" />
-  </bean>
->>>>>>> origin/integration
 </beans>
