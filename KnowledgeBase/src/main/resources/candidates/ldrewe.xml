@@ -24,7 +24,7 @@ CC-BY-SA-4.0
   </kb:meta>
   
   <kb:data>  
-      
+
     <kb:purposes>
       <kb:purpose id="relishDinner" root="true">
         <kb:label>relish.Dinner</kb:label>
@@ -47,61 +47,61 @@ CC-BY-SA-4.0
       <kb:variant id="VeggiMeal">
         <kb:label>Veggi Meal</kb:label>
       </kb:variant>
-      
+
       <kb:variant id="CarniMeal">
         <kb:label>Carni Meal</kb:label>
       </kb:variant>
-      
+
       <kb:variant id="Hollandaise">
         <kb:label>Sauce Hollandaise</kb:label>
       </kb:variant>
-      
+
       <kb:variant id="BratenSosse">
         <kb:label>Bratensoße</kb:label>
       </kb:variant>
-      
+
       <kb:variant id="Spargel">
         <kb:label>Spargel</kb:label>
       </kb:variant>
-      
+
       <kb:variant id="Erbsen">
         <kb:label>Erbsen</kb:label>
       </kb:variant>
-      
+
       <kb:variant id="Schinken">
         <kb:label>Schinken</kb:label>
       </kb:variant>
-      
+
       <kb:variant id="Braten">
         <kb:label>Braten</kb:label>
       </kb:variant>
-      
+
       <kb:variant id="Kartoffeln">
         <kb:label>Kartoffeln</kb:label>
       </kb:variant>
-      
+
       <kb:variant id="Nudeln">
         <kb:label>Nudeln</kb:label>
       </kb:variant>
-      
+
     </kb:variants>  
 
     <kb:alternatives>
-      <kb:fulfills purposeID="relishDinner" variantID="VeggiMeal CarniMeal " />
-      <kb:fulfills purposeID="addTaste" variantID="Hollandaise BratenSosse " />
-      <kb:fulfills purposeID="addVitamins" variantID="Spargel Erbsen " />
-      <kb:fulfills purposeID="addProteins" variantID="Braten Schinken " />
-      <kb:fulfills purposeID="addCarbohydrats" variantID="Kartoffeln Nudeln " />
+      <kb:fulfills purposeID="relishDinner" variantID="VeggiMeal CarniMeal" />
+      <kb:fulfills purposeID="addTaste" variantID="Hollandaise BratenSosse" />
+      <kb:fulfills purposeID="addVitamins" variantID="Spargel Erbsen" />
+      <kb:fulfills purposeID="addProteins" variantID="Braten Schinken" />
+      <kb:fulfills purposeID="addCarbohydrats" variantID="Kartoffeln Nudeln" />
     </kb:alternatives>  
-     
+
     <kb:constituents>
       <kb:constitutes variantID="VeggiMeal" purposeID="addTaste addVitamins addCarbohydrats" />
       <kb:constitutes variantID="CarniMeal" purposeID="addTaste addVitamins addProteins addCarbohydrats" />
     </kb:constituents> 
 
-    
+
     <kb:events>
-    
+
       <kb:event id="VeggiMealWithTasteX" variantID="VeggiMeal">
         <kb:label>Veggi Meal mit TasteX</kb:label>
         <kb:contextPath pathIDs="VeggiMeal addTaste" /> 
@@ -137,8 +137,7 @@ CC-BY-SA-4.0
         <kb:label>Carni Meal mit Spargel</kb:label>
         <kb:contextPath pathIDs="CarniMeal addVitamins Spargel" /> 
       </kb:event>
-       
-       
+
        <kb:event id="CarniMealWithProteinX" variantID="CarniMeal">
         <kb:label>Carni Meal mit ProteinX</kb:label>
         <kb:contextPath pathIDs="CarniMeal addProteins" /> 
@@ -156,7 +155,7 @@ CC-BY-SA-4.0
         <kb:label>Carni Meal mit Kartoffeln</kb:label>
         <kb:contextPath pathIDs="CarniMeal addCarbohydrats Kartoffeln" /> 
       </kb:event>
-      
+
       <kb:event id="VeggiMealWithCarboX" variantID="VeggiMeal">
         <kb:label>VeggiMeal mit KohlehydratX</kb:label>
         <kb:contextPath pathIDs="VeggiMeal addCarbohydrats" /> 
@@ -167,73 +166,73 @@ CC-BY-SA-4.0
         <kb:contextPath pathIDs="VeggiMeal addCarbohydrats Kartoffeln" /> 
       </kb:event>
     </kb:events> 
-    
-    
+
+
     <kb:rules>
-    
+
       <kb:rule 
         id="IFVMwithHoolandaiseTHENVMwithSpargel"
         variantID="VeggiMeal"
-        triggerEventID="VeggiMealWithHollandaise "        
-        premiseEventID="VeggiMealWithVitaminX "
+        triggerEventID="VeggiMealWithHollandaise"        
+        premiseEventID="VeggiMealWithVitaminX"
         conclusionEventID="VeggiMealWithSpargel" >
         <kb:label>IF VM mit Hoolandaise THEN VM mit Spargel</kb:label>
       </kb:rule>
-      
+
       <kb:rule 
         id="IFVMwithSpargelTHENVMwithHoolandaise"
         variantID="VeggiMeal"
-        triggerEventID="VeggiMealWithSpargel "
-        premiseEventID="VeggiMealWithTasteX "
+        triggerEventID="VeggiMealWithSpargel"
+        premiseEventID="VeggiMealWithTasteX"
         conclusionEventID="VeggiMealWithHollandaise" >
         <kb:label>IF VM mit Spargel THEN VM mit Hollandaise</kb:label>
       </kb:rule>
-      
+
       <kb:rule 
         id="IFCMwithHoolandaiseTHENCMwithSpargel"
         variantID="CarniMeal"
-        triggerEventID="CarniMealWithHollandaise "
-        premiseEventID="CarniMealWithVitaminX "
+        triggerEventID="CarniMealWithHollandaise"
+        premiseEventID="CarniMealWithVitaminX"
         conclusionEventID="CarniMealWithSpargel" >
         <kb:label>IF CM mit Hoolandaise THEN CM mit Spargel</kb:label>
       </kb:rule>
-      
+
       <kb:rule 
         id="IFCMwithSpargelTHENCMwithHoolandaise"
         variantID="CarniMeal"
-        triggerEventID="CarniMealWithSpargel "
-        premiseEventID="CarniMealWithTasteX "
+        triggerEventID="CarniMealWithSpargel"
+        premiseEventID="CarniMealWithTasteX"
         conclusionEventID="CarniMealWithHollandaise" >
         <kb:label>IF CM mit Spargel THEN CM mit Hollandaise</kb:label>
       </kb:rule>
-      
+
       <kb:rule 
         id="IFCMwithSpargelTHENCMwithSchinken"
         variantID="CarniMeal"
-        triggerEventID="CarniMealWithSpargel "
-        premiseEventID="CarniMealWithProteinX "
+        triggerEventID="CarniMealWithSpargel"
+        premiseEventID="CarniMealWithProteinX"
         conclusionEventID="CarniMealWithSchinken" >
         <kb:label>IF CM mit Spargel THEN CM mit Schinken</kb:label>
       </kb:rule>
-      
+
       <kb:rule 
         id="IFCMwithSpargelTHENCMwithKartoffeln"
         variantID="CarniMeal"
-        triggerEventID="CarniMealWithSpargel "
-        premiseEventID="CarniMealWithCarboX "
+        triggerEventID="CarniMealWithSpargel"
+        premiseEventID="CarniMealWithCarboX"
         conclusionEventID="CarniMealWithKartoffeln" >
         <kb:label>IF CM mit Spargel THEN CM mit Kartoffeln</kb:label>
       </kb:rule>
-      
+
       <kb:rule 
         id="IFVMwithSpargelTHENVMwithKartoffeln"
         variantID="VeggiMeal"
-        triggerEventID="VeggiMealWithSpargel "
-        premiseEventID="VeggiMealWithCarboX "
+        triggerEventID="VeggiMealWithSpargel"
+        premiseEventID="VeggiMealWithCarboX"
         conclusionEventID="VeggiMealWithKartoffeln" >
         <kb:label>IF VM mit Spargel THEN VM mit Kartoffeln</kb:label>
       </kb:rule>
     </kb:rules> 
-    
+
   </kb:data>    
 </kb:knowledgebase>
