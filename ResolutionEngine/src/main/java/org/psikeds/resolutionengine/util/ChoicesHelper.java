@@ -14,8 +14,27 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.util;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.apache.commons.lang.StringUtils;
+
+import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
+import org.psikeds.resolutionengine.interfaces.pojos.ConceptChoices;
+import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice;
+import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoices;
+import org.psikeds.resolutionengine.interfaces.pojos.FeatureValue;
+import org.psikeds.resolutionengine.interfaces.pojos.FeatureValues;
+import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity;
+import org.psikeds.resolutionengine.interfaces.pojos.Purpose;
+import org.psikeds.resolutionengine.interfaces.pojos.Variant;
+import org.psikeds.resolutionengine.interfaces.pojos.VariantChoice;
+import org.psikeds.resolutionengine.interfaces.pojos.VariantChoices;
+import org.psikeds.resolutionengine.interfaces.pojos.Variants;
+import org.psikeds.resolutionengine.transformer.Transformer;
 
 /**
  * Helper for handling/manipulating all Kind of Choices
@@ -27,5 +46,147 @@ public class ChoicesHelper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ChoicesHelper.class);
 
-  // TODO
+  // ----------------------------------------------------------------
+
+  public static boolean cleanupVariantChoices(final KnowledgeEntity ke, final String purposeId) {
+    return cleanupVariantChoices(ke, purposeId, null);
+  }
+
+  public static boolean cleanupVariantChoices(final KnowledgeEntity ke, final String purposeId, final String variantId) {
+    boolean removed = false;
+    try {
+      LOGGER.trace("--> cleanupVariantChoices(); PID = {}; VID = {}; KE = {}", purposeId, variantId, ke);
+      final VariantChoices choices = ke.getPossibleVariants();
+      final Iterator<VariantChoice> vciter = choices.iterator();
+      while (vciter.hasNext()) {
+        final VariantChoice vc = vciter.next();
+        final Purpose p = vc.getPurpose();
+        final String pid = (p == null ? null : p.getPurposeID());
+        if (StringUtils.isEmpty(purposeId) || purposeId.equals(pid)) {
+          final Variants variants = vc.getVariants();
+          final Iterator<Variant> viter = variants.iterator();
+          while (viter.hasNext()) {
+            final Variant v = viter.next();
+            final String vid = (v == null ? null : v.getVariantID());
+            if (StringUtils.isEmpty(variantId) || variantId.equals(vid)) {
+              LOGGER.debug("Removing Variant {} from Choices for Purpose {}", vid, pid);
+              viter.remove();
+              removed = true;
+            }
+          }
+        }
+      }
+      return removed;
+    }
+    finally {
+      LOGGER.trace("<-- cleanupVariantChoices(); PID = {}; VID = {}; removed = {}", purposeId, variantId, removed);
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  public static boolean cleanupFeatureChoices(final KnowledgeEntity ke, final String variantId, final String featureId) {
+    return cleanupFeatureChoices(ke, variantId, featureId, null);
+  }
+
+  public static boolean cleanupFeatureChoices(final KnowledgeEntity ke, final String variantId, final String featureId, final String featureValueId) {
+    boolean removed = false;
+    try {
+      LOGGER.trace("--> cleanupFeatureChoices(); VID = {}; FID = {}; FVID = {}; KE = {}", variantId, featureId, featureValueId, ke);
+      final FeatureChoices choices = ke.getPossibleFeatures();
+      final Iterator<FeatureChoice> fciter = choices.iterator();
+      while (fciter.hasNext()) {
+        final FeatureChoice fc = fciter.next();
+        final String vid = fc.getParentVariantID();
+        if (StringUtils.isEmpty(variantId) || variantId.equals(vid)) {
+          final String fid = fc.getFeatureID();
+          if (StringUtils.isEmpty(featureId) || featureId.equals(fid)) {
+            final FeatureValues values = fc.getPossibleValues();
+            final Iterator<FeatureValue> valiter = values.iterator();
+            while (valiter.hasNext()) {
+              final FeatureValue fv = valiter.next();
+              final String fvid = (fv == null ? null : fv.getFeatureValueID());
+              if (StringUtils.isEmpty(featureValueId) || featureValueId.equals(fvid)) {
+                LOGGER.debug("Removing FeatureValue {} of Feature {} from Choices for Variant {}", fvid, fid, vid);
+                valiter.remove();
+                removed = true;
+              }
+            }
+          }
+        }
+      }
+      return removed;
+    }
+    finally {
+      LOGGER.trace("<-- cleanupFeatureChoices(); VID = {}; FID = {}; FVID = {}; removed = {}", variantId, featureId, featureValueId, removed);
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  public static VariantChoices getNewVariantChoices(final KnowledgeBase kb, final Transformer trans, final org.psikeds.resolutionengine.datalayer.vo.Variant parentVariant) {
+    final VariantChoices choices = new VariantChoices();
+    final String parentVariantID = (parentVariant == null ? null : parentVariant.getVariantID());
+    try {
+      LOGGER.trace("--> getNewVariantChoices(); Variant = {}", parentVariantID);
+      // get all components/purposes constituting parent-variant ...
+      final org.psikeds.resolutionengine.datalayer.vo.Constitutes consts = kb.getConstitutes(parentVariantID);
+      final List<org.psikeds.resolutionengine.datalayer.vo.Component> comps = (consts == null ? null : consts.getComponents());
+      if ((comps != null) && !comps.isEmpty()) {
+        // ... and create for every existing component/purpose ...
+        for (final org.psikeds.resolutionengine.datalayer.vo.Component c : comps) {
+          if (c != null) {
+            final long qty = c.getQuantity();
+            final String pid = c.getPurposeID();
+            final org.psikeds.resolutionengine.datalayer.vo.Purpose p = kb.getPurpose(pid);
+            // ... a new VariantChoice-POJO for the Client
+            final org.psikeds.resolutionengine.datalayer.vo.Fulfills ff = kb.getFulfills(pid);
+            final org.psikeds.resolutionengine.datalayer.vo.Variants variants = new org.psikeds.resolutionengine.datalayer.vo.Variants();
+            for (final String vid : ff.getVariantID()) {
+              variants.addVariant(kb.getVariant(vid));
+            }
+            final VariantChoice vc = trans.valueObject2Pojo(parentVariantID, p, variants, qty);
+            LOGGER.debug("Adding new Variant-Choice: {}", vc);
+            choices.add(vc);
+          }
+        }
+      }
+      // return list of all new variant choices
+      return choices;
+    }
+    finally {
+      LOGGER.trace("<-- getNewVariantChoices(); Variant = {}\nChoices = {}", parentVariantID, choices);
+    }
+  }
+
+  public static FeatureChoices getNewFeatureChoices(final KnowledgeBase kb, final Transformer trans, final org.psikeds.resolutionengine.datalayer.vo.Variant parentVariant) {
+    final FeatureChoices choices = new FeatureChoices();
+    final String parentVariantID = (parentVariant == null ? null : parentVariant.getVariantID());
+    try {
+      LOGGER.trace("--> getNewFeatureChoices(); Variant = {}", parentVariantID);
+      // get all features of this variant ...
+      final org.psikeds.resolutionengine.datalayer.vo.Features newfeats = kb.getFeatures(parentVariantID);
+      final List<org.psikeds.resolutionengine.datalayer.vo.Feature> feats = (newfeats == null ? null : newfeats.getFeature());
+      if ((feats != null) && !feats.isEmpty()) {
+        // ... and create for every feature ...
+        for (final org.psikeds.resolutionengine.datalayer.vo.Feature f : feats) {
+          // ... a new FeatureChoice-POJO for the Client
+          // TODO this is wrong!!! we must get the values allowed for this variant, not all possible values of the feature!!!
+          final FeatureChoice fc = trans.valueObject2Pojo(parentVariantID, f.getValues());
+          LOGGER.debug("Adding new Feature-Choice: {}", fc);
+          choices.add(fc);
+        }
+      }
+      // return list of all new feature choices
+      return choices;
+    }
+    finally {
+      LOGGER.trace("<-- getNewFeatureChoices()\nChoices = {}", choices);
+    }
+  }
+
+  public static ConceptChoices getNewConceptChoices(final KnowledgeBase kb, final Transformer trans, final org.psikeds.resolutionengine.datalayer.vo.Variant parentVariant) {
+    // TODO implement!
+    return null;
+  }
 }

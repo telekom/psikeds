@@ -66,7 +66,7 @@ public class KnowledgeHelper {
     return result;
   }
 
-  public static KnowledgeEntities findRoot(final KnowledgeEntities result, final String rootVariantId, final KnowledgeEntities entities) {
+  private static KnowledgeEntities findRoot(final KnowledgeEntities result, final String rootVariantId, final KnowledgeEntities entities) {
     // TODO: performance optimization: cache pointers to root of variant in session-cache, search only once!
     for (final KnowledgeEntity ke : entities) {
       if (rootVariantId.equals(ke.getVariant().getVariantID())) {
