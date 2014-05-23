@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.apache.commons.lang.StringUtils;
 
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
+import org.psikeds.resolutionengine.datalayer.vo.Event;
 import org.psikeds.resolutionengine.interfaces.pojos.ConceptChoices;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoices;
@@ -34,6 +35,7 @@ import org.psikeds.resolutionengine.interfaces.pojos.Variant;
 import org.psikeds.resolutionengine.interfaces.pojos.VariantChoice;
 import org.psikeds.resolutionengine.interfaces.pojos.VariantChoices;
 import org.psikeds.resolutionengine.interfaces.pojos.Variants;
+import org.psikeds.resolutionengine.resolver.ResolutionException;
 import org.psikeds.resolutionengine.transformer.Transformer;
 
 /**
@@ -45,6 +47,66 @@ import org.psikeds.resolutionengine.transformer.Transformer;
 public class ChoicesHelper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ChoicesHelper.class);
+
+  // ----------------------------------------------------------------
+
+  public static boolean cleanupChoices(final KnowledgeBase kb, final Event e, final KnowledgeEntity ke) {
+    boolean removed = false;
+    try {
+      LOGGER.trace("--> cleanupChoices(); E = {}; KE = {}", e.getEventID(), ke);
+      if (Event.TRIGGER_TYPE_VARIANT.equals(e.getTriggerType())) {
+        removed = cleanupVariantChoices(e, ke, null);
+      }
+      else {
+        removed = cleanupFeatureChoices(kb, e, ke, null);
+      }
+      return removed;
+    }
+    finally {
+      LOGGER.trace("<-- cleanupChoices(); E = {}; removed = {}", e.getEventID(), removed);
+    }
+  }
+
+  public static boolean cleanupVariantChoices(final Event e, final KnowledgeEntity ke, final String purposeId) {
+    boolean removed = false;
+    try {
+      LOGGER.trace("--> cleanupVariantChoices(); PID = {}; TID = {}; E = {}; KE = {}", purposeId, e.getTriggerID(), e.getEventID(), ke);
+      if (Event.TRIGGER_TYPE_VARIANT.equals(e.getTriggerType())) {
+        removed = ChoicesHelper.cleanupVariantChoices(ke, purposeId, e.getTriggerID());
+        return removed;
+      }
+      else {
+        throw new ResolutionException("Cannot cleanup Variant-Choices. Unexpected Trigger-Type: " + e.getTriggerType());
+      }
+    }
+    finally {
+      LOGGER.trace("<-- cleanupVariantChoices(); PID = {}; TID = {}, E = {}; removed = {}", purposeId, e.getTriggerID(), e.getEventID(), removed);
+    }
+  }
+
+  public static boolean cleanupFeatureChoices(final KnowledgeBase kb, final Event e, final KnowledgeEntity ke, final String variantId) {
+    boolean removed = false;
+    try {
+      LOGGER.trace("--> cleanupFeatureChoices(); VID = {}; TID = {}, E = {}; KE = {}", variantId, e.getTriggerID(), e.getEventID(), ke);
+      if (Event.TRIGGER_TYPE_FEATURE_VALUE.equals(e.getTriggerType())) {
+        final String featureValueId = e.getTriggerID();
+        final org.psikeds.resolutionengine.datalayer.vo.FeatureValue fv = kb.getFeatureValue(featureValueId);
+        final String featureId = fv.getFeatureID();
+        removed = ChoicesHelper.cleanupFeatureChoices(ke, variantId, featureId, featureValueId);
+        return removed;
+      }
+      else if (Event.TRIGGER_TYPE_CONCEPT.equals(e.getTriggerType())) {
+        // TODO: implement Concepts
+        return removed;
+      }
+      else {
+        throw new ResolutionException("Cannot cleanup Feature-Choices. Unexpected Trigger-Type: " + e.getTriggerType());
+      }
+    }
+    finally {
+      LOGGER.trace("<-- cleanupFeatureChoices(); VID = {}; TID = {}, E = {}; removed = {}", variantId, e.getTriggerID(), e.getEventID(), removed);
+    }
+  }
 
   // ----------------------------------------------------------------
 

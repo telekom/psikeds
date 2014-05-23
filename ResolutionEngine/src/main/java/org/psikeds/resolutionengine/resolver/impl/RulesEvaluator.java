@@ -304,38 +304,55 @@ public class RulesEvaluator implements InitializingBean, Resolver {
   private boolean applyRuleModusPonens(final Rule r, final String conclusionEventID, final KnowledgeEntities root, final Knowledge knowledge, final RulesAndEventsHandler raeh, final Metadata metadata) {
     boolean stable = true;
     final String ruleId = (r == null ? null : r.getRuleID());
-    LOGGER.info("MODUS PONENS - applying Conclusion-Event {} of Rule {}", conclusionEventID, ruleId);
-    if (applyEvent(root, conclusionEventID)) {
+    LOGGER.info("MODUS PONENS --> applying Conclusion-Event {} of Rule {}", conclusionEventID, ruleId);
+    if (handleEvent(root, conclusionEventID, false)) {
       triggerRule(r, raeh, metadata, "_modus_ponens");
       stable = false;
     }
     return stable;
   }
 
-  private boolean applyEvent(final KnowledgeEntities root, final String eventId) {
-    boolean applied = false;
+  private boolean applyRuleModusTollens(final Rule r, final String premiseEventID, final KnowledgeEntities root, final Knowledge knowledge, final RulesAndEventsHandler raeh, final Metadata metadata) {
+    boolean stable = true;
+    final String ruleId = (r == null ? null : r.getRuleID());
+    LOGGER.info("MODUS TOLLENS --> Disabling Premise-Event {} of Rule {}", premiseEventID, ruleId);
+    if (handleEvent(root, premiseEventID, true)) {
+      triggerRule(r, raeh, metadata, "_modus_tollens");
+      stable = false;
+    }
+    return stable;
+  }
+
+  private boolean handleEvent(final KnowledgeEntities root, final String eventId, boolean disable) {
+    boolean modified = false;
     try {
-      LOGGER.trace("--> applyEvent(); E = {}", eventId);
+      LOGGER.trace("--> handleEvent(); E = {}; disable = {}", eventId, disable);
       final Event e = this.kb.getEvent(eventId);
       final List<String> ctx = e.getContext();
+      if (e.isNotEvent()) {
+        LOGGER.debug("Event {} is a Not-Event --> disable = {}", eventId, disable);
+        disable = !disable;
+      }
       for (final KnowledgeEntity ke : root) {
-        if (e.isNotEvent()) {
+        if (disable) {
           if (removeTriggerFromChoices(e, ke, ctx)) {
-            applied = true;
+            modified = true;
           }
         }
         else {
           if (createPathEntries(e, ke, ctx)) {
-            applied = true;
+            modified = true;
           }
         }
       }
-      return applied;
+      return modified;
     }
     finally {
-      LOGGER.trace("<-- applyEvent(); E = {}; applied = {}", eventId, applied);
+      LOGGER.trace("<-- handleEvent(); E = {}; disable = {}; removed = {}", eventId, disable, modified);
     }
   }
+
+  // ----------------------------------------------------------------
 
   private boolean createPathEntries(final Event e, final KnowledgeEntity currentKE, final List<String> path) {
     boolean created = false;
@@ -413,8 +430,6 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       LOGGER.trace("<-- createPathEntries(); Path = {}; created = {}\nNext KE = {}", path, created, nextKE);
     }
   }
-
-  // ----------------------------------------------------------------
 
   private KnowledgeEntity createNewEntity(final KnowledgeEntity parent, final String purposeId, final String variantId) {
     KnowledgeEntity nextKE = null;
@@ -522,42 +537,6 @@ public class RulesEvaluator implements InitializingBean, Resolver {
 
   // ----------------------------------------------------------------
 
-  private boolean applyRuleModusTollens(final Rule r, final String premiseEventID, final KnowledgeEntities root, final Knowledge knowledge, final RulesAndEventsHandler raeh, final Metadata metadata) {
-    boolean stable = true;
-    final String ruleId = (r == null ? null : r.getRuleID());
-    LOGGER.info("MODUS TOLLENS - Disabling Premise-Event {} of Rule {}", premiseEventID, ruleId);
-    if (disableEvent(root, premiseEventID)) {
-      triggerRule(r, raeh, metadata, "_modus_tollens");
-      stable = false;
-    }
-    return stable;
-  }
-
-  private boolean disableEvent(final KnowledgeEntities root, final String eventId) {
-    boolean removed = false;
-    try {
-      LOGGER.trace("--> disableEvent(); E = {}", eventId);
-      final Event e = this.kb.getEvent(eventId);
-      final List<String> ctx = e.getContext();
-      for (final KnowledgeEntity ke : root) {
-        if (e.isNotEvent()) {
-          if (createPathEntries(e, ke, ctx)) {
-            removed = true;
-          }
-        }
-        else {
-          if (removeTriggerFromChoices(e, ke, ctx)) {
-            removed = true;
-          }
-        }
-      }
-      return removed;
-    }
-    finally {
-      LOGGER.trace("<-- disableEvent(); E = {}; removed = {}", eventId, removed);
-    }
-  }
-
   private boolean removeTriggerFromChoices(final Event e, final KnowledgeEntity currentKE, final List<String> path) {
     boolean removed = false;
     KnowledgeEntity nextKE = null;
@@ -566,7 +545,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       final int len = (path == null ? 0 : path.size());
       if (len < 1) {
         // Walked complete Context-Path, now check Trigger and cleanup corresponding Choices
-        removed = cleanupChoices(e, currentKE);
+        removed = ChoicesHelper.cleanupChoices(this.kb, e, currentKE);
         return removed;
       }
       // Check that first Path Element is really matching to current KE
@@ -574,19 +553,19 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       final String currentVariantId = (currentVariant == null ? null : currentVariant.getVariantID());
       final String expectedVariantId = path.get(0);
       if (StringUtils.isEmpty(expectedVariantId) || !expectedVariantId.equals(currentVariantId)) {
-        throw new ResolutionException("LOGICAL ERROR: Path not matching to current KE!!!");
+        throw new ResolutionException("Context-Path is not matching to current KE!!!");
       }
       if (len == 1) {
         // There is just one PE, which is the Variant of this KE
         // --> remove Trigger from Feature- and Concept-Choices
-        removed = cleanupFeatureChoices(e, currentKE, expectedVariantId);
+        removed = ChoicesHelper.cleanupFeatureChoices(this.kb, e, currentKE, expectedVariantId);
         return removed;
       }
       if (len == 2) {
         // There is one additional PE left, which is a Purpose
         // --> remove Trigger from all Variant-Choices for this Purpose
         final String purposeId = path.get(1);
-        removed = cleanupVariantChoices(e, currentKE, purposeId);
+        removed = ChoicesHelper.cleanupVariantChoices(e, currentKE, purposeId);
         return removed;
       }
       // Path has 3 or more Elements: Check whether next KnowledgeEntity exists
@@ -615,71 +594,11 @@ public class RulesEvaluator implements InitializingBean, Resolver {
         return removed;
       }
       else {
-        throw new ResolutionException("LOGICAL ERROR: Cannot apply Modus Tollens, Trigger-Event cannot be disabled! Check your Config and Rules in KB!!!");
+        throw new ResolutionException("Cannot remove Trigger from Choices! Check your Config and Rules in KB!!!");
       }
     }
     finally {
       LOGGER.trace("<-- removeTriggerFromChoices(); removed = {}; Path = {}", removed, path);
-    }
-  }
-
-  // ----------------------------------------------------------------
-
-  private boolean cleanupChoices(final Event e, final KnowledgeEntity ke) {
-    boolean removed = false;
-    try {
-      LOGGER.trace("--> cleanupChoices(); E = {}; KE = {}", e.getEventID(), ke);
-      if (Event.TRIGGER_TYPE_VARIANT.equals(e.getTriggerType())) {
-        removed = cleanupVariantChoices(e, ke, null);
-      }
-      else {
-        removed = cleanupFeatureChoices(e, ke, null);
-      }
-      return removed;
-    }
-    finally {
-      LOGGER.trace("<-- cleanupChoices(); E = {}; removed = {}", e.getEventID(), removed);
-    }
-  }
-
-  private boolean cleanupVariantChoices(final Event e, final KnowledgeEntity ke, final String purposeId) {
-    boolean removed = false;
-    try {
-      LOGGER.trace("--> cleanupVariantChoices(); PID = {}; TID = {}; E = {}; KE = {}", purposeId, e.getTriggerID(), e.getEventID(), ke);
-      if (Event.TRIGGER_TYPE_VARIANT.equals(e.getTriggerType())) {
-        removed = ChoicesHelper.cleanupVariantChoices(ke, purposeId, e.getTriggerID());
-        return removed;
-      }
-      else {
-        throw new ResolutionException("Cannot cleanup Variant-Choices. Unexpected Trigger-Type: " + e.getTriggerType());
-      }
-    }
-    finally {
-      LOGGER.trace("<-- cleanupVariantChoices(); PID = {}; TID = {}, E = {}; removed = {}", purposeId, e.getTriggerID(), e.getEventID(), removed);
-    }
-  }
-
-  private boolean cleanupFeatureChoices(final Event e, final KnowledgeEntity ke, final String variantId) {
-    boolean removed = false;
-    try {
-      LOGGER.trace("--> cleanupFeatureChoices(); VID = {}; TID = {}, E = {}; KE = {}", variantId, e.getTriggerID(), e.getEventID(), ke);
-      if (Event.TRIGGER_TYPE_FEATURE_VALUE.equals(e.getTriggerType())) {
-        final String featureValueId = e.getTriggerID();
-        final org.psikeds.resolutionengine.datalayer.vo.FeatureValue fv = this.kb.getFeatureValue(featureValueId);
-        final String featureId = fv.getFeatureID();
-        removed = ChoicesHelper.cleanupFeatureChoices(ke, variantId, featureId, featureValueId);
-        return removed;
-      }
-      else if (Event.TRIGGER_TYPE_CONCEPT.equals(e.getTriggerType())) {
-        // TODO: implement Concepts
-        return removed;
-      }
-      else {
-        throw new ResolutionException("Cannot cleanup Feature-Choices. Unexpected Trigger-Type: " + e.getTriggerType());
-      }
-    }
-    finally {
-      LOGGER.trace("<-- cleanupFeatureChoices(); VID = {}; TID = {}, E = {}; removed = {}", variantId, e.getTriggerID(), e.getEventID(), removed);
     }
   }
 
