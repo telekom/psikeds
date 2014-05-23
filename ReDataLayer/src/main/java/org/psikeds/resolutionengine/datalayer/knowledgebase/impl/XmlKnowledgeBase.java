@@ -487,6 +487,27 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
 
   /**
    * @param variantId
+   * @param featureId
+   * @return all values for this feature on this variant
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFeatureValues(java.lang.String,
+   *      java.lang.String)
+   */
+  @Override
+  public FeatureValues getFeatureValues(final String variantId, final String featureId) {
+    final FeatureValues values = new FeatureValues();
+    final Variant v = (StringUtils.isEmpty(variantId) ? null : getVariant(variantId));
+    if (v != null) {
+      for (final FeatureValue fv : v.getFeatureValues()) {
+        if ((fv != null) && fv.getFeatureID().equals(featureId)) {
+          values.addValue(fv);
+        }
+      }
+    }
+    return values;
+  }
+
+  /**
+   * @param variantId
    * @return Events attached to Variant
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getAttachedEvents(java.lang.String)
    */

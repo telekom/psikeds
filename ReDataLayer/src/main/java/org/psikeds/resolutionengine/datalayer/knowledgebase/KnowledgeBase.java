@@ -106,6 +106,8 @@ public interface KnowledgeBase {
 
   FeatureValues getFeatureValuesWithinRange(String featureId, String rangeID);
 
+  FeatureValues getFeatureValues(String variantId, String featureId);
+
   Events getAttachedEvents(String variantId);
 
   Rules getAttachedRules(String variantId);
