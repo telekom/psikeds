@@ -30,7 +30,10 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
 
   <bean id="resolutionSOAPService" class="org.psikeds.queryagent.interfaces.presenter.soap.ResolutionSOAPService">
     <constructor-arg index="0" type="org.psikeds.queryagent.interfaces.presenter.services.ResolutionService" ref="resolutionBusinessService" />  <!-- defined in business-services-context.xml -->
+    <constructor-arg index="1" value="${queryagent.service.async.enabled}" />
+    <constructor-arg index="2" value="${queryagent.service.async.timeout}" />
   </bean>
+
 
   <!-- Definition of SOAP endpoints -->
 

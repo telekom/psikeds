@@ -37,15 +37,23 @@ public class Purpose extends POJO implements Serializable {
   private boolean root;
 
   public Purpose() {
-    this(null, null, null);
+    this(null);
   }
 
-  public Purpose(final String label, final String description, final String id) {
-    this(label, description, id, false);
+  public Purpose(final String purposeID) {
+    this(purposeID, false);
   }
 
-  public Purpose(final String label, final String description, final String id, final boolean root) {
-    super(id);
+  public Purpose(final String purposeID, final boolean root) {
+    this(purposeID, null, purposeID, root);
+  }
+
+  public Purpose(final String label, final String description, final String purposeID) {
+    this(label, description, purposeID, false);
+  }
+
+  public Purpose(final String label, final String description, final String purposeID, final boolean root) {
+    super(purposeID);
     this.label = label;
     this.description = description;
     this.root = root;
@@ -73,5 +81,13 @@ public class Purpose extends POJO implements Serializable {
 
   public void setRoot(final boolean root) {
     this.root = root;
+  }
+
+  public String getPurposeID() {
+    return getId();
+  }
+
+  public void setPurposeID(final String purposeID) {
+    setId(purposeID);
   }
 }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -16,48 +16,41 @@ package org.psikeds.resolutionengine.datalayer.vo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.StringUtils;
+
 /**
- * A variant is constituted by one or several purposes(s).
- *
- * Note: VariantID and PurposeID(s) must reference existing Objects!
- *
+ * A Variant is constituted by one or several Component(s), i.e. Purposes.
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
+@XmlRootElement(name = "Constitutes")
 public class Constitutes extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private String description;
   private String variantID;
-  private List<String> purposeID;
+  private List<Component> components;
 
   public Constitutes() {
-    this(null, null, (List<String>) null);
+    this(null, (List<Component>) null);
   }
 
-  public Constitutes(final String description, final String variantID, final String purposeID) {
+  public Constitutes(final String variantID, final String purposeID) {
     super();
-    setDescription(description);
     setVariantID(variantID);
-    addPurposeID(purposeID);
+    addComponent(purposeID);
   }
 
-  public Constitutes(final String description, final String variantID, final List<String> purposeID) {
+  public Constitutes(final String variantID, final List<Component> components) {
     super();
-    setDescription(description);
     setVariantID(variantID);
-    setPurposeID(purposeID);
-  }
-
-  public String getDescription() {
-    return this.description;
-  }
-
-  public void setDescription(final String value) {
-    this.description = value;
+    setComponents(components);
   }
 
   public String getVariantID() {
@@ -68,18 +61,26 @@ public class Constitutes extends ValueObject implements Serializable {
     this.variantID = value;
   }
 
-  public List<String> getPurposeID() {
-    if (this.purposeID == null) {
-      this.purposeID = new ArrayList<String>();
+  public List<Component> getComponents() {
+    if (this.components == null) {
+      this.components = new ArrayList<Component>();
     }
-    return this.purposeID;
+    return this.components;
   }
 
-  public boolean addPurposeID(final String value) {
-    return getPurposeID().add(value);
+  public boolean addComponent(final String purposeID) {
+    return (!StringUtils.isEmpty(purposeID) && addComponent(new Component(purposeID)));
   }
 
-  public void setPurposeID(final List<String> lst) {
-    this.purposeID = lst;
+  public boolean addComponent(final Component comp) {
+    return ((comp != null) && getComponents().add(comp));
+  }
+
+  public boolean addComponent(final Collection<? extends Component> c) {
+    return ((c != null) && !c.isEmpty() && getComponents().addAll(c));
+  }
+
+  public void setComponents(final List<Component> components) {
+    this.components = components;
   }
 }

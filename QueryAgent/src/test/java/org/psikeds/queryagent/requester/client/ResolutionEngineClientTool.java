@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +29,7 @@ import org.apache.cxf.jaxrs.provider.JAXBElementProvider;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 
+import org.psikeds.common.util.JSONHelper;
 import org.psikeds.queryagent.requester.client.impl.ResolutionEngineClientRestImpl;
 import org.psikeds.queryagent.requester.client.impl.WebClientFactoryImpl;
 import org.psikeds.resolutionengine.interfaces.pojos.Choice;
@@ -39,6 +39,8 @@ import org.psikeds.resolutionengine.interfaces.pojos.Purpose;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse;
 import org.psikeds.resolutionengine.interfaces.pojos.Variant;
+import org.psikeds.resolutionengine.interfaces.pojos.VariantChoice;
+import org.psikeds.resolutionengine.interfaces.pojos.VariantDecission;
 
 /**
  * Simple Client for invoking Services of Resolution-Engine
@@ -49,21 +51,23 @@ import org.psikeds.resolutionengine.interfaces.pojos.Variant;
  */
 public class ResolutionEngineClientTool {
 
-  private static final String LOG4J = System.getProperty("org.psikeds.test.log4j.xml", "./src/main/resources/log4j.xml");
   private static final Logger LOGGER = LoggerFactory.getLogger(ResolutionEngineClientTool.class);
 
-  private static final String TEST_DATA_DIR = System.getProperty("org.psikeds.test.data.dir", "./src/test/resources/");
-  private static final ObjectMapper MAPPER = new ObjectMapper();
+  private static String LOG4J;
+  private static File TEST_DATA_DIR;
 
   private static boolean doInvokeInit = true;
+  private static boolean doInvokeCurrent = true;
   private static boolean doInvokeSelect = true;
   private static boolean doUseSessionId = true;
   private static boolean doOverWrite = false;
-  private static File fInitResponse = new File(TEST_DATA_DIR, "InitResponse.json");
-  private static File fSelectRequest = new File(TEST_DATA_DIR, "SelectRequest.json");
-  private static File fSelectResponse = new File(TEST_DATA_DIR, "SelectResponse.json");
-  private static File fDecission = new File(TEST_DATA_DIR, "Decission.json");
-  private static String reBaseUrl = ResolutionEngineClientRestImpl.DEFAULT_RESOLUTION_ENGINE_BASE_REST_URL;
+
+  private static File fInitResponse;
+  private static File fCurrentResponse;
+  private static File fSelectRequest;
+  private static File fSelectResponse;
+  private static File fDecission;
+  private static String reBaseUrl;
 
   public static void main(final String[] args) {
     try {
@@ -78,10 +82,23 @@ public class ResolutionEngineClientTool {
 
   private static void configureLogging() {
     BasicConfigurator.configure();
+    LOG4J = System.getProperty("org.psikeds.test.log4j.xml", "./src/main/resources/log4j.xml");
     DOMConfigurator.configure(LOG4J);
   }
 
   private static void parseParameters(final String[] args) {
+    // defaults
+    TEST_DATA_DIR = new File(System.getProperty("org.psikeds.test.data.dir", "./src/test/resources/"));
+    if (!TEST_DATA_DIR.exists()) {
+      TEST_DATA_DIR.mkdir();
+    }
+    fInitResponse = new File(TEST_DATA_DIR, "InitResponse.json");
+    fCurrentResponse = new File(TEST_DATA_DIR, "CurrentResponse.json");
+    fSelectRequest = new File(TEST_DATA_DIR, "SelectRequest.json");
+    fSelectResponse = new File(TEST_DATA_DIR, "SelectResponse.json");
+    fDecission = new File(TEST_DATA_DIR, "Decission.json");
+    reBaseUrl = ResolutionEngineClientRestImpl.DEFAULT_RESOLUTION_ENGINE_BASE_REST_URL;
+    // parse parameters
     for (final String param : args) {
       final String lower = param.toLowerCase();
       if ("-f".equals(lower) || "-overwrite".equals(lower)) {
@@ -98,6 +115,9 @@ public class ResolutionEngineClientTool {
       }
       else if (lower.startsWith("-initresp=")) {
         fInitResponse = new File(TEST_DATA_DIR, param.substring(10));
+      }
+      else if (lower.startsWith("-currentresp=")) {
+        fCurrentResponse = new File(TEST_DATA_DIR, param.substring(13));
       }
       else if (lower.startsWith("-selectreq=")) {
         fSelectRequest = new File(TEST_DATA_DIR, param.substring(11));
@@ -120,10 +140,11 @@ public class ResolutionEngineClientTool {
   private static void invokeServices() throws JsonProcessingException, IOException {
     final ResolutionEngineClient client = createResolutionEngineClient();
     final ResolutionResponse iresp = invokeInitService(client);
-    invokeSelectService(client, iresp);
+    final ResolutionResponse sresp = invokeSelectService(client, iresp);
+    invokeCurrentService(client, sresp);
   }
 
-  // ------------------------------------------------------
+  // ----------------------------------------------------------------
 
   @SuppressWarnings("rawtypes")
   private static ResolutionEngineClient createResolutionEngineClient() {
@@ -142,11 +163,11 @@ public class ResolutionEngineClientTool {
       iresp = client.invokeInitService();
       LOGGER.info(" ... done. Response = {}", iresp);
       if (doOverWrite || !fInitResponse.exists()) {
-        writeObjectToJsonFile(fInitResponse, iresp);
+        JSONHelper.writeObjectToJsonFile(fInitResponse, iresp);
       }
     }
     else {
-      iresp = readObjectFromJsonFile(fInitResponse, ResolutionResponse.class);
+      iresp = JSONHelper.readObjectFromJsonFile(fInitResponse, ResolutionResponse.class);
     }
     return (iresp == null ? new ResolutionResponse() : iresp);
   }
@@ -160,26 +181,43 @@ public class ResolutionEngineClientTool {
       sresp = client.invokeSelectService(sreq);
       LOGGER.info(" ... done. Response = {}", sresp);
       if (doOverWrite || !fSelectResponse.exists()) {
-        writeObjectToJsonFile(fSelectResponse, sresp);
+        JSONHelper.writeObjectToJsonFile(fSelectResponse, sresp);
       }
     }
     else {
-      sresp = readObjectFromJsonFile(fSelectResponse, ResolutionResponse.class);
+      sresp = JSONHelper.readObjectFromJsonFile(fSelectResponse, ResolutionResponse.class);
     }
     return (sresp == null ? new ResolutionResponse() : sresp);
   }
 
-  // ------------------------------------------------------
+  private static ResolutionResponse invokeCurrentService(final ResolutionEngineClient client, final ResolutionResponse sresp) throws JsonProcessingException, IOException {
+    ResolutionResponse cresp = null;
+    if (doInvokeCurrent) {
+      LOGGER.info("Invoking Current-Service ...");
+      final String sessionID = (sresp == null ? null : sresp.getSessionID());
+      cresp = client.invokeCurrentService(sessionID);
+      LOGGER.info(" ... done. Response = {}", cresp);
+      if (doOverWrite || !fCurrentResponse.exists()) {
+        JSONHelper.writeObjectToJsonFile(fCurrentResponse, cresp);
+      }
+    }
+    else {
+      cresp = JSONHelper.readObjectFromJsonFile(fCurrentResponse, ResolutionResponse.class);
+    }
+    return (cresp == null ? new ResolutionResponse() : cresp);
+  }
+
+  // ----------------------------------------------------------------
 
   private static ResolutionRequest getSelectRequest(final ResolutionResponse iresp) throws JsonProcessingException, IOException {
-    ResolutionRequest sreq = readObjectFromJsonFile(fSelectRequest, ResolutionRequest.class);
+    ResolutionRequest sreq = JSONHelper.readObjectFromJsonFile(fSelectRequest, ResolutionRequest.class);
     final String sessionID = getSessionID(iresp);
     if (sreq == null) {
       LOGGER.debug("File {} not found, creating default Select-Request.", fSelectRequest);
       final Metadata metadata = getMetadata(iresp);
       final Decission decission = getDecission(iresp);
       sreq = new ResolutionRequest(sessionID, metadata, null, decission);
-      writeObjectToJsonFile(fSelectRequest, sreq);
+      JSONHelper.writeObjectToJsonFile(fSelectRequest, sreq);
     }
     if (doUseSessionId) {
       sreq.setSessionID(sessionID);
@@ -197,45 +235,39 @@ public class ResolutionEngineClientTool {
   }
 
   private static Decission getDecission(final ResolutionResponse iresp) throws JsonProcessingException, IOException {
-    Decission decission = readObjectFromJsonFile(fDecission, Decission.class);
-    if (decission == null) {
-      LOGGER.debug("File {} not found, creating Decission from first Choice.", fDecission);
-      Purpose p;
-      Variant v;
-      try {
-        final Choice c = iresp.getPossibleChoices().get(0);
-        p = c.getPurpose();
-        v = c.getVariants().get(0);
+    VariantDecission vd = null;
+    try {
+      vd = JSONHelper.readObjectFromJsonFile(fDecission, VariantDecission.class);
+    }
+    catch (final Exception ex) {
+      vd = null;
+    }
+    if (vd == null) {
+      Purpose p = null;
+      Variant v = null;
+      LOGGER.debug("File {} not found, creating VariantDecission from first Choice.", fDecission);
+      for (final Choice c : iresp.getChoices()) {
+        if (c instanceof VariantChoice) {
+          final VariantChoice vc = (VariantChoice) c;
+          p = vc.getPurpose();
+          v = vc.getVariants().get(0);
+          vd = new VariantDecission(p, v);
+          break;
+        }
       }
-      catch (final Exception ex) {
-        // probably no choice in iresp, fallback
+      if (vd == null) {
+        LOGGER.debug("No Variant-Choice in IResp, fallback to Dummy-Values!");// probably no variant-choice in iresp, fallback
         p = new Purpose("P1", "P1", "P1", true);
         v = new Variant("V1", "V1", "V1");
+        vd = new VariantDecission(p, v);
       }
-      decission = new Decission(p, v);
-      writeObjectToJsonFile(fDecission, decission);
-    }
-    return decission;
-  }
-
-  // ------------------------------------------------------
-
-  private static <T> T readObjectFromJsonFile(final File f, final Class<T> type) throws JsonProcessingException, IOException {
-    T obj = null;
-    if ((type != null) && (f != null) && f.isFile() && f.exists() && f.canRead()) {
-      obj = MAPPER.readValue(f, type);
-      LOGGER.debug("Read Object from File {}\n{}", f, obj);
-    }
-    return obj;
-  }
-
-  private static void writeObjectToJsonFile(final File f, final Object obj) throws JsonProcessingException, IOException {
-    if ((f != null) && (obj != null)) {
-      LOGGER.info("Writing Object to File {}\n{}", f, obj);
-      MAPPER.writeValue(f, obj);
-      if (!f.exists()) {
-        throw new IOException("Could not write Object(s) to File " + f.getPath());
+      try {
+        JSONHelper.writeObjectToJsonFile(fDecission, vd);
+      }
+      catch (final Exception ex) {
+        // ignore
       }
     }
+    return vd;
   }
 }

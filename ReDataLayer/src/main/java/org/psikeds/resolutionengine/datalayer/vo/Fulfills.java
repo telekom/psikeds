@@ -18,52 +18,34 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.StringUtils;
+
 /**
- * A purpose is fulfilled by one or several variant(s).
- *
- * Optionally a Quantity can be specified, meaning that the purpose
- * is not fullfilled by 1 Variant (default) but by that number of
- * Variants. 
- *
+ * A Purpose is fulfilled by one or several Variant(s).
+ * 
  * Note: PurposeID and VariantID(s) must reference existing Objects!
- *
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
+@XmlRootElement(name = "Fulfills")
 public class Fulfills extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private static final long MINIMUM_QUANTITY = 1L;
-  private static final long DEFAULT_QUANTITY = MINIMUM_QUANTITY;
-
-  private String description;
   private String purposeID;
   private List<String> variantID;
-  private long quantity;
 
   public Fulfills() {
-    this(null, null, null);
+    this(null, null);
   }
 
-  public Fulfills(final String description, final String purposeID, final List<String> variantID) {
-    this(description, purposeID, variantID, DEFAULT_QUANTITY);
-  }
-
-  public Fulfills(final String description, final String purposeID, final List<String> variantID, final long qty) {
+  public Fulfills(final String purposeID, final List<String> variantID) {
     super();
-    setDescription(description);
     setPurposeID(purposeID);
     setVariantID(variantID);
-    setQuantity(qty);
-  }
-
-  public String getDescription() {
-    return this.description;
-  }
-
-  public void setDescription(final String value) {
-    this.description = value;
   }
 
   public String getPurposeID() {
@@ -81,19 +63,11 @@ public class Fulfills extends ValueObject implements Serializable {
     return this.variantID;
   }
 
-  public boolean addVariantID(final String value) {
-    return getVariantID().add(value);
+  public boolean addVariantID(final String id) {
+    return (!StringUtils.isEmpty(id) && getVariantID().add(id));
   }
 
   public void setVariantID(final List<String> lst) {
     this.variantID = lst;
-  }
-
-  public long getQuantity() {
-    return this.quantity;
-  }
-
-  public void setQuantity(final long qty) {
-    this.quantity = qty < MINIMUM_QUANTITY ? MINIMUM_QUANTITY : qty;
   }
 }

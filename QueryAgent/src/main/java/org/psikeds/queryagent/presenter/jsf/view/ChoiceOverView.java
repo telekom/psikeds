@@ -21,8 +21,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.psikeds.queryagent.interfaces.presenter.pojos.Choice;
+import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureChoice;
+import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureValue;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Purpose;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Variant;
+import org.psikeds.queryagent.interfaces.presenter.pojos.VariantChoice;
 import org.psikeds.queryagent.presenter.jsf.model.KnowledgeRepresentation;
 import org.psikeds.queryagent.presenter.jsf.util.SelectionHelper;
 
@@ -44,7 +47,7 @@ public class ChoiceOverView extends BaseView {
   }
 
   public boolean isWithoutData() {
-    return (isNotInitialized() || isResolved() || this.model.getPossibleChoices().isEmpty());
+    return (isNotInitialized() || isResolved() || this.model.getChoices().isEmpty());
   }
 
   public List<DisplayItem> getPossibleChoices() {
@@ -52,18 +55,41 @@ public class ChoiceOverView extends BaseView {
     try {
       LOGGER.trace("--> getPossibleChoices()");
       if (!isWithoutData()) {
-        final List<Choice> choices = this.model.getPossibleChoices();
-        for (final Choice c : choices) {
-          final Purpose p = c.getPurpose();
-          final DisplayItem dp = new DisplayItem(p.getId(), p.getLabel(), p.getDescription(), DisplayItem.TYPE_PURPOSE);
-          lst.add(dp);
-          LOGGER.trace("Added P: {}", dp);
-          for (final Variant v : c.getVariants()) {
-            final DisplayItem dv = new DisplayItem(v.getId(), v.getLabel(), v.getDescription(), DisplayItem.TYPE_VARIANT);
-            dv.setSelectionKey(SelectionHelper.createSelectionString(p, v));
-            dp.addChild(dv);
-            lst.add(dv);
-            LOGGER.trace("Added V: {}", dv);
+        final List<Choice> choices = this.model.getChoices();
+        if ((choices != null) && !choices.isEmpty()) {
+          for (final Choice c : choices) {
+            if (c instanceof VariantChoice) {
+              final VariantChoice vc = (VariantChoice) c;
+              final Purpose p = vc.getPurpose();
+              final DisplayItem dp = new DisplayItem(p.getPurposeID(), p.getLabel(), p.getDescription(), DisplayItem.TYPE_PURPOSE);
+              lst.add(dp);
+              LOGGER.trace("Added P: {}", dp);
+              for (final Variant v : vc.getVariants()) {
+                final DisplayItem dv = new DisplayItem(v.getVariantID(), v.getLabel(), v.getDescription(), DisplayItem.TYPE_VARIANT);
+                dv.setSelectionKey(SelectionHelper.createSelectionString(p, v));
+                dp.addChild(dv);
+                lst.add(dv);
+                LOGGER.trace("Added V: {}", dv);
+              }
+            }
+            else if (c instanceof FeatureChoice) {
+              final FeatureChoice fc = (FeatureChoice) c;
+              final String vid = fc.getParentVariantID();
+              final String fid = fc.getFeatureID();
+              // TODO: get variant and feature from the model and create nicer display items
+              final DisplayItem df = new DisplayItem(fid, fid, null, DisplayItem.TYPE_FEATURE);
+              lst.add(df);
+              LOGGER.trace("Added F: {}", df);
+              for (final FeatureValue fv : fc.getPossibleValues()) {
+                final String fvid = fv.getFeatureValueID();
+                final String value = fv.getValue();
+                final DisplayItem dfv = new DisplayItem(fvid, value, null, DisplayItem.TYPE_CHOICE);
+                dfv.setSelectionKey(SelectionHelper.createSelectionString(vid, fid, fvid));
+                df.addChild(dfv);
+                lst.add(dfv);
+                LOGGER.trace("Added V: {}", dfv);
+              }
+            }
           }
         }
       }

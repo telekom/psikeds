@@ -30,7 +30,7 @@ import org.psikeds.resolutionengine.datalayer.vo.Purpose;
 import org.psikeds.resolutionengine.datalayer.vo.Variant;
 
 /**
- * Basic Validator checking that all References in Alternatives/Fulfills are valid.
+ * Validator checking that all References in Alternatives/Fulfills are valid.
  * 
  * @author marco@juliano.de
  * 
@@ -48,37 +48,54 @@ public class FulfillsValidator implements Validator {
       LOGGER.debug("Validating KnowledgeBase regarding Alternatives / Fulfills ...");
       boolean valid = true;
 
-      final Alternatives alts = kb.getAlternatives();
-      final List<Fulfills> lst = alts.getFulfills();
-      for (final Fulfills f : lst) {
-        final String pid = f.getPurposeID();
-        if (StringUtils.isEmpty(pid)) {
-          valid = false;
-          LOGGER.warn("Empty PurposeID!");
-        }
-        else {
-          final Purpose p = kb.getPurpose(pid);
-          if ((p == null) || !pid.equals(p.getId())) {
+      final Alternatives alts = (kb == null ? null : kb.getAlternatives());
+      final List<Fulfills> lst = (alts == null ? null : alts.getFulfills());
+      if ((lst == null) || lst.isEmpty()) {
+        valid = false;
+        LOGGER.warn("KnowledgeBase does not contain any Alternatives/Fulfills!");
+      }
+      else {
+        for (final Fulfills f : lst) {
+          final String pid = (f == null ? null : f.getPurposeID());
+          if (StringUtils.isEmpty(pid)) {
             valid = false;
-            LOGGER.warn("Unknown PurposeID: " + pid);
+            LOGGER.warn("No PurposeID: {}", f);
+            continue;
           }
-        }
-        final List<String> varids = f.getVariantID();
-        if ((varids == null) || varids.isEmpty()) {
-          valid = false;
-          LOGGER.warn("No fulfilling Variants for PurposeID: " + pid);
-        }
-        else {
-          for (final String vid : varids) {
-            if (StringUtils.isEmpty(vid)) {
-              valid = false;
-              LOGGER.warn("Empty VariantID for PurposeID: " + pid);
-            }
-            else {
-              final Variant v = kb.getVariant(vid);
-              if ((v == null) || !vid.equals(v.getId())) {
+          if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Checking Fulfills: {}", f);
+          }
+          final Purpose p = kb.getPurpose(pid);
+          if ((p == null) || !pid.equals(p.getPurposeID())) {
+            valid = false;
+            LOGGER.warn("Unknown PurposeID: {}", pid);
+          }
+          else if (StringUtils.isEmpty(p.getLabel())) {
+            valid = false;
+            LOGGER.warn("Purpose {} has no Label!", pid);
+          }
+
+          final List<String> varids = f.getVariantID();
+          if ((varids == null) || varids.isEmpty()) {
+            valid = false;
+            LOGGER.warn("No fulfilling Variants for PurposeID: {}", pid);
+          }
+          else {
+            for (final String vid : varids) {
+              if (StringUtils.isEmpty(vid)) {
                 valid = false;
-                LOGGER.warn("Unknown VariantID: " + vid);
+                LOGGER.warn("Empty VariantID for PurposeID: {}", pid);
+              }
+              else {
+                final Variant v = kb.getVariant(vid);
+                if ((v == null) || !vid.equals(v.getVariantID())) {
+                  valid = false;
+                  LOGGER.warn("Unknown VariantID: {}", vid);
+                }
+                else if (StringUtils.isEmpty(v.getLabel())) {
+                  valid = false;
+                  LOGGER.warn("Variant {} has no Label!", vid);
+                }
               }
             }
           }

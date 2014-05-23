@@ -16,25 +16,21 @@ package org.psikeds.resolutionengine.transformer;
 
 import java.util.List;
 
-import org.psikeds.resolutionengine.datalayer.vo.ValueObject;
-import org.psikeds.resolutionengine.interfaces.pojos.POJO;
-
 /**
- * Helper for transforming Value-Objects from the Datalayer into POJOs of
- * the RE-Interface (and vice versa).
+ * Helper for transforming Value-Objects from the Datalayer
+ * into POJOs of the RE-Interface.
+ * 
+ * Note: For Safety-Reasons we will never transform POJOs
+ * (from the Client!) back into Value-Objects (Server-Data!)
  * 
  * @author marco@juliano.de
- *
  */
 public interface Transformer {
 
   org.psikeds.resolutionengine.interfaces.pojos.Metadata valueObject2Pojo(
-      org.psikeds.resolutionengine.datalayer.vo.Meta vo);
+      org.psikeds.resolutionengine.datalayer.vo.MetaData vo);
 
   // ----------------------------------------------------------------
-
-  org.psikeds.resolutionengine.datalayer.vo.Purpose pojo2ValueObject(
-      org.psikeds.resolutionengine.interfaces.pojos.Purpose pojo);
 
   org.psikeds.resolutionengine.interfaces.pojos.Purpose valueObject2Pojo(
       org.psikeds.resolutionengine.datalayer.vo.Purpose vo);
@@ -44,61 +40,112 @@ public interface Transformer {
 
   // ----------------------------------------------------------------
 
-  org.psikeds.resolutionengine.datalayer.vo.Variant pojo2ValueObject(
-      org.psikeds.resolutionengine.interfaces.pojos.Variant pojo);
-
   org.psikeds.resolutionengine.interfaces.pojos.Variant valueObject2Pojo(
       org.psikeds.resolutionengine.datalayer.vo.Variant vo);
 
   org.psikeds.resolutionengine.interfaces.pojos.Variant valueObject2Pojo(
       org.psikeds.resolutionengine.datalayer.vo.Variant vo,
-      List<org.psikeds.resolutionengine.interfaces.pojos.Feature> features);
+      org.psikeds.resolutionengine.datalayer.vo.Features features);
 
-  List<org.psikeds.resolutionengine.interfaces.pojos.Variant> valueObject2Pojo(
+  org.psikeds.resolutionengine.interfaces.pojos.Variant valueObject2Pojo(
+      org.psikeds.resolutionengine.datalayer.vo.Variant vo,
+      org.psikeds.resolutionengine.interfaces.pojos.Features features);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Variants valueObject2Pojo(
       org.psikeds.resolutionengine.datalayer.vo.Variants vo);
 
   // ----------------------------------------------------------------
 
-  org.psikeds.resolutionengine.datalayer.vo.Feature pojo2ValueObject(
-      org.psikeds.resolutionengine.interfaces.pojos.Feature pojo);
+  org.psikeds.resolutionengine.interfaces.pojos.Concept valueObject2Pojo(
+      org.psikeds.resolutionengine.datalayer.vo.Concept vo);
+
+  org.psikeds.resolutionengine.interfaces.pojos.Concepts valueObject2Pojo(
+      org.psikeds.resolutionengine.datalayer.vo.Concepts vo);
+
+  // ----------------------------------------------------------------
+
+  org.psikeds.resolutionengine.interfaces.pojos.FeatureValue valueObject2Pojo(
+      org.psikeds.resolutionengine.datalayer.vo.FeatureValue vo);
+
+  org.psikeds.resolutionengine.interfaces.pojos.FeatureValues valueObject2Pojo(
+      List<org.psikeds.resolutionengine.datalayer.vo.FeatureValue> vo);
+
+  org.psikeds.resolutionengine.interfaces.pojos.FeatureValues valueObject2Pojo(
+      org.psikeds.resolutionengine.datalayer.vo.FeatureValues vo);
+
+  // ----------------------------------------------------------------
 
   org.psikeds.resolutionengine.interfaces.pojos.Feature valueObject2Pojo(
       org.psikeds.resolutionengine.datalayer.vo.Feature vo);
 
-  List<org.psikeds.resolutionengine.interfaces.pojos.Feature> valueObject2Pojo(
+  org.psikeds.resolutionengine.interfaces.pojos.Features valueObject2Pojo(
       org.psikeds.resolutionengine.datalayer.vo.Features vo);
 
   // ----------------------------------------------------------------
 
-  org.psikeds.resolutionengine.datalayer.vo.FeatureValueType pojo2ValueObject(
-      org.psikeds.resolutionengine.interfaces.pojos.FeatureValueType pojo);
+  org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice valueObject2Pojo(
+      org.psikeds.resolutionengine.datalayer.vo.Variant parent,
+      org.psikeds.resolutionengine.datalayer.vo.FeatureValue value);
 
-  org.psikeds.resolutionengine.interfaces.pojos.FeatureValueType valueObject2Pojo(
-      org.psikeds.resolutionengine.datalayer.vo.FeatureValueType vo);
+  org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice valueObject2Pojo(
+      org.psikeds.resolutionengine.datalayer.vo.Variant parent,
+      List<org.psikeds.resolutionengine.datalayer.vo.FeatureValue> values);
+
+  org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice valueObject2Pojo(
+      org.psikeds.resolutionengine.datalayer.vo.Variant parent,
+      org.psikeds.resolutionengine.datalayer.vo.FeatureValues values);
+
+  org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice valueObject2Pojo(
+      String parentVariantID,
+      org.psikeds.resolutionengine.datalayer.vo.FeatureValue value);
+
+  org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice valueObject2Pojo(
+      String parentVariantID,
+      org.psikeds.resolutionengine.datalayer.vo.FeatureValues values);
+
+  org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice valueObject2Pojo(
+      String parentVariantID,
+      List<org.psikeds.resolutionengine.datalayer.vo.FeatureValue> values);
 
   // ----------------------------------------------------------------
 
-  org.psikeds.resolutionengine.interfaces.pojos.Choice valueObject2Pojo(
+  org.psikeds.resolutionengine.interfaces.pojos.VariantChoice valueObject2Pojo(
       org.psikeds.resolutionengine.datalayer.vo.Purpose p,
-      List<org.psikeds.resolutionengine.datalayer.vo.Variant> vars);
+      org.psikeds.resolutionengine.interfaces.pojos.Variants variants,
+      long qty);
 
-  org.psikeds.resolutionengine.interfaces.pojos.Choice valueObject2Pojo(
+  org.psikeds.resolutionengine.interfaces.pojos.VariantChoice valueObject2Pojo(
       org.psikeds.resolutionengine.datalayer.vo.Purpose p,
-      org.psikeds.resolutionengine.datalayer.vo.Variants vars);
+      org.psikeds.resolutionengine.datalayer.vo.Variants variants,
+      long qty);
 
-  org.psikeds.resolutionengine.interfaces.pojos.Choice valueObject2Pojo(
-      org.psikeds.resolutionengine.datalayer.vo.Variant parent,
+  org.psikeds.resolutionengine.interfaces.pojos.VariantChoice valueObject2Pojo(
+      String parentVariantID,
       org.psikeds.resolutionengine.datalayer.vo.Purpose p,
-      List<org.psikeds.resolutionengine.datalayer.vo.Variant> vars);
+      org.psikeds.resolutionengine.interfaces.pojos.Variants variants,
+      long qty);
 
-  org.psikeds.resolutionengine.interfaces.pojos.Choice valueObject2Pojo(
-      org.psikeds.resolutionengine.datalayer.vo.Variant parent,
+  org.psikeds.resolutionengine.interfaces.pojos.VariantChoice valueObject2Pojo(
+      String parentVariantID,
       org.psikeds.resolutionengine.datalayer.vo.Purpose p,
-      org.psikeds.resolutionengine.datalayer.vo.Variants vars);
+      org.psikeds.resolutionengine.datalayer.vo.Variants variants,
+      long qty);
 
   // ----------------------------------------------------------------
 
-  <T extends POJO> List<T> valueObject2Pojo(List<? extends ValueObject> volst);
+  org.psikeds.resolutionengine.interfaces.pojos.ConceptChoice valueObject2Pojo(
+      org.psikeds.resolutionengine.datalayer.vo.Variant parent,
+      org.psikeds.resolutionengine.datalayer.vo.Concept con);
 
-  <T extends ValueObject> List<T> pojo2ValueObject(List<? extends POJO> pojolst);
+  org.psikeds.resolutionengine.interfaces.pojos.ConceptChoice valueObject2Pojo(
+      org.psikeds.resolutionengine.datalayer.vo.Variant parent,
+      org.psikeds.resolutionengine.datalayer.vo.Concepts cons);
+
+  org.psikeds.resolutionengine.interfaces.pojos.ConceptChoice valueObject2Pojo(
+      String parentVariantID,
+      org.psikeds.resolutionengine.datalayer.vo.Concept con);
+
+  org.psikeds.resolutionengine.interfaces.pojos.ConceptChoice valueObject2Pojo(
+      String parentVariantID,
+      org.psikeds.resolutionengine.datalayer.vo.Concepts cons);
 }

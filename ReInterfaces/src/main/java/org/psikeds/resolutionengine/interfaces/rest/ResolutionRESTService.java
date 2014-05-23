@@ -51,8 +51,23 @@ public class ResolutionRESTService extends AbstractRESTService {
   private final ResolutionService delegate;
 
   public ResolutionRESTService(final ResolutionService delegate) {
+    super();
     this.delegate = delegate;
-    this.context = null;
+  }
+
+  public ResolutionRESTService(final ResolutionService delegate, final boolean asyncSupported) {
+    super(asyncSupported);
+    this.delegate = delegate;
+  }
+
+  public ResolutionRESTService(final ResolutionService delegate, final long suspensionTimeout) {
+    super(suspensionTimeout);
+    this.delegate = delegate;
+  }
+
+  public ResolutionRESTService(final ResolutionService delegate, final boolean asyncSupported, final long suspensionTimeout) {
+    super(asyncSupported, suspensionTimeout);
+    this.delegate = delegate;
   }
 
   // -----------------------------------------------------
@@ -63,10 +78,29 @@ public class ResolutionRESTService extends AbstractRESTService {
   public Response init(final String reqid) {
     try {
       final ResolutionResponse resp = (ResolutionResponse) handleRequest(reqid, getExecutable(this.delegate, "init"));
-      if (resp != null && resp.getKnowledge() != null && resp.getSessionID() != null) {
+      if ((resp != null) && (resp.getKnowledge() != null) && (resp.getSessionID() != null)) {
         return buildResponse(Status.OK, resp);
       }
       return buildResponse(Status.SERVICE_UNAVAILABLE, "Failed to create Session and to initialize Knowledge!");
+    }
+    catch (final Exception ex) {
+      return buildResponse(ex);
+    }
+  }
+
+  @GET
+  @Path("/current")
+  @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+  public Response current(final String sessionID, final String reqid) {
+    try {
+      if (sessionID == null) {
+        return buildResponse(Status.BAD_REQUEST, "No Session-ID!");
+      }
+      final ResolutionResponse resp = (ResolutionResponse) handleRequest(reqid, getExecutable(this.delegate, "current"), sessionID);
+      if ((resp != null) && (resp.getKnowledge() != null) && (resp.getSessionID() != null)) {
+        return buildResponse(Status.OK, resp);
+      }
+      return buildResponse(Status.BAD_REQUEST, String.valueOf(sessionID));
     }
     catch (final Exception ex) {
       return buildResponse(ex);
@@ -79,11 +113,11 @@ public class ResolutionRESTService extends AbstractRESTService {
   @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
   public Response select(final ResolutionRequest req, final String reqid) {
     try {
-      if (req == null || req.getSessionID() == null && req.getKnowledge() == null) {
+      if ((req == null) || ((req.getSessionID() == null) && (req.getKnowledge() == null))) {
         return buildResponse(Status.BAD_REQUEST, String.valueOf(req));
       }
       final ResolutionResponse resp = (ResolutionResponse) handleRequest(reqid, getExecutable(this.delegate, "select"), req);
-      if (resp != null && resp.getKnowledge() != null && resp.getSessionID() != null) {
+      if ((resp != null) && (resp.getKnowledge() != null) && (resp.getSessionID() != null)) {
         return buildResponse(Status.OK, resp);
       }
       return buildResponse(Status.BAD_REQUEST, String.valueOf(req));

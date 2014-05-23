@@ -17,10 +17,10 @@ package org.psikeds.resolutionengine.datalayer.knowledgebase.transformer;
 /**
  * Helper for transforming a JAXB XML Object from the Knowledgebase into a
  * Value Object for the Datalayer.<br>
- *
+ * 
  * The Knowledgebase is read-only, therefore only transformations XML to VO
- * are supported / implemented.<br>
- *
+ * are supported / allowed.<br>
+ * 
  * @author marco@juliano.de
  */
 public interface Transformer {
@@ -29,35 +29,29 @@ public interface Transformer {
 
   org.psikeds.resolutionengine.datalayer.vo.Constituents xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Constituents xml);
 
-  org.psikeds.resolutionengine.datalayer.vo.Constitutes xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Constitutes xml);
-
-  org.psikeds.resolutionengine.datalayer.vo.ContextPath xml2ValueObject(final org.psikeds.knowledgebase.jaxb.ContextPath xml);
-
-  org.psikeds.resolutionengine.datalayer.vo.Data xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Data xml);
+  org.psikeds.resolutionengine.datalayer.vo.Constituents xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Derivations xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Event xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Event xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Events xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Events xml);
 
-  org.psikeds.resolutionengine.datalayer.vo.Feature xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Feature xml);
-
-  org.psikeds.resolutionengine.datalayer.vo.Features xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Features xml);
+  org.psikeds.resolutionengine.datalayer.vo.Feature xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Sensor xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Fulfills xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Fulfills xml);
 
-  org.psikeds.resolutionengine.datalayer.vo.Knowledgebase xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Knowledgebase xml);
-
-  org.psikeds.resolutionengine.datalayer.vo.Meta xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Meta xml);
+  org.psikeds.resolutionengine.datalayer.vo.MetaData xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Meta xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Purpose xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Purpose xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Purposes xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Purposes xml);
 
+  org.psikeds.resolutionengine.datalayer.vo.RelationParameter xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Parameter xml);
+
+  org.psikeds.resolutionengine.datalayer.vo.RelationOperator xml2ValueObject(final org.psikeds.knowledgebase.jaxb.RelationType xml);
+
+  String xml2ValueObject(final org.psikeds.knowledgebase.jaxb.RelParamType xml);
+
   org.psikeds.resolutionengine.datalayer.vo.Rule xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Rule xml);
 
   org.psikeds.resolutionengine.datalayer.vo.Rules xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Rules xml);
-
-  org.psikeds.resolutionengine.datalayer.vo.Variant xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Variant xml);
-
-  org.psikeds.resolutionengine.datalayer.vo.Variants xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Variants xml);
 }

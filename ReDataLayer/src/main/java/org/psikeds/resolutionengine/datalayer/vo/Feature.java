@@ -15,143 +15,138 @@
 package org.psikeds.resolutionengine.datalayer.vo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
- * This object represents a single Feature / Attribute of a Variant.
+ * This is a Feature-Definition/Declaration, i.e. Type and possible Values of an
+ * Attribute that can be assigned to a Variant.
  * 
- * Note: ID must be globally unique!
+ * Note: Feature-ID must be globally unique!
  * 
  * @author marco@juliano.de
  * 
  */
+@XmlRootElement(name = "Feature")
 public class Feature extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
+  public static final String VALUE_TYPE_STRING = "string";
+  public static final String VALUE_TYPE_INTEGER = "integer";
+  public static final String VALUE_TYPE_FLOAT = "float";
+
   private String label;
   private String description;
-  private String minValue;
-  private String maxValue;
-  private FeatureValueType valueType;
-  private boolean range;
+  private String type;
+  private String unit;
+  private List<FeatureValue> values;
 
-  /**
-   * Default constructor: use Setters for Initialization
-   * 
-   */
   public Feature() {
-    this(null, null, null, null, null, null, false);
+    this(null);
   }
 
-  /**
-   * Constructor for a Feature with a discrete Value
-   * 
-   * @param label
-   * @param description
-   * @param id
-   * @param value
-   * @param fvt
-   * 
-   */
-  public Feature(final String label, final String description, final String id, final String value, final FeatureValueType fvt) {
-    this(label, description, id, value, null, fvt, false);
+  public Feature(final String featureID) {
+    this(featureID, null, featureID, null);
   }
 
-  /**
-   * Constructor for a Feature with a Range from minValue to maxValue
-   * 
-   * @param label
-   * @param description
-   * @param id
-   * @param minValue
-   * @param maxValue
-   * @param fvt
-   * 
-   */
-  public Feature(final String label, final String description, final String id, final String minValue, final String maxValue, final FeatureValueType fvt) {
-    this(label, description, id, minValue, maxValue, fvt, true);
+  public Feature(final String label, final String description, final String featureID, final String unit) {
+    this(label, description, featureID, null, unit, null);
   }
 
-  /**
-   * Internal constructor
-   * 
-   * @param label
-   * @param description
-   * @param id
-   * @param minValue
-   * @param maxValue
-   * @param fvt
-   * @param range
-   */
-  private Feature(final String label, final String description, final String id, final String minValue, final String maxValue, final FeatureValueType fvt, final boolean range) {
-    super(id);
-    this.label = label;
-    this.description = description;
-    this.minValue = minValue;
-    this.maxValue = maxValue;
-    this.valueType = fvt == null ? FeatureValueType.STRING : fvt;
-    this.range = range;
+  public Feature(final String label, final String description, final String featureID, final String type, final String unit, final List<FeatureValue> values) {
+    super(featureID);
+    setLabel(label);
+    setDescription(description);
+    setType(type);
+    setUnit(unit);
+    setValues(values);
   }
+
+  // ----------------------------------------------------------------
 
   public String getLabel() {
     return this.label;
   }
 
-  public void setLabel(final String value) {
-    this.label = value;
+  public void setLabel(final String label) {
+    this.label = label;
   }
 
   public String getDescription() {
     return this.description;
   }
 
-  public void setDescription(final String value) {
-    this.description = value;
+  public void setDescription(final String description) {
+    this.description = description;
   }
 
-  public String getMinValue() {
-    return this.minValue;
+  public String getFeatureID() {
+    return getId();
   }
 
-  public String getValue() {
-    return this.minValue;
+  public void setFeatureID(final String featureID) {
+    setId(featureID);
   }
 
-  public void setMinValue(final String minValue) {
-    this.minValue = minValue;
-    this.range = true;
+  public String getType() {
+    return this.type;
   }
 
-  public void setValue(final String value) {
-    this.minValue = value;
-    this.range = false;
+  public void setType(final String type) {
+    if (VALUE_TYPE_FLOAT.equalsIgnoreCase(type)) {
+      this.type = VALUE_TYPE_FLOAT;
+    }
+    else if (VALUE_TYPE_INTEGER.equalsIgnoreCase(type)) {
+      this.type = VALUE_TYPE_INTEGER;
+    }
+    else {
+      this.type = VALUE_TYPE_STRING;
+    }
   }
 
-  public String getMaxValue() {
-    return this.maxValue;
+  public String getUnit() {
+    return this.unit;
   }
 
-  public void setMaxValue(final String maxValue) {
-    this.maxValue = maxValue;
-    this.range = true;
+  public void setUnit(final String unit) {
+    this.unit = unit;
   }
 
-  public FeatureValueType getValueType() {
-    return this.valueType;
+  // ----------------------------------------------------------------
+
+  public List<FeatureValue> getValues() {
+    if (this.values == null) {
+      this.values = new ArrayList<FeatureValue>();
+    }
+    return this.values;
   }
 
-  public void setValueType(final FeatureValueType valueType) {
-    this.valueType = valueType;
+  public boolean addValue(final String featureValueID, final String value) {
+    return (!StringUtils.isEmpty(featureValueID) && !StringUtils.isEmpty(value) && addValue(new FeatureValue(getFeatureID(), featureValueID, getType(), value)));
   }
 
-  public boolean isRange() {
-    return this.range;
+  public boolean addValue(final FeatureValue value) {
+    return ((value != null) && getValues().add(value));
   }
 
-  public void setRange(final boolean range) {
-    this.range = range;
-    if (!this.range) {
-      this.maxValue = null;
+  public boolean addValue(final Collection<? extends FeatureValue> values) {
+    return ((values != null) && !values.isEmpty() && getValues().addAll(values));
+  }
+
+  public void setValues(final List<FeatureValue> values) {
+    this.values = values;
+  }
+
+  public void clearValues() {
+    if (this.values != null) {
+      this.values.clear();
+      this.values = null;
     }
   }
 }

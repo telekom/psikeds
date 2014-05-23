@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+psiKeds :- ps induced knowledge entity delivery system
+
+Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+
+This file is free software: you can redistribute
+it and/or modify it under the terms of the
+[X] GNU Affero General Public License
+[ ] GNU General Public License
+[ ] GNU Lesser General Public License
+[ ] Creatice Commons ShareAlike 3.0 License
+
+For details see file LICENSING in the top project directory
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns="http://org.psikeds.knowledgebase"
+  targetNamespace="http://org.psikeds.knowledgebase">
+
+  <!-- This XSD describes the syntax of a psiKeds Knowledge Base.
+
+  Note:
+  All elements are defined on top-level and then referenced by other
+  elements (Salami Slice Design).
+  ==> This might not be best practices from an XSD point of view, but
+      results in JAXB-Classes that are very nice for the StAX-Parser. -->
+
+  <!-- ============================================================== -->
+  <!-- XML-Root-Element, entry point of our Knowledge Base -->
+  <!-- ============================================================== -->
+
+  <xs:element name="knowledgebase">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="meta" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="data" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="meta">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="created" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="lastmodified" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="language" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="version" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="creator" minOccurs="0" maxOccurs="unbounded" />
+        <xs:element ref="description" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="data">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="features" minOccurs="0" maxOccurs="1" />      <!-- features/attributes of variants -->
+        <xs:element ref="purposes" />                                  <!-- ps nodes -->
+        <xs:element ref="variants" />                                  <!-- pv nodes -->
+        <xs:element ref="alternatives" minOccurs="0" maxOccurs="1" />  <!-- is-a releations, i.e. edges from pv to ps -->
+        <xs:element ref="constituents" minOccurs="0" maxOccurs="1" />  <!-- has-a releatons, i.e. edges from ps to pv -->
+        <xs:element ref="events" minOccurs="0" maxOccurs="1" />        <!-- event e = context pv->ps->pv->ps->... + trigger -->
+        <xs:element ref="rules" minOccurs="0" maxOccurs="1" />         <!-- Rules based on Events: If event1 ==> event2 -->
+        <xs:element ref="relations" minOccurs="0" maxOccurs="1" />     <!-- Logical relations based on Feature-Values, e.g.: feature1 < feature2  or  feature1 <> feature2  -->
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ============================================================== -->
+  <!-- Features, first declared afterwards referenced by ID -->
+  <!-- ============================================================== -->
+
+  <xs:element name="features">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="feature" minOccurs="1" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+    <xs:unique name="featureID">
+      <xs:selector xpath="feature" />
+      <xs:field xpath="@id" />
+    </xs:unique>
+  </xs:element>
+
+  <xs:element name="feature">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="label" />
+        <xs:element ref="description" minOccurs="0" maxOccurs="1" />
+        <xs:choice>
+          <xs:element ref="valueSet" />    <!-- Feature is either a discrete Set/List of Values ... -->
+          <xs:element ref="valueRange" />  <!-- ... or defined as a Range of Values -->
+        </xs:choice>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:ID" use="required" />  <!-- unique ID of this feature -->
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="valueSet">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="valueType" />
+        <xs:element ref="value" minOccurs="1" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="value" type="nonEmptyString" />
+
+  <xs:element name="valueRange">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="valueType" />   <!-- Note: Value-Ranges are only supported/reasonable for Integer and Float -->
+        <xs:element ref="minInclusive" />
+        <xs:element ref="maxExclusive" />
+        <xs:element ref="step" minOccurs="0" maxOccurs="1" /> <!-- Default: Step = 1 -->
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="minInclusive" type="nonEmptyString" />
+
+  <xs:element name="maxExclusive" type="nonEmptyString" />
+
+  <xs:element name="step" type="nonEmptyString" />
+
+  <xs:element name="valueType">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="string" />
+        <xs:enumeration value="integer" />
+        <xs:enumeration value="float" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+
+  <!-- ============================================================== -->
+  <!-- Purposes, first declared afterwards referenced by ID -->
+  <!-- ============================================================== -->
+
+  <xs:element name="purposes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="purpose" minOccurs="1" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+    <xs:unique name="purposeID">
+      <xs:selector xpath="purpose" />
+      <xs:field xpath="@id" />
+    </xs:unique>
+  </xs:element>
+
+  <xs:element name="purpose">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="label" />
+        <xs:element ref="description" minOccurs="0" maxOccurs="1" />
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:ID" use="required" />         <!-- unique ID of this purpose -->
+      <xs:attribute name="root" type="xs:boolean" use="optional" />  <!-- root purposes are initial starting points for decissions -->
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ============================================================== -->
+  <!-- Variants, first declared afterwards referenced by ID -->
+  <!-- ============================================================== -->
+
+  <xs:element name="variants">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="variant" minOccurs="1" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+    <xs:unique name="variantID">
+      <xs:selector xpath="variant" />
+      <xs:field xpath="@id" />
+    </xs:unique>
+  </xs:element>
+
+  <xs:element name="variant">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="label" />
+        <xs:element ref="description" minOccurs="0" maxOccurs="1" />
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:ID" use="required" />               <!-- unique ID of this variant -->
+      <xs:attribute name="hasFeatures" type="xs:IDREFS" use="optional" />  <!-- a variant can have some features -->
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ============================================================== -->
+  <!-- Alternatives, link between a Purpose and several Alternatives -->
+  <!-- ============================================================== -->
+
+  <xs:element name="alternatives">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="fulfills" minOccurs="1" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="fulfills">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="quantity" minOccurs="0" maxOccurs="1" />         <!-- number of entities needed to fulfill this purpose, e.g. 4 tires required for driving -->
+        <xs:element ref="description" minOccurs="0" maxOccurs="1" />
+      </xs:sequence>
+      <xs:attribute name="purposeID" type="xs:IDREF" use="required" />    <!-- a purpose is fulfilled by one or several variant(s) -->
+      <xs:attribute name="variantID" type="xs:IDREFS" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ============================================================== -->
+  <!-- Constituents, link between a Variant and its Purposes -->
+  <!-- ============================================================== -->
+
+  <xs:element name="constituents">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="constitutes" minOccurs="1" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="constitutes">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="description" minOccurs="0" maxOccurs="1" />
+      </xs:sequence>
+      <xs:attribute name="variantID" type="xs:IDREF" use="required" />    <!-- a variant is constituted by one or several purposes(s) -->
+      <xs:attribute name="purposeID" type="xs:IDREFS" use="required" />
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ============================================================== -->
+  <!-- Events, first declared afterwards referenced by ID -->
+  <!-- ============================================================== -->
+
+  <xs:element name="events">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="event" minOccurs="1" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+    <xs:unique name="eventID">
+      <xs:selector xpath="event" />
+      <xs:field xpath="@id" />
+    </xs:unique>
+  </xs:element>
+
+  <xs:element name="event">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="label" />
+        <xs:element ref="description" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="context" />
+        <xs:element ref="trigger" />
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:ID" use="required" />                  <!-- Unique ID of this Event -->
+      <xs:attribute name="variantID" type="xs:IDREF" use="required" />        <!-- An Event is always attached to a Variant -->
+      <xs:attribute name="featureEvent" type="xs:boolean" use="optional" />   <!-- Is the Trigger of this Event a Feature-Value, i.e. is the entityID of the Trigger the ID of a Feature?
+                                                                                   Default is false; Note: Only Feature-Events can be used in Relations -->
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="context">
+    <xs:complexType>
+      <xs:attribute name="pathIDs" type="xs:IDREFS" use="required" />  <!-- A Context is an ordered List of IDs describing the Path to an Entity (Purpose, Variant or Feature), e.g.: v11 p112 v1123 p11231.
+                                                                            Note: The first Element of the Context-Path must be the ID of the Variant that this Event is attached to. -->
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="trigger">
+    <xs:complexType>
+      <xs:attribute name="entityID" type="xs:IDREF" use="required" />    <!-- A Trigger is the ID of an Entity (Purpose, Variant or Feature) that triggers an Event within the given context, e.g. f0003 -->
+      <xs:attribute name="notEvent" type="xs:boolean" use="optional" />  <!-- Is this Event fired by selecting the Trigger (notEvent=false) or by eliminating the Trigger (notEvent=true)?
+                                                                              Default is false, i.e. Event is normally fired by the Trigger; Note: Feature-Events must not be Not-Events -->
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ============================================================== -->
+  <!-- Rules are based on Events and always attached to a Variant -->
+  <!-- ============================================================== -->
+
+  <xs:element name="rules">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="rule" minOccurs="1" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+    <xs:unique name="ruleID">
+      <xs:selector xpath="rule" />
+      <xs:field xpath="@id" />
+    </xs:unique>
+  </xs:element>
+
+  <xs:element name="rule">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="label" />
+        <xs:element ref="description" minOccurs="0" maxOccurs="1" />
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:ID" use="required" />                     <!-- Unique ID of this Rule -->
+      <xs:attribute name="variantID" type="xs:IDREF" use="required" />           <!-- A Rule is always attached to a Variant; Note: this Variant must match to the Variants of Premise-Event und Conclusion-Event. -->
+      <xs:attribute name="premiseEventID" type="xs:IDREF" use="required" />      <!-- If a Premise is fulfilled ... -->
+      <xs:attribute name="conclusionEventID" type="xs:IDREF" use="required" />   <!-- ... then the Conclusion is applied. -->
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ============================================================== -->
+  <!-- Relations are based on Feature-Events and always attached to a Variant -->
+  <!-- ============================================================== -->
+
+  <xs:element name="relations">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="relation" minOccurs="1" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+    <xs:unique name="relationID">
+      <xs:selector xpath="relation" />
+      <xs:field xpath="@id" />
+    </xs:unique>
+  </xs:element>
+
+  <xs:element name="relation">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="label" />
+        <xs:element ref="description" minOccurs="0" maxOccurs="1" />
+        <xs:element ref="relationOperator" minOccurs="0" maxOccurs="1" />          <!-- Kind of Relation between two Features; Default is Identity, i.e. Equal-Operator -->
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:ID" use="required" />                       <!-- Unique ID of this Relation -->
+      <xs:attribute name="variantID" type="xs:IDREF" use="required" />             <!-- A Relation is always attached to a Variant; Note: this Variant must match to the Variants of both Feature-Events. -->
+      <xs:attribute name="leftPartnerEventID" type="xs:IDREF" use="required" />    <!-- Syntax: Left Operator Right, e.g.: Feature-Event1 greaterThan Feature-Event2  -->
+      <xs:attribute name="rightPartnerEventID" type="xs:IDREF" use="required" />   <!-- Note: Type of both Features must be matching. -->
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="relationOperator">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="equal" />
+        <xs:enumeration value="notEqual" />
+        <xs:enumeration value="lessThan" />
+        <xs:enumeration value="lessOrEqual" />
+        <xs:enumeration value="greaterThan" />
+        <xs:enumeration value="greaterOrEqual" />
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+
+  <!-- ============================================================== -->
+  <!-- Basic attributes, types and restrictions -->
+  <!-- ============================================================== -->
+
+  <xs:element name="created" type="xs:dateTime" />
+
+  <xs:element name="lastmodified" type="xs:dateTime" />
+
+  <xs:element name="language" type="nonEmptyString" />
+
+  <xs:element name="version" type="nonEmptyString" />
+
+  <xs:element name="creator" type="nonEmptyString" />
+
+  <xs:element name="label" type="nonEmptyString" />
+
+  <xs:element name="description" type="nonEmptyString" />
+
+  <xs:simpleType name="nonEmptyString">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1" />
+      <xs:maxLength value="255" />
+      <xs:pattern value="[^\t\n\r\s]*.*[^\t\n\r\s]*" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="quantity" type="positiveNumber" />
+
+  <xs:simpleType name="positiveNumber">
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="0" />
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

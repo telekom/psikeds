@@ -32,6 +32,26 @@ public abstract class AbstractSOAPService extends AbstractBaseService implements
   @Context
   protected WebServiceContext context;
 
+  public AbstractSOAPService() {
+    super();
+    this.context = null;
+  }
+
+  public AbstractSOAPService(final boolean asyncSupported) {
+    super(asyncSupported);
+    this.context = null;
+  }
+
+  public AbstractSOAPService(final long suspensionTimeout) {
+    super(suspensionTimeout);
+    this.context = null;
+  }
+
+  public AbstractSOAPService(final boolean asyncSupported, final long suspensionTimeout) {
+    super(asyncSupported, suspensionTimeout);
+    this.context = null;
+  }
+
   /**
    * @see org.psikeds.common.services.AbstractBaseService#getContinuationProvider()
    */

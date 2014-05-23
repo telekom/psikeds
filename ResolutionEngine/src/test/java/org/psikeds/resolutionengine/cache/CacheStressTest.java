@@ -37,6 +37,10 @@ import org.psikeds.common.idgen.impl.SessionIdGenerator;
 
 /**
  * Testcase checking Caching and LRU-Expiry of Sessions and Objects.
+ * (@link org.psikeds.resolutionengine.cache.ResolutionCache)
+ * 
+ * Note: Any Test called *Test.java is a Unit-Test executed offline by Surefire.
+ * Everything called *IT.java is an Integration-Test executed online by Failsafe.
  * 
  * @author marco@juliano.de
  * 

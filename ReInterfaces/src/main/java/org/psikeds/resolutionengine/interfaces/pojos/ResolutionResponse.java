@@ -15,17 +15,22 @@
 package org.psikeds.resolutionengine.interfaces.pojos;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  * Response-Object representing the current Context of a Resolution
  * sent by the Server back to the Client.
  * 
- * Note: Reading from and writing to JSON works out of the box.
- * However for XML the XmlRootElement annotation is required.
+ * A Response contains either the current Knowledge or one or more Errors,
+ * but never both! In both cases some Warnings could be present.
+ * 
+ * Note: The Choices in this Response-Object is a summary of all still open
+ * Choices for both Variants and Features spread over the Knowledge-Tree.
+ * This is for convenience of the Client only.
  * 
  * @author marco@juliano.de
  * 
@@ -34,106 +39,180 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ResolutionResponse extends BaseResolutionContext implements Serializable {
 
   private static final long serialVersionUID = 1L;
-  private static final long DEFAULT_MAX_TREE_DEPTHS = 15L;
 
-  private List<Choice> choices;
-  private boolean resolved;
-  private long maxTreeDepth;
+  private Warnings warnings;
+  private Errors errors;
+  private Choices choices;
 
   public ResolutionResponse() {
-    this(null, null);
+    this(null, null, null, null, null);
   }
 
   public ResolutionResponse(final String sessionID, final Knowledge knowledge) {
     this(sessionID, null, knowledge);
   }
 
-  public ResolutionResponse(final String sessionID, final Metadata metadata, final Knowledge knowledge) {
-    this(sessionID, metadata, knowledge, DEFAULT_MAX_TREE_DEPTHS);
+  public ResolutionResponse(final String sessionID, final Errors errors) {
+    this(sessionID, null, errors);
   }
 
-  public ResolutionResponse(final String sessionID, final Metadata metadata, final Knowledge knowledge, final long maxTreeDepth) {
+  public ResolutionResponse(final String sessionID, final Metadata metadata, final Knowledge knowledge) {
+    this(sessionID, metadata, knowledge, null, null);
+  }
+
+  public ResolutionResponse(final String sessionID, final Metadata metadata, final Errors errors) {
+    this(sessionID, metadata, null, errors, null);
+  }
+
+  public ResolutionResponse(final String sessionID, final Metadata metadata, final Knowledge knowledge, final Errors errors, final Warnings warnings) {
     super(sessionID, metadata, knowledge);
-    setMaxTreeDepth(maxTreeDepth);
-    setResolved(false);
-    setPossibleChoices(null);
+    setErrors(errors);
+    setWarnings(warnings);
     calculateChoices();
   }
 
-  // -----------------------------------------------------------
+  // ----------------------------------------------------------------
 
-  public boolean isResolved() {
-    return this.resolved;
+  public Warnings getWarnings() {
+    if (this.warnings == null) {
+      this.warnings = new Warnings();
+    }
+    return this.warnings;
   }
 
-  public void setResolved(final boolean f) {
-    this.resolved = f;
+  public void setWarnings(final Warnings warnings) {
+    clearWarnings();
+    this.warnings = warnings;
   }
 
-  public List<Choice> getPossibleChoices() {
+  public void addWarning(final Warning warning) {
+    if (warning != null) {
+      getWarnings().add(warning);
+    }
+  }
+
+  public void addAllWarnings(final Collection<? extends Warning> c) {
+    if ((c != null) && !c.isEmpty()) {
+      getWarnings().addAll(c);
+    }
+  }
+
+  public void clearWarnings() {
+    if (this.warnings != null) {
+      this.warnings.clear();
+      this.warnings = null;
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  public Errors getErrors() {
+    if (this.errors == null) {
+      this.errors = new Errors();
+    }
+    return this.errors;
+  }
+
+  public void setErrors(final Errors errors) {
+    clearErrors();
+    this.errors = errors;
+  }
+
+  public void addError(final ErrorMessage error) {
+    if (error != null) {
+      getErrors().add(error);
+    }
+  }
+
+  public void addAllErrors(final Collection<? extends ErrorMessage> c) {
+    if ((c != null) && !c.isEmpty()) {
+      getErrors().addAll(c);
+    }
+  }
+
+  public void clearErrors() {
+    if (this.errors != null) {
+      this.errors.clear();
+      this.errors = null;
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  public Choices getChoices() {
     if (this.choices == null) {
-      this.choices = new ArrayList<Choice>();
+      this.choices = new Choices();
     }
     return this.choices;
   }
 
-  public void setPossibleChoices(final List<Choice> lst) {
-    this.choices = lst;
+  public void setChoices(final Choices c) {
+    clearChoices();
+    addAllChoices(c);
   }
 
-  public void addPossibleChoice(final Choice choice) {
+  public void addChoice(final Choice choice) {
     if (choice != null) {
-      getPossibleChoices().add(choice);
+      getChoices().add(choice);
     }
   }
 
-  public void addAllPossibleChoices(final List<Choice> lst) {
-    if ((lst != null) && !lst.isEmpty()) {
-      getPossibleChoices().addAll(lst);
+  public void addAllChoices(final Collection<? extends Choice> c) {
+    if ((c != null) && !c.isEmpty()) {
+      getChoices().addAll(c);
     }
   }
 
-  public void clearPossibleChoices() {
+  public void clearChoices() {
     if (this.choices != null) {
       this.choices.clear();
+      this.choices = null;
     }
   }
 
-  public long getMaxTreeDepth() {
-    return this.maxTreeDepth;
-  }
+  // ----------------------------------------------------------------
 
-  public void setMaxTreeDepth(final long depth) {
-    this.maxTreeDepth = depth < 0 ? DEFAULT_MAX_TREE_DEPTHS : depth;
-  }
-
-  // -----------------------------------------------------------
-
-  public boolean calculateChoices() {
-    clearPossibleChoices();
+  @JsonIgnore
+  public void calculateChoices() {
+    clearChoices();
     if (this.knowledge != null) {
-      addAllPossibleChoices(this.knowledge.getChoices());
-      addChoices(this.knowledge.getEntities(), this.getMaxTreeDepth());
-      this.resolved = getPossibleChoices().isEmpty();
+      addAllChoices(this.knowledge.getChoices());
+      addChoices(this.knowledge.getEntities());
     }
-    else {
-      this.resolved = true;
-    }
-    return this.resolved;
   }
 
-  private void addChoices(final List<KnowledgeEntity> entities, final long depth) {
-    if ((entities != null) && !entities.isEmpty() && (depth > 0)) {
+  private void addChoices(final Collection<? extends KnowledgeEntity> entities) {
+    if ((entities != null) && !entities.isEmpty()) {
       for (final KnowledgeEntity ke : entities) {
-        addChoices(ke, depth);
+        addChoices(ke);
       }
     }
   }
 
-  private void addChoices(final KnowledgeEntity ke, final long depth) {
+  private void addChoices(final KnowledgeEntity ke) {
     if (ke != null) {
-      addAllPossibleChoices(ke.getChoices());
-      addChoices(ke.getSiblings(), depth - 1);
+      addAllChoices(ke.getPossibleVariants());
+      // TODO: enable features and concepts here
+//      addAllChoices(ke.getPossibleFeatures());
+//      addAllChoices(ke.getPossibleConcepts());
+      addChoices(ke.getChildren());
     }
+  }
+
+  // ----------------------------------------------------------------
+
+  @JsonIgnore
+  public boolean isResolved() {
+    return ((this.choices == null) || this.choices.isEmpty());
+  }
+
+  @JsonIgnore
+  public boolean hasErrors() {
+    return ((this.errors != null) && !this.errors.isEmpty());
+  }
+
+  @JsonIgnore
+  public boolean hasWarnings() {
+    return ((this.warnings != null) && !this.warnings.isEmpty());
   }
 }

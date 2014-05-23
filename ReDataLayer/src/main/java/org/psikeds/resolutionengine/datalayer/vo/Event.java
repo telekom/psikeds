@@ -15,71 +15,146 @@
 package org.psikeds.resolutionengine.datalayer.vo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
- * An Event is defined by its Context Path (Variant->Purpose->Variant->...)
- * and the ID of the Variant it is attached to.
+ * An Event is defined by the ID of the Variant it is attached to,
+ * its Context (= Path: Variant->Purpose->Variant->...) and the
+ * triggering Entity, i.e. a Variant, a Feature-Value or a Concept.
  * 
- * Note 1: ID must be globally unique.
+ * Note 1: Event-ID must be globally unique.
  * 
- * Note 2: VariantId must reference an existing Object!
- * 
- * Note 3: Context Path of an Event must point to an Entity that is located
- * within the Subtree under the Variant this Event is attached to.
+ * Note 2: Variant-ID must reference an existing Object!
  * 
  * @author marco@juliano.de
  * 
  */
+@XmlRootElement(name = "Event")
 public class Event extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
+  public static final String TRIGGER_TYPE_VARIANT = "variant";
+  public static final String TRIGGER_TYPE_FEATURE_VALUE = "feature";
+  public static final String TRIGGER_TYPE_CONCEPT = "concept";
+
+  public static final boolean DEFAULT_NOT_EVENT = false;
+
   private String label;
   private String description;
-  private ContextPath ctx;
-  private String variantId;
+  private String variantID;
+  private List<String> context;
+  private String triggerID;
+  private String triggerType;
+  private boolean notEvent;
 
   public Event() {
-    this(null, null, null, null, null);
+    this(null, null);
   }
 
-  public Event(final String label, final String description, final String id, final ContextPath ctx, final String variantId) {
-    super(id);
-    this.label = label;
-    this.description = description;
-    this.ctx = ctx;
-    this.variantId = variantId;
+  public Event(final String eventID, final String variantID) {
+    this(eventID, null, eventID, variantID, null, null, null);
+  }
+
+  public Event(final String label, final String description, final String eventID, final String variantID,
+      final List<String> context, final String triggerID, final String triggerType) {
+    this(label, description, eventID, variantID, context, triggerID, triggerType, DEFAULT_NOT_EVENT);
+  }
+
+  public Event(final String label, final String description, final String eventID, final String variantID,
+      final List<String> context, final String triggerID, final String triggerType,
+      final boolean notEvent) {
+    super(eventID);
+    setLabel(label);
+    setDescription(description);
+    setVariantID(variantID);
+    setContext(context);
+    setTriggerID(triggerID);
+    setTriggerType(triggerType);
+    setNotEvent(notEvent);
   }
 
   public String getLabel() {
     return this.label;
   }
 
-  public void setLabel(final String value) {
-    this.label = value;
+  public void setLabel(final String label) {
+    this.label = label;
   }
 
   public String getDescription() {
     return this.description;
   }
 
-  public void setDescription(final String value) {
-    this.description = value;
+  public void setDescription(final String description) {
+    this.description = description;
   }
 
-  public ContextPath getContextPath() {
-    return this.ctx;
+  public String getEventID() {
+    return getId();
   }
 
-  public void setContextPath(final ContextPath ctx) {
-    this.ctx = ctx;
+  public void setEventID(final String eventID) {
+    setId(eventID);
   }
 
-  public String getVariantId() {
-    return this.variantId;
+  public String getVariantID() {
+    return this.variantID;
   }
 
-  public void setVariantId(final String variantId) {
-    this.variantId = variantId;
+  public void setVariantID(final String variantID) {
+    this.variantID = variantID;
+  }
+
+  public List<String> getContext() {
+    if (this.context == null) {
+      this.context = new ArrayList<String>();
+    }
+    return this.context;
+  }
+
+  public void setContext(final List<String> context) {
+    this.context = context;
+  }
+
+  public boolean addContextPathID(final String id) {
+    return (!StringUtils.isEmpty(id) && getContext().add(id));
+  }
+
+  public String getTriggerID() {
+    return this.triggerID;
+  }
+
+  public void setTriggerID(final String triggerID) {
+    this.triggerID = triggerID;
+  }
+
+  public String getTriggerType() {
+    return this.triggerType;
+  }
+
+  public void setTriggerType(final String type) {
+    if (TRIGGER_TYPE_FEATURE_VALUE.equalsIgnoreCase(type)) {
+      this.triggerType = TRIGGER_TYPE_FEATURE_VALUE;
+    }
+    else if (TRIGGER_TYPE_CONCEPT.equalsIgnoreCase(type)) {
+      this.triggerType = TRIGGER_TYPE_CONCEPT;
+    }
+    else {
+      this.triggerType = TRIGGER_TYPE_VARIANT;
+    }
+  }
+
+  public boolean isNotEvent() {
+    return this.notEvent;
+  }
+
+  public void setNotEvent(final boolean notEvent) {
+    this.notEvent = notEvent;
   }
 }

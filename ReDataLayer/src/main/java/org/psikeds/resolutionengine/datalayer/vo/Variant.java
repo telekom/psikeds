@@ -16,7 +16,12 @@ package org.psikeds.resolutionengine.datalayer.vo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * A single Variant. Variants can optionally have certain Features,
@@ -29,35 +34,66 @@ import java.util.List;
  * @author marco@juliano.de
  * 
  */
+@XmlRootElement(name = "Variant")
 public class Variant extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
+  public static final boolean DEFAULT_IS_SINGLETON = false;
+  public static final boolean DEFAULT_IS_IMPLICIT = false;
+
   private String label;
   private String description;
-  private List<String> featureIds;
+  private boolean singleton;
+  private boolean implicit;
+  private List<String> featureIds; // distinct features referenced by all values and concepts
+  private List<FeatureValue> featureValues;
+  private List<Concept> concepts;
 
   public Variant() {
-    this(null, null, null);
+    this(null);
   }
 
-  public Variant(final String label, final String description, final String id) {
-    this(label, description, id, null);
+  public Variant(final String variantID) {
+    this(variantID, null, variantID);
   }
 
-  public Variant(final String label, final String description, final String id, final List<String> featureIds) {
-    super(id);
-    this.label = label;
-    this.description = description;
-    this.featureIds = featureIds;
+  public Variant(final String label, final String description, final String variantID) {
+    this(label, description, variantID, DEFAULT_IS_SINGLETON, DEFAULT_IS_IMPLICIT);
   }
+
+  public Variant(final String label, final String description, final String variantID, final boolean singleton, final boolean implicit) {
+    this(label, description, variantID, singleton, implicit, null, null);
+  }
+
+  public Variant(final String label, final String description, final String variantID,
+      final boolean singleton, final boolean implicit,
+      final List<String> featureIds, final List<FeatureValue> featureValues) {
+    this(label, description, variantID, singleton, implicit, featureIds, featureValues, null);
+  }
+
+  public Variant(final String label, final String description, final String variantID,
+      final boolean singleton, final boolean implicit,
+      final List<String> featureIds, final List<FeatureValue> featureValues,
+      final List<Concept> concepts) {
+    super(variantID);
+    setLabel(label);
+    setDescription(description);
+    setSingleton(singleton);
+    setImplicit(implicit);
+    setFeatureIds(featureIds);
+    setFeatureValues(featureValues);
+    setConcepts(concepts);
+  }
+
+  // ----------------------------------------------------------------
 
   public String getLabel() {
     return this.label;
   }
 
   public void setLabel(final String value) {
-    this.label = value;
+    this.label = (value == null ? null : value.trim());
   }
 
   public String getDescription() {
@@ -65,8 +101,34 @@ public class Variant extends ValueObject implements Serializable {
   }
 
   public void setDescription(final String value) {
-    this.description = value;
+    this.description = (value == null ? null : value.trim());
   }
+
+  public String getVariantID() {
+    return getId();
+  }
+
+  public void setVariantID(final String variantID) {
+    setId(variantID);
+  }
+
+  public boolean isSingleton() {
+    return this.singleton;
+  }
+
+  public void setSingleton(final boolean singleton) {
+    this.singleton = singleton;
+  }
+
+  public boolean isImplicit() {
+    return this.implicit;
+  }
+
+  public void setImplicit(final boolean implicit) {
+    this.implicit = implicit;
+  }
+
+  // ----------------------------------------------------------------
 
   public List<String> getFeatureIds() {
     if (this.featureIds == null) {
@@ -79,13 +141,70 @@ public class Variant extends ValueObject implements Serializable {
     this.featureIds = featureIds;
   }
 
-  public void addFeatureId(final String featureId) {
-    getFeatureIds().add(featureId);
+  public boolean addFeatureId(final String featureId) {
+    return (!StringUtils.isEmpty(featureId) && !getFeatureIds().contains(featureId) && getFeatureIds().add(featureId));
   }
 
-  public void addFeature(final Feature feature) {
-    if (feature != null) {
-      getFeatureIds().add(feature.getId());
+  public void clearFeatureIds() {
+    if (this.featureIds != null) {
+      this.featureIds.clear();
+      this.featureIds = null;
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  public List<FeatureValue> getFeatureValues() {
+    if (this.featureValues == null) {
+      this.featureValues = new ArrayList<FeatureValue>();
+    }
+    return this.featureValues;
+  }
+
+  public void setFeatureValues(final List<FeatureValue> featureValues) {
+    this.featureValues = featureValues;
+  }
+
+  public boolean addFeatureValue(final FeatureValue value) {
+    return ((value != null) && getFeatureValues().add(value));
+  }
+
+  public boolean addFeatureValue(final Collection<? extends FeatureValue> c) {
+    return ((c != null) && !c.isEmpty() && getFeatureValues().addAll(c));
+  }
+
+  public void clearFeatureValues() {
+    if (this.featureValues != null) {
+      this.featureValues.clear();
+      this.featureValues = null;
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  public List<Concept> getConcepts() {
+    if (this.concepts == null) {
+      this.concepts = new ArrayList<Concept>();
+    }
+    return this.concepts;
+  }
+
+  public void setConcepts(final List<Concept> concepts) {
+    this.concepts = concepts;
+  }
+
+  public boolean addConcept(final Concept concept) {
+    return ((concept != null) && getConcepts().add(concept));
+  }
+
+  public boolean addConcept(final Collection<? extends Concept> c) {
+    return ((c != null) && !c.isEmpty() && getConcepts().addAll(c));
+  }
+
+  public void clearConcepts() {
+    if (this.concepts != null) {
+      this.concepts.clear();
+      this.concepts = null;
     }
   }
 }

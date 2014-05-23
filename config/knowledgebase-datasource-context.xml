@@ -2,7 +2,7 @@
 <!--
 psiKeds :- ps induced knowledge entity delivery system
 
-Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
 
 This file is free software: you can redistribute
 it and/or modify it under the terms of the
@@ -26,22 +26,31 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
   Define your Datasource for the Knowledgebase here. This can be any 
   kind of Bean as long as it is a org.springframework.core.io.Resource and 
   the delivered data is XML valid against the kb.xsd
+
+  IMPORTANT: This is a Custom-Config "overwriting" the pre-packaged one in
+             ResolutionEngine/src/main/webapp/WEB-INF/config/knowledgebase-datasource-context.xml
   -->
 
-  <!-- This Definition will use the packaged Default-KB from within the JAR-File -->
+  <!--
+  This Definition will use the packaged Default-KB from within
+  the JAR-File using a Standard-Spring-ClassPathResource
+  -->
   <!--
   <bean id="kbXmlSource" class="org.springframework.core.io.ClassPathResource">
-    <constructor-arg index="0" type="java.lang.String" value="kb.xml" />
+    <constructor-arg index="0" type="java.lang.String" value="default.knowledgebase.xml" />
   </bean>
   -->
 
-  <!-- This Definition will look for a custom Demo-KB within the psiKeds-Configuration-Directory -->
+  <!--
+  This Definition will look for a custom Demo-KB within the
+  psiKeds-Configuration-Directory using our own FileSystemResource
+  -->
   <!--
   <bean id="kbXmlSource" class="org.psikeds.common.config.FileSystemResource"> 
-    <constructor-arg index="0" type="java.lang.String" value="software-stack-demo-kb.xml" />
+    <constructor-arg index="0" type="java.lang.String" value="ldrewe.xml" />
   </bean>
   -->
   <bean id="kbXmlSource" class="org.psikeds.common.config.FileSystemResource"> 
-    <constructor-arg index="0" type="java.lang.String" value="ldrewe.xml" />
+    <constructor-arg index="0" type="java.lang.String" value="software-stack-demo-kb.xml" />
   </bean>
 </beans>

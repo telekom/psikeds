@@ -16,11 +16,12 @@ package org.psikeds.resolutionengine.rules;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.util.StringUtils;
 
-import org.psikeds.resolutionengine.cache.LimitedHashMap;
+import org.psikeds.common.cache.LimitedHashMap;
 import org.psikeds.resolutionengine.datalayer.vo.Rule;
 
 /**
@@ -47,8 +48,12 @@ public class RuleStack extends LimitedHashMap<String, Rule> implements Serializa
     return new ArrayList<Rule>(this.values());
   }
 
-  public void setRules(final List<Rule> rules) {
+  public void setRules(final Collection<? extends Rule> rules) {
     clear();
+    addRules(rules);
+  }
+
+  public void addRules(final Collection<? extends Rule> rules) {
     if (rules != null) {
       for (final Rule r : rules) {
         addRule(r);
@@ -57,27 +62,27 @@ public class RuleStack extends LimitedHashMap<String, Rule> implements Serializa
   }
 
   public Rule addRule(final Rule r) {
-    final String id = (r == null ? null : r.getId());
-    return (StringUtils.isEmpty(id) ? null : this.put(id, r));
+    final String rid = (r == null ? null : r.getRuleID());
+    return (StringUtils.isEmpty(rid) ? null : this.put(rid, r));
   }
 
   public Rule removeRule(final Rule r) {
-    final String id = (r == null ? null : r.getId());
-    return removeRule(id);
+    final String rid = (r == null ? null : r.getRuleID());
+    return removeRule(rid);
   }
 
-  public Rule removeRule(final String id) {
-    return (StringUtils.isEmpty(id) ? null : this.remove(id));
+  public Rule removeRule(final String rid) {
+    return (StringUtils.isEmpty(rid) ? null : this.remove(rid));
   }
 
   // ------------------------------------------------------
 
   public boolean containsRule(final Rule r) {
-    return containsRule(r == null ? null : r.getId());
+    return containsRule(r == null ? null : r.getRuleID());
   }
 
-  public boolean containsRule(final String id) {
-    return (StringUtils.isEmpty(id) ? false : this.containsKey(id));
+  public boolean containsRule(final String rid) {
+    return (StringUtils.isEmpty(rid) ? false : this.containsKey(rid));
   }
 
   public Rule move2stack(final Rule r, final RuleStack destination) {
@@ -85,8 +90,8 @@ public class RuleStack extends LimitedHashMap<String, Rule> implements Serializa
     return ((orig == null) || (destination == null) ? null : destination.addRule(r));
   }
 
-  public Rule move2stack(final String ruleId, final RuleStack destination) {
-    final Rule r = removeRule(ruleId);
+  public Rule move2stack(final String rid, final RuleStack destination) {
+    final Rule r = removeRule(rid);
     return ((r == null) || (destination == null) ? null : destination.addRule(r));
   }
 
@@ -102,7 +107,7 @@ public class RuleStack extends LimitedHashMap<String, Rule> implements Serializa
       }
       else {
         sb.append(", ");
-        sb.append(r.getId());
+        sb.append(r.getRuleID());
       }
     }
     sb.append('\n');

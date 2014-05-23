@@ -1,0 +1,1113 @@
+{
+  "@type" : "KnowledgeData",
+  "features" : {
+    "@type" : "Features",
+    "feature" : [ {
+      "@type" : "Feature",
+      "type" : "integer",
+      "featureID" : "F1",
+      "values" : [ {
+        "@type" : "FeatureValue",
+        "value" : "1",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "2",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "3",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "4",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I4"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "5",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I5"
+      } ],
+      "label" : "F1",
+      "description" : "F1",
+      "unit" : null
+    }, {
+      "@type" : "Feature",
+      "type" : "float",
+      "featureID" : "F2",
+      "values" : [ {
+        "@type" : "FeatureValue",
+        "value" : "2.0",
+        "type" : "float",
+        "featureID" : "F2",
+        "featureValueID" : "FR2F1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "4.0",
+        "type" : "float",
+        "featureID" : "F2",
+        "featureValueID" : "FR2F2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "6.0",
+        "type" : "float",
+        "featureID" : "F2",
+        "featureValueID" : "FR2F3"
+      } ],
+      "label" : "F2",
+      "description" : "F2",
+      "unit" : null
+    }, {
+      "@type" : "Feature",
+      "type" : "string",
+      "featureID" : "F3",
+      "values" : [ {
+        "@type" : "FeatureValue",
+        "value" : "lala",
+        "type" : "string",
+        "featureID" : "F3",
+        "featureValueID" : "F3S1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "lele",
+        "type" : "string",
+        "featureID" : "F3",
+        "featureValueID" : "F3S2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "lolo",
+        "type" : "string",
+        "featureID" : "F3",
+        "featureValueID" : "F3S3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "lulu",
+        "type" : "string",
+        "featureID" : "F3",
+        "featureValueID" : "F3S4"
+      } ],
+      "label" : "F3",
+      "description" : null,
+      "unit" : null
+    }, {
+      "@type" : "Feature",
+      "type" : "integer",
+      "featureID" : "F4",
+      "values" : [ {
+        "@type" : "FeatureValue",
+        "value" : "3",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "6",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "9",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "12",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I4"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "15",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I5"
+      } ],
+      "label" : "F4",
+      "description" : "F4",
+      "unit" : null
+    }, {
+      "@type" : "Feature",
+      "type" : "float",
+      "featureID" : "F5",
+      "values" : [ {
+        "@type" : "FeatureValue",
+        "value" : "5.0",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "5.6542997",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "6.3085995",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "6.962899",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F4"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "7.617199",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F5"
+      } ],
+      "label" : "F5",
+      "description" : "F5",
+      "unit" : null
+    } ]
+  },
+  "featureValues" : {
+    "@type" : "FeatureValues",
+    "value" : [ {
+      "@type" : "FeatureValue",
+      "value" : "1",
+      "type" : "integer",
+      "featureID" : "F1",
+      "featureValueID" : "IR1I1"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "2",
+      "type" : "integer",
+      "featureID" : "F1",
+      "featureValueID" : "IR1I2"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "3",
+      "type" : "integer",
+      "featureID" : "F1",
+      "featureValueID" : "IR1I3"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "4",
+      "type" : "integer",
+      "featureID" : "F1",
+      "featureValueID" : "IR1I4"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "5",
+      "type" : "integer",
+      "featureID" : "F1",
+      "featureValueID" : "IR1I5"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "2.0",
+      "type" : "float",
+      "featureID" : "F2",
+      "featureValueID" : "FR2F1"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "4.0",
+      "type" : "float",
+      "featureID" : "F2",
+      "featureValueID" : "FR2F2"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "6.0",
+      "type" : "float",
+      "featureID" : "F2",
+      "featureValueID" : "FR2F3"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "lala",
+      "type" : "string",
+      "featureID" : "F3",
+      "featureValueID" : "F3S1"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "lele",
+      "type" : "string",
+      "featureID" : "F3",
+      "featureValueID" : "F3S2"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "lolo",
+      "type" : "string",
+      "featureID" : "F3",
+      "featureValueID" : "F3S3"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "lulu",
+      "type" : "string",
+      "featureID" : "F3",
+      "featureValueID" : "F3S4"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "3",
+      "type" : "integer",
+      "featureID" : "F4",
+      "featureValueID" : "IR4I1"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "6",
+      "type" : "integer",
+      "featureID" : "F4",
+      "featureValueID" : "IR4I2"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "9",
+      "type" : "integer",
+      "featureID" : "F4",
+      "featureValueID" : "IR4I3"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "12",
+      "type" : "integer",
+      "featureID" : "F4",
+      "featureValueID" : "IR4I4"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "15",
+      "type" : "integer",
+      "featureID" : "F4",
+      "featureValueID" : "IR4I5"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "5.0",
+      "type" : "float",
+      "featureID" : "F5",
+      "featureValueID" : "FR5F1"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "5.6542997",
+      "type" : "float",
+      "featureID" : "F5",
+      "featureValueID" : "FR5F2"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "6.3085995",
+      "type" : "float",
+      "featureID" : "F5",
+      "featureValueID" : "FR5F3"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "6.962899",
+      "type" : "float",
+      "featureID" : "F5",
+      "featureValueID" : "FR5F4"
+    }, {
+      "@type" : "FeatureValue",
+      "value" : "7.617199",
+      "type" : "float",
+      "featureID" : "F5",
+      "featureValueID" : "FR5F5"
+    } ]
+  },
+  "concepts" : {
+    "@type" : "Concepts",
+    "concept" : [ ]
+  },
+  "purposes" : {
+    "@type" : "Purposes",
+    "purpose" : [ {
+      "@type" : "Purpose",
+      "purposeID" : "P1",
+      "root" : true,
+      "label" : "P1",
+      "description" : null
+    }, {
+      "@type" : "Purpose",
+      "purposeID" : "P2",
+      "root" : true,
+      "label" : "P2",
+      "description" : null
+    }, {
+      "@type" : "Purpose",
+      "purposeID" : "P111",
+      "root" : false,
+      "label" : "P111",
+      "description" : null
+    }, {
+      "@type" : "Purpose",
+      "purposeID" : "P112",
+      "root" : false,
+      "label" : "P112",
+      "description" : null
+    }, {
+      "@type" : "Purpose",
+      "purposeID" : "P113",
+      "root" : false,
+      "label" : "P113",
+      "description" : null
+    }, {
+      "@type" : "Purpose",
+      "purposeID" : "P221",
+      "root" : false,
+      "label" : "P221",
+      "description" : null
+    }, {
+      "@type" : "Purpose",
+      "purposeID" : "P222",
+      "root" : false,
+      "label" : "P222",
+      "description" : null
+    }, {
+      "@type" : "Purpose",
+      "purposeID" : "P223",
+      "root" : false,
+      "label" : "P223",
+      "description" : null
+    } ]
+  },
+  "variants" : {
+    "@type" : "Variants",
+    "variant" : [ {
+      "@type" : "Variant",
+      "featureValues" : [ {
+        "@type" : "FeatureValue",
+        "value" : "1",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "2",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "3",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "4",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I4"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "5",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I5"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "3",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "6",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "9",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "12",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I4"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "15",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I5"
+      } ],
+      "concepts" : [ ],
+      "variantID" : "V11",
+      "featureIds" : [ "F1", "F4" ],
+      "label" : "V11",
+      "description" : null,
+      "singleton" : false,
+      "implicit" : false
+    }, {
+      "@type" : "Variant",
+      "featureValues" : [ {
+        "@type" : "FeatureValue",
+        "value" : "2.0",
+        "type" : "float",
+        "featureID" : "F2",
+        "featureValueID" : "FR2F1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "4.0",
+        "type" : "float",
+        "featureID" : "F2",
+        "featureValueID" : "FR2F2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "6.0",
+        "type" : "float",
+        "featureID" : "F2",
+        "featureValueID" : "FR2F3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "5.0",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "5.6542997",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "6.3085995",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "6.962899",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F4"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "7.617199",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F5"
+      } ],
+      "concepts" : [ ],
+      "variantID" : "V12",
+      "featureIds" : [ "F2", "F5" ],
+      "label" : "V12",
+      "description" : null,
+      "singleton" : false,
+      "implicit" : false
+    }, {
+      "@type" : "Variant",
+      "featureValues" : [ {
+        "@type" : "FeatureValue",
+        "value" : "lala",
+        "type" : "string",
+        "featureID" : "F3",
+        "featureValueID" : "F3S1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "lele",
+        "type" : "string",
+        "featureID" : "F3",
+        "featureValueID" : "F3S2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "lolo",
+        "type" : "string",
+        "featureID" : "F3",
+        "featureValueID" : "F3S3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "lulu",
+        "type" : "string",
+        "featureID" : "F3",
+        "featureValueID" : "F3S4"
+      } ],
+      "concepts" : [ ],
+      "variantID" : "V13",
+      "featureIds" : [ "F3" ],
+      "label" : "V13",
+      "description" : null,
+      "singleton" : false,
+      "implicit" : false
+    }, {
+      "@type" : "Variant",
+      "featureValues" : [ {
+        "@type" : "FeatureValue",
+        "value" : "1",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "2",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "3",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "4",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I4"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "5",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I5"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "3",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "6",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "9",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "12",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I4"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "15",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I5"
+      } ],
+      "concepts" : [ ],
+      "variantID" : "V21",
+      "featureIds" : [ "F1", "F4" ],
+      "label" : "V21",
+      "description" : null,
+      "singleton" : false,
+      "implicit" : false
+    }, {
+      "@type" : "Variant",
+      "featureValues" : [ {
+        "@type" : "FeatureValue",
+        "value" : "2.0",
+        "type" : "float",
+        "featureID" : "F2",
+        "featureValueID" : "FR2F1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "4.0",
+        "type" : "float",
+        "featureID" : "F2",
+        "featureValueID" : "FR2F2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "6.0",
+        "type" : "float",
+        "featureID" : "F2",
+        "featureValueID" : "FR2F3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "5.0",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "5.6542997",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "6.3085995",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "6.962899",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F4"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "7.617199",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F5"
+      } ],
+      "concepts" : [ ],
+      "variantID" : "V22",
+      "featureIds" : [ "F2", "F5" ],
+      "label" : "V22",
+      "description" : null,
+      "singleton" : false,
+      "implicit" : false
+    }, {
+      "@type" : "Variant",
+      "featureValues" : [ {
+        "@type" : "FeatureValue",
+        "value" : "lala",
+        "type" : "string",
+        "featureID" : "F3",
+        "featureValueID" : "F3S1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "lele",
+        "type" : "string",
+        "featureID" : "F3",
+        "featureValueID" : "F3S2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "lolo",
+        "type" : "string",
+        "featureID" : "F3",
+        "featureValueID" : "F3S3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "lulu",
+        "type" : "string",
+        "featureID" : "F3",
+        "featureValueID" : "F3S4"
+      } ],
+      "concepts" : [ ],
+      "variantID" : "V23",
+      "featureIds" : [ "F3" ],
+      "label" : "V23",
+      "description" : null,
+      "singleton" : false,
+      "implicit" : false
+    }, {
+      "@type" : "Variant",
+      "featureValues" : [ {
+        "@type" : "FeatureValue",
+        "value" : "1",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "2",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "3",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "4",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I4"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "5",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I5"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "3",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "6",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "9",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "12",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I4"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "15",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I5"
+      } ],
+      "concepts" : [ ],
+      "variantID" : "V1121",
+      "featureIds" : [ "F1", "F4" ],
+      "label" : "V1121",
+      "description" : null,
+      "singleton" : false,
+      "implicit" : false
+    }, {
+      "@type" : "Variant",
+      "featureValues" : [ {
+        "@type" : "FeatureValue",
+        "value" : "2.0",
+        "type" : "float",
+        "featureID" : "F2",
+        "featureValueID" : "FR2F1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "4.0",
+        "type" : "float",
+        "featureID" : "F2",
+        "featureValueID" : "FR2F2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "6.0",
+        "type" : "float",
+        "featureID" : "F2",
+        "featureValueID" : "FR2F3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "5.0",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "5.6542997",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "6.3085995",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "6.962899",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F4"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "7.617199",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F5"
+      } ],
+      "concepts" : [ ],
+      "variantID" : "V1122",
+      "featureIds" : [ "F2", "F5" ],
+      "label" : "V1122",
+      "description" : null,
+      "singleton" : false,
+      "implicit" : false
+    }, {
+      "@type" : "Variant",
+      "featureValues" : [ {
+        "@type" : "FeatureValue",
+        "value" : "lala",
+        "type" : "string",
+        "featureID" : "F3",
+        "featureValueID" : "F3S1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "lele",
+        "type" : "string",
+        "featureID" : "F3",
+        "featureValueID" : "F3S2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "lolo",
+        "type" : "string",
+        "featureID" : "F3",
+        "featureValueID" : "F3S3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "lulu",
+        "type" : "string",
+        "featureID" : "F3",
+        "featureValueID" : "F3S4"
+      } ],
+      "concepts" : [ ],
+      "variantID" : "V1123",
+      "featureIds" : [ "F3" ],
+      "label" : "V1123",
+      "description" : null,
+      "singleton" : false,
+      "implicit" : false
+    }, {
+      "@type" : "Variant",
+      "featureValues" : [ {
+        "@type" : "FeatureValue",
+        "value" : "1",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "2",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "3",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "4",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I4"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "5",
+        "type" : "integer",
+        "featureID" : "F1",
+        "featureValueID" : "IR1I5"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "3",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "6",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "9",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "12",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I4"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "15",
+        "type" : "integer",
+        "featureID" : "F4",
+        "featureValueID" : "IR4I5"
+      } ],
+      "concepts" : [ ],
+      "variantID" : "V2231",
+      "featureIds" : [ "F1", "F4" ],
+      "label" : "V2231",
+      "description" : null,
+      "singleton" : false,
+      "implicit" : false
+    }, {
+      "@type" : "Variant",
+      "featureValues" : [ {
+        "@type" : "FeatureValue",
+        "value" : "2.0",
+        "type" : "float",
+        "featureID" : "F2",
+        "featureValueID" : "FR2F1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "4.0",
+        "type" : "float",
+        "featureID" : "F2",
+        "featureValueID" : "FR2F2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "6.0",
+        "type" : "float",
+        "featureID" : "F2",
+        "featureValueID" : "FR2F3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "5.0",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "5.6542997",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "6.3085995",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "6.962899",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F4"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "7.617199",
+        "type" : "float",
+        "featureID" : "F5",
+        "featureValueID" : "FR5F5"
+      } ],
+      "concepts" : [ ],
+      "variantID" : "V2232",
+      "featureIds" : [ "F2", "F5" ],
+      "label" : "V2232",
+      "description" : null,
+      "singleton" : false,
+      "implicit" : false
+    }, {
+      "@type" : "Variant",
+      "featureValues" : [ {
+        "@type" : "FeatureValue",
+        "value" : "lala",
+        "type" : "string",
+        "featureID" : "F3",
+        "featureValueID" : "F3S1"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "lele",
+        "type" : "string",
+        "featureID" : "F3",
+        "featureValueID" : "F3S2"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "lolo",
+        "type" : "string",
+        "featureID" : "F3",
+        "featureValueID" : "F3S3"
+      }, {
+        "@type" : "FeatureValue",
+        "value" : "lulu",
+        "type" : "string",
+        "featureID" : "F3",
+        "featureValueID" : "F3S4"
+      } ],
+      "concepts" : [ ],
+      "variantID" : "V2233",
+      "featureIds" : [ "F3" ],
+      "label" : "V2233",
+      "description" : null,
+      "singleton" : false,
+      "implicit" : false
+    } ]
+  },
+  "alternatives" : {
+    "@type" : "Alternatives",
+    "fulfills" : [ {
+      "@type" : "Fulfills",
+      "purposeID" : "P1",
+      "variantID" : [ "V11", "V12", "V13" ]
+    }, {
+      "@type" : "Fulfills",
+      "purposeID" : "P2",
+      "variantID" : [ "V21", "V22", "V23" ]
+    }, {
+      "@type" : "Fulfills",
+      "purposeID" : "P112",
+      "variantID" : [ "V1121", "V1122", "V1123" ]
+    }, {
+      "@type" : "Fulfills",
+      "purposeID" : "P223",
+      "variantID" : [ "V2231", "V2232", "V2233" ]
+    } ]
+  },
+  "constituents" : {
+    "@type" : "Constituents",
+    "constitutes" : [ {
+      "@type" : "Constitutes",
+      "variantID" : "V11",
+      "components" : [ {
+        "@type" : "Component",
+        "purposeID" : "P111",
+        "quantity" : 1
+      }, {
+        "@type" : "Component",
+        "purposeID" : "P112",
+        "quantity" : 2
+      }, {
+        "@type" : "Component",
+        "purposeID" : "P113",
+        "quantity" : 3
+      } ]
+    }, {
+      "@type" : "Constitutes",
+      "variantID" : "V22",
+      "components" : [ {
+        "@type" : "Component",
+        "purposeID" : "P221",
+        "quantity" : 1
+      }, {
+        "@type" : "Component",
+        "purposeID" : "P222",
+        "quantity" : 2
+      }, {
+        "@type" : "Component",
+        "purposeID" : "P223",
+        "quantity" : 3
+      } ]
+    } ]
+  },
+  "events" : {
+    "@type" : "Events",
+    "event" : [ ]
+  },
+  "rules" : {
+    "@type" : "Rules",
+    "rule" : [ ]
+  },
+  "relationParameters" : {
+    "@type" : "RelationParameters",
+    "parameter" : [ ]
+  },
+  "relations" : {
+    "@type" : "Relations",
+    "relation" : [ ]
+  },
+  "metadata" : {
+    "@type" : "MetaData",
+    "name" : "PSIKEDS1399236492846",
+    "language" : "de_DE",
+    "description" : [ "Mock Knowledgebase V1.0 for Testing Purposes", "Created by Marco on MJSW-Zenbook at 04.05.2014 22:48:12" ],
+    "teaser" : null,
+    "release" : "V1.0",
+    "copyright" : null,
+    "license" : null,
+    "created" : 1399236492846,
+    "lastmodified" : 1399236492846,
+    "loaded" : 1399236492846,
+    "creator" : [ "Marco" ],
+    "additionalInfo" : {
+      "KB_CREATOR" : "Marco",
+      "KB_SERVER" : "MJSW-Zenbook"
+    }
+  }
+}

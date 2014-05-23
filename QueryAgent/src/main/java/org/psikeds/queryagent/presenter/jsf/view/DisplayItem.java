@@ -35,6 +35,7 @@ public class DisplayItem implements Serializable {
   public static final String TYPE_ENTITY = "Entity";     // a knowledge entity (selected variant for a purpose)
   public static final String TYPE_PURPOSE = "Purpose";   // a purpose
   public static final String TYPE_VARIANT = "Variant";   // a variant
+  public static final String TYPE_FEATURE = "Feature";   // a feature value
   public static final String TYPE_CHOICE = "Choice";     // a possible choice
   public static final String TYPE_LABEL = "Label";       // everything else, i.e. just some string
 
@@ -126,6 +127,9 @@ public class DisplayItem implements Serializable {
     }
     else if (TYPE_VARIANT.equalsIgnoreCase(type)) {
       this.type = TYPE_VARIANT;
+    }
+    else if (TYPE_FEATURE.equalsIgnoreCase(type)) {
+      this.type = TYPE_FEATURE;
     }
     else if (TYPE_CHOICE.equalsIgnoreCase(type)) {
       this.type = TYPE_CHOICE;

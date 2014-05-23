@@ -24,13 +24,14 @@ import org.apache.commons.lang.StringUtils;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.ValidationException;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.Validator;
+import org.psikeds.resolutionengine.datalayer.vo.Component;
 import org.psikeds.resolutionengine.datalayer.vo.Constituents;
 import org.psikeds.resolutionengine.datalayer.vo.Constitutes;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
 import org.psikeds.resolutionengine.datalayer.vo.Variant;
 
 /**
- * Basic Validator checking that all Constituents / Constitutes are valid.
+ * Validator checking that all Constituents / Constitutes are valid.
  * 
  * @author marco@juliano.de
  * 
@@ -47,38 +48,62 @@ public class ConstitutesValidator implements Validator {
     try {
       LOGGER.debug("Validating KnowledgeBase regarding Constituents / Constitutes ...");
       boolean valid = true;
-
-      final Constituents cons = kb.getConstituents();
-      final List<Constitutes> lst = cons.getConstitutes();
-      for (final Constitutes c : lst) {
-        final String vid = c.getVariantID();
-        if (StringUtils.isEmpty(vid)) {
-          valid = false;
-          LOGGER.warn("Empty VariantID!");
-        }
-        else {
-          final Variant v = kb.getVariant(vid);
-          if ((v == null) || !vid.equals(v.getId())) {
+      // Note: Constituents are optional, i.e. this Node can be null!
+      final Constituents cons = (kb == null ? null : kb.getConstituents());
+      final List<Constitutes> lst = (cons == null ? null : cons.getConstitutes());
+      if ((lst != null) && !lst.isEmpty()) {
+        for (final Constitutes c : lst) {
+          final String vid = (c == null ? null : c.getVariantID());
+          if (StringUtils.isEmpty(vid)) {
             valid = false;
-            LOGGER.warn("Unknown VariantID: " + vid);
+            LOGGER.warn("No VariantID: {}", c);
+            continue;
           }
-        }
-        final List<String> purpids = c.getPurposeID();
-        if ((purpids == null) || purpids.isEmpty()) {
-          valid = false;
-          LOGGER.warn("No constituting Purposes of VariantID: " + vid);
-        }
-        else {
-          for (final String pid : purpids) {
-            if (StringUtils.isEmpty(pid)) {
-              valid = false;
-              LOGGER.warn("Empty PurposeID for VariantID: " + vid);
-            }
-            else {
-              final Purpose p = kb.getPurpose(pid);
-              if ((p == null) || !pid.equals(p.getId())) {
+          if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Checking Constitutes: {}", c);
+          }
+          final Variant v = kb.getVariant(vid);
+          if ((v == null) || !vid.equals(v.getVariantID())) {
+            valid = false;
+            LOGGER.warn("Unknown VariantID: {}", vid);
+          }
+          else if (StringUtils.isEmpty(v.getLabel())) {
+            valid = false;
+            LOGGER.warn("Variant {} has no Label!", vid);
+          }
+          final List<Component> components = c.getComponents();
+          if ((components == null) || components.isEmpty()) {
+            valid = false;
+            LOGGER.warn("No constituting Components/Purposes for VariantID: {}", vid);
+          }
+          else {
+            for (final Component comp : components) {
+              final String pid = (comp == null ? null : comp.getPurposeID());
+              if (StringUtils.isEmpty(pid)) {
                 valid = false;
-                LOGGER.warn("Unknown PurposeID: " + pid);
+                LOGGER.warn("Empty PurposeID within Component for VariantID: {}", vid);
+              }
+              else {
+                final Purpose p = kb.getPurpose(pid);
+                if ((p == null) || !pid.equals(p.getPurposeID())) {
+                  valid = false;
+                  LOGGER.warn("Unknown PurposeID: {}", pid);
+                }
+                else {
+                  if (StringUtils.isEmpty(p.getLabel())) {
+                    valid = false;
+                    LOGGER.warn("Purpose {} has no Label!", pid);
+                  }
+                  if (p.isRoot()) {
+                    valid = false;
+                    LOGGER.warn("Purpose {} is marked as Root-Purpose but constituting Variant {}", pid, vid);
+                  }
+                }
+                final long qty = comp.getQuantity();
+                if (qty < Component.MINIMUM_QUANTITY) {
+                  valid = false;
+                  LOGGER.warn("Illegal Quantity: " + qty);
+                }
               }
             }
           }

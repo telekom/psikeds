@@ -2,7 +2,7 @@
 <!--
 psiKeds :- ps induced knowledge entity delivery system
 
-Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
 
 This file is free software: you can redistribute
 it and/or modify it under the terms of the
@@ -22,13 +22,13 @@ For details see file LICENSING in the top project directory
   <parent>
     <groupId>org.psikeds</groupId>
     <artifactId>psikeds</artifactId>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>0.8.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>ReInterfaces</artifactId>
   <packaging>jar</packaging>
   <name>ReInterfaces</name>
-  <description>Interfaces of the Resolution Engine of psiKeds (RelCu)</description>
+  <description>Interfaces of the Resolution Engine of psiKeds</description>
 
   <dependencies>
     <!--
@@ -74,15 +74,19 @@ For details see file LICENSING in the top project directory
     </dependency>
 
     <!--
-      The following Libs are not required for the Interface-JAR but only 
-      for running the Unit-Tests
+      The Jackson-Core-ASL is required for compiling the Json-Annotations
     -->
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-core-asl</artifactId>
       <version>${jackson.version}</version>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
+
+    <!--
+      The following Libs are not required for the Interface-JAR but only 
+      for running the Unit-Tests
+    -->
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>

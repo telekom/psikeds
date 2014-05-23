@@ -22,11 +22,15 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.commons.lang.StringUtils;
 
-import org.psikeds.queryagent.interfaces.presenter.pojos.Choice;
+import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureChoice;
+import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureChoices;
+import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureValue;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Knowledge;
 import org.psikeds.queryagent.interfaces.presenter.pojos.KnowledgeEntity;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Purpose;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Variant;
+import org.psikeds.queryagent.interfaces.presenter.pojos.VariantChoice;
+import org.psikeds.queryagent.interfaces.presenter.pojos.VariantChoices;
 import org.psikeds.queryagent.presenter.jsf.model.KnowledgeRepresentation;
 import org.psikeds.queryagent.presenter.jsf.util.SelectionHelper;
 
@@ -59,7 +63,7 @@ public class TreeView extends BaseView {
     this.mapping = mapping;
   }
 
-  // ------------------------------------------------------
+  // ----------------------------------------------------------------
 
   public boolean isWithoutData() {
     // whenever it is initialized we also have something to display
@@ -73,7 +77,7 @@ public class TreeView extends BaseView {
       if (!isWithoutData()) {
         final Knowledge k = this.model.getKnowledge();
         addEntities(lst, k.getEntities());
-        addChoices(lst, k.getChoices());
+        addVariantChoices(lst, k.getChoices());
       }
     }
     catch (final Exception ex) {
@@ -85,24 +89,24 @@ public class TreeView extends BaseView {
     return lst;
   }
 
-  // ------------------------------------------------------
+  // ----------------------------------------------------------------
 
-  private void addChoices(final List<DisplayItem> lst, final List<Choice> choices) {
-    addChoices(lst, choices, null);
+  private void addVariantChoices(final List<DisplayItem> lst, final VariantChoices choices) {
+    addVariantChoices(lst, choices, null);
   }
 
-  private void addChoices(final List<DisplayItem> lst, final List<Choice> choices, final DisplayItem parent) {
+  private void addVariantChoices(final List<DisplayItem> lst, final VariantChoices choices, final DisplayItem parent) {
     if ((lst != null) && (choices != null)) {
-      for (final Choice c : choices) {
-        final Purpose p = c.getPurpose();
-        final DisplayItem dp = new DisplayItem(p.getId(), p.getLabel(), p.getDescription(), DisplayItem.TYPE_PURPOSE);
+      for (final VariantChoice vc : choices) {
+        final Purpose p = vc.getPurpose();
+        final DisplayItem dp = new DisplayItem(p.getPurposeID(), p.getLabel(), p.getDescription(), DisplayItem.TYPE_PURPOSE);
         if (parent != null) {
           parent.addChild(dp);
         }
         lst.add(dp);
         LOGGER.trace("Added P: {}", dp);
-        for (final Variant v : c.getVariants()) {
-          final DisplayItem dv = new DisplayItem(v.getId(), v.getLabel(), v.getDescription(), DisplayItem.TYPE_VARIANT);
+        for (final Variant v : vc.getVariants()) {
+          final DisplayItem dv = new DisplayItem(v.getVariantID(), v.getLabel(), v.getDescription(), DisplayItem.TYPE_VARIANT);
           dv.setSelectionKey(SelectionHelper.createSelectionString(p, v));
           dp.addChild(dv);
           lst.add(dv);
@@ -112,7 +116,31 @@ public class TreeView extends BaseView {
     }
   }
 
-  // ------------------------------------------------------
+  // ----------------------------------------------------------------
+
+  private void addFeatureChoices(final List<DisplayItem> lst, final FeatureChoices choices, final DisplayItem parent) {
+    if ((lst != null) && (choices != null)) {
+      for (final FeatureChoice fc : choices) {
+        final String vid = fc.getParentVariantID();
+        final String fid = fc.getFeatureID();
+        // TODO: get variant and feature from the model and create nicer display items
+        final DisplayItem df = new DisplayItem(fid, fid, null, DisplayItem.TYPE_FEATURE);
+        lst.add(df);
+        LOGGER.trace("Added F: {}", df);
+        for (final FeatureValue fv : fc.getPossibleValues()) {
+          final String fvid = fv.getFeatureValueID();
+          final String value = fv.getValue();
+          final DisplayItem dfv = new DisplayItem(fvid, value, null, DisplayItem.TYPE_CHOICE);
+          dfv.setSelectionKey(SelectionHelper.createSelectionString(vid, fid, fvid));
+          df.addChild(dfv);
+          lst.add(dfv);
+          LOGGER.trace("Added V: {}", dfv);
+        }
+      }
+    }
+  }
+
+  // ----------------------------------------------------------------
 
   private void addEntities(final List<DisplayItem> lst, final List<KnowledgeEntity> entities) {
     addEntities(lst, entities, null);
@@ -128,8 +156,9 @@ public class TreeView extends BaseView {
           }
           lst.add(dke);
           LOGGER.trace("Added KE: {}", dke);
-          addEntities(lst, ke.getSiblings(), dke);
-          addChoices(lst, ke.getChoices(), dke);
+          addEntities(lst, ke.getChildren(), dke);
+          addVariantChoices(lst, ke.getPossibleVariants(), dke);
+          addFeatureChoices(lst, ke.getPossibleFeatures(), dke);
         }
       }
     }

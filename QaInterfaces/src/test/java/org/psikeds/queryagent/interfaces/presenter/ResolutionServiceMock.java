@@ -14,57 +14,92 @@
  *******************************************************************************/
 package org.psikeds.queryagent.interfaces.presenter;
 
+import java.util.List;
+
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.commons.lang.StringUtils;
 
 import org.psikeds.common.idgen.IdGenerator;
 import org.psikeds.common.idgen.impl.SessionIdGenerator;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ConceptDecission;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Decission;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ErrorMessage;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Errors;
+import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureDecission;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Knowledge;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Metadata;
 import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionRequest;
 import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionResponse;
+import org.psikeds.queryagent.interfaces.presenter.pojos.VariantDecission;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Warning;
 import org.psikeds.queryagent.interfaces.presenter.services.ResolutionService;
 
 /**
- * Mock-Implementation of ResolutionService for testing purposes.
+ * A simple Mock-Implementation of
+ * {@link org.psikeds.queryagent.interfaces.presenter.services.ResolutionService}
  * 
  * @author marco@juliano.de
  * 
  */
 public class ResolutionServiceMock implements ResolutionService {
 
-  private Knowledge initKnowledge;
-  private Knowledge selectKnowledge;
+  private Knowledge lastReturnedKnowledge;
+  private Knowledge initialKnowledge;
+  private Knowledge selectVariantKnowledge;
+  private Knowledge selectFeatureKnowledge;
+  private Metadata metadata;
   private IdGenerator gen;
 
   public ResolutionServiceMock(final Knowledge knowledge) {
-    this(knowledge, knowledge);
+    this(knowledge, knowledge, knowledge, null);
   }
 
-  public ResolutionServiceMock(final Knowledge initKnowledge, final Knowledge selectKnowledge) {
-    this(initKnowledge, selectKnowledge, null);
+  public ResolutionServiceMock(final Knowledge initialKnowledge, final Knowledge selectVariantKnowledge, final Knowledge selectFeatureKnowledge, final Metadata metadata) {
+    this(initialKnowledge, selectVariantKnowledge, selectFeatureKnowledge, metadata, null);
   }
 
-  public ResolutionServiceMock(final Knowledge initKnowledge, final Knowledge selectKnowledge, final IdGenerator gen) {
-    setInitKnowledge(initKnowledge);
-    setSelectKnowledge(selectKnowledge);
+  public ResolutionServiceMock(final Knowledge initialKnowledge, final Knowledge selectVariantKnowledge, final Knowledge selectFeatureKnowledge, final Metadata metadata, final IdGenerator gen) {
+    this.initialKnowledge = initialKnowledge;
+    this.lastReturnedKnowledge = initialKnowledge;
+    this.selectVariantKnowledge = selectVariantKnowledge;
+    this.selectFeatureKnowledge = selectFeatureKnowledge;
+    this.metadata = metadata;
     setIdGenerator(gen);
   }
 
   // ------------------------------------------------------
 
-  public Knowledge getInitKnowledge() {
-    return this.initKnowledge;
+  public Knowledge getInitialKnowledge() {
+    return this.initialKnowledge;
   }
 
-  public void setInitKnowledge(final Knowledge initKnowledge) {
-    this.initKnowledge = initKnowledge;
+  public void setInitialKnowledge(final Knowledge initialKnowledge) {
+    this.initialKnowledge = initialKnowledge;
   }
 
-  public Knowledge getSelectKnowledge() {
-    return this.selectKnowledge;
+  public Knowledge getSelectVariantKnowledge() {
+    return this.selectVariantKnowledge;
   }
 
-  public void setSelectKnowledge(final Knowledge selectKnowledge) {
-    this.selectKnowledge = selectKnowledge;
+  public void setSelectVariantKnowledge(final Knowledge selectVariantKnowledge) {
+    this.selectVariantKnowledge = selectVariantKnowledge;
+  }
+
+  public Knowledge getSelectFeatureKnowledge() {
+    return this.selectFeatureKnowledge;
+  }
+
+  public void setSelectFeatureKnowledge(final Knowledge selectFeatureKnowledge) {
+    this.selectFeatureKnowledge = selectFeatureKnowledge;
+  }
+
+  public Metadata getMetadata() {
+    return this.metadata;
+  }
+
+  public void setMetadata(final Metadata metadata) {
+    this.metadata = metadata;
   }
 
   public IdGenerator getIdGenerator() {
@@ -73,7 +108,7 @@ public class ResolutionServiceMock implements ResolutionService {
 
   public void setIdGenerator(final IdGenerator gen) {
     try {
-      this.gen = gen == null ? new SessionIdGenerator("QA") : gen;
+      this.gen = gen == null ? new SessionIdGenerator("TEST") : gen;
     }
     catch (final Exception ex) {
       this.gen = null;
@@ -84,34 +119,76 @@ public class ResolutionServiceMock implements ResolutionService {
 
   /**
    * @return ResolutionResponse
-   * @see org.psikeds.resolutionengine.interfaces.services.ResolutionService#init()
+   * @see org.psikeds.queryagent.interfaces.presenter.services.ResolutionService#init()
    */
   @Override
   public ResolutionResponse init() {
-    return new ResolutionResponse(createSessionID(), getInitKnowledge());
+    this.lastReturnedKnowledge = this.initialKnowledge;
+    final String sessionID = (this.gen == null ? null : this.gen.getNextId());
+    return new ResolutionResponse(sessionID, this.metadata, this.initialKnowledge);
+  }
+
+  /**
+   * @param sessionID
+   * @return ResolutionResponse
+   * @see org.psikeds.queryagent.interfaces.presenter.services.ResolutionService#current(java.lang.String)
+   */
+  @Override
+  public ResolutionResponse current(final String sessionID) {
+    ResolutionResponse resp;
+    if ((this.lastReturnedKnowledge == null) || StringUtils.isEmpty(sessionID)) {
+      resp = init();
+      resp.addWarning(new Warning("Cannot get current State. Fallback to initial Knowledge!"));
+    }
+    else {
+      resp = new ResolutionResponse(sessionID, this.metadata, this.lastReturnedKnowledge);
+    }
+    return resp;
   }
 
   /**
    * @param req
    * @return ResolutionResponse
-   * @see org.psikeds.resolutionengine.interfaces.services.ResolutionService#select(org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest)
+   * @see org.psikeds.queryagent.interfaces.presenter.services.ResolutionService#select(org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest)
    */
   @Override
   public ResolutionResponse select(final ResolutionRequest req) {
-    String sessionId = (req == null ? null : req.getSessionID());
-    if (StringUtils.isEmpty(sessionId)) {
-      sessionId = createSessionID();
+    ResolutionResponse resp;
+    final String sessionID = (req == null ? null : req.getSessionID());
+    if (StringUtils.isEmpty(sessionID)) {
+      resp = init();
+      resp.addWarning(new Warning("No Session-ID! Fallback to initial Knowledge!"));
     }
-    Knowledge know = (req == null ? null : req.getKnowledge());
-    if (know == null) {
-      know = getSelectKnowledge();
+    else {
+      final List<Decission> lst = req.getDecissions();
+      if ((lst == null) || lst.isEmpty()) {
+        resp = current(sessionID);
+        resp.addWarning(new Warning("No Decission! Returning current State of Resolution."));
+      }
+      else {
+        // we only support single decissions in this mock
+        final Decission decission = lst.get(0);
+        // very simple: depending on the type of decission always return one of the knowledges
+        if (decission instanceof VariantDecission) {
+          this.lastReturnedKnowledge = this.selectVariantKnowledge;
+          resp = new ResolutionResponse(sessionID, this.metadata, this.selectVariantKnowledge);
+        }
+        else if (decission instanceof FeatureDecission) {
+          this.lastReturnedKnowledge = this.selectFeatureKnowledge;
+          resp = new ResolutionResponse(sessionID, this.metadata, this.selectFeatureKnowledge);
+        }
+        else if (decission instanceof ConceptDecission) {
+          resp = current(sessionID);
+          resp.addWarning(new Warning("Concept-Decission is not supported by Mock! Returning current State of Resolution."));
+        }
+        else {
+          // decission is probably null
+          final Errors error = new Errors();
+          error.add(new ErrorMessage(Status.BAD_REQUEST.getStatusCode(), "Request does not contain a valid Decission!"));
+          resp = new ResolutionResponse(sessionID, this.metadata, error);
+        }
+      }
     }
-    return new ResolutionResponse(sessionId, know);
-  }
-
-  // ------------------------------------------------------
-
-  private String createSessionID() {
-    return this.gen == null ? null : this.gen.getNextId();
+    return resp;
   }
 }

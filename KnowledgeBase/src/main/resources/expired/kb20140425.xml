@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+psiKeds :- ps induced knowledge entity delivery system
+
+Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+
+This file is free software: you can redistribute
+it and/or modify it under the terms of the
+[ ] GNU Affero General Public License
+[ ] GNU General Public License
+[ ] GNU Lesser General Public License
+[X] Creatice Commons ShareAlike 3.0 License
+
+For details see file LICENSING in the top project directory
+-->
+<kb:knowledgebase xmlns="http://org.psikeds.knowledgebase"
+  xmlns:kb="http://org.psikeds.knowledgebase"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://org.psikeds.knowledgebase kb.xsd">
+
+  <kb:meta>
+    <kb:created>2014-03-06T14:16:49</kb:created>
+    <kb:lastmodified>2014-03-12T15:24:27</kb:lastmodified>
+    <kb:language>en_US</kb:language>
+    <kb:version>V0.8</kb:version>
+    <kb:creator>marco@juliano.de</kb:creator>
+    <kb:description>An example of a Knowledge Base with Features and Relations</kb:description>
+    <kb:description>Status: Work in Progress</kb:description>
+  </kb:meta>
+
+  <kb:data>
+    <kb:features>
+      <kb:feature id="f0001">
+        <kb:label>A list of Colors</kb:label>
+        <kb:valueSet>
+          <kb:valueType>string</kb:valueType>
+          <kb:value>Red</kb:value>
+          <kb:value>Green</kb:value>
+          <kb:value>Blue</kb:value>
+          <kb:value>Yellow</kb:value>
+          <kb:value>Magenta</kb:value>
+        </kb:valueSet>
+      </kb:feature>
+      <kb:feature id="f0002">
+        <kb:label>A set of Numbers</kb:label>
+        <kb:valueSet>
+          <kb:valueType>float</kb:valueType>
+          <kb:value>3.14159</kb:value> <!-- PI -->
+          <kb:value>2.71828</kb:value> <!-- euler -->
+          <kb:value>1.41421</kb:value> <!-- sqrt 2  -->
+          <kb:value>1.61803</kb:value> <!-- golden ratio -->
+        </kb:valueSet>
+      </kb:feature>
+      <kb:feature id="f0003">
+        <kb:label>A range of Numbers: 0, 2, 4, 6, 8, 10</kb:label>
+        <kb:valueRange>
+          <kb:valueType>integer</kb:valueType>
+          <kb:minInclusive>0</kb:minInclusive>
+          <kb:maxExclusive>11</kb:maxExclusive>
+          <kb:step>2</kb:step>
+        </kb:valueRange>
+      </kb:feature>
+      <kb:feature id="f0004">
+        <kb:label>Another range of Numbers: 0.1, 0.2, 0.3, 0.4, 0.5</kb:label>
+        <kb:valueRange>
+          <kb:valueType>float</kb:valueType>
+          <kb:minInclusive>0.10000</kb:minInclusive>
+          <kb:maxExclusive>0.56789</kb:maxExclusive>
+          <kb:step>0.1</kb:step>
+        </kb:valueRange>
+      </kb:feature>
+    </kb:features>
+
+    <kb:purposes>
+      <kb:purpose id="p1" root="true">
+        <kb:label>Sweets</kb:label>
+      </kb:purpose>
+      <kb:purpose id="p2" root="true">
+        <kb:label>Packaging</kb:label>
+      </kb:purpose>
+      <kb:purpose id="p3" root="true">
+        <kb:label>Drinking</kb:label>
+      </kb:purpose>
+      <kb:purpose id="p111">
+        <kb:label>Be Milky</kb:label>
+      </kb:purpose>
+      <kb:purpose id="p112">
+        <kb:label>Have Chocolate</kb:label>
+      </kb:purpose>
+    </kb:purposes>
+
+    <kb:variants>
+      <kb:variant id="v11" hasFeatures="f0002 f0003">
+        <kb:label>Milk Chocolate</kb:label>
+      </kb:variant>
+      <kb:variant id="v12" hasFeatures="f0001 f0002">
+        <kb:label>Diet Chocolate</kb:label>
+      </kb:variant>
+      <kb:variant id="v1111" hasFeatures="f0003 f0004">
+        <kb:label>Soya Milk</kb:label>
+      </kb:variant>
+      <kb:variant id="v1112" hasFeatures="f0004">
+        <kb:label>Low Fat Milk</kb:label>
+      </kb:variant>
+      <kb:variant id="v1113">
+        <kb:label>Full Flavoured Milk</kb:label>
+      </kb:variant>
+      <kb:variant id="v1121" hasFeatures="f0003 f0004">
+        <kb:label>Dark Chocolate</kb:label>
+      </kb:variant>
+      <kb:variant id="v1122" hasFeatures="f0003">
+        <kb:label>50% Chocolate</kb:label>
+      </kb:variant>
+      <kb:variant id="v1123">
+        <kb:label>White Chocolate</kb:label>
+      </kb:variant>
+      <kb:variant id="v13">
+        <kb:label>Gummy Bears</kb:label>
+      </kb:variant>
+      <kb:variant id="v14">
+        <kb:label>Twix</kb:label>
+      </kb:variant>
+      <kb:variant id="v15">
+        <kb:label>Duplo</kb:label>
+      </kb:variant>
+      <kb:variant id="v16">
+        <kb:label>Licorice</kb:label>
+      </kb:variant>
+      <kb:variant id="v21">
+        <kb:label>No Packaging</kb:label>
+      </kb:variant>
+      <kb:variant id="v22">
+        <kb:label>Cardboard Box</kb:label>
+      </kb:variant>
+      <kb:variant id="v23">
+        <kb:label>Aluminum Foil</kb:label>
+      </kb:variant>
+      <kb:variant id="v24">
+        <kb:label>Bottle</kb:label>
+      </kb:variant>
+      <kb:variant id="v25">
+        <kb:label>Can</kb:label>
+      </kb:variant>
+      <kb:variant id="v31">
+        <kb:label>Coca Cola</kb:label>
+      </kb:variant>
+      <kb:variant id="v32">
+        <kb:label>Pepsi Cola</kb:label>
+      </kb:variant>
+      <kb:variant id="v33">
+        <kb:label>Budweiser</kb:label>
+      </kb:variant>
+      <kb:variant id="v34">
+        <kb:label>Mineral Water</kb:label>
+      </kb:variant>
+      <kb:variant id="v35">
+        <kb:label>Red Wine</kb:label>
+      </kb:variant>
+    </kb:variants>
+
+    <kb:alternatives>
+      <!-- purpose p1 is fulfilled by variant v11 or v12 or v13 or ... -->
+      <kb:fulfills purposeID="p1" variantID="v11 v12 v13 v14 v15 v16" />
+      <kb:fulfills purposeID="p111" variantID="v1111 v1112 v1113">
+        <kb:quantity>2</kb:quantity>
+        <kb:description>Purpose p111 is fulfilled by 2 entities of variants v1111, v1112 or v1113</kb:description>
+      </kb:fulfills>
+      <kb:fulfills purposeID="p112" variantID="v1121 v1122 v1123">
+        <kb:quantity>1</kb:quantity>
+        <kb:description>Purpose p112 is fulfilled by variant v1121, v1122 or v1123</kb:description>
+      </kb:fulfills>
+      <!-- purpose p2 is fulfilled by variant v21 or v22 or ... -->
+      <kb:fulfills purposeID="p2" variantID="v21 v22 v23 v24 v25" />
+      <!-- purpose p3 is fulfilled by variant v31 or v32 or ... -->
+      <kb:fulfills purposeID="p3" variantID="v31 v32 v33 v34 v35" />
+    </kb:alternatives>
+
+    <kb:constituents>
+      <!-- variant v11 is constituted by purpose p111 and purpose p112 -->
+      <kb:constitutes variantID="v11" purposeID="p111 p112" />
+      <!-- variant v23 is constituted by purpose p111 -->
+      <kb:constitutes variantID="v23" purposeID="p111" />
+      <!-- variant v22 is constituted by purpose p112 -->
+      <kb:constitutes variantID="v22" purposeID="p112" />
+    </kb:constituents>
+
+    <!-- 
+    The following Events and Rule are not very reasonable but show
+    the Syntax of a Rule-Definition.
+    Please note, that a Rule and all its Events must be attched to
+    the same Variant and that the Start-Element of the corresponding
+    Context-Paths always must be the ID of that Variant!
+    -->
+    <kb:events>
+      <kb:event variantID="v11" id="e0001" context="v11 p111">
+        <kb:label>Premise Event 1</kb:label>
+        <kb:variantTrigger variantID="v1111" notEvent="false"/>
+      </kb:event>
+      <kb:event variantID="v11" id="e0002" context="v11 p111">
+        <kb:label>Premise Event 2</kb:label>
+        <kb:variantTrigger variantID="v1112" notEvent="false"/>
+      </kb:event>
+      <kb:event variantID="v11" id="e0003" context="v11 p111">
+        <kb:label>Premise Event 3</kb:label>
+        <kb:variantTrigger variantID="v1113" notEvent="false"/>
+      </kb:event>
+      <kb:event variantID="v11" id="e0004" context="v11 p112">
+        <kb:label>Conclusion Event 1</kb:label>
+        <kb:variantTrigger variantID="v1121" notEvent="false"/>
+      </kb:event>
+      <kb:event variantID="v11" id="e0005" context="v11 p112">
+        <kb:label>Conclusion Event 2</kb:label>
+        <kb:variantTrigger variantID="v1122" notEvent="false"/>
+      </kb:event>
+      <kb:event variantID="v11" id="e0006" context="v11 p112">
+        <kb:label>Conclusion Event 3</kb:label>
+        <kb:variantTrigger variantID="v1123" notEvent="false"/>
+      </kb:event>
+    </kb:events>
+
+    <kb:rules>
+      <!--
+      The following Rules say:
+      1. If e0001 then e0004 must be applied (Modus Ponens)
+      2. If e0004 is false then e0001 must be forbidden (Modus Tollens)
+      3. Same applies for e0002->e0005 and e0003->e0006 
+      -->
+      <kb:rule id="rule1" variantID="v11" premiseEventID="e0001" conclusionEventID="e0004">
+         <kb:label>First example of a Rule</kb:label>
+      </kb:rule>
+      <kb:rule id="rule2" variantID="v11" premiseEventID="e0002" conclusionEventID="e0005">
+         <kb:label>First example of a Rule</kb:label>
+      </kb:rule>
+      <kb:rule id="rule3" variantID="v11" premiseEventID="e0003" conclusionEventID="e0006">
+         <kb:label>First example of a Rule</kb:label>
+      </kb:rule>
+    </kb:rules>
+
+    <kb:relations>
+      <kb:relation variantID="v11" id="rel0815">
+        <kb:label>A simple Equality-Relation</kb:label>
+        <kb:left context="v11 p111 v1111" featureID="f0003" />
+        <kb:right context="v11 p112 v1122" featureID="f0003" />
+        <kb:operator>equal</kb:operator>
+      </kb:relation>
+    </kb:relations>
+
+  </kb:data>
+</kb:knowledgebase>

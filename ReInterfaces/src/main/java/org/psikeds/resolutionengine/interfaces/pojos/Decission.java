@@ -14,66 +14,37 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.interfaces.pojos;
 
-import java.io.Serializable;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
- * A decission made, i.e. which Variant was selected for which Purpose?
- * 
- * Note 1: PurposeID and VariantID(s) must reference existing Objects!
- * 
- * Note 2: Reading from and writing to JSON works out of the box.
- * However for XML the XmlRootElement annotation is required.
+ * A general Decission, either VariantDecission, FeatureDecission or ConceptDecission
  * 
  * @author marco@juliano.de
  * 
  */
-@XmlRootElement(name = "Decission")
-public class Decission extends POJO implements Serializable {
+@XmlSeeAlso({ ConceptDecission.class, FeatureDecission.class, VariantDecission.class })
+@JsonSubTypes({ @JsonSubTypes.Type(value = ConceptDecission.class, name = "ConceptDecission"),
+    @JsonSubTypes.Type(value = FeatureDecission.class, name = "FeatureDecission"),
+    @JsonSubTypes.Type(value = VariantDecission.class, name = "VariantDecission"), })
+public abstract class Decission extends POJO {
 
   private static final long serialVersionUID = 1L;
 
-  private String purposeID;
-  private String variantID;
-
   public Decission() {
-    this((Purpose) null, (Variant) null);
+    super();
   }
 
-  public Decission(final String purposeID, final String variantID) {
-    super(purposeID, variantID);
-    setPurposeID(purposeID);
-    setVariantID(variantID);
+  public Decission(final POJO... pojos) {
+    super(pojos);
   }
 
-  public Decission(final Purpose purpose, final Variant variant) {
-    super(purpose, variant);
-    setPurpose(purpose);
-    setVariant(variant);
+  public Decission(final String... ids) {
+    super(ids);
   }
 
-  public String getPurposeID() {
-    return this.purposeID;
-  }
-
-  public void setPurposeID(final String purposeID) {
-    this.purposeID = purposeID;
-  }
-
-  public void setPurpose(final Purpose purpose) {
-    this.purposeID = purpose == null ? null : purpose.getId();
-  }
-
-  public String getVariantID() {
-    return this.variantID;
-  }
-
-  public void setVariantID(final String variantID) {
-    this.variantID = variantID;
-  }
-
-  public void setVariant(final Variant variant) {
-    this.variantID = variant == null ? null : variant.getId();
+  public Decission(final String id) {
+    super(id);
   }
 }

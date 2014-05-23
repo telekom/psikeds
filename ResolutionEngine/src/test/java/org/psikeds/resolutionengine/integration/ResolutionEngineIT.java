@@ -45,17 +45,22 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
 
 import org.psikeds.resolutionengine.interfaces.pojos.Choice;
+import org.psikeds.resolutionengine.interfaces.pojos.Choices;
 import org.psikeds.resolutionengine.interfaces.pojos.Decission;
+import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice;
+import org.psikeds.resolutionengine.interfaces.pojos.FeatureDecission;
 import org.psikeds.resolutionengine.interfaces.pojos.Purpose;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse;
 import org.psikeds.resolutionengine.interfaces.pojos.Variant;
+import org.psikeds.resolutionengine.interfaces.pojos.VariantChoice;
+import org.psikeds.resolutionengine.interfaces.pojos.VariantDecission;
 
 /**
  * Integration-Tests for Resolution-Engine running online against Application Server.
  * 
- * Note: Anything called *Test.java is a Unit-Test executed offline by Surefire.
- * Everythinf called *IT.java is an Integration-Test executed online by Failsafe.
+ * Note: Any Test called *Test.java is a Unit-Test executed offline by Surefire.
+ * Everything called *IT.java is an Integration-Test executed online by Failsafe.
  * 
  * @author marco@juliano.de
  * 
@@ -102,7 +107,7 @@ public class ResolutionEngineIT {
       checkDeployedServices();
       final ResolutionResponse ires = checkInitService();
       final String sessionID = ires.getSessionID();
-      final List<Choice> choices = ires.getPossibleChoices();
+      final Choices choices = ires.getChoices();
       final Decission decission = makeDecission(choices);
       checkSelectService(sessionID, decission);
       // TODO: additional tests
@@ -117,7 +122,7 @@ public class ResolutionEngineIT {
   private void checkDeployedServices() throws IllegalStateException, IOException {
     LOGGER.info(" ... checking deployed REST-Services ...");
     final String wadlUrl = this.baseUrl + "/?_wadl";
-    LOGGER.trace("URL = " + wadlUrl);
+    LOGGER.trace("URL = {}", wadlUrl);
     final WebClient wadlClient = WebClient.create(wadlUrl);
     final Response wadlResp = wadlClient.get();
     assertNotNull("No Response!", wadlResp);
@@ -125,7 +130,7 @@ public class ResolutionEngineIT {
     LOGGER.info("HTTP {}", code);
     assertEquals(Response.Status.OK.getStatusCode(), code);
     final String wadl = IOUtils.toString((InputStream) wadlResp.getEntity());
-    LOGGER.trace("WADL = " + wadl);
+    LOGGER.trace("WADL = {}", wadl);
     assertFalse("No WADL!", StringUtils.isEmpty(wadl));
   }
 
@@ -134,7 +139,7 @@ public class ResolutionEngineIT {
     LOGGER.info("... checking Init-Service ...");
     try {
       final String initServiceUrl = this.baseUrl + "/resolution/init";
-      LOGGER.debug("URL = " + initServiceUrl);
+      LOGGER.debug("URL = {}", initServiceUrl);
       final WebClient initClient = WebClient.create(initServiceUrl);
 
       final Response initResp = initClient.accept(MediaType.APPLICATION_JSON).get();
@@ -145,13 +150,13 @@ public class ResolutionEngineIT {
       assertNotNull("No SessionID in Init-ResolutionResponse!", ires.getSessionID());
       assertNotNull("No Knowledge in Init-ResolutionResponse!", ires.getKnowledge());
       assertFalse("Initial Knowledge is already fully resolved! Check Testdata!", ires.isResolved());
-      final List<Choice> choices = ires.getPossibleChoices();
+      final Choices choices = ires.getChoices();
       assertTrue("No Choices in Init-ResolutionResponse! Check Testdata!", (choices != null) && (choices.size() > 0));
       return ires;
     }
     finally {
       LOGGER.info("... finished check of Init-Service ...");
-      LOGGER.trace("Resp = " + String.valueOf(ires));
+      LOGGER.trace("Resp = {}", ires);
     }
   }
 
@@ -159,13 +164,20 @@ public class ResolutionEngineIT {
     Decission decission = null;
     try {
       final Choice c = choices.get(0);
-      final Purpose p = c.getPurpose();
-      final Variant v = c.getVariants().get(0);
-      decission = new Decission(p, v);
+      if (c instanceof VariantChoice) {
+        final VariantChoice vc = (VariantChoice) c;
+        final Purpose p = vc.getPurpose();
+        final Variant v = vc.getVariants().get(0);
+        decission = new VariantDecission(p, v);
+      }
+      else if (c instanceof FeatureChoice) {
+        final FeatureChoice fc = (FeatureChoice) c;
+        decission = new FeatureDecission(fc, 0);
+      }
       return decission;
     }
     finally {
-      LOGGER.debug("Decission = " + String.valueOf(decission));
+      LOGGER.debug("Decission = {}", decission);
     }
   }
 
@@ -174,11 +186,11 @@ public class ResolutionEngineIT {
     LOGGER.info("... checking Select-Service ...");
     try {
       final String selectServiceUrl = this.baseUrl + "/resolution/select";
-      LOGGER.debug("URL = " + selectServiceUrl);
+      LOGGER.debug("URL = {}", selectServiceUrl);
       final WebClient selectClient = WebClient.create(selectServiceUrl, this.providers, true);
 
       final ResolutionRequest sreq = new ResolutionRequest(sessionID, decission);
-      LOGGER.trace("Req = " + String.valueOf(sreq));
+      LOGGER.trace("Req = {}", sreq);
       final Response selectResp = selectClient.type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).post(sreq);
       checkHttpResponse(selectResp);
       sres = getContent(selectResp, ResolutionResponse.class);
@@ -192,14 +204,14 @@ public class ResolutionEngineIT {
     }
     finally {
       LOGGER.info("... finished check of Select-Service ...");
-      LOGGER.trace("Resp = " + String.valueOf(sres));
+      LOGGER.trace("Resp = {}", sres);
     }
   }
 
   private void checkHttpResponse(final Response resp) {
     assertNotNull("No Response!", resp);
     final int code = resp.getStatus();
-    LOGGER.info("HTTP " + code);
+    LOGGER.info("HTTP {}", code);
     assertEquals(Response.Status.OK.getStatusCode(), code);
   }
 

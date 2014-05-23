@@ -15,19 +15,27 @@
 package org.psikeds.queryagent.interfaces.presenter.pojos;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
- * Interface object representing a Knowledge-Entity, "one piece" of Knowledge.
- * A KE is a selected Variant for a certain Purpose. It can have siblings, i.e.
- * other KEs constituting this KE. There might also be Choices, i.e. Purposes
- * for which a constituting Variant must yet be selected.
+ * Interface object representing a Knowledge-Entity, i.e. "one piece" of
+ * Knowledge. A Knowledge-Entity is always a selected Variant for a certain
+ * Purpose. Optionally a Quantity can be specified (e.g. 4 wheels for driving)
  * 
- * Note: Reading from and writing to JSON works out of the box.
- * However for XML the XmlRootElement annotation is required.
+ * A Knowledge-Entity may also have Features if the selected Variant declares
+ * them. Initially only possible Feature-Choices exist being transformed
+ * into Feature-Values with every Decission of the Client.
+ * 
+ * Also Concepts can be choosen. A Concept is a subsumption of Feature-Values,
+ * i.e. selecting a Concept is like selecting several Feature-Values.
+ * 
+ * Additionally a KE may have Children, i.e. other KEs constituting this KE.
+ * Initially these are possible Variant-Choices, i.e. Purposes for which a
+ * constituting Variant must yet be selected.
  * 
  * @author marco@juliano.de
  * 
@@ -37,43 +45,55 @@ public class KnowledgeEntity extends POJO implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
+  public static final long MINIMUM_QUANTITY = 0L; // nothing selected yet ==> quantity = 0
+  public static final long DEFAULT_QUANTITY = 1L; // default: just one variant for fulfilling the purpose
+
+  private long quantity;
   private Purpose purpose;
   private Variant variant;
-  private List<KnowledgeEntity> siblings;
-  private List<Choice> choices;
+  private FeatureValues features;
+  private KnowledgeEntities children;
+  private VariantChoices possibleVariants;
+  private FeatureChoices possibleFeatures;
+  private ConceptChoices possibleConcepts;
 
   public KnowledgeEntity() {
-    this(null, null);
+    this(MINIMUM_QUANTITY, null, null, null, null, null, null, null);
   }
 
-  /**
-   * Leaf-KnowledgeEntity, only Purpose and Variant, no Siblings or Choices.
-   * 
-   * @param purpose
-   * @param variant
-   */
   public KnowledgeEntity(final Purpose purpose, final Variant variant) {
-    this(purpose, variant, null, null);
+    this(DEFAULT_QUANTITY, purpose, variant);
   }
 
-  /**
-   * New KnowledgeEntity, not resolved, only Choices no Siblings yet
-   * 
-   * @param purpose
-   * @param variant
-   * @param choices
-   */
-  public KnowledgeEntity(final Purpose purpose, final Variant variant, final List<Choice> choices) {
-    this(purpose, variant, null, choices);
+  public KnowledgeEntity(final long qty, final Purpose purpose, final Variant variant) {
+    this(qty, purpose, variant, null, null, null, null, null);
   }
 
-  public KnowledgeEntity(final Purpose purpose, final Variant variant, final List<KnowledgeEntity> siblings, final List<Choice> choices) {
+  public KnowledgeEntity(final Purpose purpose, final Variant variant,
+      final VariantChoices possibleVariants, final FeatureChoices possibleFeatures, final ConceptChoices possibleConcepts) {
+    this(DEFAULT_QUANTITY, purpose, variant, possibleVariants, possibleFeatures, possibleConcepts);
+  }
+
+  public KnowledgeEntity(final long qty, final Purpose purpose, final Variant variant,
+      final VariantChoices possibleVariants, final FeatureChoices possibleFeatures, final ConceptChoices possibleConcepts) {
+    this(qty, purpose, variant, null, null, possibleVariants, possibleFeatures, possibleConcepts);
+  }
+
+  public KnowledgeEntity(final long qty, final Purpose purpose, final Variant variant,
+      final FeatureValues features, final KnowledgeEntities children,
+      final VariantChoices possibleVariants, final FeatureChoices possibleFeatures, final ConceptChoices possibleConcepts) {
     super(purpose, variant);
-    this.purpose = purpose;
-    this.variant = variant;
-    this.siblings = siblings;
-    this.choices = choices;
+    setPurpose(purpose);
+    setVariant(variant);
+    setQuantity(qty);
+    setFeatures(features);
+    setChildren(children);
+    setPossibleVariants(possibleVariants);
+    setPossibleFeatures(possibleFeatures);
+    setPossibleConcepts(possibleConcepts);
   }
+
+  // ----------------------------------------------------------------
 
   public Purpose getPurpose() {
     return this.purpose;
@@ -91,37 +111,187 @@ public class KnowledgeEntity extends POJO implements Serializable {
     this.variant = variant;
   }
 
-  public List<KnowledgeEntity> getSiblings() {
-    if (this.siblings == null) {
-      this.siblings = new ArrayList<KnowledgeEntity>();
+  public long getQuantity() {
+    return (((this.variant == null) || (this.purpose == null)) ? MINIMUM_QUANTITY : this.quantity); // nothing selected, no quantity
+  }
+
+  public void setQuantity(final long qty) {
+    this.quantity = (qty < MINIMUM_QUANTITY ? MINIMUM_QUANTITY : qty);
+  }
+
+  // ----------------------------------------------------------------
+
+  public KnowledgeEntities getChildren() {
+    if (this.children == null) {
+      this.children = new KnowledgeEntities();
     }
-    return this.siblings;
+    return this.children;
   }
 
-  public void setSiblings(final List<KnowledgeEntity> siblings) {
-    this.siblings = siblings;
+  public void setChildren(final KnowledgeEntities children) {
+    clearChildren();
+    this.children = children;
   }
 
-  public void addSibling(final KnowledgeEntity ke) {
-    if (ke != null) {
-      getSiblings().add(ke);
+  public boolean addChild(final KnowledgeEntity child) {
+    return ((child != null) && getChildren().add(child));
+  }
+
+  public boolean addAllChildren(final Collection<? extends KnowledgeEntity> c) {
+    return ((c != null) && !c.isEmpty() && getChildren().addAll(c));
+  }
+
+  public void clearChildren() {
+    if (this.children != null) {
+      this.children.clear();
+      this.children = null;
     }
   }
 
-  public List<Choice> getChoices() {
-    if (this.choices == null) {
-      this.choices = new ArrayList<Choice>();
+  // ----------------------------------------------------------------
+
+  public FeatureValues getFeatures() {
+    if (this.features == null) {
+      this.features = new FeatureValues();
     }
-    return this.choices;
+    return this.features;
   }
 
-  public void setChoices(final List<Choice> choices) {
-    this.choices = choices;
+  public void setFeatures(final FeatureValues features) {
+    clearFeatures();
+    this.features = features;
   }
 
-  public void addChoice(final Choice chc) {
-    if (chc != null) {
-      getChoices().add(chc);
+  public boolean addFeature(final FeatureValue feature) {
+    return ((feature != null) && !getFeatures().contains(feature) && getFeatures().add(feature));
+  }
+
+  public void addAllFeatures(final Collection<? extends FeatureValue> c) {
+    if ((c != null) && !c.isEmpty()) {
+      for (final FeatureValue feature : c) {
+        addFeature(feature);
+      }
     }
+  }
+
+  public void clearFeatures() {
+    if (this.features != null) {
+      this.features.clear();
+      this.features = null;
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  public VariantChoices getPossibleVariants() {
+    if (this.possibleVariants == null) {
+      this.possibleVariants = new VariantChoices();
+    }
+    return this.possibleVariants;
+  }
+
+  public void setPossibleVariants(final VariantChoices choices) {
+    clearPossibleVariants();
+    if (choices != null) {
+      choices.setParentVariantID(this.variant == null ? null : this.variant.getVariantID());
+      this.possibleVariants = choices;
+    }
+  }
+
+  public void addPossibleVariant(final VariantChoice choice) {
+    if (choice != null) {
+      choice.setParentVariantID((this.variant == null ? null : this.variant.getVariantID()));
+      choice.setPurpose(this.purpose);
+      getPossibleVariants().add(choice);
+    }
+  }
+
+  public void addAllPossibleVariants(final VariantChoices choices) {
+    if ((choices != null) && !choices.isEmpty()) {
+      choices.setParentVariantID(this.variant == null ? null : this.variant.getVariantID());
+      getPossibleVariants().addAll(choices);
+    }
+  }
+
+  public void clearPossibleVariants() {
+    if (this.possibleVariants != null) {
+      this.possibleVariants.clear();
+      this.possibleVariants = null;
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  public FeatureChoices getPossibleFeatures() {
+    if (this.possibleFeatures == null) {
+      this.possibleFeatures = new FeatureChoices();
+    }
+    return this.possibleFeatures;
+  }
+
+  public void setPossibleFeatures(final FeatureChoices choices) {
+    clearPossibleFeatures();
+    this.possibleFeatures = choices;
+  }
+
+  public boolean addPossibleFeature(final FeatureChoice choice) {
+    return ((choice != null) && getPossibleFeatures().add(choice));
+  }
+
+  public boolean addAllPossibleFeatures(final Collection<? extends FeatureChoice> c) {
+    return ((c != null) && !c.isEmpty() && getPossibleFeatures().addAll(c));
+  }
+
+  public void clearPossibleFeatures() {
+    if (this.possibleFeatures != null) {
+      this.possibleFeatures.clear();
+      this.possibleFeatures = null;
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  public ConceptChoices getPossibleConcepts() {
+    if (this.possibleConcepts == null) {
+      this.possibleConcepts = new ConceptChoices();
+    }
+    return this.possibleConcepts;
+  }
+
+  public void setPossibleConcepts(final ConceptChoices choices) {
+    clearPossibleConcepts();
+    this.possibleConcepts = choices;
+  }
+
+  public boolean addPossibleConcept(final ConceptChoice choice) {
+    return ((choice != null) && getPossibleConcepts().add(choice));
+  }
+
+  public boolean addAllPossibleConcepts(final Collection<? extends ConceptChoice> c) {
+    return ((c != null) && !c.isEmpty() && getPossibleConcepts().addAll(c));
+  }
+
+  public void clearPossibleConcepts() {
+    if (this.possibleConcepts != null) {
+      this.possibleConcepts.clear();
+      this.possibleConcepts = null;
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  @JsonIgnore
+  public boolean isResolved() {
+    return ((this.purpose != null)
+        && (this.variant != null)
+        // TODO: enable features and concepts here
+//        && ((this.possibleConcepts == null) || this.possibleConcepts.isEmpty())
+//        && ((this.possibleFeatures == null) || this.possibleFeatures.isEmpty())
+        && ((this.possibleVariants == null) || this.possibleVariants.isEmpty()));
+  }
+
+  @JsonIgnore
+  public boolean isRoot() {
+    return ((this.purpose != null) && this.purpose.isRoot());
   }
 }

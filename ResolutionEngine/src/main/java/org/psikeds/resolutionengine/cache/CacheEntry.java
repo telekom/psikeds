@@ -16,6 +16,8 @@ package org.psikeds.resolutionengine.cache;
 
 import java.io.Serializable;
 
+import org.psikeds.common.cache.LimitedHashMap;
+
 /**
  * A Cache-Entry is a Map of serializable Objects all related
  * to the corresponding Session.

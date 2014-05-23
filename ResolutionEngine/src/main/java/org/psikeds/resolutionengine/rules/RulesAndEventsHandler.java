@@ -15,21 +15,26 @@
 package org.psikeds.resolutionengine.rules;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.apache.cxf.common.util.StringUtils;
 
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.datalayer.vo.Event;
 import org.psikeds.resolutionengine.datalayer.vo.Events;
 import org.psikeds.resolutionengine.datalayer.vo.Rule;
 import org.psikeds.resolutionengine.datalayer.vo.Rules;
+import org.psikeds.resolutionengine.datalayer.vo.Variant;
+import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
 
 /**
  * Object handling all Rules and Events; Depending on the current State of
  * Resolution and the corresponding Knowledge, Rules and Events are in one
- * of the Stats Possible, Obsolete or Triggered.
+ * of the States Relevant, Obsolete or Triggered.
  * 
  * @author marco@juliano.de
  * 
@@ -40,28 +45,32 @@ public class RulesAndEventsHandler implements Serializable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RulesAndEventsHandler.class);
 
-  private static final int MAX_NUM_EVENTS = 1024;
-  private static final int MAX_NUM_RULES = 512;
+  private static final int MAX_NUM_EVENTS = EventStack.DEFAULT_MAX_MAP_SIZE * 2;
+  private static final int MAX_NUM_RULES = RuleStack.DEFAULT_MAX_MAP_SIZE;
 
-  private final EventStack possibleEvents;
+  private final EventStack relevantEvents;
   private final EventStack obsoleteEvents;
   private final EventStack triggeredEvents;
 
-  private final RuleStack possibleRules;
+  private final RuleStack relevantRules;
   private final RuleStack obsoleteRules;
   private final RuleStack triggeredRules;
 
   private boolean knowledgeDirty;
 
-  private RulesAndEventsHandler(final List<Event> allEvents, final int maxEvents, final List<Rule> allRules, final int maxRules) {
+  private RulesAndEventsHandler(final List<Event> relevantEvents, final List<Rule> relevantRules) {
+    this(relevantEvents, MAX_NUM_EVENTS, relevantRules, MAX_NUM_RULES);
+  }
+
+  private RulesAndEventsHandler(final List<Event> relevantEvents, final int maxEvents, final List<Rule> relevantRules, final int maxRules) {
     this.obsoleteEvents = new EventStack(maxEvents);
     this.triggeredEvents = new EventStack(maxEvents);
-    this.possibleEvents = new EventStack(maxEvents);
-    this.possibleEvents.setEvents(allEvents);
+    this.relevantEvents = new EventStack(maxEvents);
+    this.relevantEvents.setEvents(relevantEvents);
     this.obsoleteRules = new RuleStack(maxRules);
     this.triggeredRules = new RuleStack(maxRules);
-    this.possibleRules = new RuleStack(maxRules);
-    this.possibleRules.setRules(allRules);
+    this.relevantRules = new RuleStack(maxRules);
+    this.relevantRules.setRules(relevantRules);
     this.knowledgeDirty = false;
   }
 
@@ -73,30 +82,38 @@ public class RulesAndEventsHandler implements Serializable {
     this.knowledgeDirty = knowledgeDirty;
   }
 
-  // ------------------------------------------------------
+  // ----------------------------------------------------------------
 
-  public List<Event> getPossibleEvents() {
-    return this.possibleEvents.getEvents();
+  public List<Event> getRelevantEvents() {
+    return this.relevantEvents.getEvents();
   }
 
-  public boolean isPossible(final String id) {
-    return this.possibleEvents.containsEvent(id);
+  public void setRelevantEvents(final Collection<? extends Event> events) {
+    this.relevantEvents.setEvents(events);
   }
 
-  public boolean isPossible(final Event e) {
-    return this.possibleEvents.containsEvent(e);
+  public void addRelevantEvents(final Collection<? extends Event> events) {
+    this.relevantEvents.addEvents(events);
   }
 
-  public boolean isObsolete(final String id) {
-    return this.obsoleteEvents.containsEvent(id);
+  public boolean isRelevant(final String eid) {
+    return this.relevantEvents.containsEvent(eid);
+  }
+
+  public boolean isRelevant(final Event e) {
+    return this.relevantEvents.containsEvent(e);
+  }
+
+  public boolean isObsolete(final String eid) {
+    return this.obsoleteEvents.containsEvent(eid);
   }
 
   public boolean isObsolete(final Event e) {
     return this.obsoleteEvents.containsEvent(e);
   }
 
-  public boolean isTriggered(final String id) {
-    return this.triggeredEvents.containsEvent(id);
+  public boolean isTriggered(final String eid) {
+    return this.triggeredEvents.containsEvent(eid);
   }
 
   public boolean isTriggered(final Event e) {
@@ -104,50 +121,98 @@ public class RulesAndEventsHandler implements Serializable {
   }
 
   public Event setObsolete(final Event e) {
-    return this.possibleEvents.move2stack(e, this.obsoleteEvents);
+    return this.relevantEvents.move2stack(e, this.obsoleteEvents);
   }
 
   public Event setTriggered(final Event e) {
-    return this.possibleEvents.move2stack(e, this.triggeredEvents);
+    return this.relevantEvents.move2stack(e, this.triggeredEvents);
   }
 
-  // ------------------------------------------------------
+  // ----------------------------------------------------------------
 
-  public List<Rule> getPossibleRules() {
-    return this.possibleRules.getRules();
+  public List<Rule> getRelevantRules() {
+    return this.relevantRules.getRules();
+  }
+
+  public void setRelevantRules(final Collection<? extends Rule> rules) {
+    this.relevantRules.setRules(rules);
+  }
+
+  public void addRelevantRules(final Collection<? extends Rule> rules) {
+    this.relevantRules.addRules(rules);
   }
 
   public Rule setObsolete(final Rule r) {
-    return this.possibleRules.move2stack(r, this.obsoleteRules);
+    return this.relevantRules.move2stack(r, this.obsoleteRules);
   }
 
   public Rule setTriggered(final Rule r) {
-    return this.possibleRules.move2stack(r, this.triggeredRules);
+    return this.relevantRules.move2stack(r, this.triggeredRules);
   }
 
-  // ------------------------------------------------------
+  // ----------------------------------------------------------------
+
+  /**
+   * Mark all Events and Rules attached to a Variant as obsolete.
+   * 
+   * @param variant
+   */
+  public void setObsolete(final Variant variant) {
+    final String variantId = (variant == null ? null : variant.getVariantID());
+    setObsolete(variantId);
+  }
+
+  /**
+   * Mark all Events and Rules attached to a Variant as obsolete.
+   * 
+   * @param variantId
+   */
+  public void setObsolete(final String variantId) {
+    if (!StringUtils.isEmpty(variantId)) {
+      for (final Event e : getRelevantEvents()) {
+        final String vid = (e == null ? null : e.getVariantID());
+        if (variantId.equals(vid)) {
+          setObsolete(e);
+        }
+      }
+      for (final Rule r : getRelevantRules()) {
+        final String vid = (r == null ? null : r.getVariantID());
+        if (variantId.equals(vid)) {
+          setObsolete(r);
+        }
+      }
+    }
+  }
+
+  // ----------------------------------------------------------------
 
   public static RulesAndEventsHandler init(final KnowledgeBase kb) {
     final Events events = kb == null ? null : kb.getEvents();
     final Rules rules = kb == null ? null : kb.getRules();
+    // simple initialization: all rules and events are relevant by default
     return init(events, rules);
   }
 
-  public static RulesAndEventsHandler init(final Events allEvents, final Rules allRules) {
-    final List<Event> events = allEvents == null ? null : allEvents.getEvent();
-    final List<Rule> rules = allRules == null ? null : allRules.getRule();
+  public static RulesAndEventsHandler init(final KnowledgeBase kb, final Knowledge knowledge) {
+    // sophisticated more performant initialization: only rules and events
+    // currently "visible" in our knowledge are relevant
+    // TODO: implement!!!
+    return init(kb); // fallback to simple init
+  }
+
+  public static RulesAndEventsHandler init(final Events relevantEvents, final Rules relevantRules) {
+    final List<Event> events = relevantEvents == null ? null : relevantEvents.getEvent();
+    final List<Rule> rules = relevantRules == null ? null : relevantRules.getRule();
     return init(events, rules);
   }
 
-  // TODO: performance optimization: do not start with all rules and events but with "visible" ones
-
-  public static RulesAndEventsHandler init(final List<Event> allEvents, final List<Rule> allRules) {
-    final RulesAndEventsHandler raeh = new RulesAndEventsHandler(allEvents, MAX_NUM_EVENTS, allRules, MAX_NUM_RULES);
+  public static RulesAndEventsHandler init(final List<Event> relevantEvents, final List<Rule> relevantRules) {
+    final RulesAndEventsHandler raeh = new RulesAndEventsHandler(relevantEvents, relevantRules);
     logContents(raeh);
     return raeh;
   }
 
-  // ------------------------------------------------------
+  // ----------------------------------------------------------------
 
   public static void logContents(final RulesAndEventsHandler raeh) {
     if (raeh != null) {
@@ -175,13 +240,13 @@ public class RulesAndEventsHandler implements Serializable {
         sb.append(toString());
       }
       if (isKnowledgeDirty()) {
-        sb.append("State of Knowledge is dirty.");
+        sb.append("State of Knowledge is dirty.\n");
       }
       else {
-        sb.append("Knowledge is stable.");
+        sb.append("Knowledge is stable.\n");
       }
       if (verbose) {
-        sb.append("\n------------------------------------------------------------\n");
+        sb.append("------------------------------------------------------------\n");
       }
       dumpEvents(sb, verbose);
       if (verbose) {
@@ -193,8 +258,8 @@ public class RulesAndEventsHandler implements Serializable {
 
   public void dumpEvents(final StringBuilder sb, final boolean verbose) {
     if (sb != null) {
-      sb.append("POSSIBLE: ");
-      this.possibleEvents.dumpEvents(sb, verbose);
+      sb.append("RELEVANT: ");
+      this.relevantEvents.dumpEvents(sb, verbose);
       sb.append("TRIGGERED: ");
       this.triggeredEvents.dumpEvents(sb, verbose);
       sb.append("OBSOLETE: ");
@@ -204,8 +269,8 @@ public class RulesAndEventsHandler implements Serializable {
 
   public void dumpRules(final StringBuilder sb, final boolean verbose) {
     if (sb != null) {
-      sb.append("POSSIBLE: ");
-      this.possibleRules.dumpRules(sb, verbose);
+      sb.append("RELEVANT: ");
+      this.relevantRules.dumpRules(sb, verbose);
       sb.append("TRIGGERED: ");
       this.triggeredRules.dumpRules(sb, verbose);
       sb.append("OBSOLETE: ");

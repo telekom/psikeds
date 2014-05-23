@@ -14,26 +14,52 @@
  *******************************************************************************/
 package org.psikeds.queryagent.transformer.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.psikeds.queryagent.interfaces.presenter.pojos.Choice;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Choices;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Concept;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ConceptChoice;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ConceptChoices;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ConceptDecission;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Concepts;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Decission;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Decissions;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ErrorMessage;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Errors;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Feature;
-import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureValueType;
+import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureChoice;
+import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureChoices;
+import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureDecission;
+import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureValue;
+import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureValues;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Features;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Knowledge;
+import org.psikeds.queryagent.interfaces.presenter.pojos.KnowledgeEntities;
 import org.psikeds.queryagent.interfaces.presenter.pojos.KnowledgeEntity;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Metadata;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Purpose;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionMessage;
 import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionRequest;
 import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionResponse;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Variant;
+import org.psikeds.queryagent.interfaces.presenter.pojos.VariantChoice;
+import org.psikeds.queryagent.interfaces.presenter.pojos.VariantChoices;
+import org.psikeds.queryagent.interfaces.presenter.pojos.VariantDecission;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Variants;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Warning;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Warnings;
 import org.psikeds.queryagent.transformer.Transformer;
 
 /**
- * Helper for transforming POJOs from the Interface of the
- * Resolution-Engine (RE) into POJOs of the Interface of the
- * Query-Agent (QA) ... and vice versa.
+ * Helper for transforming POJOs from the Interface of the Resolution-Engine (RE)
+ * into POJOs of the Interface of the Query-Agent (QA) ... and vice versa.
+ * 
+ * It is used by {@link org.psikeds.queryagent.presenter.services.ResolutionBusinessService} in
+ * order to transform Requests for and Responses from
+ * {@link org.psikeds.queryagent.requester.client.ResolutionEngineClient}
+ * 
+ * Note: Currently the Interfaces of RE and QA are very similar, making this
+ * Transformer "quite simple". However this will change for future Frontends
+ * having a more sophisticated Data-Model.
  * 
  * @author marco@juliano.de
  */
@@ -42,14 +68,17 @@ public class Re2QaTransformer implements Transformer {
   @Override
   public Choice re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Choice re) {
     Choice qa = null;
-    if (re != null) {
-      final Variant parentVariant = re2qa(re.getParentVariant());
-      final Purpose purpose = re2qa(re.getPurpose());
-      final List<Variant> variants = new ArrayList<Variant>();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Variant v : re.getVariants()) {
-        variants.add(re2qa(v));
-      }
-      qa = new Choice(parentVariant, purpose, variants);
+    if (re instanceof org.psikeds.resolutionengine.interfaces.pojos.VariantChoice) {
+      qa = re2qa((org.psikeds.resolutionengine.interfaces.pojos.VariantChoice) re);
+    }
+    else if (re instanceof org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice) {
+      qa = re2qa((org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice) re);
+    }
+    else if (re instanceof org.psikeds.resolutionengine.interfaces.pojos.ConceptChoice) {
+      qa = re2qa((org.psikeds.resolutionengine.interfaces.pojos.ConceptChoice) re);
+    }
+    else {
+      throw new IllegalArgumentException("Unexpected kind of Choice: " + String.valueOf(re));
     }
     return qa;
   }
@@ -57,23 +86,137 @@ public class Re2QaTransformer implements Transformer {
   @Override
   public org.psikeds.resolutionengine.interfaces.pojos.Choice qa2re(final Choice qa) {
     org.psikeds.resolutionengine.interfaces.pojos.Choice re = null;
-    if (qa != null) {
-      final org.psikeds.resolutionengine.interfaces.pojos.Variant parentVariant = qa2re(qa.getParentVariant());
-      final org.psikeds.resolutionengine.interfaces.pojos.Purpose purpose = qa2re(qa.getPurpose());
-      final List<org.psikeds.resolutionengine.interfaces.pojos.Variant> variants = new ArrayList<org.psikeds.resolutionengine.interfaces.pojos.Variant>();
-      for (final Variant v : qa.getVariants()) {
-        variants.add(qa2re(v));
-      }
-      re = new org.psikeds.resolutionengine.interfaces.pojos.Choice(parentVariant, purpose, variants);
+    if (qa instanceof VariantChoice) {
+      re = qa2re((VariantChoice) qa);
+    }
+    else if (qa instanceof FeatureChoice) {
+      re = qa2re((FeatureChoice) qa);
+    }
+    else if (qa instanceof ConceptChoice) {
+      re = qa2re((ConceptChoice) qa);
+    }
+    else {
+      throw new IllegalArgumentException("Unexpected kind of Choice: " + String.valueOf(qa));
     }
     return re;
   }
 
   @Override
+  public Choices re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Choices re) {
+    Choices qa = null;
+    if (re != null) {
+      qa = new Choices();
+      for (final org.psikeds.resolutionengine.interfaces.pojos.Choice c : re) {
+        qa.add(re2qa(c));
+      }
+    }
+    return qa;
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.Choices qa2re(final Choices qa) {
+    org.psikeds.resolutionengine.interfaces.pojos.Choices re = null;
+    if (qa != null) {
+      re = new org.psikeds.resolutionengine.interfaces.pojos.Choices();
+      for (final Choice c : qa) {
+        re.add(qa2re(c));
+      }
+    }
+    return re;
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.Concept qa2re(final Concept qa) {
+    return (qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Concept(qa.getLabel(), qa.getDescription(), qa.getConceptID(), qa.getFeatureIds(), qa2re(qa.getValues())));
+  }
+
+  @Override
+  public Concept re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Concept re) {
+    return (re == null ? null : new Concept(re.getLabel(), re.getDescription(), re.getConceptID(), re.getFeatureIds(), re2qa(re.getValues())));
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.ConceptChoice qa2re(final ConceptChoice qa) {
+    return (qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.ConceptChoice(qa.getParentVariantID(), qa2re(qa.getConcepts())));
+  }
+
+  @Override
+  public ConceptChoice re2qa(final org.psikeds.resolutionengine.interfaces.pojos.ConceptChoice re) {
+    return (re == null ? null : new ConceptChoice(re.getParentVariantID(), re2qa(re.getConcepts())));
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.ConceptChoices qa2re(final ConceptChoices qa) {
+    org.psikeds.resolutionengine.interfaces.pojos.ConceptChoices re = null;
+    if (qa != null) {
+      re = new org.psikeds.resolutionengine.interfaces.pojos.ConceptChoices();
+      for (final ConceptChoice c : qa) {
+        re.add(qa2re(c));
+      }
+    }
+    return re;
+  }
+
+  @Override
+  public ConceptChoices re2qa(final org.psikeds.resolutionengine.interfaces.pojos.ConceptChoices re) {
+    ConceptChoices qa = null;
+    if (re != null) {
+      qa = new ConceptChoices();
+      for (final org.psikeds.resolutionengine.interfaces.pojos.ConceptChoice c : re) {
+        qa.add(re2qa(c));
+      }
+    }
+    return qa;
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.ConceptDecission qa2re(final ConceptDecission qa) {
+    return (qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.ConceptDecission(qa.getVariantID(), qa.getConceptID()));
+  }
+
+  @Override
+  public ConceptDecission re2qa(final org.psikeds.resolutionengine.interfaces.pojos.ConceptDecission re) {
+    return (re == null ? null : new ConceptDecission(re.getVariantID(), re.getConceptID()));
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.Concepts qa2re(final Concepts qa) {
+    org.psikeds.resolutionengine.interfaces.pojos.Concepts re = null;
+    if (qa != null) {
+      re = new org.psikeds.resolutionengine.interfaces.pojos.Concepts();
+      for (final Concept c : qa) {
+        re.add(qa2re(c));
+      }
+    }
+    return re;
+  }
+
+  @Override
+  public Concepts re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Concepts re) {
+    Concepts qa = null;
+    if (re != null) {
+      qa = new Concepts();
+      for (final org.psikeds.resolutionengine.interfaces.pojos.Concept c : re) {
+        qa.add(re2qa(c));
+      }
+    }
+    return qa;
+  }
+
+  @Override
   public Decission re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Decission re) {
     Decission qa = null;
-    if (re != null) {
-      qa = new Decission(re.getPurposeID(), re.getVariantID());
+    if (re instanceof org.psikeds.resolutionengine.interfaces.pojos.VariantDecission) {
+      qa = re2qa((org.psikeds.resolutionengine.interfaces.pojos.VariantDecission) re);
+    }
+    else if (re instanceof org.psikeds.resolutionengine.interfaces.pojos.FeatureDecission) {
+      qa = re2qa((org.psikeds.resolutionengine.interfaces.pojos.FeatureDecission) re);
+    }
+    else if (re instanceof org.psikeds.resolutionengine.interfaces.pojos.ConceptDecission) {
+      qa = re2qa((org.psikeds.resolutionengine.interfaces.pojos.ConceptDecission) re);
+    }
+    else {
+      throw new IllegalArgumentException("Unexpected kind of Decission: " + String.valueOf(re));
     }
     return qa;
   }
@@ -81,70 +224,221 @@ public class Re2QaTransformer implements Transformer {
   @Override
   public org.psikeds.resolutionengine.interfaces.pojos.Decission qa2re(final Decission qa) {
     org.psikeds.resolutionengine.interfaces.pojos.Decission re = null;
+    if (qa instanceof VariantDecission) {
+      re = qa2re((VariantDecission) qa);
+    }
+    else if (qa instanceof FeatureDecission) {
+      re = qa2re((FeatureDecission) qa);
+    }
+    else if (qa instanceof ConceptDecission) {
+      re = qa2re((ConceptDecission) qa);
+    }
+    else {
+      throw new IllegalArgumentException("Unexpected kind of Decission: " + String.valueOf(qa));
+    }
+    return re;
+  }
+
+  @Override
+  public Decissions re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Decissions re) {
+    Decissions qa = null;
+    if (re != null) {
+      qa = new Decissions();
+      for (final org.psikeds.resolutionengine.interfaces.pojos.Decission d : re) {
+        qa.add(re2qa(d));
+      }
+    }
+    return qa;
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.Decissions qa2re(final Decissions qa) {
+    org.psikeds.resolutionengine.interfaces.pojos.Decissions re = null;
     if (qa != null) {
-      re = new org.psikeds.resolutionengine.interfaces.pojos.Decission(qa.getPurposeID(), qa.getVariantID());
+      re = new org.psikeds.resolutionengine.interfaces.pojos.Decissions();
+      for (final Decission d : qa) {
+        re.add(qa2re(d));
+      }
+    }
+    return re;
+  }
+
+  @Override
+  public ErrorMessage re2qa(final org.psikeds.resolutionengine.interfaces.pojos.ErrorMessage re) {
+    return (re == null ? null : new ErrorMessage(re.getCode(), re.getMessage()));
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.ErrorMessage qa2re(final ErrorMessage qa) {
+    return (qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.ErrorMessage(qa.getCode(), qa.getMessage()));
+  }
+
+  @Override
+  public Errors re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Errors re) {
+    Errors qa = null;
+    if (re != null) {
+      qa = new Errors();
+      for (final org.psikeds.resolutionengine.interfaces.pojos.ErrorMessage msg : re) {
+        qa.add(re2qa(msg));
+      }
+    }
+    return qa;
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.Errors qa2re(final Errors qa) {
+    org.psikeds.resolutionengine.interfaces.pojos.Errors re = null;
+    if (qa != null) {
+      re = new org.psikeds.resolutionengine.interfaces.pojos.Errors();
+      for (final ErrorMessage msg : qa) {
+        re.add(qa2re(msg));
+      }
     }
     return re;
   }
 
   @Override
   public Feature re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Feature re) {
-    Feature qa = null;
+    return (re == null ? null : new Feature(re.getLabel(), re.getDescription(), re.getFeatureID(), re.getValueType(), re.getUnit()));
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.Feature qa2re(final Feature qa) {
+    return (qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Feature(qa.getLabel(), qa.getDescription(), qa.getFeatureID(), qa.getValueType(), qa.getUnit()));
+  }
+
+  @Override
+  public FeatureChoice re2qa(final org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice re) {
+    return (re == null ? null : new FeatureChoice(re.getParentVariantID(), re.getFeatureID(), re2qa(re.getPossibleValues())));
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice qa2re(final FeatureChoice qa) {
+    return (qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice(qa.getParentVariantID(), qa.getFeatureID(), qa2re(qa.getPossibleValues())));
+  }
+
+  @Override
+  public FeatureChoices re2qa(final org.psikeds.resolutionengine.interfaces.pojos.FeatureChoices re) {
+    FeatureChoices qa = null;
     if (re != null) {
-      qa = new Feature(re.getLabel(), re.getDescription(), re.getId(), re.getMinValue(), re.getMaxValue(), re2qa(re.getValueType()));
+      qa = new FeatureChoices();
+      for (final org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice fc : re) {
+        qa.add(re2qa(fc));
+      }
     }
     return qa;
   }
 
   @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Feature qa2re(final Feature qa) {
-    org.psikeds.resolutionengine.interfaces.pojos.Feature re = null;
+  public org.psikeds.resolutionengine.interfaces.pojos.FeatureChoices qa2re(final FeatureChoices qa) {
+    org.psikeds.resolutionengine.interfaces.pojos.FeatureChoices re = null;
     if (qa != null) {
-      re = new org.psikeds.resolutionengine.interfaces.pojos.Feature(qa.getLabel(), qa.getDescription(), qa.getId(), qa.getMinValue(), qa.getMaxValue(), qa2re(qa.getValueType()));
+      re = new org.psikeds.resolutionengine.interfaces.pojos.FeatureChoices();
+      for (final FeatureChoice fc : qa) {
+        re.add(qa2re(fc));
+      }
     }
     return re;
   }
 
   @Override
-  public FeatureValueType re2qa(final org.psikeds.resolutionengine.interfaces.pojos.FeatureValueType re) {
-    return (re == null ? null : FeatureValueType.fromValue(re.value()));
+  public FeatureDecission re2qa(final org.psikeds.resolutionengine.interfaces.pojos.FeatureDecission re) {
+    return (re == null ? null : new FeatureDecission(re.getVariantID(), re.getFeatureID(), re.getFeatureValueID()));
   }
 
   @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.FeatureValueType qa2re(final FeatureValueType qa) {
-    return (qa == null ? null : org.psikeds.resolutionengine.interfaces.pojos.FeatureValueType.fromValue(qa.value()));
+  public org.psikeds.resolutionengine.interfaces.pojos.FeatureDecission qa2re(final FeatureDecission qa) {
+    return (qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.FeatureDecission(qa.getVariantID(), qa.getFeatureID(), qa.getFeatureValueID()));
   }
 
   @Override
-  public Knowledge re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Knowledge re) {
-    Knowledge qa = null;
+  public Features re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Features re) {
+    Features qa = null;
     if (re != null) {
-      final List<KnowledgeEntity> entities = new ArrayList<KnowledgeEntity>();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity ke : re.getEntities()) {
-        entities.add(re2qa(ke));
+      qa = new Features();
+      for (final org.psikeds.resolutionengine.interfaces.pojos.Feature f : re) {
+        qa.add(re2qa(f));
       }
-      final List<Choice> choices = new ArrayList<Choice>();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Choice c : re.getChoices()) {
-        choices.add(re2qa(c));
-      }
-      qa = new Knowledge(entities, choices);
     }
     return qa;
   }
 
   @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Knowledge qa2re(final Knowledge qa) {
-    org.psikeds.resolutionengine.interfaces.pojos.Knowledge re = null;
+  public org.psikeds.resolutionengine.interfaces.pojos.Features qa2re(final Features qa) {
+    org.psikeds.resolutionengine.interfaces.pojos.Features re = null;
     if (qa != null) {
-      final List<org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity> entities = new ArrayList<org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity>();
-      for (final KnowledgeEntity ke : qa.getEntities()) {
-        entities.add(qa2re(ke));
+      re = new org.psikeds.resolutionengine.interfaces.pojos.Features();
+      for (final Feature f : qa) {
+        re.add(qa2re(f));
       }
-      final List<org.psikeds.resolutionengine.interfaces.pojos.Choice> choices = new ArrayList<org.psikeds.resolutionengine.interfaces.pojos.Choice>();
-      for (final Choice c : qa.getChoices()) {
-        choices.add(qa2re(c));
+    }
+    return re;
+  }
+
+  @Override
+  public FeatureValue re2qa(final org.psikeds.resolutionengine.interfaces.pojos.FeatureValue re) {
+    return (re == null ? null : new FeatureValue(re.getFeatureID(), re.getFeatureValueID(), re.getValue()));
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.FeatureValue qa2re(final FeatureValue qa) {
+    return (qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.FeatureValue(qa.getFeatureID(), qa.getFeatureValueID(), qa.getValue()));
+  }
+
+  @Override
+  public FeatureValues re2qa(final org.psikeds.resolutionengine.interfaces.pojos.FeatureValues re) {
+    FeatureValues qa = null;
+    if (re != null) {
+      qa = new FeatureValues();
+      for (final org.psikeds.resolutionengine.interfaces.pojos.FeatureValue fv : re) {
+        qa.add(re2qa(fv));
       }
-      re = new org.psikeds.resolutionengine.interfaces.pojos.Knowledge(entities, choices);
+    }
+    return qa;
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.FeatureValues qa2re(final FeatureValues qa) {
+    org.psikeds.resolutionengine.interfaces.pojos.FeatureValues re = null;
+    if (qa != null) {
+      re = new org.psikeds.resolutionengine.interfaces.pojos.FeatureValues();
+      for (final FeatureValue fv : qa) {
+        re.add(qa2re(fv));
+      }
+    }
+    return re;
+  }
+
+  @Override
+  public Knowledge re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Knowledge re) {
+    return (re == null ? null : new Knowledge(re2qa(re.getEntities()), re2qa(re.getChoices())));
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.Knowledge qa2re(final Knowledge qa) {
+    return (qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Knowledge(qa2re(qa.getEntities()), qa2re(qa.getChoices())));
+  }
+
+  @Override
+  public KnowledgeEntities re2qa(final org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntities re) {
+    KnowledgeEntities qa = null;
+    if (re != null) {
+      qa = new KnowledgeEntities();
+      for (final org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity ke : re) {
+        qa.add(re2qa(ke));
+      }
+    }
+    return qa;
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntities qa2re(final KnowledgeEntities qa) {
+    org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntities re = null;
+    if (qa != null) {
+      re = new org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntities();
+      for (final KnowledgeEntity ke : qa) {
+        re.add(qa2re(ke));
+      }
     }
     return re;
   }
@@ -153,17 +447,15 @@ public class Re2QaTransformer implements Transformer {
   public KnowledgeEntity re2qa(final org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity re) {
     KnowledgeEntity qa = null;
     if (re != null) {
+      final long quantity = re.getQuantity();
       final Purpose purpose = re2qa(re.getPurpose());
       final Variant variant = re2qa(re.getVariant());
-      final List<KnowledgeEntity> siblings = new ArrayList<KnowledgeEntity>();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity ke : re.getSiblings()) {
-        siblings.add(re2qa(ke));
-      }
-      final List<Choice> choices = new ArrayList<Choice>();
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Choice c : re.getChoices()) {
-        choices.add(re2qa(c));
-      }
-      qa = new KnowledgeEntity(purpose, variant, siblings, choices);
+      final FeatureValues features = re2qa(re.getFeatures());
+      final KnowledgeEntities children = re2qa(re.getChildren());
+      final VariantChoices possibleVariants = re2qa(re.getPossibleVariants());
+      final FeatureChoices possibleFeatures = re2qa(re.getPossibleFeatures());
+      final ConceptChoices possibleConcepts = re2qa(re.getPossibleConcepts());
+      qa = new KnowledgeEntity(quantity, purpose, variant, features, children, possibleVariants, possibleFeatures, possibleConcepts);
     }
     return qa;
   }
@@ -172,39 +464,67 @@ public class Re2QaTransformer implements Transformer {
   public org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity qa2re(final KnowledgeEntity qa) {
     org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity re = null;
     if (qa != null) {
+      final long quantity = qa.getQuantity();
       final org.psikeds.resolutionengine.interfaces.pojos.Purpose purpose = qa2re(qa.getPurpose());
       final org.psikeds.resolutionengine.interfaces.pojos.Variant variant = qa2re(qa.getVariant());
-      final List<org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity> siblings = new ArrayList<org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity>();
-      for (final KnowledgeEntity ke : qa.getSiblings()) {
-        siblings.add(qa2re(ke));
-      }
-      final List<org.psikeds.resolutionengine.interfaces.pojos.Choice> choices = new ArrayList<org.psikeds.resolutionengine.interfaces.pojos.Choice>();
-      for (final Choice c : qa.getChoices()) {
-        choices.add(qa2re(c));
-      }
-      re = new org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity(purpose, variant, siblings, choices);
+      final org.psikeds.resolutionengine.interfaces.pojos.FeatureValues features = qa2re(qa.getFeatures());
+      final org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntities children = qa2re(qa.getChildren());
+      final org.psikeds.resolutionengine.interfaces.pojos.VariantChoices possibleVariants = qa2re(qa.getPossibleVariants());
+      final org.psikeds.resolutionengine.interfaces.pojos.FeatureChoices possibleFeatures = qa2re(qa.getPossibleFeatures());
+      final org.psikeds.resolutionengine.interfaces.pojos.ConceptChoices possibleConcepts = qa2re(qa.getPossibleConcepts());
+      re = new org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity(quantity, purpose, variant, features, children, possibleVariants, possibleFeatures, possibleConcepts);
     }
     return re;
   }
 
   @Override
   public Metadata re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Metadata re) {
-    return (re == null ? null : new Metadata(re.getInfomap()));
+    return (re == null ? null : new Metadata(re.getInfoMap()));
   }
 
   @Override
   public org.psikeds.resolutionengine.interfaces.pojos.Metadata qa2re(final Metadata qa) {
-    return (qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Metadata(qa.getInfomap()));
+    return (qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Metadata(qa.getInfoMap()));
   }
 
   @Override
   public Purpose re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Purpose re) {
-    return re == null ? null : new Purpose(re.getLabel(), re.getDescription(), re.getId(), re.isRoot());
+    return re == null ? null : new Purpose(re.getLabel(), re.getDescription(), re.getPurposeID(), re.isRoot());
   }
 
   @Override
   public org.psikeds.resolutionengine.interfaces.pojos.Purpose qa2re(final Purpose qa) {
-    return qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Purpose(qa.getLabel(), qa.getDescription(), qa.getId(), qa.isRoot());
+    return qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Purpose(qa.getLabel(), qa.getDescription(), qa.getPurposeID(), qa.isRoot());
+  }
+
+  @Override
+  public ResolutionMessage re2qa(final org.psikeds.resolutionengine.interfaces.pojos.ResolutionMessage re) {
+    ResolutionMessage qa = null;
+    if (re instanceof org.psikeds.resolutionengine.interfaces.pojos.Warning) {
+      qa = re2qa((org.psikeds.resolutionengine.interfaces.pojos.Warning) re);
+    }
+    else if (re instanceof org.psikeds.resolutionengine.interfaces.pojos.ErrorMessage) {
+      qa = re2qa((org.psikeds.resolutionengine.interfaces.pojos.ErrorMessage) re);
+    }
+    else {
+      throw new IllegalArgumentException("Unexpected kind of ResolutionMessage: " + String.valueOf(re));
+    }
+    return qa;
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.ResolutionMessage qa2re(final ResolutionMessage qa) {
+    org.psikeds.resolutionengine.interfaces.pojos.ResolutionMessage re = null;
+    if (qa instanceof Warning) {
+      re = qa2re((Warning) qa);
+    }
+    else if (qa instanceof ErrorMessage) {
+      re = qa2re((ErrorMessage) qa);
+    }
+    else {
+      throw new IllegalArgumentException("Unexpected kind of ResolutionMessage: " + String.valueOf(qa));
+    }
+    return re;
   }
 
   @Override
@@ -214,8 +534,8 @@ public class Re2QaTransformer implements Transformer {
       final String sessionID = re.getSessionID();
       final Metadata metadata = re2qa(re.getMetadata());
       final Knowledge knowledge = re2qa(re.getKnowledge());
-      final Decission decission = re2qa(re.getMadeDecission());
-      qa = new ResolutionRequest(sessionID, metadata, knowledge, decission);
+      final Decissions decissions = re2qa(re.getDecissions());
+      qa = new ResolutionRequest(sessionID, metadata, knowledge, decissions);
     }
     return qa;
   }
@@ -227,8 +547,8 @@ public class Re2QaTransformer implements Transformer {
       final String sessionID = qa.getSessionID();
       final org.psikeds.resolutionengine.interfaces.pojos.Metadata metadata = qa2re(qa.getMetadata());
       final org.psikeds.resolutionengine.interfaces.pojos.Knowledge knowledge = qa2re(qa.getKnowledge());
-      final org.psikeds.resolutionengine.interfaces.pojos.Decission decission = qa2re(qa.getMadeDecission());
-      re = new org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest(sessionID, metadata, knowledge, decission);
+      final org.psikeds.resolutionengine.interfaces.pojos.Decissions decissions = qa2re(qa.getDecissions());
+      re = new org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest(sessionID, metadata, knowledge, decissions);
     }
     return re;
   }
@@ -240,11 +560,9 @@ public class Re2QaTransformer implements Transformer {
       final String sessionID = re.getSessionID();
       final Metadata metadata = re2qa(re.getMetadata());
       final Knowledge knowledge = re2qa(re.getKnowledge());
-      final boolean resolved = re.isResolved();
-      qa = new ResolutionResponse(sessionID, metadata, knowledge, resolved);
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Choice c : re.getPossibleChoices()) {
-        qa.addPossibleChoice(re2qa(c));
-      }
+      final Errors errors = re2qa(re.getErrors());
+      final Warnings warnings = re2qa(re.getWarnings());
+      qa = new ResolutionResponse(sessionID, metadata, knowledge, errors, warnings);
     }
     return qa;
   }
@@ -256,31 +574,136 @@ public class Re2QaTransformer implements Transformer {
       final String sessionID = qa.getSessionID();
       final org.psikeds.resolutionengine.interfaces.pojos.Metadata metadata = qa2re(qa.getMetadata());
       final org.psikeds.resolutionengine.interfaces.pojos.Knowledge knowledge = qa2re(qa.getKnowledge());
-      // choices and resolved will be automatically calculated by this constructor
-      re = new org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse(sessionID, metadata, knowledge);
+      final org.psikeds.resolutionengine.interfaces.pojos.Errors errors = qa2re(qa.getErrors());
+      final org.psikeds.resolutionengine.interfaces.pojos.Warnings warnings = qa2re(qa.getWarnings());
+      re = new org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse(sessionID, metadata, knowledge, errors, warnings);
     }
     return re;
   }
 
   @Override
   public Variant re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Variant re) {
-    Variant qa = null;
+    return (re == null ? null : new Variant(re.getLabel(), re.getDescription(), re.getVariantID(), re2qa(re.getFeatures())));
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.Variant qa2re(final Variant qa) {
+    return (qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Variant(qa.getLabel(), qa.getDescription(), qa.getVariantID(), qa2re(qa.getFeatures())));
+  }
+
+  @Override
+  public VariantChoice re2qa(final org.psikeds.resolutionengine.interfaces.pojos.VariantChoice re) {
+    VariantChoice qa = null;
     if (re != null) {
-      qa = new Variant(re.getLabel(), re.getDescription(), re.getId());
-      for (final org.psikeds.resolutionengine.interfaces.pojos.Feature f : re.getFeatures()) {
-        qa.addFeature(re2qa(f));
+      final long qty = re.getQuantity();
+      final String parentVariantID = re.getParentVariantID();
+      final Purpose purpose = re2qa(re.getPurpose());
+      final Variants variants = re2qa(re.getVariants());
+      qa = new VariantChoice(parentVariantID, purpose, variants, qty);
+    }
+    return qa;
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.VariantChoice qa2re(final VariantChoice qa) {
+    org.psikeds.resolutionengine.interfaces.pojos.VariantChoice re = null;
+    if (qa != null) {
+      final long qty = qa.getQuantity();
+      final String parentVariantID = qa.getParentVariantID();
+      final org.psikeds.resolutionengine.interfaces.pojos.Purpose purpose = qa2re(qa.getPurpose());
+      final org.psikeds.resolutionengine.interfaces.pojos.Variants variants = qa2re(qa.getVariants());
+      re = new org.psikeds.resolutionengine.interfaces.pojos.VariantChoice(parentVariantID, purpose, variants, qty);
+    }
+    return re;
+  }
+
+  @Override
+  public VariantChoices re2qa(final org.psikeds.resolutionengine.interfaces.pojos.VariantChoices re) {
+    VariantChoices qa = null;
+    if (re != null) {
+      qa = new VariantChoices();
+      for (final org.psikeds.resolutionengine.interfaces.pojos.VariantChoice vc : re) {
+        qa.add(re2qa(vc));
       }
     }
     return qa;
   }
 
   @Override
-  public org.psikeds.resolutionengine.interfaces.pojos.Variant qa2re(final Variant qa) {
-    org.psikeds.resolutionengine.interfaces.pojos.Variant re = null;
+  public org.psikeds.resolutionengine.interfaces.pojos.VariantChoices qa2re(final VariantChoices qa) {
+    org.psikeds.resolutionengine.interfaces.pojos.VariantChoices re = null;
     if (qa != null) {
-      re = new org.psikeds.resolutionengine.interfaces.pojos.Variant(qa.getLabel(), qa.getDescription(), qa.getId());
-      for (final Feature f : qa.getFeatures()) {
-        re.addFeature(qa2re(f));
+      re = new org.psikeds.resolutionengine.interfaces.pojos.VariantChoices();
+      for (final VariantChoice vc : qa) {
+        re.add(qa2re(vc));
+      }
+    }
+    return re;
+  }
+
+  @Override
+  public VariantDecission re2qa(final org.psikeds.resolutionengine.interfaces.pojos.VariantDecission re) {
+    return (re == null ? null : new VariantDecission(re.getPurposeID(), re.getVariantID()));
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.VariantDecission qa2re(final VariantDecission qa) {
+    return (qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.VariantDecission(qa.getPurposeID(), qa.getVariantID()));
+  }
+
+  @Override
+  public Variants re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Variants re) {
+    Variants qa = null;
+    if (re != null) {
+      qa = new Variants();
+      for (final org.psikeds.resolutionengine.interfaces.pojos.Variant v : re) {
+        qa.add(re2qa(v));
+      }
+    }
+    return qa;
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.Variants qa2re(final Variants qa) {
+    org.psikeds.resolutionengine.interfaces.pojos.Variants re = null;
+    if (qa != null) {
+      re = new org.psikeds.resolutionengine.interfaces.pojos.Variants();
+      for (final Variant v : qa) {
+        re.add(qa2re(v));
+      }
+    }
+    return re;
+  }
+
+  @Override
+  public Warning re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Warning re) {
+    return (re == null ? null : new Warning(re.getMessage()));
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.Warning qa2re(final Warning qa) {
+    return (qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Warning(qa.getMessage()));
+  }
+
+  @Override
+  public Warnings re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Warnings re) {
+    Warnings qa = null;
+    if (re != null) {
+      qa = new Warnings();
+      for (final org.psikeds.resolutionengine.interfaces.pojos.Warning w : re) {
+        qa.add(re2qa(w));
+      }
+    }
+    return qa;
+  }
+
+  @Override
+  public org.psikeds.resolutionengine.interfaces.pojos.Warnings qa2re(final Warnings qa) {
+    org.psikeds.resolutionengine.interfaces.pojos.Warnings re = null;
+    if (qa != null) {
+      re = new org.psikeds.resolutionengine.interfaces.pojos.Warnings();
+      for (final Warning w : qa) {
+        re.add(qa2re(w));
       }
     }
     return re;

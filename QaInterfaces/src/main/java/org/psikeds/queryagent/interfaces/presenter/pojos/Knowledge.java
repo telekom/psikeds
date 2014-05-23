@@ -15,8 +15,6 @@
 package org.psikeds.queryagent.interfaces.presenter.pojos;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -30,13 +28,6 @@ import javax.xml.bind.annotation.XmlRootElement;
  * created. In the End there is a Tree of Knowledge-Entities and no Choices
  * left, then our Resolution-Process is finished.
  * 
- * The Knowledge-Datastructure is the main Object-Model that must/can be
- * displayed in a GUI, e.g. rendering Knowledge-Entities as a Tree and Choices
- * as Radio-Buttons or Checkboxes in HTML.
- * 
- * Note: Reading from and writing to JSON works out of the box.
- * However for XML the XmlRootElement annotation is required.
- * 
  * @author marco@juliano.de
  * 
  */
@@ -45,31 +36,34 @@ public class Knowledge extends POJO implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private List<KnowledgeEntity> entities;
-  private List<Choice> choices;
+  private KnowledgeEntities entities;
+  private VariantChoices choices;
 
   public Knowledge() {
     this(null);
   }
 
-  public Knowledge(final List<Choice> choices) {
+  public Knowledge(final VariantChoices choices) {
     this(null, choices);
   }
 
-  public Knowledge(final List<KnowledgeEntity> entities, final List<Choice> choices) {
+  public Knowledge(final KnowledgeEntities entities, final VariantChoices choices) {
     super();
     this.entities = entities;
     this.choices = choices;
   }
 
-  public List<KnowledgeEntity> getEntities() {
+  // ----------------------------------------------------------------
+
+  public KnowledgeEntities getEntities() {
     if (this.entities == null) {
-      this.entities = new ArrayList<KnowledgeEntity>();
+      this.entities = new KnowledgeEntities();
     }
     return this.entities;
   }
 
-  public void setEntities(final List<KnowledgeEntity> entities) {
+  public void setEntities(final KnowledgeEntities entities) {
+    clearEntities();
     this.entities = entities;
   }
 
@@ -79,20 +73,49 @@ public class Knowledge extends POJO implements Serializable {
     }
   }
 
-  public List<Choice> getChoices() {
+  public void addAllEntities(final KnowledgeEntities entities) {
+    if ((entities != null) && !entities.isEmpty()) {
+      getEntities().addAll(entities);
+    }
+  }
+
+  public void clearEntities() {
+    if (this.entities != null) {
+      this.entities.clear();
+      this.entities = null;
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  public VariantChoices getChoices() {
     if (this.choices == null) {
-      this.choices = new ArrayList<Choice>();
+      this.choices = new VariantChoices();
     }
     return this.choices;
   }
 
-  public void setChoices(final List<Choice> choices) {
+  public void setChoices(final VariantChoices choices) {
+    clearChoices();
     this.choices = choices;
   }
 
-  public void addChoice(final Choice chc) {
-    if (chc != null) {
-      getChoices().add(chc);
+  public void addChoice(final VariantChoice choice) {
+    if (choice != null) {
+      getChoices().add(choice);
+    }
+  }
+
+  public void addAllChoices(final VariantChoices choices) {
+    if ((choices != null) && !choices.isEmpty()) {
+      getChoices().addAll(choices);
+    }
+  }
+
+  public void clearChoices() {
+    if (this.choices != null) {
+      this.choices.clear();
+      this.choices = null;
     }
   }
 }

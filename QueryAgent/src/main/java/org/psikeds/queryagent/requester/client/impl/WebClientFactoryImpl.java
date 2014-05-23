@@ -16,7 +16,6 @@ package org.psikeds.queryagent.requester.client.impl;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -24,8 +23,11 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.commons.lang.Validate;
 import org.apache.cxf.common.util.StringUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
+
+import org.springframework.beans.factory.InitializingBean;
 
 import org.psikeds.queryagent.requester.client.ResolutionEngineClient;
 import org.psikeds.queryagent.requester.client.WebClientFactory;
@@ -35,47 +37,44 @@ import org.psikeds.queryagent.requester.client.WebClientFactory;
  * 
  * @author marco@juliano.de
  */
-public class WebClientFactoryImpl implements WebClientFactory {
+public class WebClientFactoryImpl implements InitializingBean, WebClientFactory {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WebClientFactoryImpl.class);
 
-  public static final boolean DEFAULT_CACHE_CLIENTS = true;
   public static final String DEFAULT_ACCEPT_HEADER = MediaType.APPLICATION_JSON;
   public static final String DEFAULT_CONTENT_TYPE = MediaType.APPLICATION_JSON;
   public static final String DEFAULT_USER_AGENT = ResolutionEngineClient.class.getName();
 
-  private final Map<String, WebClient> clients = new ConcurrentHashMap<String, WebClient>();
   private String acceptHeader;
   private String contentTypeHeader;
   private String userAgent;
-  private List<Object> providers;
   private boolean cacheClients;
+  private List<Object> providers;
+  private Map<String, WebClient> cache;
 
   public WebClientFactoryImpl() {
     this(null);
   }
 
   public WebClientFactoryImpl(final List<Object> providers) {
-    this(DEFAULT_ACCEPT_HEADER, DEFAULT_CONTENT_TYPE, providers);
+    this(null, providers);
   }
 
-  public WebClientFactoryImpl(final String acceptHeader, final String contentTypeHeader) {
-    this(acceptHeader, contentTypeHeader, null);
+  public WebClientFactoryImpl(final Map<String, WebClient> cache, final List<Object> providers) {
+    this(DEFAULT_ACCEPT_HEADER, DEFAULT_CONTENT_TYPE, DEFAULT_USER_AGENT, (cache != null), cache, providers);
   }
 
-  public WebClientFactoryImpl(final String acceptHeader, final String contentTypeHeader, final List<Object> providers) {
-    this(acceptHeader, contentTypeHeader, providers, DEFAULT_USER_AGENT, DEFAULT_CACHE_CLIENTS);
-  }
-
-  public WebClientFactoryImpl(final String acceptHeader, final String contentTypeHeader, final List<Object> providers, final String userAgent, final boolean cacheClients) {
+  public WebClientFactoryImpl(final String acceptHeader, final String contentTypeHeader, final String userAgent, final boolean cacheClients, final Map<String, WebClient> cache,
+      final List<Object> providers) {
     this.acceptHeader = acceptHeader;
     this.contentTypeHeader = contentTypeHeader;
-    this.providers = providers;
     this.userAgent = userAgent;
+    this.cache = cache;
+    this.providers = providers;
     this.cacheClients = cacheClients;
   }
 
-  // ------------------------------------------------------
+  // ----------------------------------------------------------------
 
   public String getAcceptHeader() {
     return this.acceptHeader;
@@ -117,6 +116,36 @@ public class WebClientFactoryImpl implements WebClientFactory {
     this.cacheClients = cacheClients;
   }
 
+  public Map<String, WebClient> getCache() {
+    return this.cache;
+  }
+
+  public void setCache(final Map<String, WebClient> cache) {
+    this.cache = cache;
+  }
+
+  // ----------------------------------------------------------------
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    if (LOGGER.isInfoEnabled()) {
+      final StringBuilder sb = new StringBuilder("Config: Default-Accept-Header: {}\n");
+      sb.append("Default-Content-Type-Header: {}\n");
+      sb.append("Default-User-Agent: {}\n");
+      sb.append("Caching Clients: {}");
+      if (this.cache == null) {
+        sb.append("\nNo WebClient-Cache supplied.");
+      }
+      if ((this.providers == null) || this.providers.isEmpty()) {
+        sb.append("\nNo JAX-RS-Providers defined.");
+      }
+      LOGGER.info(sb.toString(), this.acceptHeader, this.contentTypeHeader, this.userAgent, this.cacheClients);
+    }
+    Validate.isTrue(!((this.cache == null) && this.cacheClients), "WebClients shall be cached but no Cache-Implementation supplied!!");
+  }
+
+  // ----------------------------------------------------------------
+
   /**
    * Create a new CXF-WebClient for the Target-URL using the Factory-Default-Settings
    * 
@@ -144,24 +173,27 @@ public class WebClientFactoryImpl implements WebClientFactory {
    */
   @Override
   public WebClient getClient(final String url, String accept, String content, String agent) {
-    WebClient wc = this.cacheClients ? this.clients.get(url) : null;
-    if (wc != null) {
-      LOGGER.debug("Reusing cached WebClient: {}", wc);
-      return wc;
+    if (StringUtils.isEmpty(url)) {
+      throw new IllegalArgumentException("Cannot create WebClient without URL!");
     }
-
-    final int size = this.providers == null ? 0 : this.providers.size();
-    if (size > 0) {
-      LOGGER.trace("Creating new WebClient for {} using {} providers.", url, size);
-      // if cache client, we also must be thread safe!
-      wc = WebClient.create(url, this.providers, this.cacheClients);
+    // get web client from cache
+    WebClient wc = (this.cacheClients ? this.cache.get(url) : null);
+    if (wc != null) {
+      LOGGER.debug("Reusing cached WebClient for URL {}", url);
     }
     else {
-      LOGGER.trace("Creating new WebClient for {} without any providers.", url);
-      // if cache client, we also must be thread safe!
-      wc = WebClient.create(url, this.cacheClients);
+      // if caching clients, we also must be thread safe!
+      final boolean threadsafe = this.cacheClients;
+      final int size = this.providers == null ? 0 : this.providers.size();
+      if (size > 0) {
+        LOGGER.debug("Creating new WebClient for URL {} using {} JAX-RS-Providers.", url, size);
+        wc = WebClient.create(url, this.providers, threadsafe);
+      }
+      else {
+        LOGGER.debug("Creating new WebClient for URL {} without any JAX-RS-Provider.", url);
+        wc = WebClient.create(url, threadsafe);
+      }
     }
-
     // set accept header if specified
     if (StringUtils.isEmpty(accept)) {
       accept = this.acceptHeader;
@@ -186,12 +218,10 @@ public class WebClientFactoryImpl implements WebClientFactory {
       LOGGER.trace("{} = {}", HttpHeaders.USER_AGENT, agent);
       wc.replaceHeader(HttpHeaders.USER_AGENT, agent);
     }
-
     if (this.cacheClients) {
-      LOGGER.trace("Caching WebClient for later reuse.");
-      this.clients.put(url, wc);
+      LOGGER.trace("Caching WebClient for URL {} for later reuse: {}", url, wc);
+      this.cache.put(url, wc);
     }
-    LOGGER.debug("Created new WebClient: {}", wc);
     return wc;
   }
 }

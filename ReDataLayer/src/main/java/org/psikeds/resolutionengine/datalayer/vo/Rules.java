@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -18,12 +18,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
- * List of all rules.
- *
+ * A List of Rules.
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
+@XmlRootElement(name = "Rules")
 public class Rules extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -47,7 +50,7 @@ public class Rules extends ValueObject implements Serializable {
   }
 
   public boolean addRule(final Rule value) {
-    return getRule().add(value);
+    return ((value != null) && getRule().add(value));
   }
 
   public void setRule(final List<Rule> lst) {

@@ -24,8 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.cxf.interceptor.Fault;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import org.psikeds.common.services.AbstractSOAPService;
 import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionRequest;
 import org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionResponse;
@@ -50,20 +48,53 @@ public class ResolutionSOAPService extends AbstractSOAPService {
 
   private final ResolutionService delegate;
 
-  @Autowired
   public ResolutionSOAPService(final ResolutionService delegate) {
     super();
     this.delegate = delegate;
-    this.context = null;
   }
 
+  public ResolutionSOAPService(final ResolutionService delegate, final boolean asyncSupported) {
+    super(asyncSupported);
+    this.delegate = delegate;
+  }
+
+  public ResolutionSOAPService(final ResolutionService delegate, final long suspensionTimeout) {
+    super(suspensionTimeout);
+    this.delegate = delegate;
+  }
+
+  public ResolutionSOAPService(final ResolutionService delegate, final boolean asyncSupported, final long suspensionTimeout) {
+    super(asyncSupported, suspensionTimeout);
+    this.delegate = delegate;
+  }
+
+  // -----------------------------------------------------
+
   @WebMethod(operationName = "doInit")
-  @WebResult(name = "ResolutionResponse", targetNamespace = "org.psikeds.queryagent.soap")
+  @WebResult(name = "InitResponse", targetNamespace = "org.psikeds.queryagent.soap")
   public ResolutionResponse doInit(final String reqid) {
     try {
       final ResolutionResponse resp = (ResolutionResponse) handleRequest(reqid, getExecutable(this.delegate, "init"));
       if ((resp == null) || (resp.getKnowledge() == null) || (resp.getSessionID() == null)) {
         throw new IllegalStateException("Failed to create Session and to initialize Resolution!");
+      }
+      return resp;
+    }
+    catch (final Exception ex) {
+      throw new Fault(ex);
+    }
+  }
+
+  @WebMethod(operationName = "getCurrent")
+  @WebResult(name = "CurrentResponse", targetNamespace = "org.psikeds.queryagent.soap")
+  public ResolutionResponse getCurrent(@WebParam(name = "SessionID") final String sessionID, final String reqid) {
+    try {
+      if (sessionID == null) {
+        throw new IllegalArgumentException("No Session-ID!");
+      }
+      final ResolutionResponse resp = (ResolutionResponse) handleRequest(reqid, getExecutable(this.delegate, "current"), sessionID);
+      if ((resp == null) || (resp.getKnowledge() == null) || (resp.getSessionID() == null)) {
+        throw new IllegalArgumentException(String.valueOf(sessionID));
       }
       return resp;
     }

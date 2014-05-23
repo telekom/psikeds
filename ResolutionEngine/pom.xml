@@ -2,7 +2,7 @@
 <!--
 psiKeds :- ps induced knowledge entity delivery system
 
-Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
 
 This file is free software: you can redistribute
 it and/or modify it under the terms of the
@@ -22,13 +22,13 @@ For details see file LICENSING in the top project directory
   <parent>
     <groupId>org.psikeds</groupId>
     <artifactId>psikeds</artifactId>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>0.8.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>ResolutionEngine</artifactId>
   <packaging>war</packaging>
   <name>ResolutionEngine</name>
-  <description>The ResolutionEngine of psiKeds (RelCu)</description>
+  <description>The ResolutionEngine of psiKeds</description>
 
   <dependencies>
     <!-- Spring-Framework for DI -->

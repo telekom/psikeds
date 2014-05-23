@@ -48,8 +48,8 @@ public class StaxParserTest {
   private static final Logger LOGGER = LoggerFactory.getLogger(StaxParserTest.class);
 
   private static final String RESOURCE_PATH = "./src/main/resources/";
-  private static final String XSD = System.getProperty("org.psikeds.test.kb.xsd", RESOURCE_PATH + "kb.xsd");
-  private static final String XML = System.getProperty("org.psikeds.test.kb.xml", RESOURCE_PATH + "kb.xml");
+  private static final String XSD = System.getProperty("org.psikeds.test.kb.xsd", RESOURCE_PATH + "psikeds.xsd");
+  private static final String XML = System.getProperty("org.psikeds.test.kb.xml", RESOURCE_PATH + "default.knowledgebase.xml");
 
   private static final String ENCODING = System.getProperty("org.psikeds.test.encoding", "UTF-8");
 
@@ -125,11 +125,8 @@ public class StaxParserTest {
       LOGGER.info(message);
       fail(message);
     }
-    assertEquals("We expected just 1 XML-Element (RootElement) but got "
-        + numElems, 1, numElems);
-    assertEquals("Number of Elements counted by Parser (" + numElems
-        + ") and CallBackHandler (" + tcbh.counter + ") are not equal.",
-        numElems, tcbh.counter);
+    assertEquals("We expected just 1 XML-Element (RootElement) but got " + numElems, 1, numElems);
+    assertEquals("Number of Elements counted by Parser (" + numElems + ") and CallBackHandler (" + tcbh.counter + ") are not equal.", numElems, tcbh.counter);
   }
 
   /**
@@ -151,11 +148,8 @@ public class StaxParserTest {
       LOGGER.info(message);
       fail(message);
     }
-    assertEquals("We expected just 1 XML-Element (RootElement) but got "
-        + numElems, 1, numElems);
-    assertEquals("Number of Elements counted by Parser (" + numElems
-        + ") and CallBackHandler (" + tcbh.counter + ") are not equal.",
-        numElems, tcbh.counter);
+    assertEquals("We expected just 1 XML-Element (RootElement) but got " + numElems, 1, numElems);
+    assertEquals("Number of Elements counted by Parser (" + numElems + ") and CallBackHandler (" + tcbh.counter + ") are not equal.", numElems, tcbh.counter);
   }
 
   /**
@@ -203,7 +197,8 @@ public class StaxParserTest {
   @Test
   public void testXmlParserWithFileAndSkippingElements() {
     final TestCallbackHandler tcbh = new TestCallbackHandler();
-    final int numSkipped = 8;
+    final int numSkipped = 16; // skip root, all metadata and data-element
+    final long expected = 11; // count elements within data, i.e. sensors, purposes, variants, rules, relations, ...
     long numElems = 0;
     try {
       LOGGER.info("Parsing XML " + XML + " skipping " + numSkipped + " Elements ...");
@@ -219,7 +214,6 @@ public class StaxParserTest {
       LOGGER.info(message);
       fail(message);
     }
-    final long expected = 7;
     assertEquals("We expected " + expected + " XML-Elements but got " + numElems, expected, numElems);
     assertEquals("Number of Elements counted by Parser (" + numElems + ") and CallBackHandler (" + tcbh.counter + ") are not equal.", numElems, tcbh.counter);
   }

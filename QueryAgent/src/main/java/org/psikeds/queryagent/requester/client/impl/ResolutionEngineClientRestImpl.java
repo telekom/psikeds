@@ -14,11 +14,17 @@
  *******************************************************************************/
 package org.psikeds.queryagent.requester.client.impl;
 
+import java.io.IOException;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.psikeds.queryagent.requester.client.ResolutionEngineClient;
 import org.psikeds.queryagent.requester.client.WebClientFactory;
+import org.psikeds.resolutionengine.interfaces.pojos.ErrorMessage;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest;
 import org.psikeds.resolutionengine.interfaces.pojos.ResolutionResponse;
 
@@ -32,16 +38,19 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
   private static final Logger LOGGER = LoggerFactory.getLogger(ResolutionEngineClientRestImpl.class);
 
   public static final String DEFAULT_RESOLUTION_ENGINE_BASE_REST_URL = "http://localhost:8080/resolutionengine/services/rest/";
+
   public static final String DEFAULT_INIT_SERVICE_SUB_CTX = "resolution/init";
+  public static final String DEFAULT_CURRENT_SERVICE_SUB_CTX = "resolution/current";
   public static final String DEFAULT_SELECT_SERVICE_SUB_CTX = "resolution/select";
-  public static final String DEFAULT_INIT_SERVICE_REST_URL = DEFAULT_RESOLUTION_ENGINE_BASE_REST_URL + DEFAULT_INIT_SERVICE_SUB_CTX;
-  public static final String DEFAULT_SELECT_SERVICE_REST_URL = DEFAULT_RESOLUTION_ENGINE_BASE_REST_URL + DEFAULT_SELECT_SERVICE_SUB_CTX;
 
   public static final String DEFAULT_INIT_SERVICE_METHOD = "GET";
+  public static final String DEFAULT_CURRENT_SERVICE_METHOD = "GET";
   public static final String DEFAULT_SELECT_SERVICE_METHOD = "POST";
 
   private String initServiceUrl;
   private String initServiceMethod;
+  private String currentServiceUrl;
+  private String currentServiceMethod;
   private String selectServiceUrl;
   private String selectServiceMethod;
 
@@ -50,33 +59,38 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
   }
 
   public ResolutionEngineClientRestImpl(final WebClientFactory clientFactory) {
-    this(clientFactory,
-        DEFAULT_INIT_SERVICE_REST_URL, DEFAULT_INIT_SERVICE_METHOD,
-        DEFAULT_SELECT_SERVICE_REST_URL, DEFAULT_SELECT_SERVICE_METHOD);
+    this(clientFactory, DEFAULT_RESOLUTION_ENGINE_BASE_REST_URL);
   }
 
   public ResolutionEngineClientRestImpl(final WebClientFactory clientFactory, final String reBaseUrl) {
     this(clientFactory,
         reBaseUrl + DEFAULT_INIT_SERVICE_SUB_CTX, DEFAULT_INIT_SERVICE_METHOD,
+        reBaseUrl + DEFAULT_CURRENT_SERVICE_SUB_CTX, DEFAULT_CURRENT_SERVICE_METHOD,
         reBaseUrl + DEFAULT_SELECT_SERVICE_SUB_CTX, DEFAULT_SELECT_SERVICE_METHOD);
   }
 
-  public ResolutionEngineClientRestImpl(final String initServiceUrl, final String initServiceMethod,
+  public ResolutionEngineClientRestImpl(
+      final String initServiceUrl, final String initServiceMethod,
+      final String currentServiceUrl, final String currentServiceMethod,
       final String selectServiceUrl, final String selectServiceMethod) {
-    this(null, initServiceUrl, initServiceMethod, selectServiceUrl, selectServiceMethod);
+    this(null, initServiceUrl, initServiceMethod, currentServiceUrl, selectServiceUrl, currentServiceMethod, selectServiceMethod);
   }
 
-  public ResolutionEngineClientRestImpl(final WebClientFactory clientFactory,
+  public ResolutionEngineClientRestImpl(
+      final WebClientFactory clientFactory,
       final String initServiceUrl, final String initServiceMethod,
+      final String currentServiceUrl, final String currentServiceMethod,
       final String selectServiceUrl, final String selectServiceMethod) {
     super(clientFactory);
     this.initServiceUrl = initServiceUrl;
     this.initServiceMethod = initServiceMethod;
+    this.currentServiceUrl = currentServiceUrl;
+    this.currentServiceMethod = currentServiceMethod;
     this.selectServiceUrl = selectServiceUrl;
     this.selectServiceMethod = selectServiceMethod;
   }
 
-  // ------------------------------------------------------
+  // ----------------------------------------------------------------
 
   public String getInitServiceUrl() {
     return this.initServiceUrl;
@@ -92,6 +106,22 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
 
   public void setInitServiceMethod(final String initServiceMethod) {
     this.initServiceMethod = initServiceMethod;
+  }
+
+  public String getCurrentServiceUrl() {
+    return this.currentServiceUrl;
+  }
+
+  public void setCurrentServiceUrl(final String currentServiceUrl) {
+    this.currentServiceUrl = currentServiceUrl;
+  }
+
+  public String getCurrentServiceMethod() {
+    return this.currentServiceMethod;
+  }
+
+  public void setCurrentServiceMethod(final String currentServiceMethod) {
+    this.currentServiceMethod = currentServiceMethod;
   }
 
   public String getSelectServiceUrl() {
@@ -110,7 +140,7 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
     this.selectServiceMethod = selectServiceMethod;
   }
 
-  //------------------------------------------------------
+  // ----------------------------------------------------------------
 
   /**
    * @return ResolutionResponse
@@ -118,7 +148,47 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
    */
   @Override
   public ResolutionResponse invokeInitService() {
-    return invokeService(this.initServiceUrl, this.initServiceMethod, ResolutionResponse.class);
+    ResolutionResponse rr = null;
+    try {
+      LOGGER.trace("--> invokeInitService()");
+      final Response resp = invokeService(this.initServiceUrl, this.initServiceMethod);
+      if (isError(resp)) {
+        rr = createErrorResponse(resp);
+      }
+      else {
+        rr = getContent(resp, ResolutionResponse.class);
+      }
+    }
+    catch (final Exception ex) {
+      rr = createErrorResponse(ex);
+    }
+    LOGGER.trace("<-- invokeInitService(); Response = {}", rr);
+    return rr;
+  }
+
+  /**
+   * @param sessionID
+   * @return ResolutionResponse
+   * @see org.psikeds.queryagent.requester.client.ResolutionEngineClient#invokeSelectService(java.lang.String)
+   */
+  @Override
+  public ResolutionResponse invokeCurrentService(final String sessionID) {
+    ResolutionResponse rr = null;
+    try {
+      LOGGER.trace("--> invokeCurrentService( {} )", sessionID);
+      final Response resp = invokeService(this.currentServiceUrl, this.currentServiceMethod, sessionID, String.class);
+      if (isError(resp)) {
+        rr = createErrorResponse(resp);
+      }
+      else {
+        rr = getContent(resp, ResolutionResponse.class);
+      }
+    }
+    catch (final Exception ex) {
+      rr = createErrorResponse(ex);
+    }
+    LOGGER.trace("<-- invokeCurrentService( {} ); Response = {}", sessionID, rr);
+    return rr;
   }
 
   /**
@@ -129,8 +199,25 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
    */
   @Override
   public ResolutionResponse invokeSelectService(final ResolutionRequest req) {
-    return invokeService(this.selectServiceUrl, this.selectServiceMethod, req, ResolutionRequest.class, ResolutionResponse.class);
+    ResolutionResponse rr = null;
+    try {
+      LOGGER.trace("--> invokeSelectService( {} )", req);
+      final Response resp = invokeService(this.selectServiceUrl, this.selectServiceMethod, req, ResolutionRequest.class);
+      if (isError(resp)) {
+        rr = createErrorResponse(resp);
+      }
+      else {
+        rr = getContent(resp, ResolutionResponse.class);
+      }
+    }
+    catch (final Exception ex) {
+      rr = createErrorResponse(ex);
+    }
+    LOGGER.trace("<-- invokeSelectService( ); Response = {}", rr);
+    return rr;
   }
+
+  // ----------------------------------------------------------------
 
   /**
    * @return Logger
@@ -139,5 +226,32 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
   @Override
   protected Logger getLogger() {
     return LOGGER;
+  }
+
+  // ----------------------------------------------------------------
+
+  private ResolutionResponse createErrorResponse(final Response resp) {
+    final ResolutionResponse rr = new ResolutionResponse();
+    final ErrorMessage em = new ErrorMessage(getStatusCode(resp), getReasonPhrase(resp));
+    rr.addError(em);
+    return rr;
+  }
+
+  private ResolutionResponse createErrorResponse(final Exception ex) {
+    final ResolutionResponse rr = new ResolutionResponse();
+    final int code;
+    if (ex instanceof IllegalArgumentException) {
+      code = Status.BAD_REQUEST.getStatusCode();
+    }
+    else if (ex instanceof IOException) {
+      code = Status.SERVICE_UNAVAILABLE.getStatusCode();
+    }
+    else {
+      code = Status.INTERNAL_SERVER_ERROR.getStatusCode();
+    }
+    final String message = ex.getMessage();
+    final ErrorMessage em = new ErrorMessage(code, message);
+    rr.addError(em);
+    return rr;
   }
 }

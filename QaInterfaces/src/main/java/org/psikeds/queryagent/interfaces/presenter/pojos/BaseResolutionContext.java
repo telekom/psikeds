@@ -14,7 +14,9 @@
  *******************************************************************************/
 package org.psikeds.queryagent.interfaces.presenter.pojos;
 
-import java.io.Serializable;
+import javax.xml.bind.annotation.XmlSeeAlso;
+
+import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
  * Base-Object representing the current Context of a Resolution.
@@ -25,7 +27,9 @@ import java.io.Serializable;
  * @author marco@juliano.de
  * 
  */
-public class BaseResolutionContext extends POJO implements Serializable {
+@XmlSeeAlso({ ResolutionRequest.class, ResolutionResponse.class })
+@JsonSubTypes({ @JsonSubTypes.Type(value = ResolutionRequest.class, name = "ResolutionRequest"), @JsonSubTypes.Type(value = ResolutionResponse.class, name = "ResolutionResponse"), })
+public abstract class BaseResolutionContext extends POJO {
 
   private static final long serialVersionUID = 1L;
 
@@ -46,15 +50,6 @@ public class BaseResolutionContext extends POJO implements Serializable {
     this.knowledge = knowledge;
   }
 
-  // just for convenience
-  public String getSessionID() {
-    return this.getId();
-  }
-
-  public void setSessionID(final String sessionID) {
-    this.setId(sessionID);
-  }
-
   public Metadata getMetadata() {
     return this.metadata;
   }
@@ -69,5 +64,13 @@ public class BaseResolutionContext extends POJO implements Serializable {
 
   public void setKnowledge(final Knowledge knowledge) {
     this.knowledge = knowledge;
+  }
+
+  public String getSessionID() {
+    return getId();
+  }
+
+  public void setSessionID(final String sessionID) {
+    setId(sessionID);
   }
 }

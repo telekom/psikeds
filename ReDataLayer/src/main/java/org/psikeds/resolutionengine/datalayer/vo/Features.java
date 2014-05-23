@@ -1,7 +1,7 @@
 /*******************************************************************************
  * psiKeds :- ps induced knowledge entity delivery system
  *
- * Copyright (c) 2013 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
+ * Copyright (c) 2013, 2014 Karsten Reincke, Marco Juliano, Deutsche Telekom AG
  *
  * This file is free software: you can redistribute
  * it and/or modify it under the terms of the
@@ -18,12 +18,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
- * List of all features or attributes.
- *
+ * List of Features.
+ * 
  * @author marco@juliano.de
- *
+ * 
  */
+@XmlRootElement(name = "Features")
 public class Features extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -47,7 +50,7 @@ public class Features extends ValueObject implements Serializable {
   }
 
   public boolean addFeature(final Feature value) {
-    return getFeature().add(value);
+    return ((value != null) && getFeature().add(value));
   }
 
   public void setFeature(final List<Feature> lst) {

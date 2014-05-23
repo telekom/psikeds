@@ -1,0 +1,111 @@
+{
+  "@type" : "Knowledge",
+  "choices" : [ "VariantChoices", [ {
+    "@type" : "VariantChoice",
+    "purpose" : {
+      "@type" : "Purpose",
+      "purposeID" : "P3",
+      "root" : true,
+      "label" : "P3",
+      "description" : null
+    },
+    "quantity" : 1,
+    "variants" : [ "Variants", [ {
+      "@type" : "Variant",
+      "variantID" : "V31",
+      "label" : "V31",
+      "description" : null,
+      "features" : [ "Features", [ ] ]
+    }, {
+      "@type" : "Variant",
+      "variantID" : "V32",
+      "label" : "V32",
+      "description" : null,
+      "features" : [ "Features", [ ] ]
+    }, {
+      "@type" : "Variant",
+      "variantID" : "V33",
+      "label" : "V33",
+      "description" : null,
+      "features" : [ "Features", [ {
+        "@type" : "Feature",
+        "featureID" : "F3",
+        "label" : "F3",
+        "description" : null,
+        "unit" : null,
+        "valueType" : "string"
+      } ] ]
+    } ] ],
+    "parentVariantID" : null
+  } ] ],
+  "entities" : [ "KnowledgeEntities", [ {
+    "@type" : "KnowledgeEntity",
+    "variant" : {
+      "@type" : "Variant",
+      "variantID" : "V11",
+      "label" : "V11",
+      "description" : null,
+      "features" : [ "Features", [ {
+        "@type" : "Feature",
+        "featureID" : "F1",
+        "label" : "F1",
+        "description" : null,
+        "unit" : null,
+        "valueType" : "integer"
+      } ] ]
+    },
+    "features" : [ "FeatureValues", [ {
+      "@type" : "FeatureValue",
+      "value" : "42",
+      "featureID" : "F1",
+      "featureValueID" : "FV11"
+    } ] ],
+    "purpose" : {
+      "@type" : "Purpose",
+      "purposeID" : "P1",
+      "root" : true,
+      "label" : "P1",
+      "description" : null
+    },
+    "quantity" : 1,
+    "children" : [ "KnowledgeEntities", [ ] ],
+    "possibleVariants" : [ "VariantChoices", [ ] ],
+    "possibleFeatures" : [ "FeatureChoices", [ ] ],
+    "possibleConcepts" : [ "ConceptChoices", [ ] ]
+  }, {
+    "@type" : "KnowledgeEntity",
+    "variant" : {
+      "@type" : "Variant",
+      "variantID" : "V22",
+      "label" : "V22",
+      "description" : null,
+      "features" : [ "Features", [ {
+        "@type" : "Feature",
+        "featureID" : "F2",
+        "label" : "F2",
+        "description" : null,
+        "unit" : null,
+        "valueType" : "float"
+      } ] ]
+    },
+    "features" : [ "FeatureValues", [ {
+      "@type" : "FeatureValue",
+      "value" : "2.0",
+      "featureID" : "F2",
+      "featureValueID" : "FV22"
+    } ] ],
+    "purpose" : {
+      "@type" : "Purpose",
+      "purposeID" : "P2",
+      "root" : true,
+      "label" : "P2",
+      "description" : null
+    },
+    "quantity" : 1,
+    "children" : [ "KnowledgeEntities", [ ] ],
+    "possibleVariants" : [ "VariantChoices", [ ] ],
+    "possibleFeatures" : [ "FeatureChoices", [ ] ],
+    "possibleConcepts" : [ "ConceptChoices", [ ] ]
+  } ] ],
+  "stable" : true
+}
