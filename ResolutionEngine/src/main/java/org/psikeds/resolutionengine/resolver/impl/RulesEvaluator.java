@@ -356,7 +356,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       }
       final String currentVarId = path.get(0);
       if (len == 1) {
-        // Context-Path contains just the current Variant-ID, so this must be a Feature-Trigger
+        // Context-Path contains just the current Variant-ID, so this must be a Feature- or Concept-Trigger
         created = applyFeatureTrigger(e, currentKE, currentVarId);
         return created;
       }
@@ -388,7 +388,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
           created = createPathEntries(e, nextKE, path.subList(3, len));
         }
         else {
-          // last KE of Event already existing, apply Trigger
+          // Context-Path of Event ends at an existing KE, so try to apply Trigger
           created = applyTrigger(e, nextKE);
           return created;
         }
@@ -405,7 +405,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
             throw new ResolutionException("Auto-Creation disabled but intermediate Path-Elements of Conclusion-Event missing! Check your Config and Premises in KB!");
           }
         }
-        else {
+        else { // len == 3
           nextKE = createNewEntity(currentKE, nextPurpId, nextVarId);
           created = (nextKE != null);
           LOGGER.debug("Finished! Created final KE: {}", nextKE);
@@ -482,11 +482,20 @@ public class RulesEvaluator implements InitializingBean, Resolver {
     KnowledgeEntity nextKE = null;
     try {
       LOGGER.trace("--> doCreateNewEntity(); PID = {}; VID = {}", purposeId, variantId);
+      if (StringUtils.isEmpty(purposeId) || StringUtils.isEmpty(variantId)) {
+        throw new ResolutionException("Cannot create new Knowledge-Entity. Illegal Parameters!");
+      }
       // ensure clean data, therefore lookup purpose, variant and quantity from knowledge base (again)
       final org.psikeds.resolutionengine.datalayer.vo.Purpose purpose = this.kb.getPurpose(purposeId);
-      final Purpose p = this.trans.valueObject2Pojo(purpose);
+      final Purpose p = (purpose == null ? null : this.trans.valueObject2Pojo(purpose));
+      if (p == null) {
+        throw new ResolutionException("Cannot create new Knowledge-Entity. Unknown Purpose-ID: " + purposeId);
+      }
       final org.psikeds.resolutionengine.datalayer.vo.Variant variant = this.kb.getVariant(variantId);
-      final Variant v = this.trans.valueObject2Pojo(variant, this.kb.getFeatures(variantId));
+      final Variant v = (variant == null ? null : this.trans.valueObject2Pojo(variant, this.kb.getFeatures(variantId)));
+      if (v == null) {
+        throw new ResolutionException("Cannot create new Knowledge-Entity. Unknown Variant-ID: " + variantId);
+      }
       final long qty = this.kb.getQuantity(variantId, purposeId);
       // get new choices for this variant
       final VariantChoices newVariantChoices = getNewVariantChoices(variant);
@@ -514,7 +523,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
   private void addNewKnowledgeEntity(final KnowledgeEntities entities, final KnowledgeEntity newke) {
     try {
       LOGGER.trace("--> addNewKnowledgeEntity()");
-      if ((entities != null) && (newke != null)) {
+      if ((newke != null) && (entities != null) && !entities.isEmpty()) {
         for (final KnowledgeEntity ke : entities) {
           final Purpose p = (ke == null ? null : ke.getPurpose());
           final Variant v = (ke == null ? null : ke.getVariant());
@@ -609,24 +618,33 @@ public class RulesEvaluator implements InitializingBean, Resolver {
   // ----------------------------------------------------------------
 
   private boolean applyTrigger(final Event e, final KnowledgeEntity ke) {
+    final Variant v = (ke == null ? null : ke.getVariant());
+    final String vid = (v == null ? null : v.getVariantID());
     if (Event.TRIGGER_TYPE_VARIANT.equals(e.getTriggerType())) {
-      if (ke.getVariant().getVariantID().equals(e.getTriggerID())) {
-        // nothing to do
+      if (!StringUtils.isEmpty(vid) && vid.equals(e.getTriggerID())) {
+        // nothing to do, trigger is variant of this KE
         return false;
       }
       else {
-        throw new ResolutionException("Cannot apply Trigger. Inconsistent State of Knowledge!?!");
+        throw new ResolutionException("Cannot apply Trigger " + e.getTriggerID() + " of Event " + e.getEventID() + ". Inconsistent State of Knowledge!?!");
       }
     }
     else {
-      return applyFeatureTrigger(e, ke, ke.getVariant().getVariantID());
+      // trigger must be a Feature- or Concept-Trigger for the Variant of this KE
+      return applyFeatureTrigger(e, ke, vid);
     }
   }
 
   private boolean applyFeatureTrigger(final Event e, final KnowledgeEntity ke, final String variantId) {
     if (Event.TRIGGER_TYPE_FEATURE_VALUE.equals(e.getTriggerType())) {
-      // TODO implement
-      return false;
+      final String featureValueId = e.getTriggerID();
+      final FeatureValue fv = this.trans.valueObject2Pojo(this.kb.getFeatureValue(featureValueId));
+      final String featureId = fv.getFeatureID();
+      // remove all Values for this Feature from the KE
+      cleanupFeatureChoices(ke, variantId, featureId, null);
+      // set the triggered Value for this KE
+      ke.addFeature(fv);
+      return true;
     }
     else if (Event.TRIGGER_TYPE_CONCEPT.equals(e.getTriggerType())) {
       // TODO implement
@@ -826,7 +844,10 @@ public class RulesEvaluator implements InitializingBean, Resolver {
     try {
       LOGGER.trace("--> cleanupFeatureChoices(); VID = {}; TID = {}, E = {}; KE = {}", variantId, e.getTriggerID(), e.getEventID(), ke);
       if (Event.TRIGGER_TYPE_FEATURE_VALUE.equals(e.getTriggerType())) {
-        removed = cleanupFeatureChoices(ke, variantId, e.getTriggerID());
+        final String featureValueId = e.getTriggerID();
+        final org.psikeds.resolutionengine.datalayer.vo.FeatureValue fv = this.kb.getFeatureValue(featureValueId);
+        final String featureId = fv.getFeatureID();
+        removed = cleanupFeatureChoices(ke, variantId, featureId, featureValueId);
         return removed;
       }
       else if (Event.TRIGGER_TYPE_CONCEPT.equals(e.getTriggerType())) {
@@ -842,25 +863,28 @@ public class RulesEvaluator implements InitializingBean, Resolver {
     }
   }
 
-  private boolean cleanupFeatureChoices(final KnowledgeEntity ke, final String variantId, final String featureValueId) {
+  private boolean cleanupFeatureChoices(final KnowledgeEntity ke, final String variantId, final String featureId, final String featureValueId) {
     boolean removed = false;
     try {
-      LOGGER.trace("--> cleanupFeatureChoices(); VID = {}; FVID = {}; KE = {}", variantId, featureValueId, ke);
+      LOGGER.trace("--> cleanupFeatureChoices(); VID = {}; FID = {}; FVID = {}; KE = {}", variantId, featureId, featureValueId, ke);
       final FeatureChoices choices = ke.getPossibleFeatures();
       final Iterator<FeatureChoice> fciter = choices.iterator();
       while (fciter.hasNext()) {
         final FeatureChoice fc = fciter.next();
         final String vid = fc.getParentVariantID();
         if (StringUtils.isEmpty(variantId) || variantId.equals(vid)) {
-          final FeatureValues values = fc.getPossibleValues();
-          final Iterator<FeatureValue> valiter = values.iterator();
-          while (valiter.hasNext()) {
-            final FeatureValue fv = valiter.next();
-            final String fvid = (fv == null ? null : fv.getFeatureValueID());
-            if (StringUtils.isEmpty(featureValueId) || featureValueId.equals(fvid)) {
-              LOGGER.debug("Removing FeatureValue {} from Choices for Variant {}", fvid, vid);
-              valiter.remove();
-              removed = true;
+          final String fid = fc.getFeatureID();
+          if (StringUtils.isEmpty(featureId) || featureId.equals(fid)) {
+            final FeatureValues values = fc.getPossibleValues();
+            final Iterator<FeatureValue> valiter = values.iterator();
+            while (valiter.hasNext()) {
+              final FeatureValue fv = valiter.next();
+              final String fvid = (fv == null ? null : fv.getFeatureValueID());
+              if (StringUtils.isEmpty(featureValueId) || featureValueId.equals(fvid)) {
+                LOGGER.debug("Removing FeatureValue {} of Feature {} from Choices for Variant {}", fvid, fid, vid);
+                valiter.remove();
+                removed = true;
+              }
             }
           }
         }
@@ -868,7 +892,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       return removed;
     }
     finally {
-      LOGGER.trace("<-- cleanupFeatureChoices(); VID = {}; FVID = {}; removed = {}", variantId, featureValueId, removed);
+      LOGGER.trace("<-- cleanupFeatureChoices(); VID = {}; FID = {}; FVID = {}; removed = {}", variantId, featureId, featureValueId, removed);
     }
   }
 
