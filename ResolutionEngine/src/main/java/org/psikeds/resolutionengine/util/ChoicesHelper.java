@@ -226,15 +226,11 @@ public class ChoicesHelper {
     final String parentVariantID = (parentVariant == null ? null : parentVariant.getVariantID());
     try {
       LOGGER.trace("--> getNewFeatureChoices(); Variant = {}", parentVariantID);
-      // get all features of this variant ...
-      final org.psikeds.resolutionengine.datalayer.vo.Features newfeats = kb.getFeatures(parentVariantID);
-      final List<org.psikeds.resolutionengine.datalayer.vo.Feature> feats = (newfeats == null ? null : newfeats.getFeature());
-      if ((feats != null) && !feats.isEmpty()) {
-        // ... and create for every feature ...
-        for (final org.psikeds.resolutionengine.datalayer.vo.Feature f : feats) {
-          // ... a new FeatureChoice-POJO for the Client
-          // TODO this is wrong!!! we must get the values allowed for this variant, not all possible values of the feature!!!
-          final FeatureChoice fc = trans.valueObject2Pojo(parentVariantID, f.getValues());
+      for (final String featureId : parentVariant.getFeatureIds()) {
+        // get all values allowed for this feature on this variant
+        final FeatureValues values = trans.valueObject2Pojo(kb.getFeatureValues(parentVariantID, featureId));
+        if ((values != null) && !values.isEmpty()) {
+          final FeatureChoice fc = new FeatureChoice(parentVariantID, featureId, values);
           LOGGER.debug("Adding new Feature-Choice: {}", fc);
           choices.add(fc);
         }
