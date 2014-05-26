@@ -294,4 +294,14 @@ public class KnowledgeEntity extends POJO implements Serializable {
   public boolean isRoot() {
     return ((this.purpose != null) && this.purpose.isRoot());
   }
+
+  @JsonIgnore
+  public boolean hasFeatures() {
+    return ((this.variant != null) && (this.variant.getFeatures() != null) && !this.variant.getFeatures().isEmpty());
+  }
+
+  @JsonIgnore
+  public boolean hasConcepts() {
+    return ((this.variant != null) && (this.variant.getConcepts() != null) && !this.variant.getConcepts().isEmpty());
+  }
 }
