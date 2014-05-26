@@ -108,6 +108,8 @@ public interface KnowledgeBase {
 
   FeatureValues getFeatureValues(String variantId, String featureId);
 
+  Concepts getAttachedConcepts(String variantId);
+
   Events getAttachedEvents(String variantId);
 
   Rules getAttachedRules(String variantId);
