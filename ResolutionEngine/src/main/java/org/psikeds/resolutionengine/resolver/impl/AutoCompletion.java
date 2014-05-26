@@ -218,7 +218,7 @@ public class AutoCompletion implements InitializingBean, Resolver {
               LOGGER.trace("Creating Choices and KE for Variant {}", vid);
               // ensure clean data, therefore lookup variant from knowledge base (again)
               final org.psikeds.resolutionengine.datalayer.vo.Variant variant = this.kb.getVariant(vid);
-              v = this.trans.valueObject2Pojo(variant, this.kb.getFeatures(vid));
+              v = this.trans.valueObject2Pojo(variant, this.kb.getFeatures(vid), this.kb.getAttachedConcepts(vid));
               final long qty = this.kb.getQuantity(pid, vid);
               // get new choices for this variant
               final VariantChoices newVariantChoices = ChoicesHelper.getNewVariantChoices(this.kb, this.trans, variant);

@@ -60,7 +60,7 @@ public class KnowledgeEntityHelper {
         throw new ResolutionException("Cannot create new Knowledge-Entity. Unknown Purpose-ID: " + purposeId);
       }
       final org.psikeds.resolutionengine.datalayer.vo.Variant variant = kb.getVariant(variantId);
-      final Variant v = (variant == null ? null : trans.valueObject2Pojo(variant, kb.getFeatures(variantId)));
+      final Variant v = (variant == null ? null : trans.valueObject2Pojo(variant, kb.getFeatures(variantId), kb.getAttachedConcepts(variantId)));
       if (v == null) {
         throw new ResolutionException("Cannot create new Knowledge-Entity. Unknown Variant-ID: " + variantId);
       }
