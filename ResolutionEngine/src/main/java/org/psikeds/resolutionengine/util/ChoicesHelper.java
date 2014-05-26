@@ -24,7 +24,9 @@ import org.apache.commons.lang.StringUtils;
 
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.datalayer.vo.Event;
+import org.psikeds.resolutionengine.interfaces.pojos.ConceptChoice;
 import org.psikeds.resolutionengine.interfaces.pojos.ConceptChoices;
+import org.psikeds.resolutionengine.interfaces.pojos.Concepts;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoices;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureValue;
@@ -244,7 +246,22 @@ public class ChoicesHelper {
   }
 
   public static ConceptChoices getNewConceptChoices(final KnowledgeBase kb, final Transformer trans, final org.psikeds.resolutionengine.datalayer.vo.Variant parentVariant) {
-    // TODO implement!
-    return null;
+    final ConceptChoices choices = new ConceptChoices();
+    final String parentVariantID = (parentVariant == null ? null : parentVariant.getVariantID());
+    try {
+      LOGGER.trace("--> getNewConceptChoices(); Variant = {}", parentVariantID);
+      final Concepts cons = trans.valueObject2Pojo(kb.getAttachedConcepts(parentVariantID));
+      if ((cons != null) && !cons.isEmpty()) {
+        // currently we have only variants that are primarily denoted by concepts, i.e. there
+        // is always just one choice where exactly one of the concepts can/must be selected.
+        final ConceptChoice cc = new ConceptChoice(parentVariantID, cons);
+        choices.add(cc);
+      }
+      // return new concept choices
+      return choices;
+    }
+    finally {
+      LOGGER.trace("<-- getNewConceptChoices()\nChoices = {}", choices);
+    }
   }
 }
