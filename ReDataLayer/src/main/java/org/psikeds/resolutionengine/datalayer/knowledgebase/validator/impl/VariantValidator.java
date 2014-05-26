@@ -138,6 +138,10 @@ public class VariantValidator implements Validator {
                   valid = false;
                   LOGGER.warn("Concept {} referenced by Variant {} does not exist!", cid, vid);
                 }
+                if (!kb.hasConcept(vid, cid)) {
+                  valid = false;
+                  LOGGER.warn("Data inconsistency! Ambiguous reference from Variant {} to Concept {}", vid, cid);
+                }
                 final List<String> featlst = c.getFeatureIds();
                 if ((featlst == null) || featlst.isEmpty()) {
                   valid = false;
