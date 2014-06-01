@@ -192,9 +192,8 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
   private void addChoices(final KnowledgeEntity ke) {
     if (ke != null) {
       addAllChoices(ke.getPossibleVariants());
-      // TODO: enable features and concepts here
-//      addAllChoices(ke.getPossibleFeatures());
-//      addAllChoices(ke.getPossibleConcepts());
+      addAllChoices(ke.getPossibleFeatures());
+//      addAllChoices(ke.getPossibleConcepts()); // TODO: enable concepts here
       addChoices(ke.getChildren());
     }
   }
