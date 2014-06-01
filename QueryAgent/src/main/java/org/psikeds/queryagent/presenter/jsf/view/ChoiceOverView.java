@@ -21,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.psikeds.queryagent.interfaces.presenter.pojos.Choice;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Concept;
+import org.psikeds.queryagent.interfaces.presenter.pojos.ConceptChoice;
 import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureChoice;
 import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureValue;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Purpose;
@@ -66,7 +68,7 @@ public class ChoiceOverView extends BaseView {
               LOGGER.trace("Added P: {}", dp);
               for (final Variant v : vc.getVariants()) {
                 final DisplayItem dv = new DisplayItem(v.getVariantID(), v.getLabel(), v.getDescription(), DisplayItem.TYPE_VARIANT);
-                dv.setSelectionKey(SelectionHelper.createSelectionString(p, v));
+                dv.setSelectionKey(SelectionHelper.createSelectionString(SelectionHelper.SELECTION_TYPE_VARIANT, p, v));
                 dp.addChild(dv);
                 lst.add(dv);
                 LOGGER.trace("Added V: {}", dv);
@@ -83,11 +85,22 @@ public class ChoiceOverView extends BaseView {
               for (final FeatureValue fv : fc.getPossibleValues()) {
                 final String fvid = fv.getFeatureValueID();
                 final String value = fv.getValue();
-                final DisplayItem dfv = new DisplayItem(fvid, value, null, DisplayItem.TYPE_CHOICE);
-                dfv.setSelectionKey(SelectionHelper.createSelectionString(vid, fid, fvid));
+                final DisplayItem dfv = new DisplayItem(fvid, value, null, DisplayItem.TYPE_FEATURE_VALUE);
+                dfv.setSelectionKey(SelectionHelper.createSelectionString(SelectionHelper.SELECTION_TYPE_FEATURE_VALUE, vid, fid, fvid));
                 df.addChild(dfv);
                 lst.add(dfv);
-                LOGGER.trace("Added V: {}", dfv);
+                LOGGER.trace("Added FV: {}", dfv);
+              }
+            }
+            else if (c instanceof ConceptChoice) {
+              final ConceptChoice cc = (ConceptChoice) c;
+              final String vid = cc.getParentVariantID();
+              for (final Concept con : cc.getConcepts()) {
+                final String cid = con.getConceptID();
+                final DisplayItem dc = new DisplayItem(cid, con.getLabel(), con.getDescription(), DisplayItem.TYPE_CONCEPT);
+                dc.setSelectionKey(SelectionHelper.createSelectionString(SelectionHelper.SELECTION_TYPE_CONCEPT, vid, cid));
+                lst.add(dc);
+                LOGGER.trace("Added C: {}", dc);
               }
             }
           }

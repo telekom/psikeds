@@ -50,6 +50,16 @@ For details see file LICENSING in the top project directory
                 <h4 class="#{di.type} level#{di.level}">#{di.value}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.longDescription}</h4>
               </ui:fragment>
             </ui:fragment>
+            <ui:fragment rendered="#{di.type == 'Label'}">
+              <ui:fragment rendered="#{di.level == 0}">
+                <h4 class="#{di.type} level#{di.level}">#{di.longDescription}</h4>
+              </ui:fragment>
+              <ui:fragment rendered="#{di.level != 0}">
+              <ul class="#{di.type} level#{di.level}">
+                <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">#{di.longDescription}</li>
+              </ul>
+              </ui:fragment>
+            </ui:fragment>
             <ui:fragment rendered="#{di.type == 'Purpose'}">
               <ui:fragment rendered="#{di.level == 0}">
                 <p/>
@@ -64,8 +74,29 @@ For details see file LICENSING in the top project directory
               <ul class="#{di.type} level#{di.level}">
                 <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">
                   <h:outputText value="#{msg['knowledge.variant.text']}" />
-                  <h:outputText value="&#160;" />#{di.selectionKey}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />
-                  <h:commandLink id="resolve" action="#{Ctrl.resolve(di.selectionKey)}">#{di.value}</h:commandLink>
+                  <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />
+                  <h:commandLink id="selectVariant" action="#{Ctrl.resolve(di.selectionKey)}">#{di.value}</h:commandLink>
+                </li>
+              </ul>
+            </ui:fragment>
+            <ui:fragment rendered="#{di.type == 'Feature'}">
+              <h4 class="#{di.type} level#{di.level}"><h:outputText value="#{msg['knowledge.feature.text']}" /><h:outputText value="&#160;" />#{di.value}</h4>
+            </ui:fragment>
+            <ui:fragment rendered="#{di.type == 'FeatureValue'}">
+              <ul class="#{di.type} level#{di.level}">
+                <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">
+                  <h:outputText value="#{msg['knowledge.feature.value.text']}" />
+                  <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />
+                  <h:commandLink id="selectFeatureValue" action="#{Ctrl.resolve(di.selectionKey)}">#{di.value}</h:commandLink>
+                </li>
+              </ul>
+            </ui:fragment>
+            <ui:fragment rendered="#{di.type == 'Concept'}">
+              <ul class="#{di.type} level#{di.level}">
+                <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">
+                  <h:outputText value="#{msg['knowledge.concept.text']}" />
+                  <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />
+                  <h:commandLink id="selectConcept" action="#{Ctrl.resolve(di.selectionKey)}">#{di.value}</h:commandLink>
                 </li>
               </ul>
             </ui:fragment>
