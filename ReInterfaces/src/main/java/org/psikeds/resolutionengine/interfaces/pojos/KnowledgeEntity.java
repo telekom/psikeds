@@ -284,7 +284,7 @@ public class KnowledgeEntity extends POJO implements Serializable {
   public boolean isResolved() {
     return ((this.purpose != null)
         && (this.variant != null)
-        // && ((this.possibleConcepts == null) || this.possibleConcepts.isEmpty()) // TODO: enable concepts here
+        && ((this.possibleConcepts == null) || this.possibleConcepts.isEmpty())
         && ((this.possibleFeatures == null) || this.possibleFeatures.isEmpty())
         && ((this.possibleVariants == null) || this.possibleVariants.isEmpty()));
   }

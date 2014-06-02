@@ -193,7 +193,7 @@ public class ResolutionResponse extends BaseResolutionContext implements Seriali
     if (ke != null) {
       addAllChoices(ke.getPossibleVariants());
       addAllChoices(ke.getPossibleFeatures());
-//      addAllChoices(ke.getPossibleConcepts()); // TODO: enable concepts here
+      addAllChoices(ke.getPossibleConcepts());
       addChoices(ke.getChildren());
     }
   }
