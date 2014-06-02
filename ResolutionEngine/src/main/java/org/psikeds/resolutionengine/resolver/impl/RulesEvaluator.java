@@ -14,7 +14,6 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.resolver.impl;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -28,12 +27,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.datalayer.vo.Event;
 import org.psikeds.resolutionengine.datalayer.vo.Rule;
-import org.psikeds.resolutionengine.interfaces.pojos.ConceptChoices;
 import org.psikeds.resolutionengine.interfaces.pojos.Decission;
-import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice;
-import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoices;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureValue;
-import org.psikeds.resolutionengine.interfaces.pojos.FeatureValues;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
 import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntities;
 import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity;
@@ -41,13 +36,14 @@ import org.psikeds.resolutionengine.interfaces.pojos.Metadata;
 import org.psikeds.resolutionengine.interfaces.pojos.Purpose;
 import org.psikeds.resolutionengine.interfaces.pojos.Variant;
 import org.psikeds.resolutionengine.interfaces.pojos.VariantChoice;
-import org.psikeds.resolutionengine.interfaces.pojos.VariantChoices;
-import org.psikeds.resolutionengine.interfaces.pojos.Variants;
 import org.psikeds.resolutionengine.resolver.ResolutionException;
 import org.psikeds.resolutionengine.resolver.Resolver;
 import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
 import org.psikeds.resolutionengine.transformer.Transformer;
 import org.psikeds.resolutionengine.transformer.impl.Vo2PojoTransformer;
+import org.psikeds.resolutionengine.util.ChoicesHelper;
+import org.psikeds.resolutionengine.util.KnowledgeEntityHelper;
+import org.psikeds.resolutionengine.util.KnowledgeHelper;
 
 /**
  * This Resolver will evaluate and apply all Rules that were triggered.
@@ -224,7 +220,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
           throw new ResolutionException("Invalid Rule!");
         }
         // check root / nexus
-        final KnowledgeEntities root = findRoot(r, knowledge);
+        final KnowledgeEntities root = KnowledgeHelper.findRoot(r, knowledge);
         if ((root == null) || root.isEmpty()) {
           LOGGER.debug("Nothing to do. Nexus {} of Rule {} is not included in the current Knowledge.", r.getVariantID(), ruleId);
           continue;
@@ -308,38 +304,55 @@ public class RulesEvaluator implements InitializingBean, Resolver {
   private boolean applyRuleModusPonens(final Rule r, final String conclusionEventID, final KnowledgeEntities root, final Knowledge knowledge, final RulesAndEventsHandler raeh, final Metadata metadata) {
     boolean stable = true;
     final String ruleId = (r == null ? null : r.getRuleID());
-    LOGGER.info("MODUS PONENS - applying Conclusion-Event {} of Rule {}", conclusionEventID, ruleId);
-    if (applyEvent(root, conclusionEventID)) {
+    LOGGER.info("MODUS PONENS --> applying Conclusion-Event {} of Rule {}", conclusionEventID, ruleId);
+    if (handleEvent(root, conclusionEventID, false)) {
       triggerRule(r, raeh, metadata, "_modus_ponens");
       stable = false;
     }
     return stable;
   }
 
-  private boolean applyEvent(final KnowledgeEntities root, final String eventId) {
-    boolean applied = false;
+  private boolean applyRuleModusTollens(final Rule r, final String premiseEventID, final KnowledgeEntities root, final Knowledge knowledge, final RulesAndEventsHandler raeh, final Metadata metadata) {
+    boolean stable = true;
+    final String ruleId = (r == null ? null : r.getRuleID());
+    LOGGER.info("MODUS TOLLENS --> Disabling Premise-Event {} of Rule {}", premiseEventID, ruleId);
+    if (handleEvent(root, premiseEventID, true)) {
+      triggerRule(r, raeh, metadata, "_modus_tollens");
+      stable = false;
+    }
+    return stable;
+  }
+
+  private boolean handleEvent(final KnowledgeEntities root, final String eventId, boolean disable) {
+    boolean modified = false;
     try {
-      LOGGER.trace("--> applyEvent(); E = {}", eventId);
+      LOGGER.trace("--> handleEvent(); E = {}; disable = {}", eventId, disable);
       final Event e = this.kb.getEvent(eventId);
       final List<String> ctx = e.getContext();
+      if (e.isNotEvent()) {
+        LOGGER.debug("Event {} is a Not-Event --> disable = {}", eventId, disable);
+        disable = !disable;
+      }
       for (final KnowledgeEntity ke : root) {
-        if (e.isNotEvent()) {
+        if (disable) {
           if (removeTriggerFromChoices(e, ke, ctx)) {
-            applied = true;
+            modified = true;
           }
         }
         else {
           if (createPathEntries(e, ke, ctx)) {
-            applied = true;
+            modified = true;
           }
         }
       }
-      return applied;
+      return modified;
     }
     finally {
-      LOGGER.trace("<-- applyEvent(); E = {}; applied = {}", eventId, applied);
+      LOGGER.trace("<-- handleEvent(); E = {}; disable = {}; removed = {}", eventId, disable, modified);
     }
   }
+
+  // ----------------------------------------------------------------
 
   private boolean createPathEntries(final Event e, final KnowledgeEntity currentKE, final List<String> path) {
     boolean created = false;
@@ -356,7 +369,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       }
       final String currentVarId = path.get(0);
       if (len == 1) {
-        // Context-Path contains just the current Variant-ID, so this must be a Feature-Trigger
+        // Context-Path contains just the current Variant-ID, so this must be a Feature- or Concept-Trigger
         created = applyFeatureTrigger(e, currentKE, currentVarId);
         return created;
       }
@@ -388,7 +401,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
           created = createPathEntries(e, nextKE, path.subList(3, len));
         }
         else {
-          // last KE of Event already existing, apply Trigger
+          // Context-Path of Event ends at an existing KE, so try to apply Trigger
           created = applyTrigger(e, nextKE);
           return created;
         }
@@ -405,7 +418,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
             throw new ResolutionException("Auto-Creation disabled but intermediate Path-Elements of Conclusion-Event missing! Check your Config and Premises in KB!");
           }
         }
-        else {
+        else { // len == 3
           nextKE = createNewEntity(currentKE, nextPurpId, nextVarId);
           created = (nextKE != null);
           LOGGER.debug("Finished! Created final KE: {}", nextKE);
@@ -417,8 +430,6 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       LOGGER.trace("<-- createPathEntries(); Path = {}; created = {}\nNext KE = {}", path, created, nextKE);
     }
   }
-
-  // ----------------------------------------------------------------
 
   private KnowledgeEntity createNewEntity(final KnowledgeEntity parent, final String purposeId, final String variantId) {
     KnowledgeEntity nextKE = null;
@@ -444,7 +455,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
         if ((expectedPurp != null) && (expectedVar != null)) {
           // perfect, the KE we want to create is really a currently choosable Combination of P and V!
           LOGGER.debug("Found expected Choice for {} and {}", purposeId, variantId);
-          nextKE = doCreateNewEntity(parent, expectedPurp, expectedVar);
+          nextKE = KnowledgeEntityHelper.ceateNewEntity(this.kb, this.trans, parent, expectedPurp, expectedVar);
         }
         else {
           // Hmmmm ... the KE we want to create is not a currently choosable Combination of P and V?!?!
@@ -452,7 +463,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
           if (this.createNonChoosableEntities) {
             // Ok, this is actually not choosable at the moment, but config says, we do it nevertheless
             LOGGER.debug("Creating a currently not valid Knowledge-Entity for {} and {}", purposeId, variantId);
-            nextKE = doCreateNewEntity(parent, purposeId, variantId);
+            nextKE = KnowledgeEntityHelper.ceateNewEntity(this.kb, this.trans, parent, purposeId, variantId);
           }
           else {
             // Definition of Rules and Events in KB seems to be strange
@@ -474,159 +485,36 @@ public class RulesEvaluator implements InitializingBean, Resolver {
     }
   }
 
-  private KnowledgeEntity doCreateNewEntity(final KnowledgeEntity parent, final Purpose purp, final Variant var) {
-    return doCreateNewEntity(parent, (purp == null ? null : purp.getPurposeID()), (var == null ? null : var.getVariantID()));
-  }
-
-  private KnowledgeEntity doCreateNewEntity(final KnowledgeEntity parent, final String purposeId, final String variantId) {
-    KnowledgeEntity nextKE = null;
-    try {
-      LOGGER.trace("--> doCreateNewEntity(); PID = {}; VID = {}", purposeId, variantId);
-      // ensure clean data, therefore lookup purpose, variant and quantity from knowledge base (again)
-      final org.psikeds.resolutionengine.datalayer.vo.Purpose purpose = this.kb.getPurpose(purposeId);
-      final Purpose p = this.trans.valueObject2Pojo(purpose);
-      final org.psikeds.resolutionengine.datalayer.vo.Variant variant = this.kb.getVariant(variantId);
-      final Variant v = this.trans.valueObject2Pojo(variant, this.kb.getFeatures(variantId));
-      final long qty = this.kb.getQuantity(variantId, purposeId);
-      // get new choices for this variant
-      final VariantChoices newVariantChoices = getNewVariantChoices(variant);
-      final FeatureChoices newFeatureChoices = getNewFeatureChoices(variant);
-      final ConceptChoices newConceptChoices = getNewConceptChoices(variant);
-      // create new knowledge entity
-      nextKE = new KnowledgeEntity(qty, p, v, newVariantChoices, newFeatureChoices, newConceptChoices);
-      addNewKnowledgeEntity(parent, nextKE);
-      // remove all variant-choices for our purpose from parent KE
-      cleanupVariantChoices(parent, purposeId);
-      return nextKE;
-    }
-    finally {
-      LOGGER.trace("<-- doCreateNewEntity(); PID = {}; VID = {}\nNext KE = {}", purposeId, variantId, nextKE);
-    }
-  }
-
-  // ----------------------------------------------------------------
-
-  private void addNewKnowledgeEntity(final KnowledgeEntity parent, final KnowledgeEntity newke) {
-    final KnowledgeEntities entities = (parent == null ? null : parent.getChildren());
-    addNewKnowledgeEntity(entities, newke);
-  }
-
-  private void addNewKnowledgeEntity(final KnowledgeEntities entities, final KnowledgeEntity newke) {
-    try {
-      LOGGER.trace("--> addNewKnowledgeEntity()");
-      if ((entities != null) && (newke != null)) {
-        for (final KnowledgeEntity ke : entities) {
-          final Purpose p = (ke == null ? null : ke.getPurpose());
-          final Variant v = (ke == null ? null : ke.getVariant());
-          if ((p != null) && (v != null)) {
-            final String pid1 = p.getPurposeID();
-            final String pid2 = newke.getPurpose().getPurposeID();
-            final String vid1 = v.getVariantID();
-            final String vid2 = newke.getVariant().getVariantID();
-            if (pid1.equals(pid2) && vid1.equals(vid2)) {
-              LOGGER.trace("Entity-List already contains KnowledgeEntity: {}", newke);
-              return;
-            }
-          }
-        }
-        LOGGER.trace("Adding new KnowledgeEntity: {}", newke);
-        entities.add(newke);
-      }
-    }
-    finally {
-      LOGGER.trace("<-- addNewKnowledgeEntity()");
-    }
-  }
-
-  // ----------------------------------------------------------------
-
-  private VariantChoices getNewVariantChoices(final org.psikeds.resolutionengine.datalayer.vo.Variant parentVariant) {
-    final VariantChoices choices = new VariantChoices();
-    final String parentVariantID = (parentVariant == null ? null : parentVariant.getVariantID());
-    try {
-      LOGGER.trace("--> getNewVariantChoices(); Variant = {}", parentVariantID);
-      // get all components/purposes constituting parent-variant ...
-      final org.psikeds.resolutionengine.datalayer.vo.Constitutes consts = this.kb.getConstitutes(parentVariantID);
-      final List<org.psikeds.resolutionengine.datalayer.vo.Component> comps = (consts == null ? null : consts.getComponents());
-      if ((comps != null) && !comps.isEmpty()) {
-        // ... and create for every existing component/purpose ...
-        for (final org.psikeds.resolutionengine.datalayer.vo.Component c : comps) {
-          if (c != null) {
-            final long qty = c.getQuantity();
-            final String pid = c.getPurposeID();
-            final org.psikeds.resolutionengine.datalayer.vo.Purpose p = this.kb.getPurpose(pid);
-            // ... a new VariantChoice-POJO for the Client
-            final org.psikeds.resolutionengine.datalayer.vo.Fulfills ff = this.kb.getFulfills(pid);
-            final org.psikeds.resolutionengine.datalayer.vo.Variants variants = new org.psikeds.resolutionengine.datalayer.vo.Variants();
-            for (final String vid : ff.getVariantID()) {
-              variants.addVariant(this.kb.getVariant(vid));
-            }
-            final VariantChoice vc = this.trans.valueObject2Pojo(parentVariantID, p, variants, qty);
-            LOGGER.trace("Adding new Variant-Choice: {}", vc);
-            choices.add(vc);
-          }
-        }
-      }
-      // return list of all new variant choices
-      return choices;
-    }
-    finally {
-      LOGGER.trace("<-- getNewVariantChoices(); Variant = {}\nChoices = {}", parentVariantID, choices);
-    }
-  }
-
-  private FeatureChoices getNewFeatureChoices(final org.psikeds.resolutionengine.datalayer.vo.Variant parentVariant) {
-    final FeatureChoices choices = new FeatureChoices();
-    final String parentVariantID = (parentVariant == null ? null : parentVariant.getVariantID());
-    try {
-      LOGGER.trace("--> getNewFeatureChoices(); Variant = {}", parentVariantID);
-      // get all features of this variant ...
-      final org.psikeds.resolutionengine.datalayer.vo.Features newfeats = this.kb.getFeatures(parentVariantID);
-      final List<org.psikeds.resolutionengine.datalayer.vo.Feature> feats = (newfeats == null ? null : newfeats.getFeature());
-      if ((feats != null) && !feats.isEmpty()) {
-        // ... and create for every feature ...
-        for (final org.psikeds.resolutionengine.datalayer.vo.Feature f : feats) {
-          // ... a new FeatureChoice-POJO for the Client
-          // TODO this is wrong!!! we must get the values allowed for this variant, not all possible values of the feature!!!
-          final FeatureChoice fc = this.trans.valueObject2Pojo(parentVariantID, f.getValues());
-          LOGGER.trace("Adding new Feature-Choice: {}", fc);
-          choices.add(fc);
-        }
-      }
-      // return list of all new feature choices
-      return choices;
-    }
-    finally {
-      LOGGER.trace("<-- getNewFeatureChoices()\nChoices = {}", choices);
-    }
-  }
-
-  private ConceptChoices getNewConceptChoices(final org.psikeds.resolutionengine.datalayer.vo.Variant parentVariant) {
-    // TODO implement!
-    return null;
-  }
-
   // ----------------------------------------------------------------
 
   private boolean applyTrigger(final Event e, final KnowledgeEntity ke) {
+    final Variant v = (ke == null ? null : ke.getVariant());
+    final String vid = (v == null ? null : v.getVariantID());
     if (Event.TRIGGER_TYPE_VARIANT.equals(e.getTriggerType())) {
-      if (ke.getVariant().getVariantID().equals(e.getTriggerID())) {
-        // nothing to do
+      if (!StringUtils.isEmpty(vid) && vid.equals(e.getTriggerID())) {
+        // nothing to do, trigger is variant of this KE
         return false;
       }
       else {
-        throw new ResolutionException("Cannot apply Trigger. Inconsistent State of Knowledge!?!");
+        throw new ResolutionException("Cannot apply Trigger " + e.getTriggerID() + " of Event " + e.getEventID() + ". Inconsistent State of Knowledge!?!");
       }
     }
     else {
-      return applyFeatureTrigger(e, ke, ke.getVariant().getVariantID());
+      // trigger must be a Feature- or Concept-Trigger for the Variant of this KE
+      return applyFeatureTrigger(e, ke, vid);
     }
   }
 
   private boolean applyFeatureTrigger(final Event e, final KnowledgeEntity ke, final String variantId) {
     if (Event.TRIGGER_TYPE_FEATURE_VALUE.equals(e.getTriggerType())) {
-      // TODO implement
-      return false;
+      final String featureValueId = e.getTriggerID();
+      final FeatureValue fv = this.trans.valueObject2Pojo(this.kb.getFeatureValue(featureValueId));
+      final String featureId = fv.getFeatureID();
+      // remove all Values for this Feature from the KE
+      ChoicesHelper.cleanupFeatureChoices(ke, variantId, featureId);
+      // set the triggered Value for this KE
+      ke.addFeature(fv);
+      return true;
     }
     else if (Event.TRIGGER_TYPE_CONCEPT.equals(e.getTriggerType())) {
       // TODO implement
@@ -649,42 +537,6 @@ public class RulesEvaluator implements InitializingBean, Resolver {
 
   // ----------------------------------------------------------------
 
-  private boolean applyRuleModusTollens(final Rule r, final String premiseEventID, final KnowledgeEntities root, final Knowledge knowledge, final RulesAndEventsHandler raeh, final Metadata metadata) {
-    boolean stable = true;
-    final String ruleId = (r == null ? null : r.getRuleID());
-    LOGGER.info("MODUS TOLLENS - Disabling Premise-Event {} of Rule {}", premiseEventID, ruleId);
-    if (disableEvent(root, premiseEventID)) {
-      triggerRule(r, raeh, metadata, "_modus_tollens");
-      stable = false;
-    }
-    return stable;
-  }
-
-  private boolean disableEvent(final KnowledgeEntities root, final String eventId) {
-    boolean removed = false;
-    try {
-      LOGGER.trace("--> disableEvent(); E = {}", eventId);
-      final Event e = this.kb.getEvent(eventId);
-      final List<String> ctx = e.getContext();
-      for (final KnowledgeEntity ke : root) {
-        if (e.isNotEvent()) {
-          if (createPathEntries(e, ke, ctx)) {
-            removed = true;
-          }
-        }
-        else {
-          if (removeTriggerFromChoices(e, ke, ctx)) {
-            removed = true;
-          }
-        }
-      }
-      return removed;
-    }
-    finally {
-      LOGGER.trace("<-- disableEvent(); E = {}; removed = {}", eventId, removed);
-    }
-  }
-
   private boolean removeTriggerFromChoices(final Event e, final KnowledgeEntity currentKE, final List<String> path) {
     boolean removed = false;
     KnowledgeEntity nextKE = null;
@@ -693,7 +545,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       final int len = (path == null ? 0 : path.size());
       if (len < 1) {
         // Walked complete Context-Path, now check Trigger and cleanup corresponding Choices
-        removed = cleanupChoices(e, currentKE);
+        removed = ChoicesHelper.cleanupChoices(this.kb, e, currentKE);
         return removed;
       }
       // Check that first Path Element is really matching to current KE
@@ -701,19 +553,19 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       final String currentVariantId = (currentVariant == null ? null : currentVariant.getVariantID());
       final String expectedVariantId = path.get(0);
       if (StringUtils.isEmpty(expectedVariantId) || !expectedVariantId.equals(currentVariantId)) {
-        throw new ResolutionException("LOGICAL ERROR: Path not matching to current KE!!!");
+        throw new ResolutionException("Context-Path is not matching to current KE!!!");
       }
       if (len == 1) {
         // There is just one PE, which is the Variant of this KE
         // --> remove Trigger from Feature- and Concept-Choices
-        removed = cleanupFeatureChoices(e, currentKE, expectedVariantId);
+        removed = ChoicesHelper.cleanupFeatureChoices(this.kb, e, currentKE, expectedVariantId);
         return removed;
       }
       if (len == 2) {
         // There is one additional PE left, which is a Purpose
         // --> remove Trigger from all Variant-Choices for this Purpose
         final String purposeId = path.get(1);
-        removed = cleanupVariantChoices(e, currentKE, purposeId);
+        removed = ChoicesHelper.cleanupVariantChoices(e, currentKE, purposeId);
         return removed;
       }
       // Path has 3 or more Elements: Check whether next KnowledgeEntity exists
@@ -742,133 +594,11 @@ public class RulesEvaluator implements InitializingBean, Resolver {
         return removed;
       }
       else {
-        throw new ResolutionException("LOGICAL ERROR: Cannot apply Modus Tollens, Trigger-Event cannot be disabled! Check your Config and Rules in KB!!!");
+        throw new ResolutionException("Cannot remove Trigger from Choices! Check your Config and Rules in KB!!!");
       }
     }
     finally {
       LOGGER.trace("<-- removeTriggerFromChoices(); removed = {}; Path = {}", removed, path);
-    }
-  }
-
-  // ----------------------------------------------------------------
-
-  private boolean cleanupChoices(final Event e, final KnowledgeEntity ke) {
-    boolean removed = false;
-    try {
-      LOGGER.trace("--> cleanupChoices(); E = {}; KE = {}", e.getEventID(), ke);
-      if (Event.TRIGGER_TYPE_VARIANT.equals(e.getTriggerType())) {
-        removed = cleanupVariantChoices(e, ke, null);
-      }
-      else {
-        removed = cleanupFeatureChoices(e, ke, null);
-      }
-      return removed;
-    }
-    finally {
-      LOGGER.trace("<-- cleanupChoices(); E = {}; removed = {}", e.getEventID(), removed);
-    }
-  }
-
-  private boolean cleanupVariantChoices(final Event e, final KnowledgeEntity ke, final String purposeId) {
-    boolean removed = false;
-    try {
-      LOGGER.trace("--> cleanupVariantChoices(); PID = {}; TID = {}; E = {}; KE = {}", purposeId, e.getTriggerID(), e.getEventID(), ke);
-      if (Event.TRIGGER_TYPE_VARIANT.equals(e.getTriggerType())) {
-        removed = cleanupVariantChoices(ke, purposeId, e.getTriggerID());
-        return removed;
-      }
-      else {
-        throw new ResolutionException("Cannot cleanup Variant-Choices. Unexpected Trigger-Type: " + e.getTriggerType());
-      }
-    }
-    finally {
-      LOGGER.trace("<-- cleanupVariantChoices(); PID = {}; TID = {}, E = {}; removed = {}", purposeId, e.getTriggerID(), e.getEventID(), removed);
-    }
-  }
-
-  private boolean cleanupVariantChoices(final KnowledgeEntity ke, final String purposeId) {
-    return cleanupVariantChoices(ke, purposeId, null);
-  }
-
-  private boolean cleanupVariantChoices(final KnowledgeEntity ke, final String purposeId, final String variantId) {
-    boolean removed = false;
-    try {
-      LOGGER.trace("--> cleanupVariantChoices(); PID = {}; VID = {}; KE = {}", purposeId, variantId, ke);
-      final VariantChoices choices = ke.getPossibleVariants();
-      final Iterator<VariantChoice> vciter = choices.iterator();
-      while (vciter.hasNext()) {
-        final VariantChoice vc = vciter.next();
-        final Purpose p = vc.getPurpose();
-        final String pid = (p == null ? null : p.getPurposeID());
-        if (StringUtils.isEmpty(purposeId) || purposeId.equals(pid)) {
-          final Variants variants = vc.getVariants();
-          final Iterator<Variant> viter = variants.iterator();
-          while (viter.hasNext()) {
-            final Variant v = viter.next();
-            final String vid = (v == null ? null : v.getVariantID());
-            if (StringUtils.isEmpty(variantId) || variantId.equals(vid)) {
-              LOGGER.debug("Removing Variant {} from Choices for Purpose {}", vid, pid);
-              viter.remove();
-              removed = true;
-            }
-          }
-        }
-      }
-      return removed;
-    }
-    finally {
-      LOGGER.trace("<-- cleanupVariantChoices(); PID = {}; VID = {}; removed = {}", purposeId, variantId, removed);
-    }
-  }
-
-  private boolean cleanupFeatureChoices(final Event e, final KnowledgeEntity ke, final String variantId) {
-    boolean removed = false;
-    try {
-      LOGGER.trace("--> cleanupFeatureChoices(); VID = {}; TID = {}, E = {}; KE = {}", variantId, e.getTriggerID(), e.getEventID(), ke);
-      if (Event.TRIGGER_TYPE_FEATURE_VALUE.equals(e.getTriggerType())) {
-        removed = cleanupFeatureChoices(ke, variantId, e.getTriggerID());
-        return removed;
-      }
-      else if (Event.TRIGGER_TYPE_CONCEPT.equals(e.getTriggerType())) {
-        // TODO: implement Concepts
-        return removed;
-      }
-      else {
-        throw new ResolutionException("Cannot cleanup Feature-Choices. Unexpected Trigger-Type: " + e.getTriggerType());
-      }
-    }
-    finally {
-      LOGGER.trace("<-- cleanupFeatureChoices(); VID = {}; TID = {}, E = {}; removed = {}", variantId, e.getTriggerID(), e.getEventID(), removed);
-    }
-  }
-
-  private boolean cleanupFeatureChoices(final KnowledgeEntity ke, final String variantId, final String featureValueId) {
-    boolean removed = false;
-    try {
-      LOGGER.trace("--> cleanupFeatureChoices(); VID = {}; FVID = {}; KE = {}", variantId, featureValueId, ke);
-      final FeatureChoices choices = ke.getPossibleFeatures();
-      final Iterator<FeatureChoice> fciter = choices.iterator();
-      while (fciter.hasNext()) {
-        final FeatureChoice fc = fciter.next();
-        final String vid = fc.getParentVariantID();
-        if (StringUtils.isEmpty(variantId) || variantId.equals(vid)) {
-          final FeatureValues values = fc.getPossibleValues();
-          final Iterator<FeatureValue> valiter = values.iterator();
-          while (valiter.hasNext()) {
-            final FeatureValue fv = valiter.next();
-            final String fvid = (fv == null ? null : fv.getFeatureValueID());
-            if (StringUtils.isEmpty(featureValueId) || featureValueId.equals(fvid)) {
-              LOGGER.debug("Removing FeatureValue {} from Choices for Variant {}", fvid, vid);
-              valiter.remove();
-              removed = true;
-            }
-          }
-        }
-      }
-      return removed;
-    }
-    finally {
-      LOGGER.trace("<-- cleanupFeatureChoices(); VID = {}; FVID = {}; removed = {}", variantId, featureValueId, removed);
     }
   }
 
@@ -910,38 +640,6 @@ public class RulesEvaluator implements InitializingBean, Resolver {
         final String msg = String.valueOf(r);
         metadata.addInfo(key, msg);
       }
-    }
-  }
-
-  // ----------------------------------------------------------------
-
-  // In a regular Tree each Variant is used just once. However in a general
-  // Knowledge-Graph a Variant could be (re)used several times for different
-  // Purposes. Therefore the following Methods do not stop after the first
-  // Hit and return a List of all Entities containing the desired Variant.
-
-  // TODO: extract findRoot() to Helper
-  // TODO: performance optimization: cache pointers to root of variant in raeh, search only once!
-
-  private KnowledgeEntities findRoot(final Rule r, final Knowledge knowledge) {
-    final String rootVariantId = r.getVariantID();
-    final KnowledgeEntities root = findRoot(rootVariantId, knowledge);
-    LOGGER.trace("Root of Rule {} is: {}", r.getRuleID(), root);
-    return root;
-  }
-
-  private KnowledgeEntities findRoot(final String rootVariantId, final Knowledge knowledge) {
-    final KnowledgeEntities result = new KnowledgeEntities();
-    findRoot(result, rootVariantId, knowledge.getEntities());
-    return result;
-  }
-
-  private void findRoot(final KnowledgeEntities result, final String rootVariantId, final KnowledgeEntities entities) {
-    for (final KnowledgeEntity ke : entities) {
-      if (rootVariantId.equals(ke.getVariant().getVariantID())) {
-        result.add(ke);
-      }
-      findRoot(result, rootVariantId, ke.getChildren());
     }
   }
 }

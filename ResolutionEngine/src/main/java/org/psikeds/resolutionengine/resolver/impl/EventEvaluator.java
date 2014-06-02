@@ -36,6 +36,7 @@ import org.psikeds.resolutionengine.interfaces.pojos.VariantChoices;
 import org.psikeds.resolutionengine.resolver.ResolutionException;
 import org.psikeds.resolutionengine.resolver.Resolver;
 import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
+import org.psikeds.resolutionengine.util.KnowledgeHelper;
 
 /**
  * This Resolver will evaluate all possible Events and check whether one
@@ -116,7 +117,7 @@ public class EventEvaluator implements Resolver {
         markEventObsolete(e, raeh, metadata);
         throw new ResolutionException("No Trigger in Event: " + eid);
       }
-      final KnowledgeEntities root = findRoot(e, knowledge);
+      final KnowledgeEntities root = KnowledgeHelper.findRoot(e, knowledge);
       if ((root == null) || root.isEmpty()) {
         LOGGER.debug("Nothing to do. Nexus {} of Event {} is not included in the current Knowledge.", e.getVariantID(), eid);
         stillPossible = true;
@@ -474,37 +475,6 @@ public class EventEvaluator implements Resolver {
         final String msg = String.valueOf(e);
         metadata.addInfo(key, msg);
       }
-    }
-  }
-
-  // ----------------------------------------------------------------
-
-  // In a regular Tree each Variant is used just once. However in a general
-  // Knowledge-Graph a Variant could be (re)used several times for different
-  // Purposes. Therefore the following Methods do not stop after the first
-  // Hit and return a List of all Entities containing the desired Variant.
-
-  // TODO: extract findRoot() to Helper
-  // TODO: performance optimization: cache pointers to root of variant in raeh, search only once!
-
-  private KnowledgeEntities findRoot(final Event e, final Knowledge knowledge) {
-    final KnowledgeEntities root = findRoot(e.getVariantID(), knowledge);
-    LOGGER.debug("Root of Event {} is: {}", e.getEventID(), root);
-    return root;
-  }
-
-  private KnowledgeEntities findRoot(final String rootVariantId, final Knowledge knowledge) {
-    final KnowledgeEntities result = new KnowledgeEntities();
-    findRoot(result, rootVariantId, knowledge.getEntities());
-    return result;
-  }
-
-  private void findRoot(final KnowledgeEntities result, final String rootVariantId, final KnowledgeEntities entities) {
-    for (final KnowledgeEntity ke : entities) {
-      if (rootVariantId.equals(ke.getVariant().getVariantID())) {
-        result.add(ke);
-      }
-      findRoot(result, rootVariantId, ke.getChildren());
     }
   }
 }

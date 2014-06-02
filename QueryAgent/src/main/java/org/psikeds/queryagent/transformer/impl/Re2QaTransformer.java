@@ -583,12 +583,12 @@ public class Re2QaTransformer implements Transformer {
 
   @Override
   public Variant re2qa(final org.psikeds.resolutionengine.interfaces.pojos.Variant re) {
-    return (re == null ? null : new Variant(re.getLabel(), re.getDescription(), re.getVariantID(), re2qa(re.getFeatures())));
+    return (re == null ? null : new Variant(re.getLabel(), re.getDescription(), re.getVariantID(), re2qa(re.getFeatures()), re2qa(re.getConcepts())));
   }
 
   @Override
   public org.psikeds.resolutionengine.interfaces.pojos.Variant qa2re(final Variant qa) {
-    return (qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Variant(qa.getLabel(), qa.getDescription(), qa.getVariantID(), qa2re(qa.getFeatures())));
+    return (qa == null ? null : new org.psikeds.resolutionengine.interfaces.pojos.Variant(qa.getLabel(), qa.getDescription(), qa.getVariantID(), qa2re(qa.getFeatures()), qa2re(qa.getConcepts())));
   }
 
   @Override

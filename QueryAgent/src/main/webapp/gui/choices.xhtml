@@ -42,20 +42,45 @@ For details see file LICENSING in the top project directory
       <h:form id="selectForm">
         <div class="meta row-fluid detail">
           <ui:repeat var="di" value="#{Choices.possibleChoices}">
-            <ui:fragment rendered="#{di.level == 0 or di.type == 'Purpose'}">
+            <ui:fragment rendered="#{di.type == 'Purpose'}">
               <p/>
               <h4 class="#{di.type} level#{di.level}"><h:outputText value="#{msg['choices.purpose.text']}" />#{di.value}</h4>
               <hr class="header_rule" />
             </ui:fragment>
-            <ui:fragment rendered="#{di.level == 1 or di.type == 'Variant'}">
+            <ui:fragment rendered="#{di.type == 'Variant'}">
               <ul class="#{di.type} level#{di.level}">
                 <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">
                   <h:outputText value="#{msg['choices.variant.text']}" />
                   <h:outputText value="&#160;" />#{di.selectionKey}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />
-                  <h:commandLink id="resolve" action="#{Ctrl.resolve(di.selectionKey)}">#{di.value}</h:commandLink>
+                  <h:commandLink id="selectVariant" action="#{Ctrl.resolve(di.selectionKey)}">#{di.value}</h:commandLink>
                 </li>
               </ul>
             </ui:fragment>
+            <ui:fragment rendered="#{di.type == 'Feature'}">
+              <p/>
+              <h4 class="#{di.type} level#{di.level}"><h:outputText value="#{msg['choices.feature.text']}" /><h:outputText value="&#160;" />#{di.value}</h4>
+              <hr class="header_rule" />
+            </ui:fragment>
+            <ui:fragment rendered="#{di.type == 'FeatureValue'}">
+              <ul class="#{di.type} level#{di.level}">
+                <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">
+                  <h:outputText value="#{msg['choices.feature.value.text']}" />
+                  <h:outputText value="&#160;" />#{di.selectionKey}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />
+                  <h:commandLink id="selectFeatureValue" action="#{Ctrl.resolve(di.selectionKey)}">#{di.value}</h:commandLink>
+                </li>
+              </ul>
+            </ui:fragment>
+<!--
+            <ui:fragment rendered="#{di.type == 'Concept'}">
+              <ul class="#{di.type} level#{di.level}">
+                <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">
+                  <h:outputText value="#{msg['choices.concept.text']}" />
+                  <h:outputText value="&#160;" />#{di.selectionKey}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />
+                  <h:commandLink id="selectConcept" action="#{Ctrl.resolve(di.selectionKey)}">#{di.value}</h:commandLink>
+                </li>
+              </ul>
+            </ui:fragment>
+-->
           </ui:repeat>
         </div> <!-- meta -->
       </h:form>

@@ -4864,8 +4864,6 @@ body {
      Header
 --------------------------------------------------------------------------------*/
 .topbar {
-  /* position */
-
   position: absolute;
   left: 4px;
   right: 4px;
@@ -4887,7 +4885,7 @@ body {
 #logo {
   display: inline;
   float: left;
-  width: 250px;
+  width: 72px;
   line-height: 48px;
   background: url('/queryagent/img/psikeds-logo.png') center left no-repeat;
   background-size: 48px;
@@ -4972,6 +4970,11 @@ h1.brand a {
 .level5 { margin-left: 100px; font-style:italic; }
 .level6 { margin-left: 120px; font-style:italic; }
 .level7 { margin-left: 140px; font-style:italic; }
+.level8 { margin-left: 160px; font-style:italic; }
+.level9 { margin-left: 160px; font-style:italic; }
+.level10 { margin-left: 160px; font-style:italic; }
+.level11 { margin-left: 160px; font-style:italic; }
+.level12 { margin-left: 160px; font-style:italic; }
 
 .psikeds_footer {
   padding: 10px 25px;
@@ -4979,8 +4982,8 @@ h1.brand a {
   margin-left: -25px;
   margin-bottom: 0;
   margin-right: -25px;
-  min-width: 700px;
-  position:absolute;
+  min-width: 400px;
+  position: fixed;
   bottom:20px;
   left:25px;
 }

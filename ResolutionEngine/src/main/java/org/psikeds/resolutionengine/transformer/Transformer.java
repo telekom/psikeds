@@ -45,11 +45,13 @@ public interface Transformer {
 
   org.psikeds.resolutionengine.interfaces.pojos.Variant valueObject2Pojo(
       org.psikeds.resolutionengine.datalayer.vo.Variant vo,
-      org.psikeds.resolutionengine.datalayer.vo.Features features);
+      org.psikeds.resolutionengine.datalayer.vo.Features features,
+      org.psikeds.resolutionengine.datalayer.vo.Concepts concepts);
 
   org.psikeds.resolutionengine.interfaces.pojos.Variant valueObject2Pojo(
       org.psikeds.resolutionengine.datalayer.vo.Variant vo,
-      org.psikeds.resolutionengine.interfaces.pojos.Features features);
+      org.psikeds.resolutionengine.interfaces.pojos.Features features,
+      org.psikeds.resolutionengine.interfaces.pojos.Concepts concepts);
 
   org.psikeds.resolutionengine.interfaces.pojos.Variants valueObject2Pojo(
       org.psikeds.resolutionengine.datalayer.vo.Variants vo);

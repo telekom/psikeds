@@ -35,7 +35,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <constructor-arg index="0" value="${resolutionengine.resolver.decission.optional.root.purposes}" />
   </bean>
 
-  <bean id="FeatureDecissionEvaluator" class="org.psikeds.resolutionengine.resolver.impl.VariantDecissionEvaluator" />
+  <bean id="FeatureDecissionEvaluator" class="org.psikeds.resolutionengine.resolver.impl.FeatureDecissionEvaluator" />
 
   <bean id="AutoCompletionResolver" class="org.psikeds.resolutionengine.resolver.impl.AutoCompletion">
     <constructor-arg index="0" type="org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase" ref="knowledgeBase" />  <!-- defined in knowledgebase-context.xml -->

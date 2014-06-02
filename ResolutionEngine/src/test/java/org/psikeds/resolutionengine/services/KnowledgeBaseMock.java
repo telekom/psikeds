@@ -422,6 +422,16 @@ public class KnowledgeBaseMock implements KnowledgeBase {
 
   /**
    * @param variantId
+   * @return Concepts
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getAttachedConcepts(java.lang.String)
+   */
+  @Override
+  public Concepts getAttachedConcepts(final String variantId) {
+    return getConcepts();
+  }
+
+  /**
+   * @param variantId
    * @return Events
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getAttachedEvents(java.lang.String)
    */
@@ -623,6 +633,27 @@ public class KnowledgeBaseMock implements KnowledgeBase {
       for (final FeatureValue val : f.getValues()) {
         if (FeatureValueHelper.isWithinRange(featureId, rangeID, val)) {
           values.addValue(val);
+        }
+      }
+    }
+    return values;
+  }
+
+  /**
+   * @param variantId
+   * @param featureId
+   * @return all values for this feature on this variant
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFeatureValues(java.lang.String,
+   *      java.lang.String)
+   */
+  @Override
+  public FeatureValues getFeatureValues(final String variantId, final String featureId) {
+    final FeatureValues values = new FeatureValues();
+    final Variant v = (StringUtils.isEmpty(variantId) ? null : getVariant(variantId));
+    if (v != null) {
+      for (final FeatureValue fv : v.getFeatureValues()) {
+        if ((fv != null) && fv.getFeatureID().equals(featureId)) {
+          values.addValue(fv);
         }
       }
     }

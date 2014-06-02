@@ -1178,7 +1178,7 @@ table .span12 {
   height: 14px;
   line-height: 14px;
   vertical-align: text-top;
-  background-image: url('/resolutionengine/img/glyphicons-halflings.png');
+  background-image: url('/queryagent/img/glyphicons-halflings.png');
   background-position: 14px 14px;
   background-repeat: no-repeat;
   *margin-right: .3em;
@@ -1187,7 +1187,7 @@ table .span12 {
   *margin-left: 0;
 }
 .icon-white {
-  background-image: url('/resolutionengine/img/glyphicons-halflings-white.png');
+  background-image: url('/queryagent/img/glyphicons-halflings-white.png');
 }
 .icon-glass {
   background-position: 0      0;
@@ -3558,7 +3558,7 @@ dt {
   font-size: 11px;
   margin-left: 20px;
   padding: 0;
-  background-image: url('/resolutionengine/img/drop_arrow.png');
+  background-image: url('/queryagent/img/drop_arrow.png');
   border: 1px solid #c0d9e4;
   background-color: #e9f5fa;
   background-repeat: no-repeat;
@@ -3601,7 +3601,7 @@ body {
   background: #fafafa;
 }
 #splash .login {
-  background: #ffffff url('/resolutionengine/img/w7-logo.png') no-repeat center 35px;
+  background: #ffffff url('/queryagent/img/w7-logo.png') no-repeat center 35px;
   position: absolute;
   top: 80px;
   left: 50%;
@@ -3662,7 +3662,7 @@ h1.brand {
   padding-bottom: 40px;
 }
 h1.brand a {
-  background: url('/resolutionengine/img/w7-logo.png') top left no-repeat;
+  background: url('/queryagent/img/w7-logo.png') top left no-repeat;
   display: block;
   float: left;
   width: 116px;
@@ -3693,7 +3693,7 @@ a.current_item:hover h3, a.current_item:hover h4 {
 .sidebar .switcher_bar a.dropdown-toggle {
   display: block;
   padding: 5px 0;
-  background-image: url('/resolutionengine/img/drop_arrow.png');
+  background-image: url('/queryagent/img/drop_arrow.png');
   border: 1px solid #c0d9e4;
   background-color: #e9f5fa;
   background-repeat: no-repeat;
@@ -3848,10 +3848,10 @@ a.current_item:hover h3, a.current_item:hover h4 {
   background-position: 98% center;
 }
 .table th.headerSortDown {
-  background-image: url('/resolutionengine/img/drop_arrow.png');
+  background-image: url('/queryagent/img/drop_arrow.png');
 }
 .table th.headerSortUp {
-  background-image: url('/resolutionengine/img/up_arrow.png');
+  background-image: url('/queryagent/img/up_arrow.png');
 }
 .table tr.summation td:first-child, .table tr.summation td:last-child {
   border-radius: 0;
@@ -3959,7 +3959,7 @@ table form {
   display: inline-block;
 }
 .table_search input {
-  background: url('/resolutionengine/img/search.png') no-repeat 195px 5px;
+  background: url('/queryagent/img/search.png') no-repeat 195px 5px;
   display: inline-block;
   margin-bottom: 0;
 }
@@ -4356,7 +4356,7 @@ tr.terminated {
   font-weight: bold;
   color: #555;
   cursor: pointer;
-  background-image: url('/resolutionengine/img/right_droparrow.png');
+  background-image: url('/queryagent/img/right_droparrow.png');
   background-repeat: no-repeat;
   background-position: 130px center;
 }
@@ -4364,7 +4364,7 @@ tr.terminated {
   width: 334px;
   margin-bottom: 10px;
   border-bottom: solid 1px #E1E1E1;
-  background-image: url('/resolutionengine/img/drop_arrow.png');
+  background-image: url('/queryagent/img/drop_arrow.png');
 }
 form div.clearfix.error {
   width: 308px;
@@ -4404,7 +4404,7 @@ form div.clearfix.error {
   margin-top: -10px;
 }
 #region_selector li:first-child p {
-  background: #ededed url('/resolutionengine/img/drop_arrow.png') no-repeat 106px 9px !important;
+  background: #ededed url('/queryagent/img/drop_arrow.png') no-repeat 106px 9px !important;
   display: block;
   border: 1px solid #e1e1e1;
   padding: 5px;
@@ -4591,7 +4591,7 @@ label.log-length {
   float: left;
 }
 .project_membership input {
-  background: url('/resolutionengine/img/search.png') no-repeat 105px 5px whiteSmoke;
+  background: url('/queryagent/img/search.png') no-repeat 105px 5px whiteSmoke;
 }
 .project_membership .fake_table_header {
   background-color: #F1F1F1;
@@ -4829,7 +4829,7 @@ label.log-length {
      Body 
 --------------------------------------------------------------------------------*/
 body {
-  /*@sf@ background-image: url('/resolutionengine/img/body_background.gif'); */
+  /*@sf@ background-image: url('/queryagent/img/body_background.gif'); */
 
 }
 /*--------------------------------------------------------------------------------
@@ -4864,8 +4864,6 @@ body {
      Header
 --------------------------------------------------------------------------------*/
 .topbar {
-  /* position */
-
   position: absolute;
   left: 4px;
   right: 4px;
@@ -4887,9 +4885,9 @@ body {
 #logo {
   display: inline;
   float: left;
-  width: 250px;
+  width: 72px;
   line-height: 48px;
-  background: url('/resolutionengine/img/psikeds-logo.png') center left no-repeat;
+  background: url('/queryagent/img/psikeds-logo.png') center left no-repeat;
   background-size: 48px;
 }
 #user_info {
@@ -4960,4 +4958,32 @@ h1.brand a {
   border: 0px none;
   border-top-left-radius: 8px;
   border-bottom-left-radius: 8px;
+}
+/*--------------------------------------------------------------------------------
+     Knowledge Tree
+--------------------------------------------------------------------------------*/
+.level0 { font-weight:bold; font-variant:small-caps; }
+.level1 { margin-left: 20px; font-weight:bold; }
+.level2 { margin-left: 40px; }
+.level3 { margin-left: 60px; font-style:italic; }
+.level4 { margin-left: 80px; font-style:italic; }
+.level5 { margin-left: 100px; font-style:italic; }
+.level6 { margin-left: 120px; font-style:italic; }
+.level7 { margin-left: 140px; font-style:italic; }
+.level8 { margin-left: 160px; font-style:italic; }
+.level9 { margin-left: 160px; font-style:italic; }
+.level10 { margin-left: 160px; font-style:italic; }
+.level11 { margin-left: 160px; font-style:italic; }
+.level12 { margin-left: 160px; font-style:italic; }
+
+.psikeds_footer {
+  padding: 10px 25px;
+  margin-top: 20px;
+  margin-left: -25px;
+  margin-bottom: 0;
+  margin-right: -25px;
+  min-width: 400px;
+  position: fixed;
+  bottom:20px;
+  left:25px;
 }

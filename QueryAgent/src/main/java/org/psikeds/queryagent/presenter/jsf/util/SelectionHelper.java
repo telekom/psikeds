@@ -17,6 +17,7 @@ package org.psikeds.queryagent.presenter.jsf.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.psikeds.queryagent.interfaces.presenter.pojos.ConceptDecission;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Decission;
 import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureDecission;
 import org.psikeds.queryagent.interfaces.presenter.pojos.POJO;
@@ -31,27 +32,39 @@ import org.psikeds.queryagent.interfaces.presenter.pojos.VariantDecission;
 public final class SelectionHelper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SelectionHelper.class);
+  private static final String SELECT_REGEXP = String.valueOf(POJO.COMPOSE_ID_SEPARATOR);
 
-  public static final String SELECT_REGEXP = String.valueOf(POJO.COMPOSE_ID_SEPARATOR);
+  public static final String SELECTION_TYPE_VARIANT = "V";
+  public static final String SELECTION_TYPE_CONCEPT = "C";
+  public static final String SELECTION_TYPE_FEATURE_VALUE = "FV";
 
-  public static String createSelectionString(final String... ids) {
-    return POJO.composeId(ids);
+  public static String createSelectionString(final String type, final String... ids) {
+    final String idstr = POJO.composeId(ids);
+    return POJO.composeId(type, idstr);
   }
 
-  public static String createSelectionString(final POJO... pojos) {
-    return POJO.composeId(pojos);
+  public static String createSelectionString(final String type, final POJO... pojos) {
+    final String idstr = POJO.composeId(pojos);
+    return POJO.composeId(type, idstr);
   }
 
   public static Decission getDecissionFromString(final String selected) {
     Decission d = null;
     try {
-      LOGGER.trace("--> getDecissionFromString( {} )", selected);
+      LOGGER.trace("--> getDecissionFromSelectionString( {} )", selected);
       final String[] parts = selected.split(SELECT_REGEXP);
-      if (parts.length == 2) {
+      final String type = parts[0].trim();
+      if (SELECTION_TYPE_VARIANT.equals(type)) {
         d = getVariantDecissionFromString(parts);
       }
-      else if (parts.length == 3) {
+      else if (SELECTION_TYPE_CONCEPT.equals(type)) {
+        d = getConceptDecissionFromString(parts);
+      }
+      else if (SELECTION_TYPE_FEATURE_VALUE.equals(type)) {
         d = getFeatureDecissionFromString(parts);
+      }
+      else {
+        LOGGER.warn("Invalid Selection-String: {}", selected);
       }
     }
     catch (final Exception ex) {
@@ -59,7 +72,7 @@ public final class SelectionHelper {
       d = null;
     }
     finally {
-      LOGGER.trace("<-- getDecissionFromString(); Decission = {}", d);
+      LOGGER.trace("<-- getDecissionFromSelectionString(); Decission = {}", d);
     }
     return d;
   }
@@ -69,8 +82,8 @@ public final class SelectionHelper {
   private static VariantDecission getVariantDecissionFromString(final String[] parts) {
     VariantDecission vd = null;
     try {
-      final String purposeID = parts[0].trim();
-      final String variantID = parts[1].trim();
+      final String purposeID = parts[1].trim();
+      final String variantID = parts[2].trim();
       vd = new VariantDecission(purposeID, variantID);
     }
     catch (final Exception ex) {
@@ -83,9 +96,9 @@ public final class SelectionHelper {
   private static FeatureDecission getFeatureDecissionFromString(final String[] parts) {
     FeatureDecission fd = null;
     try {
-      final String variantID = parts[0].trim();
-      final String featureID = parts[1].trim();
-      final String featureValueID = parts[2].trim();
+      final String variantID = parts[1].trim();
+      final String featureID = parts[2].trim();
+      final String featureValueID = parts[3].trim();
       fd = new FeatureDecission(variantID, featureID, featureValueID);
     }
     catch (final Exception ex) {
@@ -93,6 +106,20 @@ public final class SelectionHelper {
       fd = null;
     }
     return fd;
+  }
+
+  private static ConceptDecission getConceptDecissionFromString(final String[] parts) {
+    ConceptDecission cd = null;
+    try {
+      final String variantID = parts[1].trim();
+      final String conceptID = parts[2].trim();
+      cd = new ConceptDecission(variantID, conceptID);
+    }
+    catch (final Exception ex) {
+      // string is null or not in the expected format
+      cd = null;
+    }
+    return cd;
   }
 
   // ----------------------------------------------------------------

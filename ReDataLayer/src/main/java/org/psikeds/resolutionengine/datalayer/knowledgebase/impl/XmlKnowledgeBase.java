@@ -99,6 +99,7 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   private static final String KEY_PREFIX_FULFILLS = "kb.fulfills.";
   private static final String KEY_PREFIX_CONSTITUTES = "kb.constitutes.";
 
+  private static final String KEY_PREFIX_ATTACHED_CONCEPTS = "kb.attached.concepts.";
   private static final String KEY_PREFIX_ATTACHED_EVENTS = "kb.attached.events.";
   private static final String KEY_PREFIX_ATTACHED_RULES = "kb.attached.rules.";
   private static final String KEY_PREFIX_ATTACHED_RELATION_PARAMS = "kb.attached.relparams.";
@@ -487,6 +488,37 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
 
   /**
    * @param variantId
+   * @param featureId
+   * @return all values for this feature on this variant
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getFeatureValues(java.lang.String,
+   *      java.lang.String)
+   */
+  @Override
+  public FeatureValues getFeatureValues(final String variantId, final String featureId) {
+    final FeatureValues values = new FeatureValues();
+    final Variant v = (StringUtils.isEmpty(variantId) ? null : getVariant(variantId));
+    if (v != null) {
+      for (final FeatureValue fv : v.getFeatureValues()) {
+        if ((fv != null) && fv.getFeatureID().equals(featureId)) {
+          values.addValue(fv);
+        }
+      }
+    }
+    return values;
+  }
+
+  /**
+   * @param variantId
+   * @return Concepts attached to Variant
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getAttachedConcepts(java.lang.String)
+   */
+  @Override
+  public Concepts getAttachedConcepts(final String variantId) {
+    return (Concepts) load(KEY_PREFIX_ATTACHED_CONCEPTS, variantId);
+  }
+
+  /**
+   * @param variantId
    * @return Events attached to Variant
    * @see org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase#getAttachedEvents(java.lang.String)
    */
@@ -632,11 +664,11 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   @Override
   public boolean hasConcept(final String variantId, final String conceptID) {
     if (!StringUtils.isEmpty(variantId) && !StringUtils.isEmpty(conceptID)) {
-      final Variant var = getVariant(variantId);
-      final List<Concept> lst = (var == null ? null : var.getConcepts());
+      final Concepts cons = getAttachedConcepts(variantId);
+      final List<Concept> lst = (cons == null ? null : cons.getConcept());
       if ((lst != null) && !lst.isEmpty()) {
-        for (final Concept idx : lst) {
-          if ((idx != null) && conceptID.equals(idx.getConceptID())) {
+        for (final Concept c : lst) {
+          if ((c != null) && conceptID.equals(c.getConceptID())) {
             return true;
           }
         }
@@ -976,11 +1008,12 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
             if ((subsumptions != null) && !subsumptions.isEmpty()) {
               for (final org.psikeds.knowledgebase.jaxb.Subsumption sub : subsumptions) {
                 final String conceptID = (sub == null ? null : sub.getRef());
-                final Concept c = (StringUtils.isEmpty(conceptID) ? null : getConcept(conceptID));
+                final Concept c = (StringUtils.isEmpty(conceptID) ? null : getConcept(conceptID)); // we want a reference to the existing concept
                 if ((c == null) || !conceptID.equals(c.getConceptID())) {
                   throw new IllegalArgumentException("Illegal Reference from Variant " + vid + " to primary Concept " + conceptID);
                 }
                 v.addConcept(c);
+                attachConcept(vid, c);
                 for (final String fid : c.getFeatureIds()) {
                   v.addFeatureId(fid);
                 }
@@ -998,11 +1031,12 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
               LOGGER.info("Secondary Concepts currently not supported. Interpreting all secondary Subsumptions of Variant {} as primary ones!", vid);
               for (final org.psikeds.knowledgebase.jaxb.Subsumption sub : subsumptions) {
                 final String conceptID = (sub == null ? null : sub.getRef());
-                final Concept c = (StringUtils.isEmpty(conceptID) ? null : getConcept(conceptID));
+                final Concept c = (StringUtils.isEmpty(conceptID) ? null : getConcept(conceptID)); // we want a reference to the existing concept
                 if ((c == null) || !conceptID.equals(c.getConceptID())) {
                   throw new IllegalArgumentException("Illegal Reference from Variant " + vid + " to secondary Concept " + conceptID);
                 }
                 v.addConcept(c);
+                attachConcept(vid, c);
                 for (final String fid : c.getFeatureIds()) {
                   v.addFeatureId(fid);
                 }
@@ -1199,6 +1233,17 @@ public class XmlKnowledgeBase implements KnowledgeBase, KBParserCallback {
   }
 
   // ----------------------------------------------------------------
+
+  private void attachConcept(final String variantId, final Concept c) {
+    if ((c != null) && !StringUtils.isEmpty(variantId)) {
+      Concepts cons = getAttachedConcepts(variantId);
+      if (cons == null) {
+        cons = new Concepts();
+      }
+      cons.addConcept(c);
+      save(KEY_PREFIX_ATTACHED_CONCEPTS, variantId, cons);
+    }
+  }
 
   private void attachEvent(final Event e) {
     final String variantId = (e == null ? null : e.getVariantID());

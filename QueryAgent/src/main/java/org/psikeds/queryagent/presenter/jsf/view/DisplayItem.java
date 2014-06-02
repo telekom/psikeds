@@ -32,12 +32,13 @@ public class DisplayItem implements Serializable {
   private static final long serialVersionUID = 1L;
 
   // some types that can be used in the xhtml-template to control layout and design
-  public static final String TYPE_ENTITY = "Entity";     // a knowledge entity (selected variant for a purpose)
-  public static final String TYPE_PURPOSE = "Purpose";   // a purpose
-  public static final String TYPE_VARIANT = "Variant";   // a variant
-  public static final String TYPE_FEATURE = "Feature";   // a feature value
-  public static final String TYPE_CHOICE = "Choice";     // a possible choice
-  public static final String TYPE_LABEL = "Label";       // everything else, i.e. just some string
+  public static final String TYPE_ENTITY = "Entity";                // a knowledge entity (selected variant for a purpose)
+  public static final String TYPE_PURPOSE = "Purpose";              // a purpose
+  public static final String TYPE_VARIANT = "Variant";              // a variant
+  public static final String TYPE_FEATURE = "Feature";              // a feature
+  public static final String TYPE_FEATURE_VALUE = "FeatureValue";   // a value of a feature
+  public static final String TYPE_CONCEPT = "Concept";              // a concept
+  public static final String TYPE_LABEL = "Label";                  // everything else, i.e. just some string
 
   public static final String DEFAULT_TYPE = TYPE_LABEL;
   public static final int DEFAULT_LEVEL = 0;
@@ -131,8 +132,11 @@ public class DisplayItem implements Serializable {
     else if (TYPE_FEATURE.equalsIgnoreCase(type)) {
       this.type = TYPE_FEATURE;
     }
-    else if (TYPE_CHOICE.equalsIgnoreCase(type)) {
-      this.type = TYPE_CHOICE;
+    else if (TYPE_FEATURE_VALUE.equalsIgnoreCase(type)) {
+      this.type = TYPE_FEATURE_VALUE;
+    }
+    else if (TYPE_CONCEPT.equalsIgnoreCase(type)) {
+      this.type = TYPE_CONCEPT;
     }
     else {
       // everything else is just a plain text label
@@ -153,7 +157,7 @@ public class DisplayItem implements Serializable {
 
   public void setParent(final DisplayItem parent) {
     this.parent = parent;
-    this.level = (parent == null ? 0 : parent.getLevel() + 1); // inherit level from parent
+    this.level = (parent == null ? DEFAULT_LEVEL : parent.getLevel() + 1); // inherit level from parent
   }
 
   public List<DisplayItem> getChild() {

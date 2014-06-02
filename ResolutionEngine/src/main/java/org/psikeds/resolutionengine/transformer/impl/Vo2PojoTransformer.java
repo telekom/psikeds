@@ -96,23 +96,25 @@ public class Vo2PojoTransformer implements Transformer {
 
   @Override
   public org.psikeds.resolutionengine.interfaces.pojos.Variant valueObject2Pojo(final org.psikeds.resolutionengine.datalayer.vo.Variant vo) {
-    return valueObject2Pojo(vo, (org.psikeds.resolutionengine.interfaces.pojos.Features) null);
+    return valueObject2Pojo(vo, (org.psikeds.resolutionengine.interfaces.pojos.Features) null, (org.psikeds.resolutionengine.interfaces.pojos.Concepts) null);
   }
 
   @Override
   public org.psikeds.resolutionengine.interfaces.pojos.Variant valueObject2Pojo(
       final org.psikeds.resolutionengine.datalayer.vo.Variant vo,
-      final org.psikeds.resolutionengine.datalayer.vo.Features features) {
-    return valueObject2Pojo(vo, valueObject2Pojo(features));
+      final org.psikeds.resolutionengine.datalayer.vo.Features features,
+      final org.psikeds.resolutionengine.datalayer.vo.Concepts concepts) {
+    return valueObject2Pojo(vo, valueObject2Pojo(features), valueObject2Pojo(concepts));
   }
 
   @Override
   public org.psikeds.resolutionengine.interfaces.pojos.Variant valueObject2Pojo(
       final org.psikeds.resolutionengine.datalayer.vo.Variant vo,
-      final org.psikeds.resolutionengine.interfaces.pojos.Features features) {
+      final org.psikeds.resolutionengine.interfaces.pojos.Features features,
+      final org.psikeds.resolutionengine.interfaces.pojos.Concepts concepts) {
     org.psikeds.resolutionengine.interfaces.pojos.Variant pojo = null;
     if (vo != null) {
-      pojo = new org.psikeds.resolutionengine.interfaces.pojos.Variant(vo.getLabel(), vo.getDescription(), vo.getVariantID(), features);
+      pojo = new org.psikeds.resolutionengine.interfaces.pojos.Variant(vo.getLabel(), vo.getDescription(), vo.getVariantID(), features, concepts);
       LOGGER.trace("valueObject2Pojo: vo = {}\n--> pojo = {}", vo, pojo);
     }
     return pojo;

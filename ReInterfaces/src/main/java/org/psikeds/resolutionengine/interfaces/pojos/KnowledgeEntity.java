@@ -284,14 +284,23 @@ public class KnowledgeEntity extends POJO implements Serializable {
   public boolean isResolved() {
     return ((this.purpose != null)
         && (this.variant != null)
-        // TODO: enable features and concepts here
-//        && ((this.possibleConcepts == null) || this.possibleConcepts.isEmpty())
-//        && ((this.possibleFeatures == null) || this.possibleFeatures.isEmpty())
+        // && ((this.possibleConcepts == null) || this.possibleConcepts.isEmpty()) // TODO: enable concepts here
+        && ((this.possibleFeatures == null) || this.possibleFeatures.isEmpty())
         && ((this.possibleVariants == null) || this.possibleVariants.isEmpty()));
   }
 
   @JsonIgnore
   public boolean isRoot() {
     return ((this.purpose != null) && this.purpose.isRoot());
+  }
+
+  @JsonIgnore
+  public boolean hasFeatures() {
+    return ((this.variant != null) && (this.variant.getFeatures() != null) && !this.variant.getFeatures().isEmpty());
+  }
+
+  @JsonIgnore
+  public boolean hasConcepts() {
+    return ((this.variant != null) && (this.variant.getConcepts() != null) && !this.variant.getConcepts().isEmpty());
   }
 }
