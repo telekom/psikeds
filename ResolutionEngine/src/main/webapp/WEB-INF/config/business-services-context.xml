@@ -37,6 +37,8 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 
   <bean id="FeatureDecissionEvaluator" class="org.psikeds.resolutionengine.resolver.impl.FeatureDecissionEvaluator" />
 
+  <bean id="ConceptDecissionEvaluator" class="org.psikeds.resolutionengine.resolver.impl.ConceptDecissionEvaluator" />
+
   <bean id="AutoCompletionResolver" class="org.psikeds.resolutionengine.resolver.impl.AutoCompletion">
     <constructor-arg index="0" type="org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase" ref="knowledgeBase" />  <!-- defined in knowledgebase-context.xml -->
     <constructor-arg index="1" type="org.psikeds.resolutionengine.transformer.Transformer" ref="PojoTransformer" />
@@ -59,6 +61,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
   <util:list id="ResolverChain">
     <ref bean="VariantDecissionEvaluator" />
     <ref bean="FeatureDecissionEvaluator" />
+    <ref bean="ConceptDecissionEvaluator" />
     <ref bean="AutoCompletionResolver" />
     <ref bean="EventEvaluator" />
     <ref bean="RulesEvaluator" />
