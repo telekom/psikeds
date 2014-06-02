@@ -6,9 +6,13 @@ psiKeds :- ps induced knowledge entity delivery system
 DEPLOYING ON TOMCAT AND UBUNTU
 ------------------------------
 
-For deploying the war-files of the psiKeds-resolulion-engine and the
+For deploying the war-files of the psiKeds-resolution-engine and the
 psiKeds-query-agent on the applications server Tomcat in an Ubuntu 12.04
 do the following steps:
+
+- install openjdk
+
+- install maven3
 
 - install the packages tomcat7-user, tomcat7, libapache2-mod-jk, tomcat7-admin
 
@@ -30,7 +34,7 @@ do the following steps:
 
 - add your deployer account to the group tomcat7
 
-- copy the complete content of the config direcgtory
+- copy the complete content of the config directory
   delivered by the project into your own recently
   generated config directory (e.g /home/reincke/psikeds)
 
@@ -38,7 +42,7 @@ do the following steps:
   bash> mvn clean install 
 
 - [Note: tomcat needs CATALINA_HOME, CATALINA_BASE, and
-   JAVA_HOME as environment variables. In UBUNTU 12.04,
+   JAVA_HOME as environment variables. In UBUNTU,
   they are defined by the tomcat starting script in
   /etc/init.d/tomcat7 as CATALINA_HOME=/usr/share/tomcat7
   and CATALINA_BASE=/var/lib/tomcat7]
