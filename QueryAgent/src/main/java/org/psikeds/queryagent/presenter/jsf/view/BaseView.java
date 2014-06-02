@@ -39,6 +39,8 @@ public abstract class BaseView {
     this.model = model;
   }
 
+  // ----------------------------------------------------------------
+
   public boolean isResolved() {
     return ((this.model != null) && this.model.isResolved());
   }
@@ -58,4 +60,8 @@ public abstract class BaseView {
   public boolean isNotInitialized() {
     return ((this.model == null) || this.model.isNotInitialized());
   }
+
+  // ----------------------------------------------------------------
+
+  public abstract boolean isWithoutData();
 }
