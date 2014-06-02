@@ -52,6 +52,9 @@ do the following steps:
   which should be resolvable as /var/lib/tomcat7/webapps
   (In case of problems delete all existing psikeds war-files and directories)
    
+- delete the existing directories 'queryagent' and 'resolutionengine'
+  in $CATALINA_BASE/webapps.
+
 - restart the tomcat instance by using the command
   bash> sudo /etc/init.d/tomcat7 start
 

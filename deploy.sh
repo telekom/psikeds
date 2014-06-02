@@ -35,107 +35,46 @@ QA_TARGET_DIR=${SCRIPT_DIR}/QueryAgent/target
 QA_FULL_PATH=${QA_TARGET_DIR}/${QA_WAR}
 
 
-TOMCAT
+TOMCAT_START=/etc/init.d/tomcat7
 
 # ---------------------------------------------------------------------------
 # Do not modify below this line ...
 # ---------------------------------------------------------------------------
 
-if [ "$CATALINA_HOME" == ""  ]; then
-  echo "Variable CATALINA_HOME is not predefined"
-  CATALINA_HOME=/var/lib/tomcat7/
-  echo "set to $CATALINA_HOME"
+if [ "$CATALINA_BASE" == ""  ]; then
+  echo -n "Variable CATALINA_BASE undefined: using value ";
+  CATALINA_BASE=/var/lib/tomcat7
+  echo "<$CATALINA_BASE>";
 fi
-if [ ! -d "$CATALINA_HOME" ]; then
-  echo "$CATALINA_HOME not found: stopping the deployment"
-  exit
+
+if [ ! -d "$CATALINA_BASE" ]; then
+  echo "$CATALINA_BASE not found: stopping the deployment";
+  exit;
 fi
-echo $CATALINA_HOME
-WEBAPPS_DIR=${CATALINA_HOME}\webapps"
+
+WEBAPPS_DIR=${CATALINA_BASE}/webapps
+if [ ! -d "$WEBAPPS_DIR" ]; then
+  echo "$WEBAPPS_DIR not found: stopping the deployment";
+  exit;
+fi
+
+echo "shutting down the tomcat-server"
+sudo $TOMCAT_START stop
+
+echo "deleting the existing application directories"
+sudo rm -rf $WEBAPPS_DIR/${RE_NAME}
+sudo rm -rf $WEBAPPS_DIR/${QA_NAME}
+
+echo "copying the new war files into $WEBAPPS_DIR"
+cp $QA_FULL_PATH $RE_FULL_PATH $WEBAPPS_DIR
+
+echo "restarting the tomcate"
+sudo $TOMCAT_START start
+
+echo "Attention! Do not forget to replace the content"
+echo "of your psikeds config directory by the content"
+echo "of the ${SCRIPT_DIR}/config"
+echo "in case of any irritation"
+
 exit
 
-
-:checkStartScript
-START_SCRIPT=%CATALINA_HOME%\bin\startup.bat"
-if exist "%START_SCRIPT%" goto checkStopScript
-@echo Start-Script not found: %START_SCRIPT%
-goto end
-
-:checkStopScript
-STOP_SCRIPT=%CATALINA_HOME%\bin\shutdown.bat"
-if exist "%STOP_SCRIPT%" goto checkWebAppsDir
-@echo Stop-Script not found: %STOP_SCRIPT%
-goto end
-
-:checkWebAppsDir
-if exist "%WEBAPPS_DIR%" goto checkWorkDir
-@echo Directory not found: %WEBAPPS_DIR%
-goto end
-
-:checkWorkDir
-WORK_DIR=%CATALINA_HOME%\work\Catalina\localhost"
-if exist "%WORK_DIR%" goto checkResEngTargetDir
-@echo Directory not found: %WORK_DIR%
-goto end
-
-:checkResEngTargetDir
-if exist "%RE_TARGET_DIR%" goto checkQryAgtTargetDir
-@echo Directory not found: %RE_TARGET_DIR%
-goto end
-
-:checkQryAgtTargetDir
-if exist "%QA_TARGET_DIR%" goto stopTomcat
-@echo Directory not found: %QA_TARGET_DIR%
-goto end
-
-# ---------------------------------------------------------------------------
-
-:stopTomcat
-cd "%SCRIPT_DIR%"
-# echo Stopping Tomcat Server ...
-# CMD /C "%STOP_SCRIPT%"
-
-:delLogs
-if not exist %PSIKEDS_LOG_DIR% goto delRE
-@echo ... removing old Logfiles from %PSIKEDS_LOG_DIR% ...
-DEL /F /Q "%PSIKEDS_LOG_DIR%\psikeds*"
-DEL /F /Q "%PSIKEDS_LOG_DIR%\*.log"
-
-:delRE
-if not exist "%RE_FULL_PATH%" goto delQA
-@echo ... removing old %RE_WAR% ...
-if exist "%WEBAPPS_DIR%\%RE_WAR%" DEL /F "%WEBAPPS_DIR%\%RE_WAR%"
-if exist "%WEBAPPS_DIR%\%RE_NAME%" DEL /F /S /Q "%WEBAPPS_DIR%\%RE_NAME%"
-if exist "%WEBAPPS_DIR%\%RE_NAME%" RMDIR /S /Q "%WEBAPPS_DIR%\%RE_NAME%"
-if exist "%WORK_DIR%\%RE_NAME%" DEL /F /S /Q "%WORK_DIR%\%RE_NAME%"
-if exist "%WORK_DIR%\%RE_NAME%" RMDIR /S /Q "%WORK_DIR%\%RE_NAME%"
-
-:deployRE
-if not exist "%RE_FULL_PATH%" goto delQA
-@echo ... deploying %RE_FULL_PATH% ...
-COPY /Y "%RE_FULL_PATH%" "%WEBAPPS_DIR%"
-
-:delQA
-if not exist "%QA_FULL_PATH%" goto startTomcat
-@echo ... removing old %QA_WAR% ...
-if exist "%WEBAPPS_DIR%\%QA_WAR%" DEL /F "%WEBAPPS_DIR%\%QA_WAR%"
-if exist "%WEBAPPS_DIR%\%QA_NAME%" DEL /F /S /Q "%WEBAPPS_DIR%\%QA_NAME%"
-if exist "%WEBAPPS_DIR%\%QA_NAME%" RMDIR /S /Q "%WEBAPPS_DIR%\%QA_NAME%"
-if exist "%WORK_DIR%\%QA_NAME%" DEL /F /S /Q "%WORK_DIR%\%QA_NAME%"
-if exist "%WORK_DIR%\%QA_NAME%" RMDIR /S /Q "%WORK_DIR%\%QA_NAME%"
-
-:deployQA
-if not exist "%QA_FULL_PATH%" goto startTomcat
-@echo ... deploying %QA_FULL_PATH% ...
-COPY /Y "%QA_FULL_PATH%" "%WEBAPPS_DIR%"
-
-:startTomcat
-# echo ... (re)starting Tomcat Server ...
-# CMD /C "%START_SCRIPT%"
-
-@echo ... done.
-
-# ---------------------------------------------------------------------------
-
-:end
-cd "%CURRENT_DIR%"
