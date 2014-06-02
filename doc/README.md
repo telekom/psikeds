@@ -6,4 +6,4 @@ psiKeds :- ps induced knowledge entity delivery system
 DOCUMENTATION AND FURTHER INFORMATION
 -------------------------------------
 - [How to develop pisKeds with Eclipse](HowtoDevelopPiskedsWithEclipse.md)
-- [How to deploy psiKeds on a Tomcat in an Ubuntu-1204](HowtoDeployPsikedsOnTomcatUbuntu1204.md)
+- [How to deploy psiKeds on a Tomcat in an Ubuntu-Environment](HowtoDeployPsikedsOnTomcatUbuntu.md)
