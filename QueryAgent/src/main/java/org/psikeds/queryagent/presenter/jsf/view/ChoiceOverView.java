@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.psikeds.queryagent.interfaces.presenter.pojos.Choice;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Choices;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Concept;
 import org.psikeds.queryagent.interfaces.presenter.pojos.ConceptChoice;
 import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureChoice;
@@ -48,6 +49,7 @@ public class ChoiceOverView extends BaseView {
     super(model);
   }
 
+  @Override
   public boolean isWithoutData() {
     return (isNotInitialized() || isResolved() || this.model.getChoices().isEmpty());
   }
@@ -57,7 +59,7 @@ public class ChoiceOverView extends BaseView {
     try {
       LOGGER.trace("--> getPossibleChoices()");
       if (!isWithoutData()) {
-        final List<Choice> choices = this.model.getChoices();
+        final Choices choices = this.model.getChoices();
         if ((choices != null) && !choices.isEmpty()) {
           for (final Choice c : choices) {
             if (c instanceof VariantChoice) {

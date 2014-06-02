@@ -199,7 +199,7 @@ public class TreeView extends BaseView {
           addEntities(lst, ke.getChildren(), dke);
           addVariantChoices(lst, ke.getPossibleVariants(), dke);
           addFeatureChoices(lst, ke.getPossibleFeatures(), dke);
-//          addConceptChoices(lst, ke.getPossibleConcepts(), dke); // TODO: enable concepts here
+          addConceptChoices(lst, ke.getPossibleConcepts(), dke);
         }
       }
     }
