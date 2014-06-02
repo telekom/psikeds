@@ -26,12 +26,13 @@ import org.springframework.beans.factory.InitializingBean;
 
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.interfaces.pojos.Choice;
+import org.psikeds.resolutionengine.interfaces.pojos.Concept;
 import org.psikeds.resolutionengine.interfaces.pojos.ConceptChoice;
 import org.psikeds.resolutionengine.interfaces.pojos.ConceptChoices;
+import org.psikeds.resolutionengine.interfaces.pojos.Concepts;
 import org.psikeds.resolutionengine.interfaces.pojos.Decission;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoices;
-import org.psikeds.resolutionengine.interfaces.pojos.FeatureValue;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureValues;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
 import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntities;
@@ -47,15 +48,19 @@ import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
 import org.psikeds.resolutionengine.transformer.Transformer;
 import org.psikeds.resolutionengine.transformer.impl.Vo2PojoTransformer;
 import org.psikeds.resolutionengine.util.ChoicesHelper;
+import org.psikeds.resolutionengine.util.ConceptHelper;
+import org.psikeds.resolutionengine.util.FeatureValueHelper;
 import org.psikeds.resolutionengine.util.KnowledgeEntityHelper;
 
 /**
  * This Resolver completes automatically all Choices, i.e. it constructs
- * a new Knowledge-Entity for every VariantChoice containing just one Variant
- * and a new FeatureValue for every FeatureChoice containing only one Value
- * for a Feature.
+ * a new Knowledge-Entity for every VariantChoice containing just one Variant,
+ * a new FeatureValue for every FeatureChoice containing only one Value for a
+ * Feature and applies all Feature-Values to a Knowledge-Entity if a ConceptChoice
+ * contains only one Concept.
  * 
- * Note: MUST run after both VariantDecissionEvaluator and FeatureDecissionEvaluator!
+ * Note: MUST run after both VariantDecissionEvaluator, FeatureDecissionEvaluator
+ * and ConceptDecissionEvaluator!
  * 
  * @author marco@juliano.de
  * 
@@ -191,9 +196,10 @@ public class AutoCompletion implements InitializingBean, Resolver {
     final boolean interactive = (decission != null);
     try {
       LOGGER.trace("--> autocompleteKnowledgeEntities(); interactive = {}\nChoices = {}", interactive, choices);
-      // Step 1: Autocomplete current Choices
+      // Step 1: Autocomplete current/remaining Choices
       final Iterator<? extends Choice> iter = (choices == null ? null : choices.iterator());
       while ((iter != null) && iter.hasNext()) {
+        boolean removed = false;
         final Choice c = iter.next();
         // Is this a Choice for a Variant?
         if (c instanceof VariantChoice) {
@@ -227,43 +233,54 @@ public class AutoCompletion implements InitializingBean, Resolver {
               // create new knowledge entity
               final KnowledgeEntity ke = new KnowledgeEntity(qty, p, v, newVariantChoices, newFeatureChoices, newConceptChoices);
               KnowledgeEntityHelper.addNewKnowledgeEntity(entities, ke);
-              // cleanup
+              completionMessage(metadata, vc);
               vars.clear();
-              // TODO: possible performance optimization: update relevant events and rules based on new variant/entity
             }
-            // remove old VariantChoice
-            completionMessage(metadata, vc);
-            iter.remove();
+            removed = true;
           }
         }
         // Is this a Choice for a Value of a Feature?
         else if (c instanceof FeatureChoice) {
           final FeatureChoice fc = (FeatureChoice) c;
+          FeatureValueHelper.removeImpossibleFeatureValues(parentEntity, fc);
           final FeatureValues values = fc.getPossibleValues();
           if (values.size() < 2) {
             LOGGER.trace("Found: {}", fc);
             final String fid = fc.getFeatureID();
             LOGGER.info("Auto-Completion for Feature {}", fid);
-            //exactly one feature value
             if (!values.isEmpty()) {
-              // Update Parent-KnowledgeEntity with new Feature-Value
-              final FeatureValue fv = values.get(0);
-              parentEntity.addFeature(fv);
-              LOGGER.trace("Adding new FeatureValue: {}", fv);
-              // cleanup
+              //exactly one feature value
+              FeatureValueHelper.applyFeatureValue(parentEntity, values.get(0));
+              completionMessage(metadata, fc);
               values.clear();
             }
-            // remove old FeatureChoice
-            completionMessage(metadata, fc);
-            iter.remove();
+            removed = true;
           }
         }
+        // Is this a Choice for a Concept?
         else if (c instanceof ConceptChoice) {
-          // TODO implement!
-          throw new IllegalArgumentException("ConceptChoices not implemented yet!");
+          final ConceptChoice cc = (ConceptChoice) c;
+          ConceptHelper.removeObsoleteConcepts(parentEntity, cc);
+          final Concepts cons = cc.getConcepts();
+          if (cons.size() < 2) {
+            LOGGER.trace("Found: {}", cc);
+            if (!cons.isEmpty()) {
+              // exactly one concept
+              final Concept con = cons.get(0);
+              LOGGER.info("Auto-Completion for Concept {}", con.getConceptID());
+              ConceptHelper.applyConcept(parentEntity, con);
+              completionMessage(metadata, cc);
+              cons.clear();
+            }
+            removed = true;
+          }
         }
         else {
           throw new IllegalArgumentException("Unsupported kind of Choice: " + String.valueOf(c));
+        }
+        if (removed) {
+          LOGGER.trace("Removing old/obsolete Choice: {}", c);
+          iter.remove();
         }
       }
       // Step 2: Recursively check Children and auto-complete their Choices, too
@@ -271,6 +288,7 @@ public class AutoCompletion implements InitializingBean, Resolver {
         for (final KnowledgeEntity ke : entities) {
           autocompleteKnowledgeEntities(decission, ke, ke.getChildren(), ke.getPossibleVariants(), metadata);
           autocompleteKnowledgeEntities(decission, ke, ke.getChildren(), ke.getPossibleFeatures(), metadata);
+          autocompleteKnowledgeEntities(decission, ke, ke.getChildren(), ke.getPossibleConcepts(), metadata);
         }
       }
       // done
@@ -307,6 +325,17 @@ public class AutoCompletion implements InitializingBean, Resolver {
       LOGGER.debug(msg);
       if (metadata != null) {
         final String key = String.format("AutoCompletion_FC_%s_%s", fc.getParentVariantID(), fc.getFeatureID());
+        metadata.addInfo(key, msg);
+      }
+    }
+  }
+
+  private void completionMessage(final Metadata metadata, final ConceptChoice cc) {
+    if (cc != null) {
+      final String msg = String.format("Completed ConceptChoice: %s", cc);
+      LOGGER.debug(msg);
+      if (metadata != null) {
+        final String key = String.format("AutoCompletion_CC_%s_%s", cc.getParentVariantID(), cc.getConcepts().get(0).getConceptID()); // we are sure that these objects exist!
         metadata.addInfo(key, msg);
       }
     }

@@ -27,6 +27,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.datalayer.vo.Event;
 import org.psikeds.resolutionengine.datalayer.vo.Rule;
+import org.psikeds.resolutionengine.interfaces.pojos.Concept;
 import org.psikeds.resolutionengine.interfaces.pojos.Decission;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureValue;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
@@ -42,6 +43,7 @@ import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
 import org.psikeds.resolutionengine.transformer.Transformer;
 import org.psikeds.resolutionengine.transformer.impl.Vo2PojoTransformer;
 import org.psikeds.resolutionengine.util.ChoicesHelper;
+import org.psikeds.resolutionengine.util.FeatureValueHelper;
 import org.psikeds.resolutionengine.util.KnowledgeEntityHelper;
 import org.psikeds.resolutionengine.util.KnowledgeHelper;
 
@@ -370,7 +372,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       final String currentVarId = path.get(0);
       if (len == 1) {
         // Context-Path contains just the current Variant-ID, so this must be a Feature- or Concept-Trigger
-        created = applyFeatureTrigger(e, currentKE, currentVarId);
+        created = applyFeatureOrConceptTrigger(e, currentKE, currentVarId);
         return created;
       }
       final String nextPurpId = path.get(1);
@@ -501,24 +503,25 @@ public class RulesEvaluator implements InitializingBean, Resolver {
     }
     else {
       // trigger must be a Feature- or Concept-Trigger for the Variant of this KE
-      return applyFeatureTrigger(e, ke, vid);
+      return applyFeatureOrConceptTrigger(e, ke, vid);
     }
   }
 
-  private boolean applyFeatureTrigger(final Event e, final KnowledgeEntity ke, final String variantId) {
+  private boolean applyFeatureOrConceptTrigger(final Event e, final KnowledgeEntity ke, final String variantId) {
     if (Event.TRIGGER_TYPE_FEATURE_VALUE.equals(e.getTriggerType())) {
       final String featureValueId = e.getTriggerID();
       final FeatureValue fv = this.trans.valueObject2Pojo(this.kb.getFeatureValue(featureValueId));
       final String featureId = fv.getFeatureID();
-      // remove all Values for this Feature from the KE
       ChoicesHelper.cleanupFeatureChoices(ke, variantId, featureId);
-      // set the triggered Value for this KE
-      ke.addFeature(fv);
+      FeatureValueHelper.applyFeatureValue(ke, fv);
       return true;
     }
     else if (Event.TRIGGER_TYPE_CONCEPT.equals(e.getTriggerType())) {
-      // TODO implement
-      return false;
+      final String conceptId = e.getTriggerID();
+      final Concept con = this.trans.valueObject2Pojo(this.kb.getConcept(conceptId));
+      ChoicesHelper.cleanupConceptChoices(ke, variantId);
+      FeatureValueHelper.applyConcept(ke, con);
+      return true;
     }
     else {
       throw new ResolutionException("Cannot apply Feature-Trigger. Unexpected Trigger-Type: " + e.getTriggerType());
@@ -558,7 +561,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       if (len == 1) {
         // There is just one PE, which is the Variant of this KE
         // --> remove Trigger from Feature- and Concept-Choices
-        removed = ChoicesHelper.cleanupFeatureChoices(this.kb, e, currentKE, expectedVariantId);
+        removed = ChoicesHelper.cleanupFeatureOrConceptChoices(this.kb, e, currentKE, expectedVariantId);
         return removed;
       }
       if (len == 2) {

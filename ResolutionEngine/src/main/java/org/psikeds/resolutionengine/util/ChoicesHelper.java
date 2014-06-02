@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.datalayer.vo.Event;
+import org.psikeds.resolutionengine.interfaces.pojos.Concept;
 import org.psikeds.resolutionengine.interfaces.pojos.ConceptChoice;
 import org.psikeds.resolutionengine.interfaces.pojos.ConceptChoices;
 import org.psikeds.resolutionengine.interfaces.pojos.Concepts;
@@ -60,7 +61,7 @@ public class ChoicesHelper {
         removed = cleanupVariantChoices(e, ke, null);
       }
       else {
-        removed = cleanupFeatureChoices(kb, e, ke, null);
+        removed = cleanupFeatureOrConceptChoices(kb, e, ke, null);
       }
       return removed;
     }
@@ -86,7 +87,7 @@ public class ChoicesHelper {
     }
   }
 
-  public static boolean cleanupFeatureChoices(final KnowledgeBase kb, final Event e, final KnowledgeEntity ke, final String variantId) {
+  public static boolean cleanupFeatureOrConceptChoices(final KnowledgeBase kb, final Event e, final KnowledgeEntity ke, final String variantId) {
     boolean removed = false;
     try {
       LOGGER.trace("--> cleanupFeatureChoices(); VID = {}; TID = {}, E = {}; KE = {}", variantId, e.getTriggerID(), e.getEventID(), ke);
@@ -98,7 +99,9 @@ public class ChoicesHelper {
         return removed;
       }
       else if (Event.TRIGGER_TYPE_CONCEPT.equals(e.getTriggerType())) {
-        // TODO: implement Concepts
+        // currently there are only primary denotions of concepts
+        // therefore we always remove all concept choices of a ke
+        removed = cleanupConceptChoices(ke, variantId);
         return removed;
       }
       else {
@@ -183,6 +186,42 @@ public class ChoicesHelper {
     }
     finally {
       LOGGER.trace("<-- cleanupFeatureChoices(); VID = {}; FID = {}; FVID = {}; removed = {}", variantId, featureId, featureValueId, removed);
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  public static boolean cleanupConceptChoices(final KnowledgeEntity ke, final String variantId) {
+    return cleanupConceptChoices(ke, variantId, null);
+  }
+
+  public static boolean cleanupConceptChoices(final KnowledgeEntity ke, final String variantId, final String conceptId) {
+    boolean removed = false;
+    try {
+      LOGGER.trace("--> cleanupConceptChoices(); VID = {}; CID = {}; KE = {}", variantId, conceptId, ke);
+      final ConceptChoices choices = ke.getPossibleConcepts();
+      final Iterator<ConceptChoice> cciter = choices.iterator();
+      while (cciter.hasNext()) {
+        final ConceptChoice cc = cciter.next();
+        final String vid = cc.getParentVariantID();
+        if (StringUtils.isEmpty(variantId) || variantId.equals(vid)) {
+          final Concepts cons = cc.getConcepts();
+          final Iterator<Concept> coniter = cons.iterator();
+          while (coniter.hasNext()) {
+            final Concept c = coniter.next();
+            final String cid = (c == null ? null : c.getConceptID());
+            if (StringUtils.isEmpty(conceptId) || conceptId.equals(cid)) {
+              LOGGER.debug("Removing Concept {} from Choices for Variant {}", cid, vid);
+              coniter.remove();
+              removed = true;
+            }
+          }
+        }
+      }
+      return removed;
+    }
+    finally {
+      LOGGER.trace("<-- cleanupConceptChoices(); VID = {}; CID = {}; removed = {}", variantId, conceptId, removed);
     }
   }
 
