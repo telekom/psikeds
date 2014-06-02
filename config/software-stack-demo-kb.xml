@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-w7LampDemoPurePsPvSemLeakFixed : 0.1.1 :  
-(C) 2014, Karsten Reincke, Deutsche Telekom AG, Darmstadt 
+w7LampDemoPurePsPvSemLeakFixed : 0.1.2 :  
+(C) 2014, Karsten Reincke, Deutsche Telekom AG, Darmstadt
 
 A psiKeds knowledge base: developed for being used by the inference machine
 of psiKeds, the purpose system induced knowledge entity delivery system
@@ -17,23 +17,24 @@ proprietary license: All rights are reserved. Feel free to contact:
   xmlns:kb="http://org.psikeds.knowledgebase"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://org.psikeds.knowledgebase psikeds.xsd">
+
   <kb:meta>
     <kb:id>w7LampDemoPurePsPvSemLeakFixed</kb:id>
     <kb:name>w7/kbsr L[A|T][M|P][PH|PY] purely ps/pv based / semantic leak fixed</kb:name>
-    <kb:release>0.1.1</kb:release>
+    <kb:release>0.1.2</kb:release>
     <kb:copyright>2014, Karsten Reincke, Deutsche Telekom AG, Darmstadt</kb:copyright>
-    <kb:license>proprietary license: All rights are reserved. Feel free to contact:
-      k.reincke@telekom.de</kb:license>
+    <kb:license>proprietary license: All rights are reserved. Feel free to contact: k.reincke@telekom.de</kb:license>
     <kb:created>2014-04-06</kb:created>
-    <kb:lastmodified>2014-04-22</kb:lastmodified>
-    <kb:language>Karsten Reincke</kb:language>
-    <kb:creator>Re-implementation of the first w7/kbsr LAMP demo database purely based
-     on the elements which constitute the structure of an entity: purposes
-     and variants</kb:creator>
-    <kb:creator>This version demonstrates the fix of the semantic leak by using NOT events</kb:creator>
+    <kb:lastmodified>2014-06-02</kb:lastmodified>
+    <kb:language>en_EN</kb:language>
+    <kb:creator>Karsten Reincke</kb:creator>
+    <kb:creator>Marco Juliano</kb:creator>
+    <kb:description>Re-implementation of the first w7/kbsr LAMP demo database purely based
+     on the elements which constitute the structure of an entity: purposes and variants</kb:description>
+    <kb:description>This version demonstrates the fix of the semantic leak by using NOT events</kb:description>
   </kb:meta>
-  <kb:data>
 
+  <kb:data>
     <kb:sensors>
       <kb:sensor id="SoftwareVersion">
         <kb:label>Software-Version</kb:label>
@@ -46,12 +47,71 @@ proprietary license: All rights are reserved. Feel free to contact:
           <kb:strValue id="SWV5">V5.x</kb:strValue>
           <kb:strValue id="SWV6">V6.x</kb:strValue>
           <kb:strValue id="SWV7">V7.x</kb:strValue>
-          <kb:strValue id="SWV8">V7.x</kb:strValue>
+          <kb:strValue id="SWV8">V8.x</kb:strValue>
           <kb:strValue id="SWV9">V9.x</kb:strValue>
           <kb:strValue id="SWV10">V10.x</kb:strValue>
         </kb:values>
       </kb:sensor>
+      <kb:sensor id="JavaVersion">
+        <kb:label>Java-Version</kb:label>
+        <kb:description>Versions of the required JDK</kb:description>
+        <kb:values>
+          <kb:strValue id="JDK5">Java 1.5</kb:strValue>
+          <kb:strValue id="JDK6">Java 1.6</kb:strValue>
+          <kb:strValue id="JDK7">Java 1.7</kb:strValue>
+          <kb:strValue id="JDK8">Java 1.8</kb:strValue>
+        </kb:values>
+      </kb:sensor>
+      <kb:sensor id="ComponentType">
+        <kb:label>Component-Type</kb:label>
+        <kb:description>Type of Software-Component</kb:description>
+        <kb:values>
+          <kb:strValue id="EJB">Java EJB Container</kb:strValue>
+          <kb:strValue id="SERVLET">Java Servlet Engine</kb:strValue>
+          <kb:strValue id="WEB">HTTP Web-Server</kb:strValue>
+          <kb:strValue id="DATABASE">Database-Server</kb:strValue>
+        </kb:values>
+      </kb:sensor>
     </kb:sensors>
+
+    <kb:concepts>
+      <kb:concept id="Tomcat6">
+        <kb:label>Tomcat 6.x</kb:label>
+        <kb:description>Tomcat Web-Application-Server V6.x</kb:description>
+        <kb:attributes>
+          <kb:complexAttribute type="str" value="SWV6" sensedByRef="SoftwareVersion" />
+          <kb:complexAttribute type="str" value="JDK6" sensedByRef="JavaVersion" />
+          <kb:complexAttribute type="str" value="SERVLET" sensedByRef="ComponentType" />
+        </kb:attributes>
+      </kb:concept>
+      <kb:concept id="Tomcat7">
+        <kb:label>Tomcat 7.x</kb:label>
+        <kb:description>Tomcat Web-Application-Server V6.x</kb:description>
+        <kb:attributes>
+          <kb:complexAttribute type="str" value="SWV7" sensedByRef="SoftwareVersion" />
+          <kb:complexAttribute type="str" value="JDK7" sensedByRef="JavaVersion" />
+          <kb:complexAttribute type="str" value="SERVLET" sensedByRef="ComponentType" />
+        </kb:attributes>
+      </kb:concept>
+      <kb:concept id="JBoss4">
+        <kb:label>JBoss 4</kb:label>
+        <kb:description>Tomcat J2EE-Application-Server V4.x</kb:description>
+        <kb:attributes>
+          <kb:complexAttribute type="str" value="SWV4" sensedByRef="SoftwareVersion" />
+          <kb:complexAttribute type="str" value="JDK5" sensedByRef="JavaVersion" />
+          <kb:complexAttribute type="str" value="EJB" sensedByRef="ComponentType" />
+        </kb:attributes>
+      </kb:concept>
+      <kb:concept id="JBoss5">
+        <kb:label>JBoss 5</kb:label>
+        <kb:description>Tomcat J2EE-Application-Server V5.x</kb:description>
+        <kb:attributes>
+          <kb:complexAttribute type="str" value="SWV5" sensedByRef="SoftwareVersion" />
+          <kb:complexAttribute type="str" value="JDK6" sensedByRef="JavaVersion" />
+          <kb:complexAttribute type="str" value="EJB" sensedByRef="ComponentType" />
+        </kb:attributes>
+      </kb:concept>
+    </kb:concepts>
 
     <kb:purposes>
       <kb:purpose id="deliverStaticWebPages" root="true">
@@ -133,15 +193,17 @@ proprietary license: All rights are reserved. Feel free to contact:
         <kb:label>Java-Web-App-Database-Software-Stack</kb:label>
       </kb:variant>
 
-      <kb:variant id="Apache"
-        type="explicit">
+      <kb:variant id="Apache" type="explicit">
         <kb:label>Apache</kb:label>
         <kb:description>apache2</kb:description>
         <kb:primarilyDenotedBy>
           <kb:oneOutOfTheseAttributes sensedByRef="SoftwareVersion" type="str">
             <kb:attribute ref="SWV1" />
             <kb:attribute ref="SWV2" />
-          </kb:oneOutOfTheseAttributes>           
+          </kb:oneOutOfTheseAttributes>
+          <kb:oneOutOfTheseAttributes sensedByRef="ComponentType" type="str">
+            <kb:attribute ref="WEB" />
+          </kb:oneOutOfTheseAttributes>
         </kb:primarilyDenotedBy>
       </kb:variant>
 
@@ -193,16 +255,31 @@ proprietary license: All rights are reserved. Feel free to contact:
         <kb:description>postgresql-8.4-703.jdbc4.jar</kb:description>
       </kb:variant>
 
-      <kb:variant id="Postgres"
-        type="explicit">
+      <kb:variant id="Postgres" type="explicit">
         <kb:label>Postgres</kb:label>
         <kb:description>postgresql-8.4</kb:description>
+        <kb:primarilyDenotedBy>
+          <kb:oneOutOfTheseAttributes sensedByRef="SoftwareVersion" type="str">
+            <kb:attribute ref="SWV8" />
+          </kb:oneOutOfTheseAttributes>
+          <kb:oneOutOfTheseAttributes sensedByRef="ComponentType" type="str">
+            <kb:attribute ref="DATABASE" />
+          </kb:oneOutOfTheseAttributes>
+        </kb:primarilyDenotedBy>
       </kb:variant>
 
       <kb:variant id="Mysql"
         type="explicit">
         <kb:label>Mysql</kb:label>
         <kb:description>mysql-server</kb:description>
+        <kb:primarilyDenotedBy>
+          <kb:oneOutOfTheseAttributes sensedByRef="SoftwareVersion" type="str">
+            <kb:attribute ref="SWV5" />
+          </kb:oneOutOfTheseAttributes>
+          <kb:oneOutOfTheseAttributes sensedByRef="ComponentType" type="str">
+            <kb:attribute ref="DATABASE" />
+          </kb:oneOutOfTheseAttributes>
+        </kb:primarilyDenotedBy>
       </kb:variant>
 
       <kb:variant id="Jboss"
@@ -210,10 +287,10 @@ proprietary license: All rights are reserved. Feel free to contact:
         <kb:label>JBoss</kb:label>
         <kb:description>jbossas4</kb:description>
         <kb:primarilyDenotedBy>
-          <kb:oneOutOfTheseAttributes sensedByRef="SoftwareVersion" type="str">
-            <kb:attribute ref="SWV4" />
-            <kb:attribute ref="SWV5" />
-          </kb:oneOutOfTheseAttributes>           
+          <kb:oneOutOfTheseConcepts>
+            <kb:subsumption type="terminal" ref="JBoss4" />
+            <kb:subsumption type="terminal" ref="JBoss5" />
+          </kb:oneOutOfTheseConcepts>
         </kb:primarilyDenotedBy>
       </kb:variant>
 
@@ -222,13 +299,12 @@ proprietary license: All rights are reserved. Feel free to contact:
         <kb:label>Tomcat</kb:label>
         <kb:description>tomcat7</kb:description>
         <kb:primarilyDenotedBy>
-          <kb:oneOutOfTheseAttributes sensedByRef="SoftwareVersion" type="str">
-            <kb:attribute ref="SWV6" />
-            <kb:attribute ref="SWV7" />
-          </kb:oneOutOfTheseAttributes>           
+          <kb:oneOutOfTheseConcepts>
+            <kb:subsumption type="terminal" ref="Tomcat6" />
+            <kb:subsumption type="terminal" ref="Tomcat7" />
+          </kb:oneOutOfTheseConcepts>
         </kb:primarilyDenotedBy>
       </kb:variant>
-
     </kb:variants>  
 
     <kb:alternatives>
