@@ -20,7 +20,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 
+import org.springframework.beans.factory.InitializingBean;
+
+import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.datalayer.vo.Event;
 import org.psikeds.resolutionengine.interfaces.pojos.Decission;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureValue;
@@ -36,6 +40,9 @@ import org.psikeds.resolutionengine.interfaces.pojos.VariantChoices;
 import org.psikeds.resolutionengine.resolver.ResolutionException;
 import org.psikeds.resolutionengine.resolver.Resolver;
 import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
+import org.psikeds.resolutionengine.transformer.Transformer;
+import org.psikeds.resolutionengine.transformer.impl.Vo2PojoTransformer;
+import org.psikeds.resolutionengine.util.ConceptHelper;
 import org.psikeds.resolutionengine.util.KnowledgeHelper;
 
 /**
@@ -48,9 +55,59 @@ import org.psikeds.resolutionengine.util.KnowledgeHelper;
  * @author marco@juliano.de
  * 
  */
-public class EventEvaluator implements Resolver {
+public class EventEvaluator implements InitializingBean, Resolver {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EventEvaluator.class);
+
+  public static final Transformer DEFAULT_TRANSFORMER = new Vo2PojoTransformer();
+
+  private KnowledgeBase kb;
+  private Transformer trans;
+
+  public EventEvaluator() {
+    this(null);
+  }
+
+  public EventEvaluator(final KnowledgeBase kb) {
+    this(kb, DEFAULT_TRANSFORMER);
+  }
+
+  public EventEvaluator(final KnowledgeBase kb, final Transformer trans) {
+    this.kb = kb;
+    this.trans = trans;
+  }
+
+  public KnowledgeBase getKnowledgeBase() {
+    return this.kb;
+  }
+
+  public void setKnowledgeBase(final KnowledgeBase kb) {
+    this.kb = kb;
+  }
+
+  public Transformer getTransformer() {
+    return this.trans;
+  }
+
+  public void setTransformer(final Transformer trans) {
+    this.trans = trans;
+  }
+
+  // ----------------------------------------------------------------
+
+  /**
+   * Check that Event-Evaluator was configured/wired correctly.
+   * 
+   * @throws Exception
+   * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+   */
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    Validate.notNull(this.kb, "No Knowledge-Base!");
+    Validate.notNull(this.trans, "No Transformer!");
+  }
+
+  // ----------------------------------------------------------------
 
   /**
    * @param knowledge
@@ -184,17 +241,8 @@ public class EventEvaluator implements Resolver {
       LOGGER.trace("--> checkKnowledgeEntity(); E = {}; Path = {}", eid, path);
       final int len = (path == null ? 0 : path.size());
       if (len <= 0) {
-        // We walked the complete path
-        if (checkTrigger(e, ke, isVariant, raeh, metadata)) {
-          // Event is fulfilled/triggered
-          triggerEvent(e, raeh, metadata);
-          matching = true;
-        }
-        else {
-          // Event is not possible
-          markEventObsolete(e, raeh, metadata);
-          matching = false;
-        }
+        // we walked the complete path
+        matching = checkTrigger(e, ke, isVariant, raeh, metadata);
         stillPossible = false;
         return stillPossible;
       }
@@ -217,16 +265,7 @@ public class EventEvaluator implements Resolver {
       if (len == 1) {
         // ... and this was the last Element.
         LOGGER.debug("Path {} of Event {} ends at this KE: {}", path, eid, ke);
-        if (checkTrigger(e, ke, isVariant, raeh, metadata)) {
-          // Event is fulfilled/triggered
-          triggerEvent(e, raeh, metadata);
-          matching = true;
-        }
-        else {
-          // Event is not possible
-          markEventObsolete(e, raeh, metadata);
-          matching = false;
-        }
+        matching = checkTrigger(e, ke, isVariant, raeh, metadata);
         stillPossible = false;
         return stillPossible;
       }
@@ -250,16 +289,7 @@ public class EventEvaluator implements Resolver {
         }
         else { // len <= 2
           LOGGER.debug("Path {} of Event {} ends at this KE: {}", path, eid, ke);
-          if (checkTrigger(e, ke, !isVariant, raeh, metadata)) {
-            // Event is fulfilled/triggered
-            triggerEvent(e, raeh, metadata);
-            matching = true;
-          }
-          else {
-            // Event is not possible
-            markEventObsolete(e, raeh, metadata);
-            matching = false;
-          }
+          matching = checkTrigger(e, ke, !isVariant, raeh, metadata);
           stillPossible = false;
         }
         return stillPossible;
@@ -314,66 +344,96 @@ public class EventEvaluator implements Resolver {
 
   private boolean checkTrigger(final Event e, final KnowledgeEntity ke, final boolean isVariant, final RulesAndEventsHandler raeh, final Metadata metadata) {
     boolean matching = false;
+    boolean undecided = true;
+    final boolean notEvent = (e == null ? false : e.isNotEvent());
+    final String eid = (e == null ? null : e.getEventID());
+    final String tid = (e == null ? null : e.getTriggerID());
+    final String type = (e == null ? null : e.getTriggerType());
     try {
-      LOGGER.trace("--> checkTrigger(); E = {}; TID = {}; TYP = {}; NOT = {}; VAR = {}", e.getEventID(), e.getTriggerID(), e.getTriggerType(), e.isNotEvent(), isVariant);
+      LOGGER.trace("--> checkTrigger(); E = {}; TID = {}; TYP = {}; NOT = {}; VAR = {}", eid, tid, type, notEvent, isVariant);
       if (isVariant) {
-        // current/last element of context path was a variant, so let's look for feature values and concepts
-        matching = (checkFeatureValueTrigger(e, ke, raeh, metadata) || checkConceptTrigger(e, ke, raeh, metadata));
+        // current/last element of context path was a variant, so triger could be a feature-value or a concept
+        if (Event.TRIGGER_TYPE_FEATURE_VALUE.equals(type)) {
+          final FeatureValues fvlst = (ke == null ? null : ke.getFeatures());
+          if ((fvlst != null) && !fvlst.isEmpty()) {
+            for (final FeatureValue fv : fvlst) {
+              if (tid.equals(fv.getFeatureValueID())) {
+                LOGGER.debug("Found matching Feature-Value: {}", fv);
+                matching = true;
+                undecided = false;
+              }
+            }
+          }
+        }
+        else if (Event.TRIGGER_TYPE_CONCEPT.equals(type)) {
+          final String cid = tid;
+          final String ret = ConceptHelper.checkConcept(this.kb, this.trans, ke, cid);
+          if (ConceptHelper.RET_CONCEPT_FULFILLED.equals(ret)) {
+            LOGGER.debug("Found matching Concept: {}", cid);
+            triggerEvent(e, raeh, metadata);
+            matching = true;
+            undecided = false;
+          }
+          else if (ConceptHelper.RET_CONCEPT_NOT_POSSIBLE.equals(ret)) {
+            LOGGER.debug("Concept {} is not possible any more!", cid);
+            matching = false;
+            undecided = false;
+          }
+          else {
+            LOGGER.debug("Concept {} is still undecided, i.e. not fulfilled yet but still possible.", cid);
+            matching = false;
+            undecided = true;
+          }
+        }
+        else {
+          matching = false;
+          undecided = true;
+          throw new ResolutionException("Invalid Event " + eid + " -- Expected a Feature- or Concept-Trigger, but encountered: " + type);
+        }
       }
       else {
         // current/last element of context path was a purpose, so only reasonable trigger is a variant
-        matching = checkVariantTrigger(e, ke, raeh, metadata);
+        if (Event.TRIGGER_TYPE_VARIANT.equals(type)) {
+          final Variant v = (ke == null ? null : ke.getVariant());
+          final String vid = (v == null ? null : v.getVariantID());
+          if (tid.equals(vid)) {
+            LOGGER.debug("Found matching Variant: {}", vid);
+            matching = true;
+            undecided = false;
+          }
+        }
+        else {
+          matching = false;
+          undecided = true;
+          throw new ResolutionException("Invalid Event " + eid + " -- Expected a Variant-Trigger, but encountered: " + type);
+        }
       }
-      if (e.isNotEvent()) {
+      if (notEvent) {
         if (matching) {
           matching = false;
-          LOGGER.debug("Trigger {} was matching but Event {} is a NOT-Event!", e.getTriggerID(), e.getEventID());
+          LOGGER.debug("Trigger {} was matching but Event {} is a NOT-Event!", tid, eid);
         }
         else {
           matching = true;
-          LOGGER.debug("Trigger {} was NOT matching but Event {} is a NOT-Event!", e.getTriggerID(), e.getEventID());
+          LOGGER.debug("Trigger {} was NOT matching but Event {} is a NOT-Event!", tid, eid);
         }
+      }
+      if (!undecided) {
+        if (matching) {
+          triggerEvent(e, raeh, metadata);
+        }
+        else {
+          markEventObsolete(e, raeh, metadata);
+        }
+      }
+      else {
+        LOGGER.debug("Trigger {} of Event {} is still undecided: {}", tid, eid);
       }
       return matching;
     }
     finally {
-      LOGGER.trace("<-- checkTrigger(); E = {}; TID = {}; TYP = {}; NOT = {}; VAR = {}; matching = {}", e.getEventID(), e.getTriggerID(), e.getTriggerType(), e.isNotEvent(), isVariant, matching);
+      LOGGER.trace("<-- checkTrigger(); E = {}; TID = {}; TYP = {}; NOT = {}; VAR = {}; matching = {}; undecided = {}", eid, tid, type, notEvent, isVariant, matching, undecided);
     }
-  }
-
-  private boolean checkVariantTrigger(final Event e, final KnowledgeEntity ke, final RulesAndEventsHandler raeh, final Metadata metadata) {
-    if (Event.TRIGGER_TYPE_VARIANT.equals(e.getTriggerType())) {
-      final Variant v = (ke == null ? null : ke.getVariant());
-      final String vid = (v == null ? null : v.getVariantID());
-      if (e.getTriggerID().equals(vid)) {
-        LOGGER.debug("Found matching Variant: {}", vid);
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private boolean checkFeatureValueTrigger(final Event e, final KnowledgeEntity ke, final RulesAndEventsHandler raeh, final Metadata metadata) {
-    if (Event.TRIGGER_TYPE_FEATURE_VALUE.equals(e.getTriggerType())) {
-      final FeatureValues fvlst = (ke == null ? null : ke.getFeatures());
-      if ((fvlst != null) && !fvlst.isEmpty()) {
-        for (final FeatureValue fv : fvlst) {
-          if (e.getTriggerID().equals(fv.getFeatureValueID())) {
-            LOGGER.debug("Found matching Feature-Value: {}", fv);
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
-
-  private boolean checkConceptTrigger(final Event e, final KnowledgeEntity ke, final RulesAndEventsHandler raeh, final Metadata metadata) {
-    if (Event.TRIGGER_TYPE_CONCEPT.equals(e.getTriggerType())) {
-      // TODO implement
-      LOGGER.info("Concepts not implemented yet!");
-    }
-    return false;
   }
 
   // ----------------------------------------------------------------
