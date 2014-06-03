@@ -76,6 +76,7 @@ For details see file LICENSING in the top project directory
                   <h:outputText value="#{msg['choices.concept.text']}" />
                   <h:outputText value="&#160;" />#{di.selectionKey}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />
                   <h:commandLink id="selectConcept" action="#{Ctrl.resolve(di.selectionKey)}">#{di.value}</h:commandLink>
+                  <h:outputText value="&#160;" />#{di.longDescription}
                 </li>
               </ul>
             </ui:fragment>

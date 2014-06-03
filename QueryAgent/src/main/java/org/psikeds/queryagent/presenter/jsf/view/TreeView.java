@@ -25,9 +25,11 @@ import org.apache.commons.lang.StringUtils;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Concept;
 import org.psikeds.queryagent.interfaces.presenter.pojos.ConceptChoice;
 import org.psikeds.queryagent.interfaces.presenter.pojos.ConceptChoices;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Feature;
 import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureChoice;
 import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureChoices;
 import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureValue;
+import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureValues;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Knowledge;
 import org.psikeds.queryagent.interfaces.presenter.pojos.KnowledgeEntity;
 import org.psikeds.queryagent.interfaces.presenter.pojos.POJO;
@@ -69,6 +71,7 @@ public class TreeView extends BaseView {
 
   // ----------------------------------------------------------------
 
+  @Override
   public boolean isWithoutData() {
     // whenever it is initialized we also have something to display
     return isNotInitialized();
@@ -126,9 +129,13 @@ public class TreeView extends BaseView {
     if ((lst != null) && (choices != null)) {
       for (final FeatureChoice fc : choices) {
         final String vid = fc.getParentVariantID();
+        final Variant v = this.model.getVariant(vid);
+        final String vlbl = (v == null ? vid : v.getLabel());
         final String fid = fc.getFeatureID();
-        // TODO: get variant and feature from the model and create nicer display items
-        final DisplayItem df = new DisplayItem(fid, fid, null, DisplayItem.TYPE_FEATURE);
+        final Feature f = (fid == null ? null : this.model.getFeature(fid));
+        final String flbl = (f == null ? fid : f.getLabel());
+        final String fdesc = (f == null ? fid : f.getDescription());
+        final DisplayItem df = new DisplayItem(fid, flbl, fdesc, DisplayItem.TYPE_FEATURE);
         if (parent != null) {
           parent.addChild(df);
         }
@@ -137,7 +144,7 @@ public class TreeView extends BaseView {
         for (final FeatureValue fv : fc.getPossibleValues()) {
           final String fvid = fv.getFeatureValueID();
           final String value = fv.getValue();
-          final DisplayItem dfv = new DisplayItem(fvid, value, null, DisplayItem.TYPE_FEATURE_VALUE);
+          final DisplayItem dfv = new DisplayItem(fvid, value, vlbl, DisplayItem.TYPE_FEATURE_VALUE);
           dfv.setSelectionKey(SelectionHelper.createSelectionString(SelectionHelper.SELECTION_TYPE_FEATURE_VALUE, vid, fid, fvid));
           df.addChild(dfv);
           dfv.setLevel(dfv.getLevel() - 1); // hack for displaying value on same level as parent-feature
@@ -155,14 +162,31 @@ public class TreeView extends BaseView {
       for (final ConceptChoice cc : choices) {
         final String vid = cc.getParentVariantID();
         for (final Concept con : cc.getConcepts()) {
-          final String cid = con.getConceptID();
-          final DisplayItem dc = new DisplayItem(cid, con.getLabel(), con.getDescription(), DisplayItem.TYPE_CONCEPT);
-          dc.setSelectionKey(SelectionHelper.createSelectionString(SelectionHelper.SELECTION_TYPE_CONCEPT, vid, cid));
-          if (parent != null) {
-            parent.addChild(dc);
+          if (con != null) {
+            final String cid = con.getConceptID();
+            final String val = con.getLabel();
+            String desc = con.getDescription();
+            final FeatureValues fvs = con.getValues();
+            if ((fvs != null) && !fvs.isEmpty()) {
+              final StringBuilder sb = new StringBuilder();
+              for (final FeatureValue fv : fvs) {
+                if (sb.length() > 0) {
+                  sb.append(", ");
+                }
+                sb.append(fv.getFeatureID());
+                sb.append(" = ");
+                sb.append(fv.getValue());
+              }
+              desc = "( " + sb.toString() + " )";
+            }
+            final DisplayItem dc = new DisplayItem(cid, val, desc, DisplayItem.TYPE_CONCEPT);
+            dc.setSelectionKey(SelectionHelper.createSelectionString(SelectionHelper.SELECTION_TYPE_CONCEPT, vid, cid));
+            if (parent != null) {
+              parent.addChild(dc);
+            }
+            lst.add(dc);
+            LOGGER.trace("Added C: {}", dc);
           }
-          lst.add(dc);
-          LOGGER.trace("Added C: {}", dc);
         }
       }
     }
@@ -178,23 +202,19 @@ public class TreeView extends BaseView {
     if ((lst != null) && (entities != null)) {
       for (final KnowledgeEntity ke : entities) {
         if (ke != null) {
-          final Purpose p = ke.getPurpose();
-          final Variant v = ke.getVariant();
-          final String str = p.getLabel();
-          final String desc = (StringUtils.isEmpty(this.mapping) ? v.getLabel() : String.format(this.mapping, v.getLabel()));
-          final DisplayItem dke = new DisplayItem(str, str, desc, DisplayItem.TYPE_ENTITY);
+          final DisplayItem dke = createDI(ke);
           if (parent != null) {
             parent.addChild(dke);
           }
           lst.add(dke);
           LOGGER.trace("Added KE: {}", dke);
           for (final FeatureValue fv : ke.getFeatures()) {
-            final String id = POJO.composeId(fv.getFeatureID(), fv.getFeatureValueID());
-            final String txt = fv.getFeatureID() + " = " + fv.getValue();
-            final DisplayItem label = createLabel(id, txt);
-            dke.addChild(label);
-            lst.add(label);
-            LOGGER.trace("Added LBL: {}", label);
+            if (fv != null) {
+              final DisplayItem label = createDI(fv);
+              dke.addChild(label);
+              lst.add(label);
+              LOGGER.trace("Added LBL: {}", label);
+            }
           }
           addEntities(lst, ke.getChildren(), dke);
           addVariantChoices(lst, ke.getPossibleVariants(), dke);
@@ -205,7 +225,23 @@ public class TreeView extends BaseView {
     }
   }
 
-  private DisplayItem createLabel(final String id, final String txt) {
+  // ----------------------------------------------------------------
+
+  private DisplayItem createDI(final KnowledgeEntity ke) {
+    final Purpose p = ke.getPurpose();
+    final Variant v = ke.getVariant();
+    final String str = p.getLabel();
+    final String desc = (StringUtils.isEmpty(this.mapping) ? v.getLabel() : String.format(this.mapping, v.getLabel()));
+    return new DisplayItem(str, str, desc, DisplayItem.TYPE_ENTITY);
+  }
+
+  private DisplayItem createDI(final FeatureValue fv) {
+    final String id = POJO.composeId(fv.getFeatureID(), fv.getFeatureValueID());
+    final String txt = fv.getFeatureID() + " = " + fv.getValue();
+    return createDI(id, txt);
+  }
+
+  private DisplayItem createDI(final String id, final String txt) {
     return new DisplayItem(id, id, txt, DisplayItem.TYPE_LABEL);
   }
 }

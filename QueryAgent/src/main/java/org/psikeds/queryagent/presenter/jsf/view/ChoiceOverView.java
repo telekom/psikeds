@@ -24,8 +24,10 @@ import org.psikeds.queryagent.interfaces.presenter.pojos.Choice;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Choices;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Concept;
 import org.psikeds.queryagent.interfaces.presenter.pojos.ConceptChoice;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Feature;
 import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureChoice;
 import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureValue;
+import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureValues;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Purpose;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Variant;
 import org.psikeds.queryagent.interfaces.presenter.pojos.VariantChoice;
@@ -79,15 +81,19 @@ public class ChoiceOverView extends BaseView {
             else if (c instanceof FeatureChoice) {
               final FeatureChoice fc = (FeatureChoice) c;
               final String vid = fc.getParentVariantID();
+              final Variant v = this.model.getVariant(vid);
+              final String vlbl = (v == null ? vid : v.getLabel());
               final String fid = fc.getFeatureID();
-              // TODO: get variant and feature from the model and create nicer display items
-              final DisplayItem df = new DisplayItem(fid, fid, null, DisplayItem.TYPE_FEATURE);
+              final Feature f = (fid == null ? null : this.model.getFeature(fid));
+              final String flbl = (f == null ? fid : f.getLabel());
+              final String fdesc = (f == null ? fid : f.getDescription());
+              final DisplayItem df = new DisplayItem(fid, flbl, fdesc, DisplayItem.TYPE_FEATURE);
               lst.add(df);
               LOGGER.trace("Added F: {}", df);
               for (final FeatureValue fv : fc.getPossibleValues()) {
                 final String fvid = fv.getFeatureValueID();
                 final String value = fv.getValue();
-                final DisplayItem dfv = new DisplayItem(fvid, value, null, DisplayItem.TYPE_FEATURE_VALUE);
+                final DisplayItem dfv = new DisplayItem(fvid, value, vlbl, DisplayItem.TYPE_FEATURE_VALUE);
                 dfv.setSelectionKey(SelectionHelper.createSelectionString(SelectionHelper.SELECTION_TYPE_FEATURE_VALUE, vid, fid, fvid));
                 df.addChild(dfv);
                 lst.add(dfv);
@@ -99,7 +105,22 @@ public class ChoiceOverView extends BaseView {
               final String vid = cc.getParentVariantID();
               for (final Concept con : cc.getConcepts()) {
                 final String cid = con.getConceptID();
-                final DisplayItem dc = new DisplayItem(cid, con.getLabel(), con.getDescription(), DisplayItem.TYPE_CONCEPT);
+                final String val = con.getLabel();
+                String desc = con.getDescription();
+                final FeatureValues fvs = con.getValues();
+                if ((fvs != null) && !fvs.isEmpty()) {
+                  final StringBuilder sb = new StringBuilder();
+                  for (final FeatureValue fv : fvs) {
+                    if (sb.length() > 0) {
+                      sb.append(", ");
+                    }
+                    sb.append(fv.getFeatureID());
+                    sb.append(" = ");
+                    sb.append(fv.getValue());
+                  }
+                  desc = "( " + sb.toString() + " )";
+                }
+                final DisplayItem dc = new DisplayItem(cid, val, desc, DisplayItem.TYPE_CONCEPT);
                 dc.setSelectionKey(SelectionHelper.createSelectionString(SelectionHelper.SELECTION_TYPE_CONCEPT, vid, cid));
                 lst.add(dc);
                 LOGGER.trace("Added C: {}", dc);
