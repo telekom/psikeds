@@ -84,6 +84,16 @@
     <priority value="DEBUG" />
   </category>
 
+<!--
+  <category name="org.psikeds.queryagent.requester">
+    <priority value="DEBUG" />
+  </category>
+
+  <category name="org.psikeds.queryagent.presenter.jsf">
+    <priority value="TRACE" />
+  </category>
+-->
+
   <!-- ======================= -->
   <!-- Setup the Root category -->
   <!-- ======================= -->
