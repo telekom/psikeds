@@ -41,24 +41,21 @@ public abstract class FeatureValueHelper {
   // ----------------------------------------------------------------
 
   public static boolean isValid(final FeatureValue fv) {
-    if (fv == null) {
+    if ((fv == null) || StringUtils.isEmpty(fv.getFeatureID()) || StringUtils.isEmpty(fv.getFeatureValueID()) || StringUtils.isEmpty(fv.getType()) || StringUtils.isEmpty(fv.getValue())) {
       return false;
     }
-    if (StringUtils.isEmpty(fv.getFeatureID()) || StringUtils.isEmpty(fv.getFeatureValueID()) || StringUtils.isEmpty(fv.getType()) || StringUtils.isEmpty(fv.getValue())) {
-      return false;
-    }
-    if (Feature.VALUE_TYPE_FLOAT.equalsIgnoreCase(fv.getType())) {
+    if (fv.isFloatValue()) {
       try {
-        final float f = Float.parseFloat(fv.getValue());
+        fv.toFloatValue();
         return true;
       }
       catch (final Exception ex) {
         return false;
       }
     }
-    else if (Feature.VALUE_TYPE_INTEGER.equalsIgnoreCase(fv.getType())) {
+    else if (fv.isIntegerValue()) {
       try {
-        final long l = Long.parseLong(fv.getValue());
+        fv.toIntegerValue();
         return true;
       }
       catch (final Exception ex) {
@@ -69,10 +66,7 @@ public abstract class FeatureValueHelper {
   }
 
   public static boolean isValid(final Feature f) {
-    if (f == null) {
-      return false;
-    }
-    if (StringUtils.isEmpty(f.getFeatureID()) || StringUtils.isEmpty(f.getType())) {
+    if ((f == null) || StringUtils.isEmpty(f.getFeatureID()) || StringUtils.isEmpty(f.getType())) {
       return false;
     }
     final List<FeatureValue> values = f.getValues();
@@ -80,10 +74,7 @@ public abstract class FeatureValueHelper {
       return false;
     }
     for (final FeatureValue fv : values) {
-      if (!isValid(fv)) {
-        return false;
-      }
-      if (!fv.getType().equals(f.getType())) {
+      if (!isValid(fv) || !fv.getType().equals(f.getType()) || !fv.getFeatureID().equals(f.getFeatureID())) {
         return false;
       }
     }
@@ -199,10 +190,8 @@ public abstract class FeatureValueHelper {
     final List<FeatureValue> lst = new ArrayList<FeatureValue>();
     long count = 1;
     for (long l = min; (l <= max) && (count <= maxSize); l = l + inc) {
-      final String val = String.valueOf(l);
-      final String num = String.valueOf(count);
-      final String featureValueID = rangeID + "I" + num;
-      final FeatureValue fv = new FeatureValue(featureID, featureValueID, Feature.VALUE_TYPE_INTEGER, val);
+      final String featureValueID = rangeID + "I" + String.valueOf(count);
+      final FeatureValue fv = new FeatureValue(featureID, featureValueID, l);
       lst.add(fv);
       count++;
     }
@@ -228,10 +217,8 @@ public abstract class FeatureValueHelper {
     final List<FeatureValue> lst = new ArrayList<FeatureValue>();
     int count = 1;
     for (float f = min; (f <= max) && (count <= maxSize); f = f + inc) {
-      final String val = String.valueOf(f);
-      final String num = String.valueOf(count);
-      final String featureValueID = rangeID + "F" + num;
-      final FeatureValue fv = new FeatureValue(featureID, featureValueID, Feature.VALUE_TYPE_FLOAT, val);
+      final String featureValueID = rangeID + "F" + String.valueOf(count);
+      final FeatureValue fv = new FeatureValue(featureID, featureValueID, f);
       lst.add(fv);
       count++;
     }

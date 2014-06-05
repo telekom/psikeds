@@ -47,9 +47,9 @@ public class FeatureValue extends ValueObject implements Serializable {
     setValue(f);
   }
 
-  public FeatureValue(final String featureID, final String featureValueID, final int i) {
+  public FeatureValue(final String featureID, final String featureValueID, final long l) {
     this(featureID, featureValueID, Feature.VALUE_TYPE_INTEGER, null);
-    setValue(i);
+    setValue(l);
   }
 
   public FeatureValue(final String featureID, final String featureValueID, final String s) {
@@ -109,31 +109,43 @@ public class FeatureValue extends ValueObject implements Serializable {
   }
 
   @JsonIgnore
-  public void setValue(final int i) {
-    this.value = String.valueOf(i);
+  public void setValue(final long l) {
+    this.value = String.valueOf(l);
   }
 
   @JsonIgnore
   public float toFloatValue() {
-    float f = 0.0f;
+    if (!isFloatValue()) {
+      throw new IllegalArgumentException("Not a Float!");
+    }
     try {
-      f = Float.parseFloat(this.value);
+      return Float.parseFloat(this.value);
     }
     catch (final Exception ex) {
-      f = 0.0f;
+      throw new IllegalArgumentException("Illegal Float-Value: " + String.valueOf(this.value));
     }
-    return f;
   }
 
   @JsonIgnore
-  public int toIntValue() {
-    int i = 0;
+  public long toIntegerValue() {
+    if (!isIntegerValue()) {
+      throw new IllegalArgumentException("Not an Integer!");
+    }
     try {
-      i = Integer.parseInt(this.value);
+      return Long.parseLong(this.value);
     }
     catch (final Exception ex) {
-      i = 0;
+      throw new IllegalArgumentException("Illegal Integer-Value: " + String.valueOf(this.value));
     }
-    return i;
+  }
+
+  @JsonIgnore
+  public boolean isFloatValue() {
+    return Feature.VALUE_TYPE_FLOAT.equals(this.type);
+  }
+
+  @JsonIgnore
+  public boolean isIntegerValue() {
+    return Feature.VALUE_TYPE_INTEGER.equals(this.type);
   }
 }
