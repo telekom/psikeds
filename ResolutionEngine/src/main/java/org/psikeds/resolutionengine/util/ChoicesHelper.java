@@ -14,6 +14,7 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.util;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -192,28 +193,39 @@ public class ChoicesHelper {
   // ----------------------------------------------------------------
 
   public static boolean cleanupConceptChoices(final KnowledgeEntity ke, final String variantId) {
-    return cleanupConceptChoices(ke, variantId, null);
+    return cleanupConceptChoices(ke, variantId, (List<String>) null);
   }
 
   public static boolean cleanupConceptChoices(final KnowledgeEntity ke, final String variantId, final String conceptId) {
+    List<String> conceptIDs = null;
+    if (!StringUtils.isEmpty(conceptId)) {
+      conceptIDs = new ArrayList<String>();
+      conceptIDs.add(conceptId);
+    }
+    return cleanupConceptChoices(ke, variantId, conceptIDs);
+  }
+
+  public static boolean cleanupConceptChoices(final KnowledgeEntity ke, final String variantId, final List<String> conceptIDs) {
     boolean removed = false;
     try {
-      LOGGER.trace("--> cleanupConceptChoices(); VID = {}; CID = {}; KE = {}", variantId, conceptId, ke);
-      final ConceptChoices choices = ke.getPossibleConcepts();
-      final Iterator<ConceptChoice> cciter = choices.iterator();
-      while (cciter.hasNext()) {
-        final ConceptChoice cc = cciter.next();
-        final String vid = cc.getParentVariantID();
-        if (StringUtils.isEmpty(variantId) || variantId.equals(vid)) {
-          final Concepts cons = cc.getConcepts();
-          final Iterator<Concept> coniter = cons.iterator();
-          while (coniter.hasNext()) {
-            final Concept c = coniter.next();
-            final String cid = (c == null ? null : c.getConceptID());
-            if (StringUtils.isEmpty(conceptId) || conceptId.equals(cid)) {
-              LOGGER.debug("Removing Concept {} from Choices for Variant {}", cid, vid);
-              coniter.remove();
-              removed = true;
+      LOGGER.trace("--> cleanupConceptChoices(); VID = {}; CIDs = {}; KE = {}", variantId, conceptIDs, ke);
+      if (ke != null) {
+        final ConceptChoices choices = ke.getPossibleConcepts();
+        final Iterator<ConceptChoice> cciter = choices.iterator();
+        while (cciter.hasNext()) {
+          final ConceptChoice cc = cciter.next();
+          final String vid = cc.getParentVariantID();
+          if (StringUtils.isEmpty(variantId) || variantId.equals(vid)) {
+            final Concepts cons = cc.getConcepts();
+            final Iterator<Concept> coniter = cons.iterator();
+            while (coniter.hasNext()) {
+              final Concept c = coniter.next();
+              final String cid = (c == null ? null : c.getConceptID());
+              if ((conceptIDs == null) || conceptIDs.isEmpty() || conceptIDs.contains(cid)) {
+                LOGGER.debug("Removing Concept {} from Choices for Variant {}", cid, vid);
+                coniter.remove();
+                removed = true;
+              }
             }
           }
         }
@@ -221,7 +233,7 @@ public class ChoicesHelper {
       return removed;
     }
     finally {
-      LOGGER.trace("<-- cleanupConceptChoices(); VID = {}; CID = {}; removed = {}", variantId, conceptId, removed);
+      LOGGER.trace("<-- cleanupConceptChoices(); VID = {}; CIDs = {}; removed = {}", variantId, conceptIDs, removed);
     }
   }
 

@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.psikeds.resolutionengine.interfaces.pojos.Concept;
-import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureValue;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureValues;
 import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity;
@@ -52,16 +51,22 @@ public class FeatureValueHelper {
 
   // ----------------------------------------------------------------
 
-  public static void removeImpossibleFeatureValues(final KnowledgeEntity ke, final FeatureChoice fc) {
+  public static boolean removeImpossibleFeatureValues(final KnowledgeEntity ke) {
+    boolean removed = false;
     try {
-      LOGGER.trace("--> removeImpossibleFeatureValues(); FC = {}\nKE = {}", fc, ke);
-      for (final FeatureValue fv : ke.getFeatures()) {
-        // remove all choices of this variant for the feature belonging to the value
-        ChoicesHelper.cleanupFeatureChoices(ke, ke.getVariant().getVariantID(), fv.getFeatureID());
+      LOGGER.trace("--> removeImpossibleFeatureValues(); KE = {}", ke);
+      if (ke != null) {
+        for (final FeatureValue fv : ke.getFeatures()) {
+          // remove all choices of this variant for the feature belonging to the value
+          if (ChoicesHelper.cleanupFeatureChoices(ke, ke.getVariant().getVariantID(), fv.getFeatureID())) {
+            removed = true;
+          }
+        }
       }
+      return removed;
     }
     finally {
-      LOGGER.trace("<-- removeImpossibleFeatureValues(); FC = {}\nKE = {}", fc, ke);
+      LOGGER.trace("<-- removeImpossibleFeatureValues(); removed = {}; KE = {}", removed, ke);
     }
   }
 }

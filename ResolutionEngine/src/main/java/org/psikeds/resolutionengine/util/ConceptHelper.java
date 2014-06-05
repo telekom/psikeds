@@ -14,6 +14,7 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -94,20 +95,31 @@ public class ConceptHelper {
 
   // ----------------------------------------------------------------
 
-  public static void removeObsoleteConcepts(final KnowledgeEntity ke, final ConceptChoice cc) {
+  public static boolean removeObsoleteConcepts(final KnowledgeEntity ke, final ConceptChoice cc) {
+    boolean removed = false;
     try {
       LOGGER.trace("--> removeObsoleteConcepts(); CC = {}\nKE = {}", cc, ke);
-      for (final Concept con : cc.getConcepts()) {
-        final String ret = checkConcept(ke, con);
-        if (!RET_CONCEPT_POSSIBLE.equals(ret)) {
-          // concept is either impossible or already fulfilled
-          // --> remove it from possible choices for this variant
-          cleanupConceptChoices(ke, cc.getParentVariantID(), con.getConceptID());
+      if ((ke != null) && (cc != null)) {
+        final String vid = cc.getParentVariantID();
+        final List<String> conceptIDs = new ArrayList<String>();
+        for (final Concept con : cc.getConcepts()) {
+          final String ret = checkConcept(ke, con);
+          if (!RET_CONCEPT_POSSIBLE.equals(ret)) {
+            // concept is either impossible or already fulfilled
+            // --> remove it from possible choices for this variant
+            final String cid = con.getConceptID();
+            conceptIDs.add(cid);
+            LOGGER.debug("Adding Concept {} to Removal-List for Variant {}", cid, vid);
+          }
+        }
+        if (!conceptIDs.isEmpty()) {
+          removed = cleanupConceptChoices(ke, vid, conceptIDs);
         }
       }
+      return removed;
     }
     finally {
-      LOGGER.trace("<-- removeObsoleteConcepts(); CC = {}\nKE = {}", cc, ke);
+      LOGGER.trace("<-- removeObsoleteConcepts(); removed = {}\nCC = {}\nKE = {}", removed, cc, ke);
     }
   }
 
@@ -123,5 +135,9 @@ public class ConceptHelper {
 
   public static boolean cleanupConceptChoices(final KnowledgeEntity ke, final String variantId, final String conceptId) {
     return ChoicesHelper.cleanupConceptChoices(ke, variantId, conceptId);
+  }
+
+  public static boolean cleanupConceptChoices(final KnowledgeEntity ke, final String variantId, final List<String> conceptIDs) {
+    return ChoicesHelper.cleanupConceptChoices(ke, variantId, conceptIDs);
   }
 }
