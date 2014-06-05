@@ -35,11 +35,9 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
   This Definition will use the packaged Default-KB from within
   the JAR-File using a Standard-Spring-ClassPathResource
   -->
-  <!--
   <bean id="kbXmlSource" class="org.springframework.core.io.ClassPathResource">
     <constructor-arg index="0" type="java.lang.String" value="default.knowledgebase.xml" />
   </bean>
-  -->
 
   <!--
   This Definition will look for a custom Demo-KB within the
@@ -49,8 +47,8 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
   <bean id="kbXmlSource" class="org.psikeds.common.config.FileSystemResource"> 
     <constructor-arg index="0" type="java.lang.String" value="ldrewe.xml" />
   </bean>
-  -->
   <bean id="kbXmlSource" class="org.psikeds.common.config.FileSystemResource"> 
     <constructor-arg index="0" type="java.lang.String" value="software-stack-demo-kb.xml" />
   </bean>
+  -->
 </beans>
