@@ -68,13 +68,31 @@
     <priority value="INFO" />
   </category>
 
-    <category name="org.psikeds.resolutionengine.rules">
+  <category name="org.psikeds.resolutionengine.resolver">
     <priority value="DEBUG" />
   </category>
 
-  <category name="org.psikeds.resolutionengine.resolver.impl.RulesEvaluator">
+  <category name="org.psikeds.resolutionengine.services">
     <priority value="DEBUG" />
   </category>
+
+<!--
+  <category name="org.psikeds.resolutionengine.util">
+    <priority value="DEBUG" />
+  </category>
+
+  <category name="org.psikeds.resolutionengine.resolver.impl.AutoCompletion">
+    <priority value="TRACE" />
+  </category>
+
+  <category name="org.psikeds.resolutionengine.resolver.impl.EventEvaluator">
+    <priority value="TRACE" />
+  </category>
+
+  <category name="org.psikeds.resolutionengine.resolver.impl.RulesEvaluator">
+    <priority value="TRACE" />
+  </category>
+-->
 
   <!-- ======================= -->
   <!-- Setup the Root category -->
