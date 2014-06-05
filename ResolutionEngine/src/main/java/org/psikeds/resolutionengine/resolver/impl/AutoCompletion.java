@@ -242,7 +242,6 @@ public class AutoCompletion implements InitializingBean, Resolver {
         // Is this a Choice for a Value of a Feature?
         else if (c instanceof FeatureChoice) {
           final FeatureChoice fc = (FeatureChoice) c;
-          FeatureValueHelper.removeImpossibleFeatureValues(parentEntity, fc);
           final FeatureValues values = fc.getPossibleValues();
           if (values.size() < 2) {
             LOGGER.trace("Found: {}", fc);
@@ -260,7 +259,6 @@ public class AutoCompletion implements InitializingBean, Resolver {
         // Is this a Choice for a Concept?
         else if (c instanceof ConceptChoice) {
           final ConceptChoice cc = (ConceptChoice) c;
-          ConceptHelper.removeObsoleteConcepts(parentEntity, cc);
           final Concepts cons = cc.getConcepts();
           if (cons.size() < 2) {
             LOGGER.trace("Found: {}", cc);
