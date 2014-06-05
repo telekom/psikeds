@@ -18,6 +18,8 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 /**
  * This is a single Feature-Value, i.e. a possible Value of an Attribute that can
  * be assigned to a Variant.
@@ -38,6 +40,20 @@ public class FeatureValue extends ValueObject implements Serializable {
 
   public FeatureValue() {
     this(null, null, null, null);
+  }
+
+  public FeatureValue(final String featureID, final String featureValueID, final float f) {
+    this(featureID, featureValueID, Feature.VALUE_TYPE_FLOAT, null);
+    setValue(f);
+  }
+
+  public FeatureValue(final String featureID, final String featureValueID, final int i) {
+    this(featureID, featureValueID, Feature.VALUE_TYPE_INTEGER, null);
+    setValue(i);
+  }
+
+  public FeatureValue(final String featureID, final String featureValueID, final String s) {
+    this(featureID, featureValueID, Feature.VALUE_TYPE_STRING, s);
   }
 
   public FeatureValue(final String featureID, final String featureValueID, final String type, final String value) {
@@ -85,5 +101,39 @@ public class FeatureValue extends ValueObject implements Serializable {
 
   public void setValue(final String value) {
     this.value = value;
+  }
+
+  @JsonIgnore
+  public void setValue(final float f) {
+    this.value = String.valueOf(f);
+  }
+
+  @JsonIgnore
+  public void setValue(final int i) {
+    this.value = String.valueOf(i);
+  }
+
+  @JsonIgnore
+  public float toFloatValue() {
+    float f = 0.0f;
+    try {
+      f = Float.parseFloat(this.value);
+    }
+    catch (final Exception ex) {
+      f = 0.0f;
+    }
+    return f;
+  }
+
+  @JsonIgnore
+  public int toIntValue() {
+    int i = 0;
+    try {
+      i = Integer.parseInt(this.value);
+    }
+    catch (final Exception ex) {
+      i = 0;
+    }
+    return i;
   }
 }
