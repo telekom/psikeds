@@ -39,11 +39,8 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 
   <bean id="ConceptDecissionEvaluator" class="org.psikeds.resolutionengine.resolver.impl.ConceptDecissionEvaluator" />
 
-<<<<<<< HEAD
-=======
   <bean id="ObsoleteEntitiesRemover" class="org.psikeds.resolutionengine.resolver.impl.ObsoleteEntitiesRemover" />
 
->>>>>>> origin/mjuliano
   <bean id="AutoCompletionResolver" class="org.psikeds.resolutionengine.resolver.impl.AutoCompletion">
     <constructor-arg index="0" type="org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase" ref="knowledgeBase" />  <!-- defined in knowledgebase-context.xml -->
     <constructor-arg index="1" type="org.psikeds.resolutionengine.transformer.Transformer" ref="PojoTransformer" />
@@ -67,10 +64,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <ref bean="VariantDecissionEvaluator" />
     <ref bean="FeatureDecissionEvaluator" />
     <ref bean="ConceptDecissionEvaluator" />
-<<<<<<< HEAD
-=======
     <ref bean="ObsoleteEntitiesRemover" />
->>>>>>> origin/mjuliano
     <ref bean="AutoCompletionResolver" />
     <ref bean="EventEvaluator" />
     <ref bean="RulesEvaluator" />
