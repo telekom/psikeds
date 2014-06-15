@@ -17,7 +17,19 @@
         parseMethod="javax.xml.bind.DatatypeConverter.parseDateTime"
         printMethod="javax.xml.bind.DatatypeConverter.printDateTime" />
 
+      <jxb:javaType name="java.math.BigDecimal" xmlType="xs:float"
+        parseMethod="javax.xml.bind.DatatypeConverter.parseDecimal"
+        printMethod="javax.xml.bind.DatatypeConverter.printDecimal" />
+
+      <jxb:javaType name="java.math.BigDecimal" xmlType="xs:double"
+        parseMethod="javax.xml.bind.DatatypeConverter.parseDecimal"
+        printMethod="javax.xml.bind.DatatypeConverter.printDecimal" />
+
       <jxb:javaType name="java.lang.Long" xmlType="xs:integer"
+        parseMethod="javax.xml.bind.DatatypeConverter.parseLong"
+        printMethod="javax.xml.bind.DatatypeConverter.printLong" />
+
+      <jxb:javaType name="java.lang.Long" xmlType="xs:int"
         parseMethod="javax.xml.bind.DatatypeConverter.parseLong"
         printMethod="javax.xml.bind.DatatypeConverter.printLong" />
 
