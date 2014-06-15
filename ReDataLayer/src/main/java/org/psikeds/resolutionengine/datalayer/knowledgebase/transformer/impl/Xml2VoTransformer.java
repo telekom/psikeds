@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.commons.lang.StringUtils;
 
+import org.springframework.beans.factory.InitializingBean;
+
 import org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.util.FeatureValueHelper;
 import org.psikeds.resolutionengine.datalayer.vo.Alternatives;
@@ -52,7 +54,7 @@ import org.psikeds.resolutionengine.datalayer.vo.Rules;
  * 
  * @author marco@juliano.de
  */
-public class Xml2VoTransformer implements Transformer {
+public class Xml2VoTransformer implements InitializingBean, Transformer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Xml2VoTransformer.class);
 
@@ -92,6 +94,24 @@ public class Xml2VoTransformer implements Transformer {
 
   public void setDefaultFloatValueRoundingMode(final int roundingMode) {
     this.defaultFloatValueRoundingMode = (roundingMode < 0 ? FloatFeatureValue.DEFAULT_ROUNDING_MODE : roundingMode);
+  }
+
+  // ----------------------------------------------------------------
+
+  /**
+   * Check that ResolutionBusinessService was configured/wired correctly.
+   * 
+   * @throws Exception
+   * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+   */
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    // nothing todo, just print settings
+    if (LOGGER.isInfoEnabled()) {
+      final StringBuilder sb = new StringBuilder("Config: Float-Value Rounding-Mode: {}\n");
+      sb.append("Maximum size of Value-Ranges: {}");
+      LOGGER.info(sb.toString(), this.defaultFloatValueRoundingMode, this.defaultMaxValueRangeSize);
+    }
   }
 
   // ----------------------------------------------------------------

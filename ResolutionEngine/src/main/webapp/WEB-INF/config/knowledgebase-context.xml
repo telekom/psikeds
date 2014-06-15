@@ -26,7 +26,10 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <constructor-arg index="0" type="org.springframework.core.io.Resource" ref="${resolutionengine.knowledgebase.datasource.name}" />  <!-- defined in resolutionengine.properties and knowledgebase-datasource-context.xml -->
   </bean>
 
-  <bean id="XmlTransformer" class="org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.impl.Xml2VoTransformer" />
+  <bean id="XmlTransformer" class="org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.impl.Xml2VoTransformer">
+    <constructor-arg index="0" type="java.lang.String" value="${resolutionengine.knowledgebase.floatvalues.roundingmode}" />
+    <constructor-arg index="1" value="${resolutionengine.knowledgebase.valueranges.maxsize}" />
+  </bean>
 
   <bean id="knowledgeBaseFactory"
     class="org.psikeds.resolutionengine.datalayer.knowledgebase.impl.XmlKnowledgeBaseFactory">
