@@ -16,6 +16,7 @@ package org.psikeds.resolutionengine.services;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -48,7 +49,9 @@ import org.psikeds.resolutionengine.datalayer.vo.Feature;
 import org.psikeds.resolutionengine.datalayer.vo.FeatureValue;
 import org.psikeds.resolutionengine.datalayer.vo.FeatureValues;
 import org.psikeds.resolutionengine.datalayer.vo.Features;
+import org.psikeds.resolutionengine.datalayer.vo.FloatFeatureValue;
 import org.psikeds.resolutionengine.datalayer.vo.Fulfills;
+import org.psikeds.resolutionengine.datalayer.vo.IntegerFeatureValue;
 import org.psikeds.resolutionengine.datalayer.vo.KnowledgeData;
 import org.psikeds.resolutionengine.datalayer.vo.MetaData;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
@@ -212,8 +215,8 @@ public class KnowledgeBaseMock implements KnowledgeBase {
     if (!StringUtils.isEmpty(featureId)) {
       final String lower = featureId.toLowerCase();
       final String uppper = featureId.toUpperCase();
-      f.addValue(lower + "L11", lower);
-      f.addValue(uppper + "u22", uppper);
+      f.addValue(new FeatureValue(featureId, lower + "L11", lower));
+      f.addValue(new FeatureValue(featureId, uppper + "u22", uppper));
     }
     LOGGER.debug("Feature {} not found, returning Dummy!", featureId);
     return f;
@@ -849,11 +852,11 @@ public class KnowledgeBaseMock implements KnowledgeBase {
     // create features and feature-values
     final Features features = new Features();
     final FeatureValues values = new FeatureValues();
-    final List<FeatureValue> f1ir1 = FeatureValueHelper.calculateIntegerRange("F1", "IR1", 1, 5, 1);
+    final List<IntegerFeatureValue> f1ir1 = FeatureValueHelper.calculateIntegerRange("F1", "IR1", 1, 5, 1);
     values.addValue(f1ir1);
     final Feature f1 = new Feature("F1", "F1", "F1", Feature.VALUE_TYPE_INTEGER, null, f1ir1);
     features.addFeature(f1);
-    final List<FeatureValue> f2fr2 = FeatureValueHelper.calculateFloatRange("F2", "FR2", 2.0f, 6.0f, 2.0f);
+    final List<FloatFeatureValue> f2fr2 = FeatureValueHelper.calculateFloatRange("F2", "FR2", new BigDecimal("2.0"), new BigDecimal("6.0"), new BigDecimal("2.0"));
     values.addValue(f2fr2);
     final Feature f2 = new Feature("F2", "F2", "F2", Feature.VALUE_TYPE_FLOAT, null, f2fr2);
     features.addFeature(f2);
@@ -871,11 +874,11 @@ public class KnowledgeBaseMock implements KnowledgeBase {
     values.addValue(f3s4);
     f3.addValue(f3s4);
     features.addFeature(f3);
-    final List<FeatureValue> f4ir4 = FeatureValueHelper.calculateIntegerRange("F4", "IR4", 3, 15, 3);
+    final List<IntegerFeatureValue> f4ir4 = FeatureValueHelper.calculateIntegerRange("F4", "IR4", 3, 15, 3);
     values.addValue(f4ir4);
     final Feature f4 = new Feature("F4", "F4", "F4", Feature.VALUE_TYPE_INTEGER, null, f4ir4);
     features.addFeature(f4);
-    final List<FeatureValue> f5fr5 = FeatureValueHelper.calculateFloatRange("F5", "FR5", 5.0000f, 8.0000f, 0.6543f);
+    final List<FloatFeatureValue> f5fr5 = FeatureValueHelper.calculateFloatRange("F5", "FR5", new BigDecimal("5.0000"), new BigDecimal("8.0000"), new BigDecimal("0.6543"));
     values.addValue(f5fr5);
     final Feature f5 = new Feature("F5", "F5", "F5", Feature.VALUE_TYPE_FLOAT, null, f5fr5);
     features.addFeature(f5);

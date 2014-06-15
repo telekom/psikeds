@@ -32,7 +32,9 @@ import org.psikeds.resolutionengine.datalayer.vo.Event;
 import org.psikeds.resolutionengine.datalayer.vo.Events;
 import org.psikeds.resolutionengine.datalayer.vo.Feature;
 import org.psikeds.resolutionengine.datalayer.vo.FeatureValue;
+import org.psikeds.resolutionengine.datalayer.vo.FloatFeatureValue;
 import org.psikeds.resolutionengine.datalayer.vo.Fulfills;
+import org.psikeds.resolutionengine.datalayer.vo.IntegerFeatureValue;
 import org.psikeds.resolutionengine.datalayer.vo.MetaData;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
 import org.psikeds.resolutionengine.datalayer.vo.Purposes;
@@ -235,7 +237,7 @@ public class Xml2VoTransformer implements Transformer {
           for (final org.psikeds.knowledgebase.jaxb.SensedStringValue strval : values.getStrValue()) {
             if (strval != null) {
               vo.setType(Feature.VALUE_TYPE_STRING);
-              vo.addValue(strval.getId(), strval.getValue());
+              vo.addValue(new FeatureValue(featureID, strval.getId(), strval.getValue()));
             }
           }
         }
@@ -245,7 +247,7 @@ public class Xml2VoTransformer implements Transformer {
               final org.psikeds.knowledgebase.jaxb.SensedIntValue intval = (org.psikeds.knowledgebase.jaxb.SensedIntValue) serial;
               final long val = (intval.getValue() == null ? 0 : intval.getValue().longValue());
               vo.setType(Feature.VALUE_TYPE_INTEGER);
-              vo.addValue(intval.getId(), String.valueOf(val));
+              vo.addValue(new IntegerFeatureValue(featureID, intval.getId(), val));
             }
             else if (serial instanceof org.psikeds.knowledgebase.jaxb.IntRange) {
               final org.psikeds.knowledgebase.jaxb.IntRange intrange = (org.psikeds.knowledgebase.jaxb.IntRange) serial;
@@ -253,7 +255,7 @@ public class Xml2VoTransformer implements Transformer {
               final long min = (intrange.getMin() == null ? 0 : intrange.getMin().longValue());
               final long max = (intrange.getMax() == null ? 0 : intrange.getMax().longValue());
               final long inc = (intrange.getInc() == null ? FeatureValueHelper.DEFAULT_RANGE_STEP : intrange.getInc().longValue());
-              final List<FeatureValue> intvallst = FeatureValueHelper.calculateIntegerRange(featureID, rangeID, min, max, inc);
+              final List<IntegerFeatureValue> intvallst = FeatureValueHelper.calculateIntegerRange(featureID, rangeID, min, max, inc);
               vo.setType(Feature.VALUE_TYPE_INTEGER);
               vo.addValue(intvallst);
             }
@@ -267,15 +269,12 @@ public class Xml2VoTransformer implements Transformer {
             if (serial instanceof org.psikeds.knowledgebase.jaxb.SensedFloatValue) {
               final org.psikeds.knowledgebase.jaxb.SensedFloatValue floatval = (org.psikeds.knowledgebase.jaxb.SensedFloatValue) serial;
               vo.setType(Feature.VALUE_TYPE_FLOAT);
-              vo.addValue(floatval.getId(), String.valueOf(floatval.getValue()));
+              vo.addValue(new FloatFeatureValue(featureID, floatval.getId(), floatval.getValue()));
             }
             else if (serial instanceof org.psikeds.knowledgebase.jaxb.FloatRange) {
               final org.psikeds.knowledgebase.jaxb.FloatRange floatrange = (org.psikeds.knowledgebase.jaxb.FloatRange) serial;
               final String rangeID = floatrange.getId();
-              final float min = (floatrange.getMin() == null ? 0 : floatrange.getMin().floatValue());
-              final float max = (floatrange.getMax() == null ? 0 : floatrange.getMax().floatValue());
-              final float inc = (floatrange.getInc() == null ? FeatureValueHelper.DEFAULT_RANGE_STEP : floatrange.getInc().floatValue());
-              final List<FeatureValue> floatvallst = FeatureValueHelper.calculateFloatRange(featureID, rangeID, min, max, inc);
+              final List<FloatFeatureValue> floatvallst = FeatureValueHelper.calculateFloatRange(featureID, rangeID, floatrange.getMin(), floatrange.getMax(), floatrange.getInc());
               vo.setType(Feature.VALUE_TYPE_FLOAT);
               vo.addValue(floatvallst);
             }

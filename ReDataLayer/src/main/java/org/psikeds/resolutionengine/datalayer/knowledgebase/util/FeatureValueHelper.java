@@ -14,6 +14,7 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.datalayer.knowledgebase.util;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,8 @@ import org.apache.commons.lang.StringUtils;
 
 import org.psikeds.resolutionengine.datalayer.vo.Feature;
 import org.psikeds.resolutionengine.datalayer.vo.FeatureValue;
+import org.psikeds.resolutionengine.datalayer.vo.FloatFeatureValue;
+import org.psikeds.resolutionengine.datalayer.vo.IntegerFeatureValue;
 
 /**
  * Helper for handling Features, Values and Ranges.
@@ -31,8 +34,8 @@ import org.psikeds.resolutionengine.datalayer.vo.FeatureValue;
 public abstract class FeatureValueHelper {
 
   public static final int DEFAULT_RANGE_STEP = 1;
-  public static final int MINIMUM_RANGE_STEP = 0;
-  public static final int MAXIMUM_RANGE_SIZE = 500;
+  public static final int DEFAULT_FLOAT_SCALE = 0;
+  public static final int DEFAULT_MAXIMUM_SIZE = 500;
 
   private FeatureValueHelper() {
     // prevent instantiation
@@ -110,89 +113,26 @@ public abstract class FeatureValueHelper {
 
   // ----------------------------------------------------------------
 
-  public static List<FeatureValue> calculateRange(final String featureID, final String rangeID, final String type, final String min, final String max, final String inc) {
-    return calculateRange(featureID, rangeID, type, min, max, inc, MAXIMUM_RANGE_SIZE);
+  public static List<IntegerFeatureValue> calculateIntegerRange(final String featureID, final String rangeID, final long min, final long max, final long inc) {
+    return calculateIntegerRange(featureID, rangeID, min, max, inc, DEFAULT_MAXIMUM_SIZE);
   }
 
-  public static List<FeatureValue> calculateRange(final String featureID, final String rangeID, final String type, final String min, final String max, final String inc, final int maxSize) {
-    if (Feature.VALUE_TYPE_INTEGER.equalsIgnoreCase(type)) {
-      long lInc;
-      long lMin;
-      long lMax;
-      try {
-        lInc = Long.parseLong(inc.trim());
-      }
-      catch (final Exception ex) {
-        lInc = DEFAULT_RANGE_STEP;
-      }
-      try {
-        lMin = Long.parseLong(min.trim());
-      }
-      catch (final Exception ex) {
-        throw new IllegalArgumentException("Not an Integer Value: " + min, ex);
-      }
-      try {
-        lMax = Long.parseLong(max.trim());
-      }
-      catch (final Exception ex) {
-        throw new IllegalArgumentException("Not an Integer Value: " + max, ex);
-      }
-      return calculateIntegerRange(featureID, rangeID, lMin, lMax, lInc, maxSize);
+  public static List<IntegerFeatureValue> calculateIntegerRange(final String featureID, final String rangeID, final long min, final long max, long inc, final long maxSize) {
+    if (inc == 0) {
+      inc = DEFAULT_RANGE_STEP;
     }
-    else if (Feature.VALUE_TYPE_FLOAT.equalsIgnoreCase(type)) {
-      float fInc;
-      float fMin;
-      float fMax;
-      try {
-        fInc = Float.parseFloat(inc.trim());
-      }
-      catch (final Exception ex) {
-        fInc = DEFAULT_RANGE_STEP;
-      }
-      try {
-        fMin = Float.parseFloat(min.trim());
-      }
-      catch (final Exception ex) {
-        throw new IllegalArgumentException("Not a Float Value: " + min, ex);
-      }
-      try {
-        fMax = Float.parseFloat(max.trim());
-      }
-      catch (final Exception ex) {
-        throw new IllegalArgumentException("Not a Float Value: " + max, ex);
-      }
-      return calculateFloatRange(featureID, rangeID, fMin, fMax, fInc, maxSize);
+    if ((inc > 0) && (max < min)) {
+      throw new IllegalArgumentException("Maximum of Range " + rangeID + " must not be smaller than Minimum!");
     }
-    else if (Feature.VALUE_TYPE_STRING.equalsIgnoreCase(type)) {
-      throw new IllegalArgumentException("Value Type String is not allowed for Ranges!");
+    if ((inc < 0) && (max > min)) {
+      throw new IllegalArgumentException("Minimum of Range " + rangeID + " must not be smaller than Maximum!");
     }
-    else {
-      throw new IllegalArgumentException("Unsupported Value Type: " + type);
-    }
-  }
-
-  // ----------------------------------------------------------------
-
-  public static List<FeatureValue> calculateIntegerRange(final String featureID, final String rangeID, final long min, final long max, final long inc) {
-    return calculateIntegerRange(featureID, rangeID, min, max, inc, MAXIMUM_RANGE_SIZE);
-  }
-
-  public static List<FeatureValue> calculateIntegerRange(final String featureID, final String rangeID, final long min, final long max, final long inc, final long maxSize) {
-    if (maxSize > MAXIMUM_RANGE_SIZE) {
-      throw new IllegalArgumentException("Max-Size of Range must not be larger than: " + MAXIMUM_RANGE_SIZE);
-    }
-    if (max < min) {
-      throw new IllegalArgumentException("Max must not be smaller than Min!");
-    }
-    if (MINIMUM_RANGE_STEP >= inc) {
-      throw new IllegalArgumentException("Inc must be larger than: " + MINIMUM_RANGE_STEP);
-    }
-    final List<FeatureValue> lst = new ArrayList<FeatureValue>();
+    final List<IntegerFeatureValue> lst = new ArrayList<IntegerFeatureValue>();
     long count = 1;
     for (long l = min; (l <= max) && (count <= maxSize); l = l + inc) {
-      final String featureValueID = rangeID + "I" + String.valueOf(count);
-      final FeatureValue fv = new FeatureValue(featureID, featureValueID, l);
-      lst.add(fv);
+      final String featureValueID = rangeID + "_I" + String.valueOf(count);
+      final IntegerFeatureValue ifv = new IntegerFeatureValue(featureID, featureValueID, l);
+      lst.add(ifv);
       count++;
     }
     return lst;
@@ -200,26 +140,34 @@ public abstract class FeatureValueHelper {
 
   // ----------------------------------------------------------------
 
-  public static List<FeatureValue> calculateFloatRange(final String featureID, final String rangeID, final float min, final float max, final float inc) {
-    return calculateFloatRange(featureID, rangeID, min, max, inc, MAXIMUM_RANGE_SIZE);
+  public static List<FloatFeatureValue> calculateFloatRange(final String featureID, final String rangeID, final BigDecimal min, final BigDecimal max, final BigDecimal inc) {
+    return calculateFloatRange(featureID, rangeID, min, max, inc, DEFAULT_MAXIMUM_SIZE);
   }
 
-  public static List<FeatureValue> calculateFloatRange(final String featureID, final String rangeID, final float min, final float max, final float inc, final int maxSize) {
-    if (maxSize > MAXIMUM_RANGE_SIZE) {
-      throw new IllegalArgumentException("Max-Size of Range must not be larger than: " + MAXIMUM_RANGE_SIZE);
+  public static List<FloatFeatureValue> calculateFloatRange(final String featureID, final String rangeID, final BigDecimal min, final BigDecimal max, final BigDecimal inc, final int maxSize) {
+    int scale = DEFAULT_FLOAT_SCALE;
+    float finc = (inc == null ? 0.0f : inc.floatValue());
+    if (finc == 0.0f) {
+      finc = DEFAULT_RANGE_STEP;
     }
-    if (max < min) {
-      throw new IllegalArgumentException("Max must not be smaller than Min!");
+    else {
+      // scale is based on the increment, if specified
+      scale = inc.scale();
     }
-    if (MINIMUM_RANGE_STEP >= inc) {
-      throw new IllegalArgumentException("Inc must be larger than: " + MINIMUM_RANGE_STEP);
+    final float fmin = (min == null ? 0.0f : min.floatValue());
+    final float fmax = (max == null ? 0.0f : max.floatValue());
+    if ((finc > 0.0f) && (fmax < fmin)) {
+      throw new IllegalArgumentException("Maximum of Range " + rangeID + " must not be smaller than Minimum!");
     }
-    final List<FeatureValue> lst = new ArrayList<FeatureValue>();
+    if ((finc < 0.0f) && (fmax > fmin)) {
+      throw new IllegalArgumentException("Minimum of Range " + rangeID + " must not be smaller than Maximum!");
+    }
+    final List<FloatFeatureValue> lst = new ArrayList<FloatFeatureValue>();
     int count = 1;
-    for (float f = min; (f <= max) && (count <= maxSize); f = f + inc) {
-      final String featureValueID = rangeID + "F" + String.valueOf(count);
-      final FeatureValue fv = new FeatureValue(featureID, featureValueID, f);
-      lst.add(fv);
+    for (float f = fmin; (f <= fmax) && (count <= maxSize); f = f + finc) {
+      final String featureValueID = rangeID + "_F" + String.valueOf(count);
+      final FloatFeatureValue ffv = new FloatFeatureValue(featureID, featureValueID, f, scale);
+      lst.add(ffv);
       count++;
     }
     return lst;
