@@ -21,8 +21,6 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * This is a Feature-Definition/Declaration, i.e. Type and possible Values of an
  * Attribute that can be assigned to a Variant.
@@ -59,13 +57,13 @@ public class Feature extends ValueObject implements Serializable {
     this(label, description, featureID, null, unit, null);
   }
 
-  public Feature(final String label, final String description, final String featureID, final String type, final String unit, final List<FeatureValue> values) {
+  public Feature(final String label, final String description, final String featureID, final String type, final String unit, final Collection<? extends FeatureValue> values) {
     super(featureID);
     setLabel(label);
     setDescription(description);
     setType(type);
     setUnit(unit);
-    setValues(values);
+    addValue(values);
   }
 
   // ----------------------------------------------------------------
@@ -125,10 +123,6 @@ public class Feature extends ValueObject implements Serializable {
       this.values = new ArrayList<FeatureValue>();
     }
     return this.values;
-  }
-
-  public boolean addValue(final String featureValueID, final String value) {
-    return (!StringUtils.isEmpty(featureValueID) && !StringUtils.isEmpty(value) && addValue(new FeatureValue(getFeatureID(), featureValueID, getType(), value)));
   }
 
   public boolean addValue(final FeatureValue value) {

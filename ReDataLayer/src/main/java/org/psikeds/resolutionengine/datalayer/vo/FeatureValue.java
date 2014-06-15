@@ -17,8 +17,10 @@ package org.psikeds.resolutionengine.datalayer.vo;
 import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
  * This is a single Feature-Value, i.e. a possible Value of an Attribute that can
@@ -30,37 +32,30 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  * 
  */
 @XmlRootElement(name = "FeatureValue")
+@XmlSeeAlso({ IntegerFeatureValue.class, FloatFeatureValue.class })
+@JsonSubTypes({ @JsonSubTypes.Type(value = IntegerFeatureValue.class, name = "IntegerFeatureValue"),
+    @JsonSubTypes.Type(value = FloatFeatureValue.class, name = "FloatFeatureValue"), })
 public class FeatureValue extends ValueObject implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private String featureID;
-  private String type;
-  private String value;
+  protected String featureID;
+  protected String type;
+  protected String value;
 
   public FeatureValue() {
-    this(null, null, null, null);
+    this(null, null, null);
   }
 
-  public FeatureValue(final String featureID, final String featureValueID, final float f) {
-    this(featureID, featureValueID, Feature.VALUE_TYPE_FLOAT, null);
-    setValue(f);
+  public FeatureValue(final String featureID, final String featureValueID, final String val) {
+    this(featureID, featureValueID, Feature.VALUE_TYPE_STRING, val);
   }
 
-  public FeatureValue(final String featureID, final String featureValueID, final long l) {
-    this(featureID, featureValueID, Feature.VALUE_TYPE_INTEGER, null);
-    setValue(l);
-  }
-
-  public FeatureValue(final String featureID, final String featureValueID, final String s) {
-    this(featureID, featureValueID, Feature.VALUE_TYPE_STRING, s);
-  }
-
-  public FeatureValue(final String featureID, final String featureValueID, final String type, final String value) {
+  public FeatureValue(final String featureID, final String featureValueID, final String type, final String val) {
     super(featureValueID);
     setFeatureID(featureID);
     setType(type);
-    setValue(value);
+    setValue(val);
   }
 
   public String getFeatureValueID() {
@@ -99,37 +94,27 @@ public class FeatureValue extends ValueObject implements Serializable {
     return this.value;
   }
 
-  public void setValue(final String value) {
-    this.value = value;
-  }
-
-  @JsonIgnore
-  public void setValue(final float f) {
-    this.value = String.valueOf(f);
-  }
-
-  @JsonIgnore
-  public void setValue(final long l) {
-    this.value = String.valueOf(l);
+  public void setValue(final String val) {
+    this.value = val;
   }
 
   @JsonIgnore
   public float toFloatValue() {
     if (!isFloatValue()) {
-      throw new IllegalArgumentException("Not a Float!");
+      throw new IllegalArgumentException("Not a Float-Value: " + String.valueOf(this.type));
     }
     try {
       return Float.parseFloat(this.value);
     }
     catch (final Exception ex) {
-      throw new IllegalArgumentException("Illegal Float-Value: " + String.valueOf(this.value));
+      throw new NumberFormatException("Illegal Float-Value: " + String.valueOf(this.value));
     }
   }
 
   @JsonIgnore
   public long toIntegerValue() {
     if (!isIntegerValue()) {
-      throw new IllegalArgumentException("Not an Integer!");
+      throw new IllegalArgumentException("Not an Integer-Value: " + String.valueOf(this.type));
     }
     try {
       return Long.parseLong(this.value);
