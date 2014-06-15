@@ -18,8 +18,6 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-
 /**
  * Interface object representing a Feature-Value, i.e.
  * an assigned Value for a Feature.
@@ -41,11 +39,6 @@ public class FeatureValue extends POJO implements Serializable {
 
   public FeatureValue() {
     this(null, null, null);
-  }
-
-  public FeatureValue(final String featureID, final String featureValueID, final float f) {
-    this(featureID, featureValueID, null);
-    setValue(f);
   }
 
   public FeatureValue(final String featureID, final String featureValueID, final String value) {
@@ -76,22 +69,5 @@ public class FeatureValue extends POJO implements Serializable {
 
   public void setValue(final String value) {
     this.value = value;
-  }
-
-  @JsonIgnore
-  public void setValue(final float f) {
-    this.value = String.valueOf(f);
-  }
-
-  @JsonIgnore
-  public float toFloatValue() {
-    float f = 0.0f;
-    try {
-      f = Float.parseFloat(this.value);
-    }
-    catch (final Exception ex) {
-      f = 0.0f;
-    }
-    return f;
   }
 }
