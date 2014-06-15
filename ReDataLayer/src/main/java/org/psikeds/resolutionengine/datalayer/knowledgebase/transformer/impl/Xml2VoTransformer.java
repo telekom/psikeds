@@ -56,6 +56,46 @@ public class Xml2VoTransformer implements Transformer {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Xml2VoTransformer.class);
 
+  private int defaultFloatValueRoundingMode;
+  private int defaultMaxValueRangeSize;
+
+  public Xml2VoTransformer() {
+    this(FloatFeatureValue.DEFAULT_ROUNDING_MODE, FeatureValueHelper.DEFAULT_MAXIMUM_SIZE);
+  }
+
+  public Xml2VoTransformer(final String roundingMode, final int maxRangeSize) {
+    this(FloatFeatureValue.DEFAULT_ROUNDING_MODE, maxRangeSize);
+    setDefaultFloatValueRoundingMode(roundingMode);
+  }
+
+  public Xml2VoTransformer(final int roundingMode, final int maxRangeSize) {
+    super();
+    setDefaultFloatValueRoundingMode(roundingMode);
+    setDefaultMaxValueRangeSize(maxRangeSize);
+  }
+
+  public int getDefaultMaxValueRangeSize() {
+    return this.defaultMaxValueRangeSize;
+  }
+
+  public void setDefaultMaxValueRangeSize(final int maxRangeSize) {
+    this.defaultMaxValueRangeSize = (maxRangeSize < 0 ? FeatureValueHelper.DEFAULT_MAXIMUM_SIZE : maxRangeSize);
+  }
+
+  public int getDefaultFloatValueRoundingMode() {
+    return this.defaultFloatValueRoundingMode;
+  }
+
+  public void setDefaultFloatValueRoundingMode(final String roundingMode) {
+    this.defaultFloatValueRoundingMode = roundingModeStr2Int(roundingMode);
+  }
+
+  public void setDefaultFloatValueRoundingMode(final int roundingMode) {
+    this.defaultFloatValueRoundingMode = (roundingMode < 0 ? FloatFeatureValue.DEFAULT_ROUNDING_MODE : roundingMode);
+  }
+
+  // ----------------------------------------------------------------
+
   /**
    * @param xml
    * @return vo
@@ -255,7 +295,7 @@ public class Xml2VoTransformer implements Transformer {
               final long min = (intrange.getMin() == null ? 0 : intrange.getMin().longValue());
               final long max = (intrange.getMax() == null ? 0 : intrange.getMax().longValue());
               final long inc = (intrange.getInc() == null ? FeatureValueHelper.DEFAULT_RANGE_STEP : intrange.getInc().longValue());
-              final List<IntegerFeatureValue> intvallst = FeatureValueHelper.calculateIntegerRange(featureID, rangeID, min, max, inc);
+              final List<IntegerFeatureValue> intvallst = FeatureValueHelper.calculateIntegerRange(featureID, rangeID, min, max, inc, this.defaultMaxValueRangeSize);
               vo.setType(Feature.VALUE_TYPE_INTEGER);
               vo.addValue(intvallst);
             }
@@ -268,13 +308,22 @@ public class Xml2VoTransformer implements Transformer {
           for (final Serializable serial : values.getFloatValueOrFloatRange()) {
             if (serial instanceof org.psikeds.knowledgebase.jaxb.SensedFloatValue) {
               final org.psikeds.knowledgebase.jaxb.SensedFloatValue floatval = (org.psikeds.knowledgebase.jaxb.SensedFloatValue) serial;
+              final FloatFeatureValue ffv = new FloatFeatureValue(featureID, floatval.getId(), floatval.getValue(), xml2ValueObject(floatval.getRoundingMode()));
+              if (floatval.getScale() != null) {
+                ffv.setScale(floatval.getScale().intValue());
+              }
               vo.setType(Feature.VALUE_TYPE_FLOAT);
-              vo.addValue(new FloatFeatureValue(featureID, floatval.getId(), floatval.getValue()));
+              vo.addValue(ffv);
             }
             else if (serial instanceof org.psikeds.knowledgebase.jaxb.FloatRange) {
               final org.psikeds.knowledgebase.jaxb.FloatRange floatrange = (org.psikeds.knowledgebase.jaxb.FloatRange) serial;
               final String rangeID = floatrange.getId();
-              final List<FloatFeatureValue> floatvallst = FeatureValueHelper.calculateFloatRange(featureID, rangeID, floatrange.getMin(), floatrange.getMax(), floatrange.getInc());
+              int scale = FloatFeatureValue.MIN_FLOAT_SCALE;
+              if (floatrange.getScale() != null) {
+                scale = floatrange.getScale().intValue();
+              }
+              final List<FloatFeatureValue> floatvallst = FeatureValueHelper.calculateFloatRange(featureID, rangeID, floatrange.getMin(), floatrange.getMax(), floatrange.getInc(),
+                  scale, xml2ValueObject(floatrange.getRoundingMode()), this.defaultMaxValueRangeSize);
               vo.setType(Feature.VALUE_TYPE_FLOAT);
               vo.addValue(floatvallst);
             }
@@ -287,6 +336,33 @@ public class Xml2VoTransformer implements Transformer {
       LOGGER.trace("xml2ValueObject: xml = {}\n--> vo = {}", xml, vo);
     }
     return vo;
+  }
+
+  /**
+   * @param xml
+   * @return int
+   * @see org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer#xml2ValueObject(org.psikeds.knowledgebase.jaxb.FloatValueRoundingMode)
+   */
+  @Override
+  public int xml2ValueObject(final org.psikeds.knowledgebase.jaxb.FloatValueRoundingMode xml) {
+    return roundingModeStr2Int((xml == null) ? null : xml.value());
+  }
+
+  private int roundingModeStr2Int(final String str) {
+    int mode = this.defaultFloatValueRoundingMode;
+    if (!StringUtils.isEmpty(str)) {
+      if (org.psikeds.knowledgebase.jaxb.FloatValueRoundingMode.MATHEMATICAL.value().equalsIgnoreCase(str)) {
+        mode = FloatFeatureValue.ROUNDING_MATHEMATICAL;
+      }
+      else if (org.psikeds.knowledgebase.jaxb.FloatValueRoundingMode.TRUNCATE.value().equalsIgnoreCase(str)) {
+        mode = FloatFeatureValue.ROUNDING_TRUNCATE;
+      }
+      else if (org.psikeds.knowledgebase.jaxb.FloatValueRoundingMode.EXACT.value().equalsIgnoreCase(str)) {
+        mode = FloatFeatureValue.ROUNDING_EXACT;
+      }
+      LOGGER.trace("roundingModeStr2Int: str = {}  -->  mode = {}", str, mode);
+    }
+    return mode;
   }
 
   /**

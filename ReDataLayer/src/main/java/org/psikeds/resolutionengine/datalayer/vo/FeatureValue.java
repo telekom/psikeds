@@ -100,27 +100,21 @@ public class FeatureValue extends ValueObject implements Serializable {
 
   @JsonIgnore
   public float toFloatValue() {
-    if (!isFloatValue()) {
-      throw new IllegalArgumentException("Not a Float-Value: " + String.valueOf(this.type));
-    }
     try {
       return Float.parseFloat(this.value);
     }
     catch (final Exception ex) {
-      throw new NumberFormatException("Illegal Float-Value: " + String.valueOf(this.value));
+      throw new NumberFormatException("Illegal Float-Value: " + ex.getMessage());
     }
   }
 
   @JsonIgnore
   public long toIntegerValue() {
-    if (!isIntegerValue()) {
-      throw new IllegalArgumentException("Not an Integer-Value: " + String.valueOf(this.type));
-    }
     try {
       return Long.parseLong(this.value);
     }
     catch (final Exception ex) {
-      throw new IllegalArgumentException("Illegal Integer-Value: " + String.valueOf(this.value));
+      throw new NumberFormatException("Illegal Integer-Value: " + ex.getMessage());
     }
   }
 

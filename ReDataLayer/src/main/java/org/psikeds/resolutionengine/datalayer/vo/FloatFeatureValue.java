@@ -37,26 +37,65 @@ public class FloatFeatureValue extends FeatureValue implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  protected BigDecimal floatValue;
-  protected int scale;
+  public static final int ROUNDING_MATHEMATICAL = BigDecimal.ROUND_HALF_UP;
+  public static final int ROUNDING_TRUNCATE = BigDecimal.ROUND_DOWN;
+  public static final int ROUNDING_EXACT = BigDecimal.ROUND_UNNECESSARY; // throws exception if rounding looses information!
+
+  public static final int DEFAULT_ROUNDING_MODE = ROUNDING_MATHEMATICAL;
+  public static final int MIN_FLOAT_SCALE = 0;
+
+  protected BigDecimal decimalValue;
+  protected int scale = MIN_FLOAT_SCALE;
+  protected int roundingMode = DEFAULT_ROUNDING_MODE;
 
   public FloatFeatureValue() {
-    super(null, null, Feature.VALUE_TYPE_FLOAT, null);
+    this(null, null, ROUNDING_MATHEMATICAL);
+  }
+
+  public FloatFeatureValue(final String featureID, final String featureValueID, final int roundingMode) {
+    super(featureID, featureValueID, Feature.VALUE_TYPE_FLOAT, null);
+    this.setRoundingMode(roundingMode);
   }
 
   public FloatFeatureValue(final String featureID, final String featureValueID, final String val) {
-    super(featureID, featureValueID, Feature.VALUE_TYPE_FLOAT, null);
+    this(featureID, featureValueID, val, DEFAULT_ROUNDING_MODE);
+  }
+
+  public FloatFeatureValue(final String featureID, final String featureValueID, final String val, final int roundingMode) {
+    this(featureID, featureValueID, roundingMode);
     this.setValue(val);
   }
 
   public FloatFeatureValue(final String featureID, final String featureValueID, final BigDecimal val) {
-    super(featureID, featureValueID, Feature.VALUE_TYPE_FLOAT, null);
+    this(featureID, featureValueID, val, DEFAULT_ROUNDING_MODE);
+  }
+
+  public FloatFeatureValue(final String featureID, final String featureValueID, final BigDecimal val, final int roundingMode) {
+    this(featureID, featureValueID, roundingMode);
     this.setValue(val);
   }
 
   public FloatFeatureValue(final String featureID, final String featureValueID, final float val, final int scale) {
-    super(featureID, featureValueID, Feature.VALUE_TYPE_FLOAT, null);
+    this(featureID, featureValueID, val, scale, DEFAULT_ROUNDING_MODE);
+  }
+
+  public FloatFeatureValue(final String featureID, final String featureValueID, final float val, final int scale, final int roundingMode) {
+    this(featureID, featureValueID, roundingMode);
     this.setValue(val, scale);
+  }
+
+  public int getRoundingMode() {
+    return this.roundingMode;
+  }
+
+  /**
+   * Rounding Mode as defined in BigDecimal
+   * 
+   * @param roundingMode
+   * @see java.math.BigDecimal
+   */
+  public void setRoundingMode(final int roundingMode) {
+    this.roundingMode = (roundingMode < 0 ? DEFAULT_ROUNDING_MODE : roundingMode);
   }
 
   public int getScale() {
@@ -66,34 +105,36 @@ public class FloatFeatureValue extends FeatureValue implements Serializable {
   public void setScale(final int newScale) {
     if (this.scale != newScale) {
       this.scale = newScale;
-      if ((this.floatValue != null) && (this.scale > 0)) {
-        final BigDecimal newFloatValue = this.floatValue.setScale(this.scale, BigDecimal.ROUND_HALF_UP);
-        this.setValue(newFloatValue); // mathematically round to new scale
+      if ((this.decimalValue != null) && (this.scale > MIN_FLOAT_SCALE)) {
+        final BigDecimal bd = this.decimalValue.setScale(this.scale, this.roundingMode);
+        this.setValue(bd);
       }
     }
   }
+
+  // ----------------------------------------------------------------
 
   /**
    * @see org.psikeds.resolutionengine.datalayer.vo.FeatureValue#getValue()
    */
   @Override
   public String getValue() {
-    if (this.floatValue == null) {
+    if (this.decimalValue == null) {
       // no value, nothing to do
       return null;
     }
-    if (this.scale > 0) {
+    if (this.scale > MIN_FLOAT_SCALE) {
       final StringBuilder formatString = new StringBuilder("0.");
       for (int i = 0; i < this.scale; i++) {
         formatString.append('0');
       }
       // format value according to scale
       final DecimalFormat valueFormat = new DecimalFormat(formatString.toString());
-      final String str = valueFormat.format(this.floatValue);
-      return str.replaceAll(",", "."); // BD cannot handle colons
+      final String str = valueFormat.format(this.decimalValue);
+      return str.replaceAll(",", "."); // BD cannot handle colons :-(
     }
     // no scale --> default string representation
-    return this.floatValue.toString();
+    return this.decimalValue.toString();
   }
 
   /**
@@ -103,7 +144,7 @@ public class FloatFeatureValue extends FeatureValue implements Serializable {
   public void setValue(final String val) {
     BigDecimal bd = null;
     try {
-      bd = new BigDecimal(val.replaceAll(",", ".")); // BD cannot handle colons
+      bd = new BigDecimal(val.replaceAll(",", ".")); // BD cannot handle colons :-(
     }
     catch (final Exception ex) {
       bd = null;
@@ -114,8 +155,8 @@ public class FloatFeatureValue extends FeatureValue implements Serializable {
   @JsonIgnore
   public void setValue(final BigDecimal val) {
     this.value = null; // string represenation of value is never used for float-implementation!
-    this.floatValue = val;
-    this.scale = (this.floatValue == null ? 0 : this.floatValue.scale());
+    this.decimalValue = val;
+    this.scale = (this.decimalValue == null ? MIN_FLOAT_SCALE : this.decimalValue.scale());
   }
 
   @JsonIgnore
@@ -130,14 +171,32 @@ public class FloatFeatureValue extends FeatureValue implements Serializable {
   @Override
   @JsonIgnore
   public float toFloatValue() {
-    if (this.floatValue == null) {
-      throw new IllegalArgumentException("Empty Float-Feature-Value!");
-    }
     try {
-      return this.floatValue.floatValue();
+      return this.decimalValue.floatValue();
     }
     catch (final Exception ex) {
-      throw new NumberFormatException("Illegal Float-Feature-Value: " + ex.getMessage());
+      throw new NumberFormatException("Illegal Float-Value: " + ex.getMessage());
+    }
+  }
+
+  /**
+   * @see org.psikeds.resolutionengine.datalayer.vo.FeatureValue#toIntegerValue()
+   */
+  @Override
+  @JsonIgnore
+  public long toIntegerValue() {
+    return toIntegerValue(this.decimalValue, this.roundingMode);
+  }
+
+  // ----------------------------------------------------------------
+
+  public static long toIntegerValue(final BigDecimal val, final int rounding) {
+    try {
+      final BigDecimal bd = val.setScale(MIN_FLOAT_SCALE, rounding); // no scale, no fraction part
+      return bd.longValue();
+    }
+    catch (final Exception ex) {
+      throw new NumberFormatException("Illegal Integer-Value: " + ex.getMessage());
     }
   }
 }

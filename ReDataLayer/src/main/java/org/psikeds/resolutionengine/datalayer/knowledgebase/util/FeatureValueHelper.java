@@ -34,7 +34,6 @@ import org.psikeds.resolutionengine.datalayer.vo.IntegerFeatureValue;
 public abstract class FeatureValueHelper {
 
   public static final int DEFAULT_RANGE_STEP = 1;
-  public static final int DEFAULT_FLOAT_SCALE = 0;
   public static final int DEFAULT_MAXIMUM_SIZE = 500;
 
   private FeatureValueHelper() {
@@ -141,17 +140,22 @@ public abstract class FeatureValueHelper {
   // ----------------------------------------------------------------
 
   public static List<FloatFeatureValue> calculateFloatRange(final String featureID, final String rangeID, final BigDecimal min, final BigDecimal max, final BigDecimal inc) {
-    return calculateFloatRange(featureID, rangeID, min, max, inc, DEFAULT_MAXIMUM_SIZE);
+    return calculateFloatRange(featureID, rangeID, min, max, inc, FloatFeatureValue.MIN_FLOAT_SCALE, FloatFeatureValue.DEFAULT_ROUNDING_MODE);
   }
 
-  public static List<FloatFeatureValue> calculateFloatRange(final String featureID, final String rangeID, final BigDecimal min, final BigDecimal max, final BigDecimal inc, final int maxSize) {
-    int scale = DEFAULT_FLOAT_SCALE;
+  public static List<FloatFeatureValue> calculateFloatRange(final String featureID, final String rangeID, final BigDecimal min, final BigDecimal max, final BigDecimal inc,
+      final int scale, final int roundingMode) {
+    return calculateFloatRange(featureID, rangeID, min, max, inc, scale, roundingMode, DEFAULT_MAXIMUM_SIZE);
+  }
+
+  public static List<FloatFeatureValue> calculateFloatRange(final String featureID, final String rangeID, final BigDecimal min, final BigDecimal max, final BigDecimal inc,
+      int scale, final int roundingMode, final int maxSize) {
     float finc = (inc == null ? 0.0f : inc.floatValue());
     if (finc == 0.0f) {
       finc = DEFAULT_RANGE_STEP;
     }
-    else {
-      // scale is based on the increment, if specified
+    else if (scale == FloatFeatureValue.MIN_FLOAT_SCALE) {
+      // scale is based on the increment, if not explicitly specified otherwise
       scale = inc.scale();
     }
     final float fmin = (min == null ? 0.0f : min.floatValue());
@@ -166,7 +170,7 @@ public abstract class FeatureValueHelper {
     int count = 1;
     for (float f = fmin; (f <= fmax) && (count <= maxSize); f = f + finc) {
       final String featureValueID = rangeID + "_F" + String.valueOf(count);
-      final FloatFeatureValue ffv = new FloatFeatureValue(featureID, featureValueID, f, scale);
+      final FloatFeatureValue ffv = new FloatFeatureValue(featureID, featureValueID, f, scale, roundingMode);
       lst.add(ffv);
       count++;
     }
@@ -181,5 +185,91 @@ public abstract class FeatureValueHelper {
     }
     // when we generate values for ranges the feature-value-id will always start with the correpsonding range-id
     return (featureId.equals(val.getFeatureID()) && val.getFeatureValueID().startsWith(rangeID));
+  }
+
+  // ----------------------------------------------------------------
+
+  /**
+   * Compares the first FeatureValue with the second one. Returns a
+   * negative number, zero, or a positive number if the Value of
+   * the first Object is less than, equal to, or greater than the
+   * second Object.
+   * 
+   * Note: Different from the Comparable-Implementation of the
+   * FeatureValue-Class itself, this method will just check the Values
+   * and irgnore any IDs or Types!
+   * 
+   */
+  public static float compareTo(final FeatureValue fv1, final FeatureValue fv2) {
+    final String t1 = (fv1 == null ? null : fv1.getType());
+    final String t2 = (fv2 == null ? null : fv2.getType());
+    if (Feature.VALUE_TYPE_FLOAT.equals(t1) && Feature.VALUE_TYPE_FLOAT.equals(t2)) {
+      final float v1 = fv1.toFloatValue();
+      final float v2 = fv2.toFloatValue();
+      return v1 - v2;
+    }
+    else if (Feature.VALUE_TYPE_INTEGER.equals(t1) && Feature.VALUE_TYPE_INTEGER.equals(t2)) {
+      final long v1 = fv1.toIntegerValue();
+      final long v2 = fv2.toIntegerValue();
+      return v1 - v2;
+    }
+    else if (Feature.VALUE_TYPE_FLOAT.equals(t1) && Feature.VALUE_TYPE_INTEGER.equals(t2)) {
+      final float v1 = fv1.toFloatValue();
+      final long v2 = fv2.toIntegerValue();
+      return v1 - v2;
+    }
+    else if (Feature.VALUE_TYPE_INTEGER.equals(t1) && Feature.VALUE_TYPE_FLOAT.equals(t2)) {
+      final long v1 = fv1.toIntegerValue();
+      final float v2 = fv2.toFloatValue();
+      return v1 - v2;
+    }
+    else {
+      final String v1 = (fv1 == null ? null : fv1.getValue());
+      final String v2 = (fv2 == null ? null : fv2.getValue());
+      if ((v1 == null) && (v2 == null)) {
+        return 0.0f;
+      }
+      else if ((v1 == null) && (v2 != null)) {
+        return -1.0f;
+      }
+      else if ((v1 != null) && (v2 == null)) {
+        return 1.0f;
+      }
+      else {
+        return v1.compareTo(v2);
+      }
+    }
+  }
+
+  public static boolean isEqual(final FeatureValue fv1, final FeatureValue fv2) {
+    return !notEqual(fv1, fv2);
+  }
+
+  public static boolean isEqual(final FeatureValue fv1, final FeatureValue fv2, final float tolerance) {
+    return !notEqual(fv1, fv2, tolerance);
+  }
+
+  public static boolean notEqual(final FeatureValue fv1, final FeatureValue fv2) {
+    return notEqual(fv1, fv2, 0.0f); // no tolerance
+  }
+
+  public static boolean notEqual(final FeatureValue fv1, final FeatureValue fv2, final float tolerance) {
+    return (Math.abs(compareTo(fv1, fv2)) > tolerance);
+  }
+
+  public static boolean greaterThan(final FeatureValue fv1, final FeatureValue fv2) {
+    return (compareTo(fv1, fv2) > 0.0f);
+  }
+
+  public static boolean lessThan(final FeatureValue fv1, final FeatureValue fv2) {
+    return greaterThan(fv2, fv1);
+  }
+
+  public static boolean lessOrEqual(final FeatureValue fv1, final FeatureValue fv2) {
+    return !greaterThan(fv1, fv2);
+  }
+
+  public static boolean greaterOrEqual(final FeatureValue fv1, final FeatureValue fv2) {
+    return !lessThan(fv1, fv2);
   }
 }

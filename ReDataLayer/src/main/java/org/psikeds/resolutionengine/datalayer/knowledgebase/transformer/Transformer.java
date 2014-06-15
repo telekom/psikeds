@@ -37,6 +37,8 @@ public interface Transformer {
 
   org.psikeds.resolutionengine.datalayer.vo.Feature xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Sensor xml);
 
+  int xml2ValueObject(final org.psikeds.knowledgebase.jaxb.FloatValueRoundingMode xml);
+
   org.psikeds.resolutionengine.datalayer.vo.Fulfills xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Fulfills xml);
 
   org.psikeds.resolutionengine.datalayer.vo.MetaData xml2ValueObject(final org.psikeds.knowledgebase.jaxb.Meta xml);
