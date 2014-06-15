@@ -184,6 +184,7 @@ public class TreeView extends BaseView {
             if (parent != null) {
               parent.addChild(dc);
             }
+            dc.setLevel(dc.getLevel() - 1); // hack for displaying concepts on the correct level
             lst.add(dc);
             LOGGER.trace("Added C: {}", dc);
           }
