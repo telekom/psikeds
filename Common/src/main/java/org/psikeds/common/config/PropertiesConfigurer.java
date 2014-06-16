@@ -32,15 +32,28 @@ import org.springframework.core.io.Resource;
  */
 public class PropertiesConfigurer extends PropertyPlaceholderConfigurer {
 
-  public static final String PROPERTIES_FILE_ENCODING = "UTF-8";
-  public static final boolean IGNORE_MISSING_PROPERTIES_FILES = false;
-
   private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesConfigurer.class);
 
+  public static final String PROPERTIES_FILE_ENCODING = "UTF-8";
+  public static final boolean IGNORE_MISSING_RESOURCES_AND_PLACEHOLDER = true;
+  public static final int DEFAULT_SYSTEM_PROPERTIES_MODE = PropertyPlaceholderConfigurer.SYSTEM_PROPERTIES_MODE_FALLBACK;
+
   public PropertiesConfigurer() {
+    this(DEFAULT_SYSTEM_PROPERTIES_MODE, IGNORE_MISSING_RESOURCES_AND_PLACEHOLDER, PROPERTIES_FILE_ENCODING);
+  }
+
+  public PropertiesConfigurer(final int systemPropertiesMode, final boolean ignoreMissingResources, final String encoding) {
     super();
-    setIgnoreResourceNotFound(IGNORE_MISSING_PROPERTIES_FILES);
-    setFileEncoding(PROPERTIES_FILE_ENCODING);
+    setSystemPropertiesMode(systemPropertiesMode);
+    setIgnoreResourceNotFound(ignoreMissingResources);
+    setIgnoreUnresolvablePlaceholders(ignoreMissingResources);
+    setFileEncoding(encoding);
+    if (LOGGER.isDebugEnabled()) {
+      final StringBuilder sb = new StringBuilder("Config: System-Properties-Mode = {}\n");
+      sb.append("Ignore missing Resources = {}\n");
+      sb.append("File-Encoding = {}");
+      LOGGER.debug(sb.toString(), systemPropertiesMode, ignoreMissingResources, encoding);
+    }
   }
 
   /**
