@@ -36,7 +36,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <constructor-arg index="0" type="org.psikeds.knowledgebase.xml.KBParser" ref="XMLParser" />
     <constructor-arg index="1" type="org.psikeds.resolutionengine.datalayer.knowledgebase.transformer.Transformer" ref="XmlTransformer" />
     <constructor-arg index="2" type="org.psikeds.knowledgebase.xml.KBValidator" ref="XSDValidator" />  <!-- defined in knowledgebase-xml-xsd-context.xml -->
-    <constructor-arg index="3" type="java.util.List" ref="ValidatorChain" />  <!-- defined in knowledgebase-validators-context.xml -->
+    <constructor-arg index="3" type="java.util.List" ref="${resolutionengine.knowledgebase.validators.name}" />  <!-- defined in resolutionengine.properties and knowledgebase-validators-context.xml -->
     <constructor-arg index="4" value="${resolutionengine.knowledgebase.validate}" />
   </bean>
 

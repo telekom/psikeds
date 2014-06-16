@@ -31,7 +31,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
   <bean id="RuleValidator" class="org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.RuleValidator" />
   <bean id="RelationValidator" class="org.psikeds.resolutionengine.datalayer.knowledgebase.validator.impl.RelationValidator" />
 
-  <util:list id="ValidatorChain">
+  <util:list id="AllValidators">
     <ref bean="FeatureValidator" />
     <ref bean="ConceptValidator" />
     <ref bean="FulfillsValidator" />
