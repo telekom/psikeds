@@ -203,11 +203,12 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
   @Override
   public ResolutionResponse init() {
     try {
-      LOGGER.trace("--> init()");
-      return current(null);  // init is just current without session or decission
+      LOGGER.debug("--> init()");
+      // init is an empty request without knowledge or decission, creating a new session
+      return handleRequest(null, true);
     }
     finally {
-      LOGGER.trace("<-- init()");
+      LOGGER.debug("<-- init()");
     }
   }
 
@@ -219,12 +220,13 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
   @Override
   public ResolutionResponse current(final String sessionID) {
     try {
-      LOGGER.trace("--> current(); sessionID = {}", sessionID);
+      LOGGER.debug("--> current()");
+      // current is a request with just a sessionid and without any knowledge or decissions
       final ResolutionRequest req = (StringUtils.isEmpty(sessionID) ? null : new ResolutionRequest(sessionID));
-      return select(req);  // current is just select without any decissions
+      return handleRequest(req, false);
     }
     finally {
-      LOGGER.trace("<-- current()");
+      LOGGER.debug("<-- current()");
     }
   }
 
@@ -235,18 +237,51 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
    */
   @Override
   public ResolutionResponse select(final ResolutionRequest req) {
+    try {
+      LOGGER.debug("--> select()");
+      // resolve request and keep current session
+      return handleRequest(req, false);
+    }
+    finally {
+      LOGGER.debug("<-- select()");
+    }
+  }
+
+  /**
+   * @param req
+   * @return ResolutionResponse
+   * @see org.psikeds.resolutionengine.interfaces.services.ResolutionService#predict(org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest)
+   */
+  @Override
+  public ResolutionResponse predict(final ResolutionRequest req) {
+    try {
+      LOGGER.debug("--> predict()");
+      // predict result by resolving request within a new session
+      return handleRequest(req, true);
+    }
+    finally {
+      LOGGER.debug("<-- predict()");
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  private ResolutionResponse handleRequest(final ResolutionRequest req, final boolean enforceSeparateSession) {
     ResolutionResponse resp = null;
     Metadata metadata = null;
-    String sessionID = null;
+    String oldSessionID = null;
+    String newSessionID = null;
     boolean initialKnowledge = false;
     boolean freshSession = false;
     try {
-      LOGGER.trace("--> select(); req = {}", req);
+      LOGGER.trace("--> handleRequest(); enforceSeparateSession = {}\nResolutionRequest = {}", enforceSeparateSession, req);
+
+      // Step 0: check preconditions
       if (this.checkValidityAtRuntime) {
         checkValidity();
       }
 
-      // Step 1: get data; either from request or cache or kb
+      // Step 1: get metadata; either from request or kb
       metadata = (req == null ? null : req.getMetadata());
       if (metadata == null) {
         metadata = this.trans.valueObject2Pojo(this.kb.getMetaData());
@@ -260,28 +295,43 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
           LOGGER.debug("Using Metadata supplied by Client.");
         }
       }
-      sessionID = (req == null ? null : req.getSessionID());
-      if (StringUtils.isEmpty(sessionID)) {
+
+      // Step 2: get or create session
+      oldSessionID = (req == null ? null : req.getSessionID());
+      if (StringUtils.isEmpty(oldSessionID)) {
+        // no session, create new one
         freshSession = true;
-        sessionID = this.gen.getNextId();
-        this.cache.removeSession(sessionID); // just to be sure!
-        LOGGER.info("Created new Session: {}", sessionID);
+        newSessionID = oldSessionID = this.gen.getNextId();
+        LOGGER.info("Created new Session: {}", newSessionID);
+      }
+      else if (enforceSeparateSession) {
+        // use data from old session but create a new one (for prediction)
+        freshSession = true;
+        newSessionID = this.gen.getNextId();
+        LOGGER.info("Created a separate Session: {}  -->  {}", oldSessionID, newSessionID);
       }
       else {
-        LOGGER.debug("Resuming old Session: {}", sessionID);
+        // just resume current session
+        newSessionID = oldSessionID;
+        LOGGER.debug("Resuming existing Session: {}", newSessionID);
       }
+      if (freshSession) {
+        this.cache.removeSession(newSessionID); // just to be sure!
+      }
+
+      // Step 3: get knowledge; either from request or cache or kb
       Knowledge knowledge = (req == null ? null : req.getKnowledge());
       if (knowledge == null) {
-        knowledge = (Knowledge) this.cache.getObject(sessionID, SESS_KEY_KNOWLEDGE);
+        knowledge = (Knowledge) this.cache.getObject(oldSessionID, SESS_KEY_KNOWLEDGE);
         if (knowledge == null) {
           initialKnowledge = true;
-          this.cache.removeSession(sessionID); // new knowledge, clean state
-          knowledge = createInitialKnowledge(metadata, sessionID);
+          this.cache.removeSession(oldSessionID); // new knowledge, clean state
+          knowledge = createInitialKnowledge(metadata);
           if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("Created new initial Knowledge for SessionID {}:\n{}", sessionID, knowledge);
+            LOGGER.trace("Created new initial Knowledge for SessionID {}:\n{}", oldSessionID, knowledge);
           }
           else {
-            LOGGER.info("Created new initial Knowledge for SessionID {}.", sessionID);
+            LOGGER.info("Created new initial Knowledge for SessionID {}.", oldSessionID);
           }
         }
         else {
@@ -302,9 +352,21 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
         }
       }
       // whatever way we got our Knowledge, update Cache
-      this.cache.saveObject(sessionID, SESS_KEY_KNOWLEDGE, knowledge);
+      this.cache.saveObject(newSessionID, SESS_KEY_KNOWLEDGE, knowledge);
 
-      // Step 2: resolve Knowledge based on Decissions
+      // Step 4: get or create raeh
+      RulesAndEventsHandler raeh = (RulesAndEventsHandler) this.cache.getObject(oldSessionID, SESS_KEY_RULES_AND_EVENTS);
+      if (raeh == null) {
+        raeh = RulesAndEventsHandler.init(getKnowledgeBase(), knowledge);
+        LOGGER.trace("Created new RAEH based on Session {}:\n{}", oldSessionID, raeh);
+      }
+      else if (LOGGER.isTraceEnabled()) {
+        LOGGER.trace("Got existing RAEH from Cache for Session {}:\n{}", oldSessionID, raeh);
+      }
+      // update cache
+      this.cache.saveObject(newSessionID, SESS_KEY_RULES_AND_EVENTS, raeh);
+
+      // Step 5: resolve Knowledge based on Decission(s)
       final Decissions decissions = (req == null ? null : req.getDecissions());
       if (!initialKnowledge || this.resolveInitialKnowledge) {
         // Sometimes there might be some automatic Resolutions also for
@@ -313,30 +375,32 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
         // However this automatic Resolution might not be desired, e.g.
         // if Root-Purposes are just Alternatives and not all mandatory.
         // Therefore this Functionality is configurable!
-        knowledge = resolveDecissions(knowledge, decissions, metadata, sessionID);
+        knowledge = resolveDecissions(knowledge, decissions, metadata, raeh);
       }
 
-      // Step 3: create Response-Object
-      resp = new ResolutionResponse(sessionID, metadata, knowledge);
+      // Step 6: create Response-Object
+      resp = new ResolutionResponse(newSessionID, metadata, knowledge);
       if (resp.isResolved()) {
         // done, cleanup session
-        this.cache.removeSession(sessionID);
-        LOGGER.info("Resolution {} finished.", sessionID);
+        this.cache.removeSession(newSessionID);
+        LOGGER.info("Resolution {} finished.", newSessionID);
       }
       else {
         // cache current state of resolution for next request
-        this.cache.saveObject(sessionID, SESS_KEY_KNOWLEDGE, knowledge);
-        LOGGER.debug("Resolved next Step for SessionID {}", sessionID);
+        this.cache.saveObject(newSessionID, SESS_KEY_KNOWLEDGE, knowledge);
+        this.cache.saveObject(newSessionID, SESS_KEY_RULES_AND_EVENTS, raeh);
+        LOGGER.debug("Resolved next Step for Session {}", newSessionID);
       }
     }
     catch (final Exception ex) {
-      LOGGER.warn("Could not resolve Knowledge!", ex);
+      LOGGER.warn("Could not handle Request: " + ex.getMessage(), ex);
       final Errors errors = new Errors();
       errors.add(new ErrorMessage(ex));
-      resp = new ResolutionResponse(sessionID, metadata, errors);
+      resp = new ResolutionResponse(newSessionID, metadata, errors);
     }
     finally {
-      LOGGER.trace("<-- select(); freshSession = {}; initialKnowledge = {}; resp = {}", freshSession, initialKnowledge, resp);
+      LOGGER.trace("<-- handleRequest(); enforceSeparateSession = {}; freshSession = {}; initialKnowledge = {}\noldSessionID = {}; newSessionID = {}\nResolutionResponse = {}", enforceSeparateSession,
+          freshSession, initialKnowledge, oldSessionID, newSessionID, resp);
     }
     return resp;
   }
@@ -351,7 +415,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     }
   }
 
-  private Knowledge createInitialKnowledge(final Metadata metadata, final String sessionID) {
+  private Knowledge createInitialKnowledge(final Metadata metadata) {
     try {
       LOGGER.trace("--> createInitialKnowledge()");
       // initial knowledge consists of root-purposes and their
@@ -382,21 +446,22 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     }
   }
 
-  // ----------------------------------------------------------------
-
-  private Knowledge resolveDecissions(Knowledge knowledge, final List<Decission> decissions, final Metadata metadata, final String sessionID) {
+  private Knowledge resolveDecissions(Knowledge knowledge, final List<Decission> decissions, final Metadata metadata, final RulesAndEventsHandler raeh) {
     try {
       LOGGER.trace("--> resolveDecissions()");
       if (knowledge == null) {
         throw new ResolutionException("Cannot resolve Decissions, Knowledge is NULL!!!");
       }
+      if (raeh == null) {
+        throw new ResolutionException("Cannot resolve Decissions, RulesAndEventsHandler is NULL!!!");
+      }
       if ((decissions == null) || decissions.isEmpty()) {
-        knowledge = autoResolve(knowledge, metadata, sessionID);
+        knowledge = autoResolve(knowledge, metadata, raeh);
       }
       else {
         LOGGER.debug("Total of {} Decission(s)", decissions.size());
         for (final Decission decission : decissions) {
-          knowledge = resolve(knowledge, decission, metadata, sessionID);
+          knowledge = resolve(knowledge, decission, metadata, raeh);
         }
       }
       return knowledge;
@@ -406,27 +471,21 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     }
   }
 
-  private Knowledge autoResolve(final Knowledge knowledge, final Metadata metadata, final String sessionID) {
+  private Knowledge autoResolve(final Knowledge knowledge, final Metadata metadata, final RulesAndEventsHandler raeh) {
     LOGGER.debug("Auto-Resolution!");
-    return resolve(knowledge, null, metadata, sessionID);
+    return resolve(knowledge, null, metadata, raeh);
   }
 
-  private Knowledge resolve(Knowledge knowledge, final Decission decission, final Metadata metadata, final String sessionID) {
+  private Knowledge resolve(Knowledge knowledge, final Decission decission, final Metadata metadata, final RulesAndEventsHandler raeh) {
     boolean ok = false;
     try {
-      LOGGER.trace("--> resolve(); S = {}; D = {}", sessionID, decission);
+      LOGGER.trace("--> resolve(); Decission = {}", decission);
       knowledge.setStable(true);
-
-      // Get all Rules and Events relevant for this Session
-      final RulesAndEventsHandler raeh = getRulesAndEvents(knowledge, metadata, sessionID);
 
       // Invoke every Resolver in Chain
       for (final Resolver res : getResolvers()) {
         knowledge = res.resolve(knowledge, decission, raeh, metadata);
       }
-
-      // Cache Rules and Events for later reuse
-      saveRulesAndEvents(sessionID, raeh);
 
       if (!knowledge.isStable()) {
         // Some Resolver signaled that the Knowledge is not stable yet, i.e.
@@ -434,7 +493,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
         // was applied or Choices with only one Variant were auto-completed.
         // Note: We do not supply any Decission because this was triggered
         // automatically and not by a Client-Interaction.
-        knowledge = autoResolve(knowledge, metadata, sessionID);
+        knowledge = autoResolve(knowledge, metadata, raeh);
       }
 
       // done
@@ -442,26 +501,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
       return knowledge;
     }
     finally {
-      LOGGER.trace("<-- resolve(); " + (ok ? "OK." : "ERROR!") + "\nS = {}\nKnowledge = {}", sessionID, knowledge);
+      LOGGER.trace("<-- resolve(); " + (ok ? "OK." : "ERROR!") + "\nKnowledge = {}", knowledge);
     }
-  }
-
-  // ----------------------------------------------------------------
-
-  private RulesAndEventsHandler getRulesAndEvents(final Knowledge knowledge, final Metadata metadata, final String sessionID) {
-    RulesAndEventsHandler raeh = (RulesAndEventsHandler) this.cache.getObject(sessionID, SESS_KEY_RULES_AND_EVENTS);
-    if (raeh == null) {
-      raeh = RulesAndEventsHandler.init(getKnowledgeBase(), knowledge);
-      saveRulesAndEvents(sessionID, raeh);
-      LOGGER.trace("Created new RAEH for {}:\n{}", sessionID, raeh);
-    }
-    else if (LOGGER.isTraceEnabled()) {
-      LOGGER.trace("Got existing RAEH from Cache for {}:\n{}", sessionID, raeh);
-    }
-    return raeh;
-  }
-
-  private void saveRulesAndEvents(final String sessionID, final RulesAndEventsHandler raeh) {
-    this.cache.saveObject(sessionID, SESS_KEY_RULES_AND_EVENTS, raeh);
   }
 }

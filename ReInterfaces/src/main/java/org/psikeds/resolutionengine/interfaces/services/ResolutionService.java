@@ -62,4 +62,16 @@ public interface ResolutionService {
    * @return ResolutionResponse
    */
   ResolutionResponse select(ResolutionRequest req);
+
+  /**
+   * Predict what the Result of a Decission would. Response is identically to
+   * the corresponding Select-Request but the State on the serverside is not
+   * changed.
+   * 
+   * Returns the Knowledge that would be resulting from this Decission.
+   * 
+   * @param req
+   * @return ResolutionResponse
+   */
+  ResolutionResponse predict(ResolutionRequest req);
 }
