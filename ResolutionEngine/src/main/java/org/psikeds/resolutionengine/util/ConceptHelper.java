@@ -20,6 +20,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.commons.lang.StringUtils;
+
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.interfaces.pojos.Concept;
 import org.psikeds.resolutionengine.interfaces.pojos.ConceptChoice;
@@ -55,6 +57,9 @@ public class ConceptHelper {
     final String conceptId = (con == null ? null : con.getConceptID());
     try {
       LOGGER.trace("--> checkConcept(); CON = {}\nKE = {}", conceptId, ke);
+      if (StringUtils.isEmpty(conceptId)) {
+        throw new IllegalArgumentException("No Concept/Concept-ID!");
+      }
       final FeatureValues kevals = ke.getFeatures();
       final FeatureValues convals = con.getValues();
       if (kevals.containsAll(convals)) {

@@ -27,8 +27,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.datalayer.vo.Event;
 import org.psikeds.resolutionengine.interfaces.pojos.Decission;
-import org.psikeds.resolutionengine.interfaces.pojos.FeatureValue;
-import org.psikeds.resolutionengine.interfaces.pojos.FeatureValues;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
 import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntities;
 import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity;
@@ -43,6 +41,7 @@ import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
 import org.psikeds.resolutionengine.transformer.Transformer;
 import org.psikeds.resolutionengine.transformer.impl.Vo2PojoTransformer;
 import org.psikeds.resolutionengine.util.ConceptHelper;
+import org.psikeds.resolutionengine.util.FeatureValueHelper;
 import org.psikeds.resolutionengine.util.KnowledgeHelper;
 
 /**
@@ -352,17 +351,24 @@ public class EventEvaluator implements InitializingBean, Resolver {
     try {
       LOGGER.trace("--> checkTrigger(); E = {}; TID = {}; TYP = {}; NOT = {}; VAR = {}", eid, tid, type, notEvent, isVariant);
       if (isVariant) {
-        // current/last element of context path was a variant, so triger could be a feature-value or a concept
+        // current/last element of context path was a variant, so trigger could be a feature-value or a concept
         if (Event.TRIGGER_TYPE_FEATURE_VALUE.equals(type)) {
-          final FeatureValues fvlst = (ke == null ? null : ke.getFeatures());
-          if ((fvlst != null) && !fvlst.isEmpty()) {
-            for (final FeatureValue fv : fvlst) {
-              if (tid.equals(fv.getFeatureValueID())) {
-                LOGGER.debug("Found matching Feature-Value: {}", fv);
-                matching = true;
-                undecided = false;
-              }
-            }
+          final String fid = tid;
+          final String ret = FeatureValueHelper.checkFeatureValue(this.kb, this.trans, ke, fid);
+          if (FeatureValueHelper.RET_FV_ASSIGNED.equalsIgnoreCase(ret)) {
+            LOGGER.debug("Found matching Feature-Value: {}", fid);
+            matching = true;
+            undecided = false;
+          }
+          else if (FeatureValueHelper.RET_FV_NOT_POSSIBLE.equalsIgnoreCase(ret)) {
+            LOGGER.debug("Feature-Value {} is not possible any more!", fid);
+            matching = false;
+            undecided = false;
+          }
+          else {
+            LOGGER.debug("Feature-Value {} is still undecided, i.e. not assigned yet but still possible.", fid);
+            matching = false;
+            undecided = true;
           }
         }
         else if (Event.TRIGGER_TYPE_CONCEPT.equals(type)) {
@@ -370,7 +376,6 @@ public class EventEvaluator implements InitializingBean, Resolver {
           final String ret = ConceptHelper.checkConcept(this.kb, this.trans, ke, cid);
           if (ConceptHelper.RET_CONCEPT_FULFILLED.equals(ret)) {
             LOGGER.debug("Found matching Concept: {}", cid);
-            triggerEvent(e, raeh, metadata);
             matching = true;
             undecided = false;
           }
