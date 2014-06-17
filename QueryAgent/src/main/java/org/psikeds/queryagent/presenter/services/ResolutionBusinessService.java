@@ -29,11 +29,12 @@ import org.psikeds.queryagent.transformer.impl.Re2QaTransformer;
  */
 public class ResolutionBusinessService implements ResolutionService {
 
+  private static final Transformer DEFAULT_TRANSFORMER = new Re2QaTransformer();
   private ResolutionEngineClient client;
   private Transformer trans;
 
   public ResolutionBusinessService() {
-    this(null, null);
+    this(null, DEFAULT_TRANSFORMER);
   }
 
   public ResolutionBusinessService(final ResolutionEngineClient client, final Transformer trans) {
@@ -51,7 +52,7 @@ public class ResolutionBusinessService implements ResolutionService {
 
   public Transformer getTransformer() {
     if (this.trans == null) {
-      this.trans = new Re2QaTransformer();
+      this.trans = DEFAULT_TRANSFORMER;
     }
     return this.trans;
   }
@@ -88,5 +89,16 @@ public class ResolutionBusinessService implements ResolutionService {
   @Override
   public ResolutionResponse select(final ResolutionRequest req) {
     return getTransformer().re2qa(getClient().invokeSelectService(getTransformer().qa2re(req)));
+  }
+
+  /**
+   * @param req
+   *          ResolutionRequest
+   * @return ResolutionResponse
+   * @see org.psikeds.queryagent.interfaces.presenter.services.ResolutionService#predict(org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionRequest)
+   */
+  @Override
+  public ResolutionResponse predict(final ResolutionRequest req) {
+    return getTransformer().re2qa(getClient().invokePredictionService(getTransformer().qa2re(req)));
   }
 }

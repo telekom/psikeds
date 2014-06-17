@@ -30,4 +30,6 @@ public interface ResolutionEngineClient {
   ResolutionResponse invokeCurrentService(String sessionID);
 
   ResolutionResponse invokeSelectService(ResolutionRequest req);
+
+  ResolutionResponse invokePredictionService(ResolutionRequest req);
 }

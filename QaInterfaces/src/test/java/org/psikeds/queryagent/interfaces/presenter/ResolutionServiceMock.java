@@ -191,4 +191,14 @@ public class ResolutionServiceMock implements ResolutionService {
     }
     return resp;
   }
+
+  /**
+   * @param req
+   * @return ResolutionResponse
+   * @see org.psikeds.queryagent.interfaces.presenter.services.ResolutionService#predict(org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest)
+   */
+  @Override
+  public ResolutionResponse predict(final ResolutionRequest req) {
+    return select(req);
+  }
 }

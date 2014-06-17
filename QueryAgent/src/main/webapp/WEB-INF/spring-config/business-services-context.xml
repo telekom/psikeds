@@ -29,10 +29,4 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <constructor-arg index="1" type="org.psikeds.queryagent.transformer.Transformer" ref="Re2QaTransformer" />
   </bean>
 
-  <!-- If you want to test the Interface/GUI of the QA without actually invoking
-       the real RE, just enable the following Bean and disable the one above. -->
-  <!-- 
-  <bean id="resolutionBusinessService" scope="singleton" class="org.psikeds.queryagent.presenter.services.ResolutionMockService" />
-  -->
-
 </beans>

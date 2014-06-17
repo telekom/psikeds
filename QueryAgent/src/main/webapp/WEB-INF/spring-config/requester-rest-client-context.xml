@@ -22,7 +22,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
-  <util:list id="allProviders">
+  <util:list id="AllProviders">
     <ref bean="jsonProvider" />  <!-- defined in providers-context.xml -->
     <ref bean="xmlProvider" />
   </util:list>
@@ -30,18 +30,18 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
   <!-- Factory caching/reusing WebClients for every URL -->
   <!--
   <bean id="webClientCache" class="org.psikeds.queryagent.requester.client.impl.WebClientCache">
-    <constructor-arg index="0" type="java.lang.String" value="${resolutionengine.rest.cache.max.clients}" />
+    <constructor-arg index="0" type="java.lang.String" value="${queryagent.client.cache.max.clients}" />
   </bean>
 
   <bean id="webClientFactory" class="org.psikeds.queryagent.requester.client.impl.WebClientFactoryImpl">
    <constructor-arg index="0" ref="webClientCache" />
-   <constructor-arg index="1" ref="allProviders" />
+   <constructor-arg index="1" ref="${queryagent.client.providers.list.name}" />
   </bean>
   -->
 
   <!-- Factory without WebClient-Cache -->
   <bean id="webClientFactory" class="org.psikeds.queryagent.requester.client.impl.WebClientFactoryImpl">
-   <constructor-arg index="0" ref="allProviders" />
+   <constructor-arg index="0" ref="${queryagent.client.providers.list.name}" />  <!-- defined in queryagent.properties -->
   </bean>
 
   <bean id="resolutionEngineClient" class="org.psikeds.queryagent.requester.client.impl.ResolutionEngineClientRestImpl">
@@ -52,6 +52,8 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <constructor-arg index="4" type="java.lang.String" value="${resolutionengine.rest.current.method}" />
     <constructor-arg index="5" type="java.lang.String" value="${resolutionengine.rest.select.url}" />
     <constructor-arg index="6" type="java.lang.String" value="${resolutionengine.rest.select.method}" />
+    <constructor-arg index="7" type="java.lang.String" value="${resolutionengine.rest.predict.url}" />
+    <constructor-arg index="8" type="java.lang.String" value="${resolutionengine.rest.predict.method}" />
   </bean>
 
 </beans>

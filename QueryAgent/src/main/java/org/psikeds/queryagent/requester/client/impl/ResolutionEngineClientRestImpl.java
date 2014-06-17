@@ -42,10 +42,12 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
   public static final String DEFAULT_INIT_SERVICE_SUB_CTX = "resolution/init";
   public static final String DEFAULT_CURRENT_SERVICE_SUB_CTX = "resolution/current";
   public static final String DEFAULT_SELECT_SERVICE_SUB_CTX = "resolution/select";
+  public static final String DEFAULT_PREDICT_SERVICE_SUB_CTX = "resolution/predict";
 
   public static final String DEFAULT_INIT_SERVICE_METHOD = "GET";
   public static final String DEFAULT_CURRENT_SERVICE_METHOD = "GET";
   public static final String DEFAULT_SELECT_SERVICE_METHOD = "POST";
+  public static final String DEFAULT_PREDICT_SERVICE_METHOD = "POST";
 
   private String initServiceUrl;
   private String initServiceMethod;
@@ -53,6 +55,8 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
   private String currentServiceMethod;
   private String selectServiceUrl;
   private String selectServiceMethod;
+  private String predictServiceUrl;
+  private String predictServiceMethod;
 
   public ResolutionEngineClientRestImpl() {
     this(null);
@@ -66,21 +70,24 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
     this(clientFactory,
         reBaseUrl + DEFAULT_INIT_SERVICE_SUB_CTX, DEFAULT_INIT_SERVICE_METHOD,
         reBaseUrl + DEFAULT_CURRENT_SERVICE_SUB_CTX, DEFAULT_CURRENT_SERVICE_METHOD,
-        reBaseUrl + DEFAULT_SELECT_SERVICE_SUB_CTX, DEFAULT_SELECT_SERVICE_METHOD);
+        reBaseUrl + DEFAULT_SELECT_SERVICE_SUB_CTX, DEFAULT_SELECT_SERVICE_METHOD,
+        reBaseUrl + DEFAULT_PREDICT_SERVICE_SUB_CTX, DEFAULT_PREDICT_SERVICE_METHOD);
   }
 
   public ResolutionEngineClientRestImpl(
       final String initServiceUrl, final String initServiceMethod,
       final String currentServiceUrl, final String currentServiceMethod,
-      final String selectServiceUrl, final String selectServiceMethod) {
-    this(null, initServiceUrl, initServiceMethod, currentServiceUrl, selectServiceUrl, currentServiceMethod, selectServiceMethod);
+      final String selectServiceUrl, final String selectServiceMethod,
+      final String predictServiceUrl, final String predictServiceMethod) {
+    this(null, initServiceUrl, initServiceMethod, currentServiceUrl, selectServiceUrl, currentServiceMethod, selectServiceMethod, predictServiceUrl, predictServiceMethod);
   }
 
   public ResolutionEngineClientRestImpl(
       final WebClientFactory clientFactory,
       final String initServiceUrl, final String initServiceMethod,
       final String currentServiceUrl, final String currentServiceMethod,
-      final String selectServiceUrl, final String selectServiceMethod) {
+      final String selectServiceUrl, final String selectServiceMethod,
+      final String predictServiceUrl, final String predictServiceMethod) {
     super(clientFactory);
     this.initServiceUrl = initServiceUrl;
     this.initServiceMethod = initServiceMethod;
@@ -88,6 +95,8 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
     this.currentServiceMethod = currentServiceMethod;
     this.selectServiceUrl = selectServiceUrl;
     this.selectServiceMethod = selectServiceMethod;
+    this.predictServiceUrl = predictServiceUrl;
+    this.predictServiceMethod = predictServiceMethod;
   }
 
   // ----------------------------------------------------------------
@@ -138,6 +147,22 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
 
   public void setSelectServiceMethod(final String selectServiceMethod) {
     this.selectServiceMethod = selectServiceMethod;
+  }
+
+  public String getPredictServiceUrl() {
+    return this.predictServiceUrl;
+  }
+
+  public void setPredictServiceUrl(final String predictServiceUrl) {
+    this.predictServiceUrl = predictServiceUrl;
+  }
+
+  public String getPredictServiceMethod() {
+    return this.predictServiceMethod;
+  }
+
+  public void setPredictServiceMethod(final String predictServiceMethod) {
+    this.predictServiceMethod = predictServiceMethod;
   }
 
   // ----------------------------------------------------------------
@@ -214,6 +239,32 @@ public class ResolutionEngineClientRestImpl extends AbstractBaseClient implement
       rr = createErrorResponse(ex);
     }
     LOGGER.trace("<-- invokeSelectService( ); Response = {}", rr);
+    return rr;
+  }
+
+  /**
+   * @param req
+   *          ResolutionRequest
+   * @return ResolutionResponse
+   * @see org.psikeds.queryagent.requester.client.ResolutionEngineClient#invokePredictionService(org.psikeds.resolutionengine.interfaces.pojos.ResolutionRequest)
+   */
+  @Override
+  public ResolutionResponse invokePredictionService(final ResolutionRequest req) {
+    ResolutionResponse rr = null;
+    try {
+      LOGGER.trace("--> invokePredictionService( {} )", req);
+      final Response resp = invokeService(this.predictServiceUrl, this.predictServiceMethod, req, ResolutionRequest.class);
+      if (isError(resp)) {
+        rr = createErrorResponse(resp);
+      }
+      else {
+        rr = getContent(resp, ResolutionResponse.class);
+      }
+    }
+    catch (final Exception ex) {
+      rr = createErrorResponse(ex);
+    }
+    LOGGER.trace("<-- invokePredictionService( ); Response = {}", rr);
     return rr;
   }
 
