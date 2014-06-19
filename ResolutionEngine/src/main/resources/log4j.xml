@@ -72,6 +72,10 @@
     <priority value="DEBUG" />
   </category>
 
+  <category name="org.psikeds.resolutionengine.rules">
+    <priority value="DEBUG" />
+  </category>
+
   <category name="org.psikeds.resolutionengine.services">
     <priority value="DEBUG" />
   </category>
@@ -90,6 +94,10 @@
   </category>
 
   <category name="org.psikeds.resolutionengine.resolver.impl.RulesEvaluator">
+    <priority value="TRACE" />
+  </category>
+
+  <category name="org.psikeds.resolutionengine.resolver.impl.RelationEvaluator">
     <priority value="TRACE" />
   </category>
 -->
