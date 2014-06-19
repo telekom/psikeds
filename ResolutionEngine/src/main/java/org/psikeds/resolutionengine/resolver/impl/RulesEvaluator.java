@@ -176,8 +176,6 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       if ((knowledge == null) || (raeh == null)) {
         throw new ResolutionException("Knowledge or RulesAndEventsHandler missing!");
       }
-      // Knowledge is clean so far
-      raeh.setKnowledgeDirty(false);
       // Check Rules, i.e. apply or expire Rules depending on their Context, Premise or Conclusion
       stable = checkRules(knowledge, raeh, metadata);
       if (!stable) {
@@ -620,7 +618,6 @@ public class RulesEvaluator implements InitializingBean, Resolver {
         LOGGER.debug("TRIGGERED: {}", r.getRuleID());
       }
       raeh.setTriggered(r);
-      raeh.setKnowledgeDirty(true);
       if ((metadata != null) && LOGGER.isInfoEnabled()) {
         final String key = "R_" + r.getRuleID() + suffix;
         final String msg = String.valueOf(r);

@@ -480,13 +480,12 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     boolean ok = false;
     try {
       LOGGER.trace("--> resolve(); Decission = {}", decission);
+      // in the beginning knowledge is clean/stable
       knowledge.setStable(true);
-
       // Invoke every Resolver in Chain
       for (final Resolver res : getResolvers()) {
         knowledge = res.resolve(knowledge, decission, raeh, metadata);
       }
-
       if (!knowledge.isStable()) {
         // Some Resolver signaled that the Knowledge is not stable yet, i.e.
         // that it must be re-resolved again. This happens e.g. after a Rule
@@ -495,7 +494,6 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
         // automatically and not by a Client-Interaction.
         knowledge = autoResolve(knowledge, metadata, raeh);
       }
-
       // done
       ok = true;
       return knowledge;

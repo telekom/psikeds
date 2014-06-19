@@ -62,8 +62,6 @@ public class RulesAndEventsHandler implements Serializable {
   private final RelationStack activeRelations;
   private final RelationStack obsoleteRelations;
 
-  private boolean knowledgeDirty;
-
   private RulesAndEventsHandler(final List<Event> relevantEvents, final List<Rule> relevantRules, final List<Relation> activeRelations) {
     this(relevantEvents, MAX_NUM_EVENTS, relevantRules, MAX_NUM_RULES, activeRelations, MAX_NUM_RELATIONS);
   }
@@ -80,15 +78,6 @@ public class RulesAndEventsHandler implements Serializable {
     this.obsoleteRelations = new RelationStack(maxRelations);
     this.activeRelations = new RelationStack(maxRelations);
     this.activeRelations.setRelations(activeRelations);
-    this.knowledgeDirty = false;
-  }
-
-  public boolean isKnowledgeDirty() {
-    return this.knowledgeDirty;
-  }
-
-  public void setKnowledgeDirty(final boolean knowledgeDirty) {
-    this.knowledgeDirty = knowledgeDirty;
   }
 
   // ----------------------------------------------------------------
@@ -171,6 +160,14 @@ public class RulesAndEventsHandler implements Serializable {
 
   public void addActiveRelations(final Collection<? extends Relation> rels) {
     this.activeRelations.addRelations(rels);
+  }
+
+  public boolean isActive(final Relation r) {
+    return this.activeRelations.containsRelation(r);
+  }
+
+  public boolean isActive(final String rid) {
+    return this.activeRelations.containsRelation(rid);
   }
 
   public Relation setObsolete(final Relation r) {
@@ -282,14 +279,6 @@ public class RulesAndEventsHandler implements Serializable {
     if (sb != null) {
       if (verbose) {
         sb.append(toString());
-      }
-      if (isKnowledgeDirty()) {
-        sb.append("State of Knowledge is dirty.\n");
-      }
-      else {
-        sb.append("Knowledge is stable.\n");
-      }
-      if (verbose) {
         sb.append("------------------------------------------------------------\n");
       }
       dumpEvents(sb, verbose);
