@@ -48,9 +48,13 @@ import org.psikeds.resolutionengine.transformer.Transformer;
  * @author marco@juliano.de
  * 
  */
-public class ChoicesHelper {
+public abstract class ChoicesHelper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ChoicesHelper.class);
+
+  private ChoicesHelper() {
+    // prevent instantiation
+  }
 
   // ----------------------------------------------------------------
 

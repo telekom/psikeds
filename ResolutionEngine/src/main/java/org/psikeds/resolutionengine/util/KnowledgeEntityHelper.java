@@ -36,9 +36,13 @@ import org.psikeds.resolutionengine.transformer.Transformer;
  * @author marco@juliano.de
  * 
  */
-public class KnowledgeEntityHelper {
+public abstract class KnowledgeEntityHelper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeEntityHelper.class);
+
+  private KnowledgeEntityHelper() {
+    // prevent instantiation
+  }
 
   // ----------------------------------------------------------------
 

@@ -30,9 +30,15 @@ import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity;
  * @author marco@juliano.de
  * 
  */
-public class KnowledgeHelper {
+public abstract class KnowledgeHelper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(KnowledgeHelper.class);
+
+  private KnowledgeHelper() {
+    // prevent instantiation
+  }
+
+  // ----------------------------------------------------------------
 
   // In a regular Tree each Variant is used just once. However in a general
   // Knowledge-Graph a Variant could be (re)used several times for different
@@ -40,39 +46,46 @@ public class KnowledgeHelper {
   // returns a List of all Root-Entities containing the desired Variant.
 
   public static KnowledgeEntities findRoot(final Event e, final Knowledge knowledge) {
-    final String rootVariantId = e.getVariantID();
+    final String eventId = (e == null ? null : e.getEventID());
+    final String rootVariantId = (e == null ? null : e.getVariantID());
     final KnowledgeEntities root = findRoot(rootVariantId, knowledge);
-    LOGGER.debug("Root of Event {} is: {}", e.getEventID(), root);
+    LOGGER.debug("Root of Event {} is: {}", eventId, root);
     return root;
   }
 
   public static KnowledgeEntities findRoot(final Rule r, final Knowledge knowledge) {
-    final String rootVariantId = r.getVariantID();
+    final String ruleId = (r == null ? null : r.getRuleID());
+    final String rootVariantId = (r == null ? null : r.getVariantID());
     final KnowledgeEntities root = findRoot(rootVariantId, knowledge);
-    LOGGER.debug("Root of Rule {} is: {}", r.getRuleID(), root);
+    LOGGER.debug("Root of Rule {} is: {}", ruleId, root);
     return root;
   }
 
   public static KnowledgeEntities findRoot(final Relation r, final Knowledge knowledge) {
-    final String rootVariantId = r.getVariantID();
+    final String relationId = (r == null ? null : r.getRelationID());
+    final String rootVariantId = (r == null ? null : r.getVariantID());
     final KnowledgeEntities root = findRoot(rootVariantId, knowledge);
-    LOGGER.debug("Root of Relation {} is: {}", r.getRelationID(), root);
+    LOGGER.debug("Root of Relation {} is: {}", relationId, root);
     return root;
   }
 
-  public static KnowledgeEntities findRoot(final String rootVariantId, final Knowledge knowledge) {
+  // ----------------------------------------------------------------
+
+  private static KnowledgeEntities findRoot(final String rootVariantId, final Knowledge knowledge) {
     final KnowledgeEntities result = new KnowledgeEntities();
-    findRoot(result, rootVariantId, knowledge.getEntities());
+    final KnowledgeEntities entities = (knowledge == null ? null : knowledge.getEntities());
+    findRoot(result, rootVariantId, entities);
     return result;
   }
 
   private static KnowledgeEntities findRoot(final KnowledgeEntities result, final String rootVariantId, final KnowledgeEntities entities) {
-    // TODO: performance optimization: cache pointers to root of variant in session-cache, search only once!
-    for (final KnowledgeEntity ke : entities) {
-      if (rootVariantId.equals(ke.getVariant().getVariantID())) {
-        result.add(ke);
+    if ((entities != null) && !entities.isEmpty()) {
+      for (final KnowledgeEntity ke : entities) {
+        if (rootVariantId.equals(ke.getVariant().getVariantID())) {
+          result.add(ke);
+        }
+        findRoot(result, rootVariantId, ke.getChildren());
       }
-      findRoot(result, rootVariantId, ke.getChildren());
     }
     return result;
   }

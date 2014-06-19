@@ -37,13 +37,17 @@ import org.psikeds.resolutionengine.transformer.Transformer;
  * @author marco@juliano.de
  * 
  */
-public class ConceptHelper {
+public abstract class ConceptHelper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConceptHelper.class);
 
   public static final String RET_CONCEPT_POSSIBLE = "possible";
   public static final String RET_CONCEPT_NOT_POSSIBLE = "impossible";
   public static final String RET_CONCEPT_FULFILLED = "fulfilled";
+
+  private ConceptHelper() {
+    // prevent instantiation
+  }
 
   // ----------------------------------------------------------------
 

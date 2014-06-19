@@ -39,13 +39,17 @@ import org.psikeds.resolutionengine.transformer.Transformer;
  * @author marco@juliano.de
  * 
  */
-public class FeatureValueHelper {
+public abstract class FeatureValueHelper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(FeatureValueHelper.class);
 
   public static final String RET_FV_POSSIBLE = "possible";
   public static final String RET_FV_NOT_POSSIBLE = "impossible";
   public static final String RET_FV_ASSIGNED = "assigned";
+
+  private FeatureValueHelper() {
+    // prevent instantiation
+  }
 
   // ----------------------------------------------------------------
 
