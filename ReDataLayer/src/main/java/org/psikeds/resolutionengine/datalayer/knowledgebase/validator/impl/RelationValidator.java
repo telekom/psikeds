@@ -22,12 +22,10 @@ import org.slf4j.LoggerFactory;
 import org.apache.commons.lang.StringUtils;
 
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
+import org.psikeds.resolutionengine.datalayer.knowledgebase.util.RelationHelper;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.ValidationException;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.validator.Validator;
 import org.psikeds.resolutionengine.datalayer.vo.Event;
-import org.psikeds.resolutionengine.datalayer.vo.Feature;
-import org.psikeds.resolutionengine.datalayer.vo.FeatureValue;
-import org.psikeds.resolutionengine.datalayer.vo.Purpose;
 import org.psikeds.resolutionengine.datalayer.vo.Relation;
 import org.psikeds.resolutionengine.datalayer.vo.RelationOperator;
 import org.psikeds.resolutionengine.datalayer.vo.RelationParameter;
@@ -100,22 +98,30 @@ public class RelationValidator implements Validator {
             valid = false;
             LOGGER.warn("Relation {} contains no Relation-Operator!", rid);
           }
-          final String ceid = r.getConditionalEventID();
-          if (!StringUtils.isEmpty(ceid)) {
+          if (r.isConditional()) {
+            final String ceid = r.getConditionalEventID();
             final Event e = kb.getEvent(ceid);
             if ((e == null) || !ceid.equals(e.getEventID())) {
               valid = false;
               LOGGER.warn("Conditional-Event-ID {} referenced by Relation {} does not exists.", ceid, rid);
             }
           }
-          // --- Step 2: check left and right relation partner ---
+          // --- Step 2: check left and right side of Relation  ---
           final RelationParameter left = r.getLeftSide();
           final RelationParameter right = r.getRightSide();
-          if (!checkRelationPartner(kb, rid, vid, left) || !checkRelationPartner(kb, rid, vid, right)) {
+          if (!RelationHelper.checkRelationParameter(kb, rid, vid, left)) {
             valid = false;
-            continue;
+            LOGGER.warn("Left side of Relation {} is not valid!", rid);
           }
-          // TODO: check compatibility of both parameters
+          if (!RelationHelper.checkRelationParameter(kb, rid, vid, right)) {
+            valid = false;
+            LOGGER.warn("Right side of Relation {} is not valid!", rid);
+          }
+          // --- Step 3: check that Parameters are compatible ---
+          if (!RelationHelper.isCompatible(kb, left, right)) {
+            valid = false;
+            LOGGER.warn("Parameters of Relation {} are not compatible!", rid);
+          }
         }
         LOGGER.debug("Checked {} Relations.", count);
       }
@@ -127,125 +133,5 @@ public class RelationValidator implements Validator {
     if (!valid) {
       throw new ValidationException("Invalid Relations in KnowledgeBase!");
     }
-  }
-
-  //----------------------------------------------------------------
-
-  private boolean checkRelationPartner(final KnowledgeBase kb, final String relationId, final String rootVariantId, final RelationParameter rp) {
-    final String parameterID = (rp == null ? null : rp.getParameterID());
-    if (StringUtils.isEmpty(parameterID)) {
-      LOGGER.warn("Relation {} has illegal Relation-Parameter: {}", relationId, rp);
-      return false;
-    }
-    final RelationParameter lookup = kb.getRelationParameter(parameterID);
-    if ((lookup == null) || !parameterID.equals(lookup.getParameterID())) {
-      LOGGER.warn("Relation-Parameter {} referenced by Relation {} does not exist!", parameterID, relationId);
-      return false;
-    }
-    final String paramValue = rp.getParameterValue();
-    if (StringUtils.isEmpty(paramValue)) {
-      LOGGER.warn("Relation-Parameter {} of Relation {} has no Value.", paramValue, relationId);
-      return false;
-    }
-    if (rp.isConstant()) {
-      final FeatureValue fv = kb.getFeatureValue(paramValue);
-      if ((fv == null) || !paramValue.equals(fv.getFeatureValueID())) {
-        LOGGER.warn("Feature-Value {} referenced by Relation-Parameter {} of Relation {} does not exist!", paramValue, parameterID, relationId);
-        return false;
-      }
-      return true;
-    }
-    else {
-      final Feature f = kb.getFeature(paramValue);
-      if ((f == null) || !paramValue.equals(f.getFeatureID())) {
-        LOGGER.warn("Feature-ID {} referenced by Relation-Parameter {} of Relation {} does not exist!", paramValue, parameterID, relationId);
-        return false;
-      }
-      final List<String> ctx = rp.getContext();
-      if ((ctx == null) || ctx.isEmpty()) {
-        LOGGER.warn("Relation-Parameter {} of Relation {} has no Context-Path.", parameterID, relationId);
-        return false;
-      }
-      return checkContextPath(kb, relationId, rootVariantId, ctx, paramValue);
-    }
-  }
-
-  private boolean checkContextPath(final KnowledgeBase kb, final String relationId, final String rootVariantId, final List<String> ctx, final String featureId) {
-    final String lastPathElement = checkContextPath(kb, relationId, rootVariantId, ctx);
-    if (StringUtils.isEmpty(lastPathElement)) {
-      return false;
-    }
-    final Variant v = kb.getVariant(lastPathElement);
-    if (v == null) {
-      LOGGER.warn("Last Element {} of Context of Relation-Partner of Relation {} is not a Variant!", lastPathElement, relationId);
-      return false;
-    }
-    final List<String> feats = v.getFeatureIds();
-    if ((feats == null) || !feats.contains(featureId)) {
-      LOGGER.warn("Feature {} referenced by Relation-Partner of Relation {} is not a valid Feature for Variant {}", featureId, relationId, lastPathElement);
-      return false;
-    }
-    return true;
-  }
-
-  private String checkContextPath(final KnowledgeBase kb, final String relationId, final String rootVariantId, final List<String> ctx) {
-    // --- Step A: check that first element of context matches to root/parent-variant ---
-    String lastPathElement = null;
-    String firstPathElement = null;
-    try {
-      firstPathElement = ctx.get(0);
-    }
-    catch (final Exception ex) {
-      firstPathElement = null;
-    }
-    if (StringUtils.isEmpty(rootVariantId) || StringUtils.isEmpty(firstPathElement) || !rootVariantId.equals(firstPathElement)) {
-      LOGGER.warn("Context of Relation-Partner of Relation {} does not start with Root-Variant-ID: {}", relationId, rootVariantId);
-      return null;
-    }
-    // --- Step B: walk along the path and check consistency ---
-    boolean variant = true;
-    Object previous = null;
-    for (final String id : ctx) {
-      lastPathElement = id;
-      if (StringUtils.isEmpty(id)) {
-        LOGGER.warn("Context of Relation-Partner of Relation {} contains an empty ID!", relationId);
-        return null;
-      }
-      if (variant) {
-        final Variant v = kb.getVariant(id);
-        if ((v == null) || !id.equals(v.getVariantID())) {
-          LOGGER.warn("Context of Relation-Partner of Relation {} contains unknown Variant-ID: {}", relationId, id);
-          return null;
-        }
-        if (previous != null) {
-          final Purpose p = (Purpose) previous;
-          final String pid = (p == null ? null : p.getPurposeID());
-          if (!kb.isFulfilledBy(pid, id)) {
-            LOGGER.warn("Context of Relation-Partner of Relation {} contains illegal Edge from {} to {}", relationId, pid, id);
-            return null;
-          }
-        }
-        previous = v;
-      }
-      else {
-        final Purpose p = kb.getPurpose(id);
-        if ((p == null) || !id.equals(p.getPurposeID())) {
-          LOGGER.warn("Context of Relation-Partner of Relation {} contains unknown Purpose-ID: {}", relationId, id);
-          return null;
-        }
-        if (previous != null) {
-          final Variant v = (Variant) previous;
-          final String vid = (v == null ? null : v.getVariantID());
-          if (!kb.isConstitutedBy(vid, id)) {
-            LOGGER.warn("Context of Relation-Partner of Relation {} contains illegal Edge from {} to {}", relationId, vid, id);
-            return null;
-          }
-        }
-        previous = p;
-      }
-      variant = !variant;
-    }
-    // --- Done! ---
-    return lastPathElement;
   }
 }
