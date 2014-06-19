@@ -96,6 +96,24 @@ public abstract class RelationHelper {
 
   // ----------------------------------------------------------------
 
+  public static FeatureValue getConstantFeatureValue(final KnowledgeBase kb, final RelationParameter rp) {
+    FeatureValue fv = null;
+    if ((kb != null) && (rp != null) && rp.isConstant()) {
+      fv = kb.getFeatureValue(rp.getParameterID());
+    }
+    return fv;
+  }
+
+  public static Feature getFeatureVariable(final KnowledgeBase kb, final RelationParameter rp) {
+    Feature f = null;
+    if ((kb != null) && (rp != null) && !rp.isConstant()) {
+      f = kb.getFeature(rp.getParameterID());
+    }
+    return f;
+  }
+
+  // ----------------------------------------------------------------
+
   public static boolean checkContextPath(final KnowledgeBase kb, final Relation rel, final boolean left) {
     final String relationId = (rel == null ? null : rel.getRelationID());
     if (StringUtils.isEmpty(relationId)) {
