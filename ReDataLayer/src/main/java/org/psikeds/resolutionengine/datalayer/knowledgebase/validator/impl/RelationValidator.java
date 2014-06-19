@@ -117,6 +117,10 @@ public class RelationValidator implements Validator {
             valid = false;
             LOGGER.warn("Right side of Relation {} is not valid!", rid);
           }
+          if (left.isConstant() && right.isConstant()) {
+            valid = false;
+            LOGGER.warn("Both Parameters of Relation {} are Constants!", rid);
+          }
           // --- Step 3: check that Parameters are compatible ---
           if (!RelationHelper.isCompatible(kb, left, right)) {
             valid = false;
