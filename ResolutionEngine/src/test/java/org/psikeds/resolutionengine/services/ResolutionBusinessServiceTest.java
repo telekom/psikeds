@@ -63,6 +63,7 @@ import org.psikeds.resolutionengine.resolver.impl.ConceptDecissionEvaluator;
 import org.psikeds.resolutionengine.resolver.impl.EventEvaluator;
 import org.psikeds.resolutionengine.resolver.impl.FeatureDecissionEvaluator;
 import org.psikeds.resolutionengine.resolver.impl.ObsoleteEntitiesRemover;
+import org.psikeds.resolutionengine.resolver.impl.RelationEvaluator;
 import org.psikeds.resolutionengine.resolver.impl.RulesEvaluator;
 import org.psikeds.resolutionengine.resolver.impl.VariantDecissionEvaluator;
 import org.psikeds.resolutionengine.transformer.Transformer;
@@ -106,8 +107,9 @@ public class ResolutionBusinessServiceTest {
     this.resolvers.add(new ConceptDecissionEvaluator());
     this.resolvers.add(new ObsoleteEntitiesRemover());
     this.resolvers.add(new AutoCompletion(this.kb, this.trans));
-    this.resolvers.add(new EventEvaluator(this.kb, this.trans));
+    this.resolvers.add(new EventEvaluator(this.kb, this.trans, true));
     this.resolvers.add(new RulesEvaluator(this.kb, this.trans));
+    this.resolvers.add(new RelationEvaluator(this.kb, this.trans));
     this.cache = new ResolutionCache();
     this.srvc = new ResolutionBusinessService(
         this.kb,

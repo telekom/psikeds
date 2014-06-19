@@ -59,21 +59,24 @@ public class EventEvaluator implements InitializingBean, Resolver {
   private static final Logger LOGGER = LoggerFactory.getLogger(EventEvaluator.class);
 
   public static final Transformer DEFAULT_TRANSFORMER = new Vo2PojoTransformer();
+  public static final boolean DEFAULT_UPDATE_CONDITIONAL_RELATIONS = true;
 
   private KnowledgeBase kb;
   private Transformer trans;
+  private boolean updateConditionalRelations;
 
   public EventEvaluator() {
     this(null);
   }
 
   public EventEvaluator(final KnowledgeBase kb) {
-    this(kb, DEFAULT_TRANSFORMER);
+    this(kb, DEFAULT_TRANSFORMER, DEFAULT_UPDATE_CONDITIONAL_RELATIONS);
   }
 
-  public EventEvaluator(final KnowledgeBase kb, final Transformer trans) {
+  public EventEvaluator(final KnowledgeBase kb, final Transformer trans, final boolean updateConditionalRelations) {
     this.kb = kb;
     this.trans = trans;
+    this.updateConditionalRelations = updateConditionalRelations;
   }
 
   public KnowledgeBase getKnowledgeBase() {
@@ -92,6 +95,14 @@ public class EventEvaluator implements InitializingBean, Resolver {
     this.trans = trans;
   }
 
+  public boolean isUpdateConditionalRelations() {
+    return this.updateConditionalRelations;
+  }
+
+  public void setUpdateConditionalRelations(final boolean updateConditionalRelations) {
+    this.updateConditionalRelations = updateConditionalRelations;
+  }
+
   // ----------------------------------------------------------------
 
   /**
@@ -102,6 +113,7 @@ public class EventEvaluator implements InitializingBean, Resolver {
    */
   @Override
   public void afterPropertiesSet() throws Exception {
+    LOGGER.info("Config: Update conditional Relations = {}", this.updateConditionalRelations);
     Validate.notNull(this.kb, "No Knowledge-Base!");
     Validate.notNull(this.trans, "No Transformer!");
   }
@@ -133,6 +145,10 @@ public class EventEvaluator implements InitializingBean, Resolver {
       for (final Event e : raeh.getRelevantEvents()) {
         // Check every relevant Event, i.e. neither obsolete nor triggered yet
         checkEvent(e, knowledge, raeh, metadata);
+      }
+      if (this.updateConditionalRelations) {
+        LOGGER.debug("Updating all conditional Relations according to latest Events.");
+        raeh.updateAllConditionalRelations();
       }
       // done
       ok = true;

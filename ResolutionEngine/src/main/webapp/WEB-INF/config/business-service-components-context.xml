@@ -50,6 +50,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
   <bean id="EventEvaluator" class="org.psikeds.resolutionengine.resolver.impl.EventEvaluator">
     <constructor-arg index="0" type="org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase" ref="knowledgeBase" />
     <constructor-arg index="1" type="org.psikeds.resolutionengine.transformer.Transformer" ref="PojoTransformer" />
+    <constructor-arg index="2" value="${resolutionengine.resolver.events.update.conditional.relations}" />
   </bean>
 
   <bean id="RulesEvaluator" class="org.psikeds.resolutionengine.resolver.impl.RulesEvaluator">
@@ -58,6 +59,11 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <constructor-arg index="2" value="${resolutionengine.resolver.rules.create.missing.conclusion.path}" />
     <constructor-arg index="3" value="${resolutionengine.resolver.rules.create.non.choosable.entities}" />
     <constructor-arg index="4" value="${resolutionengine.resolver.rules.keep.modus.tollens.for.later}" />
+  </bean>
+
+  <bean id="RelationEvaluator" class="org.psikeds.resolutionengine.resolver.impl.RelationEvaluator">
+    <constructor-arg index="0" type="org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase" ref="knowledgeBase" />
+    <constructor-arg index="1" type="org.psikeds.resolutionengine.transformer.Transformer" ref="PojoTransformer" />
   </bean>
 
 </beans>
