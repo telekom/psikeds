@@ -26,15 +26,17 @@ import org.apache.cxf.common.util.StringUtils;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.datalayer.vo.Event;
 import org.psikeds.resolutionengine.datalayer.vo.Events;
+import org.psikeds.resolutionengine.datalayer.vo.Relation;
+import org.psikeds.resolutionengine.datalayer.vo.Relations;
 import org.psikeds.resolutionengine.datalayer.vo.Rule;
 import org.psikeds.resolutionengine.datalayer.vo.Rules;
 import org.psikeds.resolutionengine.datalayer.vo.Variant;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
 
 /**
- * Object handling all Rules and Events; Depending on the current State of
- * Resolution and the corresponding Knowledge, Rules and Events are in one
- * of the States Relevant, Obsolete or Triggered.
+ * Object handling all Events, Rules and Relations; Depending on the current State
+ * of Resolution and the corresponding Knowledge, Rules and Events are in one of
+ * the States Relevant/Active, Obsolete or Triggered.
  * 
  * @author marco@juliano.de
  * 
@@ -45,8 +47,9 @@ public class RulesAndEventsHandler implements Serializable {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RulesAndEventsHandler.class);
 
-  private static final int MAX_NUM_EVENTS = EventStack.DEFAULT_MAX_MAP_SIZE * 2;
+  private static final int MAX_NUM_EVENTS = EventStack.DEFAULT_MAX_MAP_SIZE;
   private static final int MAX_NUM_RULES = RuleStack.DEFAULT_MAX_MAP_SIZE;
+  private static final int MAX_NUM_RELATIONS = RelationStack.DEFAULT_MAX_MAP_SIZE;
 
   private final EventStack relevantEvents;
   private final EventStack obsoleteEvents;
@@ -56,13 +59,16 @@ public class RulesAndEventsHandler implements Serializable {
   private final RuleStack obsoleteRules;
   private final RuleStack triggeredRules;
 
+  private final RelationStack activeRelations;
+  private final RelationStack obsoleteRelations;
+
   private boolean knowledgeDirty;
 
-  private RulesAndEventsHandler(final List<Event> relevantEvents, final List<Rule> relevantRules) {
-    this(relevantEvents, MAX_NUM_EVENTS, relevantRules, MAX_NUM_RULES);
+  private RulesAndEventsHandler(final List<Event> relevantEvents, final List<Rule> relevantRules, final List<Relation> activeRelations) {
+    this(relevantEvents, MAX_NUM_EVENTS, relevantRules, MAX_NUM_RULES, activeRelations, MAX_NUM_RELATIONS);
   }
 
-  private RulesAndEventsHandler(final List<Event> relevantEvents, final int maxEvents, final List<Rule> relevantRules, final int maxRules) {
+  private RulesAndEventsHandler(final List<Event> relevantEvents, final int maxEvents, final List<Rule> relevantRules, final int maxRules, final List<Relation> activeRelations, final int maxRelations) {
     this.obsoleteEvents = new EventStack(maxEvents);
     this.triggeredEvents = new EventStack(maxEvents);
     this.relevantEvents = new EventStack(maxEvents);
@@ -71,6 +77,9 @@ public class RulesAndEventsHandler implements Serializable {
     this.triggeredRules = new RuleStack(maxRules);
     this.relevantRules = new RuleStack(maxRules);
     this.relevantRules.setRules(relevantRules);
+    this.obsoleteRelations = new RelationStack(maxRelations);
+    this.activeRelations = new RelationStack(maxRelations);
+    this.activeRelations.setRelations(activeRelations);
     this.knowledgeDirty = false;
   }
 
@@ -152,6 +161,32 @@ public class RulesAndEventsHandler implements Serializable {
 
   // ----------------------------------------------------------------
 
+  public List<Relation> getActiveRelations() {
+    return this.activeRelations.getRelations();
+  }
+
+  public void setActiveRelations(final Collection<? extends Relation> rels) {
+    this.activeRelations.setRelations(rels);
+  }
+
+  public void addActiveRelations(final Collection<? extends Relation> rels) {
+    this.activeRelations.addRelations(rels);
+  }
+
+  public Relation setObsolete(final Relation r) {
+    return this.activeRelations.move2stack(r, this.obsoleteRelations);
+  }
+
+  public void updateAllConditionalRelations() {
+    for (final Relation r : getActiveRelations()) {
+      if ((r != null) && r.isConditional() && isObsolete(r.getConditionalEventID())) {
+        setObsolete(r);
+      }
+    }
+  }
+
+  // ----------------------------------------------------------------
+
   /**
    * Mark all Events and Rules attached to a Variant as obsolete.
    * 
@@ -163,21 +198,28 @@ public class RulesAndEventsHandler implements Serializable {
   }
 
   /**
-   * Mark all Events and Rules attached to a Variant as obsolete.
+   * Mark all Events, Rules and Relations attached to a Variant as obsolete.
    * 
    * @param variantId
    */
   public void setObsolete(final String variantId) {
     if (!StringUtils.isEmpty(variantId)) {
       for (final Event e : getRelevantEvents()) {
-        final String vid = (e == null ? null : e.getVariantID());
-        if (variantId.equals(vid)) {
+        if ((e != null) && variantId.equals(e.getVariantID())) {
           setObsolete(e);
         }
       }
       for (final Rule r : getRelevantRules()) {
-        final String vid = (r == null ? null : r.getVariantID());
-        if (variantId.equals(vid)) {
+        if ((r != null) && variantId.equals(r.getVariantID())) {
+          setObsolete(r);
+        }
+      }
+      for (final Relation r : getActiveRelations()) {
+        if ((r != null) && variantId.equals(r.getVariantID())) {
+          setObsolete(r);
+          continue;
+        }
+        if ((r != null) && r.isConditional() && isObsolete(r.getConditionalEventID())) {
           setObsolete(r);
         }
       }
@@ -189,25 +231,27 @@ public class RulesAndEventsHandler implements Serializable {
   public static RulesAndEventsHandler init(final KnowledgeBase kb) {
     final Events events = kb == null ? null : kb.getEvents();
     final Rules rules = kb == null ? null : kb.getRules();
-    // simple initialization: all rules and events are relevant by default
-    return init(events, rules);
+    final Relations rels = kb == null ? null : kb.getRelations();
+    // simple initialization: all events, rules and relations are relevant/active in the beginning
+    return init(events, rules, rels);
   }
 
   public static RulesAndEventsHandler init(final KnowledgeBase kb, final Knowledge knowledge) {
     // sophisticated more performant initialization: only rules and events
     // currently "visible" in our knowledge are relevant
-    // TODO: implement!!!
+    // TODO
     return init(kb); // fallback to simple init
   }
 
-  public static RulesAndEventsHandler init(final Events relevantEvents, final Rules relevantRules) {
+  public static RulesAndEventsHandler init(final Events relevantEvents, final Rules relevantRules, final Relations activeRelations) {
     final List<Event> events = relevantEvents == null ? null : relevantEvents.getEvent();
     final List<Rule> rules = relevantRules == null ? null : relevantRules.getRule();
-    return init(events, rules);
+    final List<Relation> rels = activeRelations == null ? null : activeRelations.getRelation();
+    return init(events, rules, rels);
   }
 
-  public static RulesAndEventsHandler init(final List<Event> relevantEvents, final List<Rule> relevantRules) {
-    final RulesAndEventsHandler raeh = new RulesAndEventsHandler(relevantEvents, relevantRules);
+  public static RulesAndEventsHandler init(final List<Event> relevantEvents, final List<Rule> relevantRules, final List<Relation> activeRelations) {
+    final RulesAndEventsHandler raeh = new RulesAndEventsHandler(relevantEvents, relevantRules, activeRelations);
     logContents(raeh);
     return raeh;
   }
@@ -253,6 +297,10 @@ public class RulesAndEventsHandler implements Serializable {
         sb.append("------------------------------------------------------------\n");
       }
       dumpRules(sb, verbose);
+      if (verbose) {
+        sb.append("------------------------------------------------------------\n");
+      }
+      dumpRelations(sb, verbose);
     }
   }
 
@@ -275,6 +323,15 @@ public class RulesAndEventsHandler implements Serializable {
       this.triggeredRules.dumpRules(sb, verbose);
       sb.append("OBSOLETE: ");
       this.obsoleteRules.dumpRules(sb, verbose);
+    }
+  }
+
+  public void dumpRelations(final StringBuilder sb, final boolean verbose) {
+    if (sb != null) {
+      sb.append("ACTIVE: ");
+      this.activeRelations.dumpRelations(sb, verbose);
+      sb.append("OBSOLETE: ");
+      this.obsoleteRelations.dumpRelations(sb, verbose);
     }
   }
 }
