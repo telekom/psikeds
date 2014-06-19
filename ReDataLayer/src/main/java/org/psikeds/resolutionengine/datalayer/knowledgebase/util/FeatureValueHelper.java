@@ -93,6 +93,14 @@ public abstract class FeatureValueHelper {
     return ((fv1 != null) && (fv2 != null) && isCompatible(fv1.getType(), fv2.getType()));
   }
 
+  public static boolean isCompatible(final Feature f1, final FeatureValue fv2) {
+    return ((f1 != null) && (fv2 != null) && isCompatible(f1.getType(), fv2.getType()));
+  }
+
+  public static boolean isCompatible(final FeatureValue fv1, final Feature f2) {
+    return isCompatible(f2, fv1);
+  }
+
   public static boolean isCompatible(final String type1, final String type2) {
     if (StringUtils.isEmpty(type1) || StringUtils.isEmpty(type2)) {
       // empty type are never compatible
@@ -106,7 +114,7 @@ public abstract class FeatureValueHelper {
       // string and number are not compatible
       return false;
     }
-    // two numbers (float or int) are compatible
+    // two numbers (either float or int) are compatible
     return true;
   }
 
