@@ -188,6 +188,15 @@ public class FloatFeatureValue extends FeatureValue implements Serializable {
     return toIntegerValue(this.decimalValue, this.roundingMode);
   }
 
+  /**
+   * @see org.psikeds.resolutionengine.datalayer.vo.FeatureValue#toBigDecimal()
+   */
+  @Override
+  @JsonIgnore
+  public BigDecimal toBigDecimal() {
+    return this.decimalValue;
+  }
+
   // ----------------------------------------------------------------
 
   public static long toIntegerValue(final BigDecimal val, final int rounding) {

@@ -15,6 +15,7 @@
 package org.psikeds.resolutionengine.datalayer.vo;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
@@ -115,6 +116,16 @@ public class FeatureValue extends ValueObject implements Serializable {
     }
     catch (final Exception ex) {
       throw new NumberFormatException("Illegal Integer-Value: " + ex.getMessage());
+    }
+  }
+
+  @JsonIgnore
+  public BigDecimal toBigDecimal() {
+    try {
+      return new BigDecimal(this.value);
+    }
+    catch (final Exception ex) {
+      throw new NumberFormatException("Illegal Number-Value: " + ex.getMessage());
     }
   }
 

@@ -28,7 +28,9 @@ public enum RelationOperator {
   EQUAL("equal"),
   NOT_EQUAL("notEqual"),
   LESS_THAN("lessThan"),
-  LESS_OR_EQUAL("lessOrEqual");
+  LESS_OR_EQUAL("lessOrEqual"),
+  GREATER_THAN("greaterThan"),
+  GREATER_OR_EQUAL("greaterOrEqual");
 
   public static final RelationOperator DEFAULT_OPERATOR = EQUAL;
 
@@ -56,7 +58,14 @@ public enum RelationOperator {
   public static RelationOperator fromValue(final String str) {
     RelationOperator op = null;
     try {
-      if (NOT_EQUAL.value().equalsIgnoreCase(str)) {
+      if (str == null) {
+        // faster than several equalsIgnoreCase()
+        op = null;
+      }
+      else if (EQUAL.value().equalsIgnoreCase(str)) {
+        op = EQUAL;
+      }
+      else if (NOT_EQUAL.value().equalsIgnoreCase(str)) {
         op = NOT_EQUAL;
       }
       else if (LESS_THAN.value().equalsIgnoreCase(str)) {
@@ -65,10 +74,19 @@ public enum RelationOperator {
       else if (LESS_OR_EQUAL.value().equalsIgnoreCase(str)) {
         op = LESS_OR_EQUAL;
       }
+      else if (GREATER_THAN.value().equalsIgnoreCase(str)) {
+        op = GREATER_THAN;
+      }
+      else if (GREATER_OR_EQUAL.value().equalsIgnoreCase(str)) {
+        op = GREATER_OR_EQUAL;
+      }
+      else {
+        op = null;
+      }
     }
     catch (final Exception ex) {
       op = null;
     }
-    return op == null ? DEFAULT_OPERATOR : op; // default is equal-operator
+    return (op == null ? DEFAULT_OPERATOR : op);
   }
 }
