@@ -16,6 +16,7 @@ package org.psikeds.resolutionengine.datalayer.knowledgebase.util;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -35,6 +36,8 @@ public abstract class FeatureValueHelper {
 
   public static final int DEFAULT_RANGE_STEP = 1;
   public static final int DEFAULT_MAXIMUM_SIZE = 500;
+
+  public static final FeatureValueComparator COMPARATOR = new FeatureValueComparator();
 
   private FeatureValueHelper() {
     // prevent instantiation
@@ -197,80 +200,20 @@ public abstract class FeatureValueHelper {
 
   // ----------------------------------------------------------------
 
-  /**
-   * Compares the first FeatureValue with the second one. Returns a
-   * negative number, zero, or a positive number if the Value of
-   * the first Object is less than, equal to, or greater than the
-   * second Object.
-   * 
-   * Note: Different from the Comparable-Implementation of the
-   * FeatureValue-Class itself, this method will just check the Values
-   * and irgnore any IDs or Types!
-   * 
-   */
-  public static float compareTo(final FeatureValue fv1, final FeatureValue fv2) {
-    final String t1 = (fv1 == null ? null : fv1.getType());
-    final String t2 = (fv2 == null ? null : fv2.getType());
-    if (Feature.VALUE_TYPE_FLOAT.equals(t1) && Feature.VALUE_TYPE_FLOAT.equals(t2)) {
-      final float v1 = fv1.toFloatValue();
-      final float v2 = fv2.toFloatValue();
-      return v1 - v2;
-    }
-    else if (Feature.VALUE_TYPE_INTEGER.equals(t1) && Feature.VALUE_TYPE_INTEGER.equals(t2)) {
-      final long v1 = fv1.toIntegerValue();
-      final long v2 = fv2.toIntegerValue();
-      return v1 - v2;
-    }
-    else if (Feature.VALUE_TYPE_FLOAT.equals(t1) && Feature.VALUE_TYPE_INTEGER.equals(t2)) {
-      final float v1 = fv1.toFloatValue();
-      final long v2 = fv2.toIntegerValue();
-      return v1 - v2;
-    }
-    else if (Feature.VALUE_TYPE_INTEGER.equals(t1) && Feature.VALUE_TYPE_FLOAT.equals(t2)) {
-      final long v1 = fv1.toIntegerValue();
-      final float v2 = fv2.toFloatValue();
-      return v1 - v2;
-    }
-    else {
-      final String v1 = (fv1 == null ? null : fv1.getValue());
-      final String v2 = (fv2 == null ? null : fv2.getValue());
-      if ((v1 == null) && (v2 == null)) {
-        return 0.0f;
-      }
-      else if ((v1 == null) && (v2 != null)) {
-        return -1.0f;
-      }
-      else if ((v1 != null) && (v2 == null)) {
-        return 1.0f;
-      }
-      else {
-        return v1.compareTo(v2);
-      }
-    }
-  }
-
   public static boolean isEqual(final FeatureValue fv1, final FeatureValue fv2) {
-    return !notEqual(fv1, fv2);
-  }
-
-  public static boolean isEqual(final FeatureValue fv1, final FeatureValue fv2, final float tolerance) {
-    return !notEqual(fv1, fv2, tolerance);
+    return (COMPARATOR.compare(fv1, fv2) == 0);
   }
 
   public static boolean notEqual(final FeatureValue fv1, final FeatureValue fv2) {
-    return notEqual(fv1, fv2, 0.0f); // no tolerance
-  }
-
-  public static boolean notEqual(final FeatureValue fv1, final FeatureValue fv2, final float tolerance) {
-    return (Math.abs(compareTo(fv1, fv2)) > tolerance);
+    return !isEqual(fv1, fv2);
   }
 
   public static boolean greaterThan(final FeatureValue fv1, final FeatureValue fv2) {
-    return (compareTo(fv1, fv2) > 0.0f);
+    return (COMPARATOR.compare(fv1, fv2) > 0);
   }
 
   public static boolean lessThan(final FeatureValue fv1, final FeatureValue fv2) {
-    return greaterThan(fv2, fv1);
+    return (COMPARATOR.compare(fv1, fv2) < 0);
   }
 
   public static boolean lessOrEqual(final FeatureValue fv1, final FeatureValue fv2) {
@@ -279,5 +222,162 @@ public abstract class FeatureValueHelper {
 
   public static boolean greaterOrEqual(final FeatureValue fv1, final FeatureValue fv2) {
     return !lessThan(fv1, fv2);
+  }
+
+  // ----------------------------------------------------------------
+
+  public static List<FeatureValue> isEqual(final List<FeatureValue> lst, final FeatureValue ref) {
+    List<FeatureValue> result = null;
+    if ((ref != null) && (lst != null) && !lst.isEmpty()) {
+      result = new ArrayList<FeatureValue>();
+      for (final FeatureValue fv : lst) {
+        if (isEqual(fv, ref)) {
+          result.add(fv);
+        }
+      }
+    }
+    return result;
+  }
+
+  public static List<FeatureValue> notEqual(final List<FeatureValue> lst, final FeatureValue ref) {
+    List<FeatureValue> result = null;
+    if (ref == null) {
+      // everything is not equal to null
+      result = lst;
+    }
+    else if ((lst != null) && !lst.isEmpty()) {
+      result = new ArrayList<FeatureValue>();
+      for (final FeatureValue fv : lst) {
+        if (notEqual(fv, ref)) {
+          result.add(fv);
+        }
+      }
+    }
+    return result;
+  }
+
+  public static List<FeatureValue> lessThan(final List<FeatureValue> lst, final FeatureValue ref) {
+    List<FeatureValue> result = null;
+    final int len = (lst == null ? 0 : lst.size());
+    if ((ref != null) && (len > 0)) {
+      sort(lst); // find requires sorted list
+      final int idx = find(lst, ref);
+      if (idx > 0) {
+        // ref is contained in list
+        result = new ArrayList<FeatureValue>(lst.subList(0, idx));
+      }
+      else {
+        // ref is not contained in list
+        final FeatureValue min = min(lst);
+        result = (lessThan(ref, min) ? null : lst);
+      }
+    }
+    return result;
+  }
+
+  public static List<FeatureValue> lessOrEqual(final List<FeatureValue> lst, final FeatureValue ref) {
+    List<FeatureValue> result = null;
+    final int len = (lst == null ? 0 : lst.size());
+    if ((ref != null) && (len > 0)) {
+      sort(lst); // find requires sorted list
+      final int idx = find(lst, ref);
+      if (idx >= 0) {
+        // ref is contained in list
+        result = new ArrayList<FeatureValue>(lst.subList(0, idx + 1));
+      }
+      else {
+        // ref is not contained in list
+        final FeatureValue min = min(lst);
+        result = (lessThan(ref, min) ? null : lst);
+      }
+    }
+    return result;
+  }
+
+  public static List<FeatureValue> greaterThan(final List<FeatureValue> lst, final FeatureValue ref) {
+    List<FeatureValue> result = null;
+    if (ref == null) {
+      // everything is greater than null
+      result = lst;
+    }
+    else {
+      final int len = (lst == null ? 0 : lst.size());
+      if (len > 0) {
+        sort(lst); // find requires sorted list
+        final int idx = find(lst, ref);
+        if ((idx >= 0) && (idx < (len - 2))) {
+          // ref is contained in list
+          result = new ArrayList<FeatureValue>(lst.subList(idx + 1, len));
+        }
+        else {
+          // ref is not contained in list
+          final FeatureValue max = max(lst);
+          result = (greaterThan(ref, max) ? null : lst);
+        }
+      }
+    }
+    return result;
+  }
+
+  public static List<FeatureValue> greaterOrEqual(final List<FeatureValue> lst, final FeatureValue ref) {
+    List<FeatureValue> result = null;
+    if (ref == null) {
+      // everything is greater or equal null
+      result = lst;
+    }
+    else {
+      final int len = (lst == null ? 0 : lst.size());
+      if (len > 0) {
+        sort(lst); // find requires sorted list
+        final int idx = find(lst, ref);
+        if ((idx >= 0) && (idx < (len - 1))) {
+          // ref is contained in list
+          result = new ArrayList<FeatureValue>(lst.subList(idx, len));
+        }
+        else {
+          // ref is not contained in list
+          final FeatureValue max = max(lst);
+          result = (greaterThan(ref, max) ? null : lst);
+        }
+      }
+    }
+    return result;
+  }
+
+  // ----------------------------------------------------------------
+
+  public static void sort(final List<FeatureValue> lst) {
+    if ((lst != null) && !lst.isEmpty()) {
+      Collections.sort(lst, COMPARATOR);
+    }
+  }
+
+  public static void reverse(final List<FeatureValue> lst) {
+    if ((lst != null) && !lst.isEmpty()) {
+      Collections.reverse(lst);
+    }
+  }
+
+  public static void shuffle(final List<FeatureValue> lst) {
+    if ((lst != null) && !lst.isEmpty()) {
+      Collections.shuffle(lst);
+    }
+  }
+
+  public static FeatureValue min(final List<FeatureValue> randomList) {
+    return ((randomList == null) || randomList.isEmpty() ? null : Collections.min(randomList, COMPARATOR));
+  }
+
+  public static FeatureValue max(final List<FeatureValue> randomList) {
+    return ((randomList == null) || randomList.isEmpty() ? null : Collections.max(randomList, COMPARATOR));
+  }
+
+  public static int find(final List<FeatureValue> sortedList, final FeatureValue fv) {
+    if ((fv == null) || (sortedList == null) || sortedList.isEmpty()) {
+      return -1;
+    }
+    // note: binary search requires sorted list. otherwise
+    // method will not fail, however result is undefined!
+    return Collections.binarySearch(sortedList, fv, COMPARATOR);
   }
 }

@@ -26,6 +26,7 @@ import org.psikeds.resolutionengine.datalayer.vo.Feature;
 import org.psikeds.resolutionengine.datalayer.vo.FeatureValue;
 import org.psikeds.resolutionengine.datalayer.vo.Purpose;
 import org.psikeds.resolutionengine.datalayer.vo.Relation;
+import org.psikeds.resolutionengine.datalayer.vo.RelationOperator;
 import org.psikeds.resolutionengine.datalayer.vo.RelationParameter;
 import org.psikeds.resolutionengine.datalayer.vo.Variant;
 
@@ -246,5 +247,95 @@ public abstract class RelationHelper {
       type = null;
     }
     return type;
+  }
+
+  // ----------------------------------------------------------------
+
+  public static RelationOperator getComplementaryOperator(final RelationOperator rp) {
+    if (rp == null) {
+      // fail fast
+      return null;
+    }
+    else if (RelationOperator.EQUAL.equals(rp)) {
+      return RelationOperator.EQUAL;
+    }
+    else if (RelationOperator.NOT_EQUAL.equals(rp)) {
+      return RelationOperator.NOT_EQUAL;
+    }
+    else if (RelationOperator.GREATER_THAN.equals(rp)) {
+      return RelationOperator.LESS_THAN;
+    }
+    else if (RelationOperator.GREATER_OR_EQUAL.equals(rp)) {
+      return RelationOperator.LESS_OR_EQUAL;
+    }
+    else if (RelationOperator.LESS_THAN.equals(rp)) {
+      return RelationOperator.GREATER_THAN;
+    }
+    else if (RelationOperator.LESS_OR_EQUAL.equals(rp)) {
+      return RelationOperator.GREATER_OR_EQUAL;
+    }
+    else {
+      return null;
+    }
+  }
+
+  public static boolean fulfillsOperation(final FeatureValue left, final RelationOperator op, final FeatureValue right) {
+    if (op == null) {
+      // fail fast
+      return false;
+    }
+    else if (RelationOperator.EQUAL.equals(op)) {
+      return FeatureValueHelper.isEqual(left, right);
+    }
+    else if (RelationOperator.NOT_EQUAL.equals(op)) {
+      return FeatureValueHelper.notEqual(left, right);
+    }
+    else if (RelationOperator.GREATER_THAN.equals(op)) {
+      return FeatureValueHelper.greaterThan(left, right);
+    }
+    else if (RelationOperator.GREATER_OR_EQUAL.equals(op)) {
+      return FeatureValueHelper.greaterOrEqual(left, right);
+    }
+    else if (RelationOperator.LESS_THAN.equals(op)) {
+      return FeatureValueHelper.lessThan(left, right);
+    }
+    else if (RelationOperator.LESS_OR_EQUAL.equals(op)) {
+      return FeatureValueHelper.lessOrEqual(left, right);
+    }
+    else {
+      return false;
+    }
+  }
+
+  public static List<FeatureValue> fulfillsOperation(final List<FeatureValue> left, final RelationOperator op, final FeatureValue right) {
+    if (op == null) {
+      // fail fast
+      return null;
+    }
+    else if (RelationOperator.EQUAL.equals(op)) {
+      return FeatureValueHelper.isEqual(left, right);
+    }
+    else if (RelationOperator.NOT_EQUAL.equals(op)) {
+      return FeatureValueHelper.notEqual(left, right);
+    }
+    else if (RelationOperator.GREATER_THAN.equals(op)) {
+      return FeatureValueHelper.greaterThan(left, right);
+    }
+    else if (RelationOperator.GREATER_OR_EQUAL.equals(op)) {
+      return FeatureValueHelper.greaterOrEqual(left, right);
+    }
+    else if (RelationOperator.LESS_THAN.equals(op)) {
+      return FeatureValueHelper.lessThan(left, right);
+    }
+    else if (RelationOperator.LESS_OR_EQUAL.equals(op)) {
+      return FeatureValueHelper.lessOrEqual(left, right);
+    }
+    else {
+      return null;
+    }
+  }
+
+  public static List<FeatureValue> fulfillsOperation(final FeatureValue left, final RelationOperator op, final List<FeatureValue> right) {
+    return fulfillsOperation(right, getComplementaryOperator(op), left);
   }
 }
