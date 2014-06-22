@@ -106,7 +106,7 @@ public abstract class FeatureValueHelper {
 
   public static boolean isCompatible(final String type1, final String type2) {
     if (StringUtils.isEmpty(type1) || StringUtils.isEmpty(type2)) {
-      // empty type are never compatible
+      // empty types are never compatible
       return false;
     }
     if (type1.equals(type2)) {
@@ -114,7 +114,7 @@ public abstract class FeatureValueHelper {
       return true;
     }
     if (Feature.VALUE_TYPE_STRING.equals(type1) || Feature.VALUE_TYPE_STRING.equals(type2)) {
-      // string and number are not compatible
+      // a string and a number are not compatible
       return false;
     }
     // two numbers (either float or int) are compatible
@@ -194,7 +194,7 @@ public abstract class FeatureValueHelper {
     if ((val == null) || StringUtils.isEmpty(featureId) || StringUtils.isEmpty(rangeID) || StringUtils.isEmpty(val.getFeatureValueID())) {
       return false;
     }
-    // when we generate values for ranges the feature-value-id will always start with the correpsonding range-id
+    // when we generate values for ranges the feature-value-id will always start with the correpsonding range-id!
     return (featureId.equals(val.getFeatureID()) && val.getFeatureValueID().startsWith(rangeID));
   }
 
@@ -263,7 +263,7 @@ public abstract class FeatureValueHelper {
       sort(lst); // find requires sorted list
       final int idx = find(lst, ref);
       if (idx > 0) {
-        // ref is contained in list
+        // ref is between min and max of list
         result = new ArrayList<FeatureValue>(lst.subList(0, idx));
       }
       else {
@@ -282,7 +282,7 @@ public abstract class FeatureValueHelper {
       sort(lst); // find requires sorted list
       final int idx = find(lst, ref);
       if (idx >= 0) {
-        // ref is contained in list
+        // ref is between min and max of list
         result = new ArrayList<FeatureValue>(lst.subList(0, idx + 1));
       }
       else {
@@ -306,7 +306,7 @@ public abstract class FeatureValueHelper {
         sort(lst); // find requires sorted list
         final int idx = find(lst, ref);
         if ((idx >= 0) && (idx < (len - 2))) {
-          // ref is contained in list
+          // ref is between min and max of list
           result = new ArrayList<FeatureValue>(lst.subList(idx + 1, len));
         }
         else {
@@ -331,7 +331,7 @@ public abstract class FeatureValueHelper {
         sort(lst); // find requires sorted list
         final int idx = find(lst, ref);
         if ((idx >= 0) && (idx < (len - 1))) {
-          // ref is contained in list
+          // ref is between min and max of list
           result = new ArrayList<FeatureValue>(lst.subList(idx, len));
         }
         else {
@@ -345,6 +345,81 @@ public abstract class FeatureValueHelper {
   }
 
   // ----------------------------------------------------------------
+
+  public static List<FeatureValue> isEqual(final List<FeatureValue> lst, final List<FeatureValue> ref) {
+    List<FeatureValue> result = null;
+    if (lst != null) {
+      result = new ArrayList<FeatureValue>();
+      if ((ref != null) && !ref.isEmpty() && !lst.isEmpty()) {
+        for (final FeatureValue fv : ref) {
+          final List<FeatureValue> found = isEqual(lst, fv);
+          if ((found != null) && !found.isEmpty()) {
+            addAllDistinct(result, found);
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  public static List<FeatureValue> notEqual(final List<FeatureValue> lst, final List<FeatureValue> ref) {
+    List<FeatureValue> result = null;
+    if (lst != null) {
+      result = new ArrayList<FeatureValue>();
+      if (!lst.isEmpty()) {
+        if ((ref == null) || ref.isEmpty()) {
+          // everything is not equal to nothing
+          result.addAll(lst);
+        }
+        else {
+          final List<FeatureValue> found = isEqual(lst, ref);
+          if ((found == null) || found.isEmpty()) {
+            // nothing equal, all distinct
+            result.addAll(lst);
+          }
+          else {
+            for (final FeatureValue fv : lst) {
+              if (!found.contains(fv)) {
+                result.add(fv);
+              }
+            }
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  public static List<FeatureValue> lessThan(final List<FeatureValue> lst, final List<FeatureValue> ref) {
+    return lessThan(lst, max(ref));
+  }
+
+  public static List<FeatureValue> lessOrEqual(final List<FeatureValue> lst, final List<FeatureValue> ref) {
+    return lessOrEqual(lst, max(ref));
+  }
+
+  public static List<FeatureValue> greaterThan(final List<FeatureValue> lst, final List<FeatureValue> ref) {
+    return greaterThan(lst, min(ref));
+  }
+
+  public static List<FeatureValue> greaterOrEqual(final List<FeatureValue> lst, final List<FeatureValue> ref) {
+    return greaterOrEqual(lst, min(ref));
+  }
+
+  // ----------------------------------------------------------------
+
+  public static boolean addAllDistinct(final List<FeatureValue> targetList, final List<FeatureValue> additionalElements) {
+    boolean changed = false;
+    if ((targetList != null) && (additionalElements != null)) {
+      for (final FeatureValue elem : additionalElements) {
+        if (!targetList.contains(elem)) {
+          changed = true;
+          targetList.add(elem);
+        }
+      }
+    }
+    return changed;
+  }
 
   public static void sort(final List<FeatureValue> lst) {
     if ((lst != null) && !lst.isEmpty()) {

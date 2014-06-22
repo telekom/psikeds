@@ -279,63 +279,91 @@ public abstract class RelationHelper {
     }
   }
 
-  public static boolean fulfillsOperation(final FeatureValue left, final RelationOperator op, final FeatureValue right) {
+  public static boolean fulfillsOperation(final FeatureValue left, final RelationOperator op, final FeatureValue ref) {
     if (op == null) {
       // fail fast
       return false;
     }
     else if (RelationOperator.EQUAL.equals(op)) {
-      return FeatureValueHelper.isEqual(left, right);
+      return FeatureValueHelper.isEqual(left, ref);
     }
     else if (RelationOperator.NOT_EQUAL.equals(op)) {
-      return FeatureValueHelper.notEqual(left, right);
+      return FeatureValueHelper.notEqual(left, ref);
     }
     else if (RelationOperator.GREATER_THAN.equals(op)) {
-      return FeatureValueHelper.greaterThan(left, right);
+      return FeatureValueHelper.greaterThan(left, ref);
     }
     else if (RelationOperator.GREATER_OR_EQUAL.equals(op)) {
-      return FeatureValueHelper.greaterOrEqual(left, right);
+      return FeatureValueHelper.greaterOrEqual(left, ref);
     }
     else if (RelationOperator.LESS_THAN.equals(op)) {
-      return FeatureValueHelper.lessThan(left, right);
+      return FeatureValueHelper.lessThan(left, ref);
     }
     else if (RelationOperator.LESS_OR_EQUAL.equals(op)) {
-      return FeatureValueHelper.lessOrEqual(left, right);
+      return FeatureValueHelper.lessOrEqual(left, ref);
     }
     else {
       return false;
     }
   }
 
-  public static List<FeatureValue> fulfillsOperation(final List<FeatureValue> left, final RelationOperator op, final FeatureValue right) {
+  public static List<FeatureValue> fulfillsOperation(final List<FeatureValue> left, final RelationOperator op, final FeatureValue ref) {
     if (op == null) {
       // fail fast
       return null;
     }
     else if (RelationOperator.EQUAL.equals(op)) {
-      return FeatureValueHelper.isEqual(left, right);
+      return FeatureValueHelper.isEqual(left, ref);
     }
     else if (RelationOperator.NOT_EQUAL.equals(op)) {
-      return FeatureValueHelper.notEqual(left, right);
+      return FeatureValueHelper.notEqual(left, ref);
     }
     else if (RelationOperator.GREATER_THAN.equals(op)) {
-      return FeatureValueHelper.greaterThan(left, right);
+      return FeatureValueHelper.greaterThan(left, ref);
     }
     else if (RelationOperator.GREATER_OR_EQUAL.equals(op)) {
-      return FeatureValueHelper.greaterOrEqual(left, right);
+      return FeatureValueHelper.greaterOrEqual(left, ref);
     }
     else if (RelationOperator.LESS_THAN.equals(op)) {
-      return FeatureValueHelper.lessThan(left, right);
+      return FeatureValueHelper.lessThan(left, ref);
     }
     else if (RelationOperator.LESS_OR_EQUAL.equals(op)) {
-      return FeatureValueHelper.lessOrEqual(left, right);
+      return FeatureValueHelper.lessOrEqual(left, ref);
     }
     else {
       return null;
     }
   }
 
-  public static List<FeatureValue> fulfillsOperation(final FeatureValue left, final RelationOperator op, final List<FeatureValue> right) {
-    return fulfillsOperation(right, getComplementaryOperator(op), left);
+  public static List<FeatureValue> fulfillsOperation(final FeatureValue ref, final RelationOperator op, final List<FeatureValue> right) {
+    return fulfillsOperation(right, getComplementaryOperator(op), ref);
+  }
+
+  public static List<FeatureValue> fulfillsOperation(final List<FeatureValue> left, final RelationOperator op, final List<FeatureValue> ref) {
+    if (op == null) {
+      // fail fast
+      return null;
+    }
+    else if (RelationOperator.EQUAL.equals(op)) {
+      return FeatureValueHelper.isEqual(left, ref);
+    }
+    else if (RelationOperator.NOT_EQUAL.equals(op)) {
+      return FeatureValueHelper.notEqual(left, ref);
+    }
+    else if (RelationOperator.GREATER_THAN.equals(op)) {
+      return FeatureValueHelper.greaterThan(left, ref);
+    }
+    else if (RelationOperator.GREATER_OR_EQUAL.equals(op)) {
+      return FeatureValueHelper.greaterOrEqual(left, ref);
+    }
+    else if (RelationOperator.LESS_THAN.equals(op)) {
+      return FeatureValueHelper.lessThan(left, ref);
+    }
+    else if (RelationOperator.LESS_OR_EQUAL.equals(op)) {
+      return FeatureValueHelper.lessOrEqual(left, ref);
+    }
+    else {
+      return null;
+    }
   }
 }

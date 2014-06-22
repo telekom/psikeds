@@ -36,6 +36,7 @@ public class FeatureValueComparator implements Comparator<FeatureValue> {
    */
   @Override
   public int compare(final FeatureValue fv1, final FeatureValue fv2) {
+    // 1. comparison of values as numbers
     BigDecimal bd1 = null;
     BigDecimal bd2 = null;
     try {
@@ -50,18 +51,9 @@ public class FeatureValueComparator implements Comparator<FeatureValue> {
     catch (final Exception ex) {
       bd2 = null;
     }
-    if ((bd1 == null) && (bd2 == null)) {
-      if ((fv1 == null) && (fv2 == null)) {
-        return 0;
-      }
-      if ((fv1 == null) && (fv2 != null)) {
-        return -1;
-      }
-      if ((fv1 != null) && (fv2 == null)) {
-        return 1;
-      }
-      // fallback to default-comparison of fv-objects
-      return fv1.compareTo(fv2);
+    if ((bd1 != null) && (bd2 != null)) {
+      // mathematically compare numbers
+      return bd1.compareTo(bd2);
     }
     if ((bd1 == null) && (bd2 != null)) {
       return -1;
@@ -69,7 +61,32 @@ public class FeatureValueComparator implements Comparator<FeatureValue> {
     if ((bd1 != null) && (bd2 == null)) {
       return 1;
     }
-    // compare fv as numbers
-    return bd1.compareTo(bd2);
+    // 2. fallback to comparison of values as strings
+    String val1 = null;
+    try {
+      val1 = fv1.getValue().trim();
+    }
+    catch (final Exception ex) {
+      val1 = null;
+    }
+    String val2 = null;
+    try {
+      val2 = fv2.getValue().trim();
+    }
+    catch (final Exception ex) {
+      val2 = null;
+    }
+    if ((val1 != null) && (val2 != null)) {
+      // alphabetically compare strings
+      return val1.compareTo(val2);
+    }
+    if ((val1 == null) && (val2 != null)) {
+      return -1;
+    }
+    if ((val1 != null) && (val2 == null)) {
+      return 1;
+    }
+    // null equals null
+    return 0;
   }
 }

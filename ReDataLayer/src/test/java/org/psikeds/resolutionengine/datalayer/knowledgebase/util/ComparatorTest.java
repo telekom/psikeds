@@ -57,7 +57,7 @@ public class ComparatorTest {
   @Test
   public void test1_FeatureValueHelper() throws Exception {
     boolean ok = false;
-    LOGGER.info("Starting test of FeatureValueComparator and FeatureValueHelper ...");
+    LOGGER.info("Starting Test 1: FeatureValueComparator and FeatureValueHelper ...");
     try {
       LOGGER.info("... creating Feature-Values ...");
       final FeatureValue fvi1 = new IntegerFeatureValue("FVI1", "FVI1", "1");
@@ -202,7 +202,7 @@ public class ComparatorTest {
       fail(t.getMessage());
     }
     finally {
-      LOGGER.info("... test of FeatureValueComparator and FeatureValueHelper finished " + (ok ? "without problems." : "with ERRORS!!!"));
+      LOGGER.info("... Test 1: FeatureValueComparator and FeatureValueHelper finished " + (ok ? "without problems." : "with ERRORS!!!"));
     }
   }
 
@@ -212,7 +212,7 @@ public class ComparatorTest {
   @Test
   public void test2_RelationHelper() throws Exception {
     boolean ok = false;
-    LOGGER.info("Starting test of RelationHelper ...");
+    LOGGER.info("Starting Test 2: RelationHelper ...");
     try {
       LOGGER.info("... creating Feature-Values ...");
       final FeatureValue fvi1 = new IntegerFeatureValue("FVI1", "FVI1", "1");
@@ -335,7 +335,125 @@ public class ComparatorTest {
       fail(t.getMessage());
     }
     finally {
-      LOGGER.info("... test of RelationHelper finished " + (ok ? "without problems." : "with ERRORS!!!"));
+      LOGGER.info("... Test 2: RelationHelper finished " + (ok ? "without problems." : "with ERRORS!!!"));
+    }
+  }
+
+  /**
+   * Test method for double-sided Comparison of FV-Lists.
+   */
+  @Test
+  public void test3_FeatureValueList() throws Exception {
+    boolean ok = false;
+    LOGGER.info("Starting Test 3: Double-sided comparison of FeatureValue-Lists ...");
+    try {
+      LOGGER.info("... creating Feature-Values ...");
+      final FeatureValue fv1 = new IntegerFeatureValue("FV1", "FV1", "1");
+      final FeatureValue fv2 = new FloatFeatureValue("FV2", "FV2", 1.9999999999f, 3);
+      final FeatureValue fv3 = new FloatFeatureValue("FV3", "FV3", "3.000");
+      final FeatureValue fv4 = new FeatureValue("FV4", "FV4", "4");
+      final FeatureValue fv5 = new IntegerFeatureValue("FV5", "FV5", 5);
+      final FeatureValue fv6 = new FloatFeatureValue("FV6", "FVF6", 6.012345f, 2);
+      final FeatureValue fv7 = new FloatFeatureValue("FV7", "FV7", "7");
+      final FeatureValue fv8 = new FeatureValue("FV8", "FV8", "8.0000");
+      final FeatureValue fv9 = new IntegerFeatureValue("FV9", "FV9", 9);
+      final FeatureValue fv10 = new FeatureValue("FV10", "FV10", "10");
+      LOGGER.info("... creating and shuffling Lists of Feature-Values ...");
+      final List<FeatureValue> list1to3 = new ArrayList<FeatureValue>();
+      list1to3.add(fv1);
+      list1to3.add(fv2);
+      list1to3.add(fv3);
+      FeatureValueHelper.shuffle(list1to3);
+      assertEquals(3, list1to3.size());
+      final List<FeatureValue> list1to5 = new ArrayList<FeatureValue>();
+      list1to5.add(fv1);
+      list1to5.add(fv2);
+      list1to5.add(fv3);
+      list1to5.add(fv4);
+      list1to5.add(fv5);
+      FeatureValueHelper.shuffle(list1to5);
+      assertEquals(5, list1to5.size());
+      final List<FeatureValue> list4to7 = new ArrayList<FeatureValue>();
+      list4to7.add(fv4);
+      list4to7.add(fv5);
+      list4to7.add(fv6);
+      list4to7.add(fv7);
+      FeatureValueHelper.shuffle(list4to7);
+      assertEquals(4, list4to7.size());
+      final List<FeatureValue> list6to10 = new ArrayList<FeatureValue>();
+      list6to10.add(fv6);
+      list6to10.add(fv7);
+      list6to10.add(fv8);
+      list6to10.add(fv9);
+      list6to10.add(fv10);
+      FeatureValueHelper.shuffle(list6to10);
+      assertEquals(5, list6to10.size());
+      final List<FeatureValue> nothing = null;
+      LOGGER.info("... comparing FeatureValue-Lists ...");
+      List<FeatureValue> result = RelationHelper.fulfillsOperation(list1to5, RelationOperator.EQUAL, list4to7);
+      assertNotNull(result);
+      assertEquals(2, result.size());
+      assertTrue(result.contains(fv4));
+      assertTrue(result.contains(fv5));
+      result = RelationHelper.fulfillsOperation(list6to10, RelationOperator.EQUAL, nothing);
+      assertNotNull(result);
+      assertEquals(0, result.size());
+      result = RelationHelper.fulfillsOperation(list1to3, RelationOperator.EQUAL, list6to10);
+      assertNotNull(result);
+      assertEquals(0, result.size());
+      result = RelationHelper.fulfillsOperation(list1to5, RelationOperator.NOT_EQUAL, list4to7);
+      assertNotNull(result);
+      assertEquals(3, result.size());
+      assertTrue(result.contains(fv1));
+      assertTrue(result.contains(fv2));
+      assertTrue(result.contains(fv3));
+      result = RelationHelper.fulfillsOperation(list4to7, RelationOperator.NOT_EQUAL, list4to7);
+      assertNotNull(result);
+      assertEquals(0, result.size());
+      result = RelationHelper.fulfillsOperation(list6to10, RelationOperator.NOT_EQUAL, nothing);
+      assertNotNull(result);
+      assertEquals(5, result.size());
+      result = RelationHelper.fulfillsOperation(list1to5, RelationOperator.LESS_THAN, list6to10);
+      assertNotNull(result);
+      assertEquals(5, result.size());
+      assertTrue(result.contains(fv1));
+      assertTrue(result.contains(fv5));
+      assertFalse(result.contains(fv6));
+      assertFalse(result.contains(fv10));
+      result = RelationHelper.fulfillsOperation(list1to5, RelationOperator.LESS_OR_EQUAL, list1to3);
+      assertNotNull(result);
+      assertEquals(3, result.size());
+      assertTrue(result.contains(fv1));
+      assertTrue(result.contains(fv2));
+      assertTrue(result.contains(fv3));
+      result = RelationHelper.fulfillsOperation(list6to10, RelationOperator.GREATER_THAN, list1to5);
+      assertNotNull(result);
+      assertEquals(5, result.size());
+      assertEquals(5, result.size());
+      assertTrue(result.contains(fv6));
+      assertTrue(result.contains(fv10));
+      assertFalse(result.contains(fv1));
+      assertFalse(result.contains(fv5));
+      result = RelationHelper.fulfillsOperation(list1to5, RelationOperator.GREATER_OR_EQUAL, list4to7);
+      assertNotNull(result);
+      assertEquals(2, result.size());
+      assertTrue(result.contains(fv4));
+      assertTrue(result.contains(fv5));
+      // done
+      ok = true;
+    }
+    catch (final AssertionError ae) {
+      ok = false;
+      LOGGER.error("Functional Error: " + ae.getMessage(), ae);
+      throw ae;
+    }
+    catch (final Throwable t) {
+      ok = false;
+      LOGGER.error("Technical Error: " + t.getMessage(), t);
+      fail(t.getMessage());
+    }
+    finally {
+      LOGGER.info("... Test 3: Double-sided comparison of FeatureValue-Lists finished " + (ok ? "without problems." : "with ERRORS!!!"));
     }
   }
 }
