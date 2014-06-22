@@ -194,6 +194,44 @@ public abstract class ChoicesHelper {
     }
   }
 
+  public static boolean cleanupFeatureChoices(final KnowledgeEntity ke, final FeatureValues vals, final boolean keep) {
+    boolean removed = false;
+    final int num = (vals == null ? 0 : vals.size());
+    try {
+      LOGGER.trace("--> cleanupFeatureChoices(); keep = {}; #values = {}", keep, num);
+      if (ke != null) {
+        final FeatureChoices choices = ke.getPossibleFeatures();
+        final Iterator<FeatureChoice> fciter = choices.iterator();
+        while (fciter.hasNext()) {
+          final FeatureChoice fc = fciter.next();
+          final FeatureValues values = fc.getPossibleValues();
+          final Iterator<FeatureValue> valiter = values.iterator();
+          while (valiter.hasNext()) {
+            final FeatureValue fv = valiter.next();
+            if (keep) {
+              if ((num <= 0) || !vals.contains(fv)) {
+                LOGGER.debug("Removing FeatureValue {} of Feature {} from Choices for Variant {}", fv.getFeatureValueID(), fv.getFeatureID(), fc.getParentVariantID());
+                valiter.remove();
+                removed = true;
+              }
+            }
+            else {
+              if ((num > 0) && vals.contains(fv)) {
+                LOGGER.debug("Removing FeatureValue {} of Feature {} from Choices for Variant {}", fv.getFeatureValueID(), fv.getFeatureID(), fc.getParentVariantID());
+                valiter.remove();
+                removed = true;
+              }
+            }
+          }
+        }
+      }
+      return removed;
+    }
+    finally {
+      LOGGER.trace("<-- cleanupFeatureChoices(); keep = {}; removed = {}\nResulting KE = {}", keep, removed, ke);
+    }
+  }
+
   // ----------------------------------------------------------------
 
   public static boolean cleanupConceptChoices(final KnowledgeEntity ke, final String variantId) {
@@ -238,6 +276,44 @@ public abstract class ChoicesHelper {
     }
     finally {
       LOGGER.trace("<-- cleanupConceptChoices(); VID = {}; CIDs = {}; removed = {}", variantId, conceptIDs, removed);
+    }
+  }
+
+  public static boolean cleanupConceptChoices(final KnowledgeEntity ke, final FeatureValues vals, final boolean keep) {
+    boolean removed = false;
+    final int num = (vals == null ? 0 : vals.size());
+    try {
+      LOGGER.trace("--> cleanupConceptChoices(); keep = {}; #values = {}", keep, num);
+      if (ke != null) {
+        final ConceptChoices choices = ke.getPossibleConcepts();
+        final Iterator<ConceptChoice> cciter = choices.iterator();
+        while (cciter.hasNext()) {
+          final ConceptChoice cc = cciter.next();
+          final Concepts cons = cc.getConcepts();
+          final Iterator<Concept> coniter = cons.iterator();
+          while (coniter.hasNext()) {
+            boolean found = false;
+            final Concept c = coniter.next();
+            final FeatureValues feats = c.getValues();
+            final Iterator<FeatureValue> fviter = feats.iterator();
+            while (fviter.hasNext()) {
+              final FeatureValue fv = fviter.next();
+              if ((num > 0) && vals.contains(fv)) {
+                found = true;
+              }
+            }
+            if ((keep && !found) || (!keep && found)) {
+              LOGGER.debug("Removing Concept {} from Choices for Variant {}", c.getConceptID(), cc.getParentVariantID());
+              coniter.remove();
+              removed = true;
+            }
+          }
+        }
+      }
+      return removed;
+    }
+    finally {
+      LOGGER.trace("<-- cleanupConceptChoices(); keep = {}; removed = {}\nResulting KE = {}", keep, removed, ke);
     }
   }
 
@@ -318,5 +394,59 @@ public abstract class ChoicesHelper {
     finally {
       LOGGER.trace("<-- getNewConceptChoices()\nChoices = {}", choices);
     }
+  }
+
+  // ----------------------------------------------------------------
+
+  public static FeatureValues getFeatureValues(final KnowledgeEntity ke, final String featureId) {
+    if ((ke != null) && !StringUtils.isEmpty(featureId)) {
+      for (final FeatureChoice fc : ke.getPossibleFeatures()) {
+        if (featureId.equals(fc.getFeatureID())) {
+          // there is at most one choice for a feature
+          return fc.getPossibleValues();
+        }
+      }
+    }
+    return null;
+  }
+
+  public static FeatureValues getFeatureValues(final Concepts concepts, final String featureId) {
+    FeatureValues result = null;
+    if ((concepts != null) && !concepts.isEmpty() && !StringUtils.isEmpty(featureId)) {
+      for (final Concept con : concepts) {
+        for (final FeatureValue fv : con.getValues()) {
+          if (featureId.equals(fv.getFeatureID())) {
+            if (result == null) {
+              result = new FeatureValues();
+            }
+            if (!result.contains(fv)) {
+              result.add(fv);
+            }
+            // every concept has exactly one value per feature
+            continue;
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  public static Concepts getConcepts(final KnowledgeEntity ke, final String featureId) {
+    if ((ke != null) && !StringUtils.isEmpty(featureId)) {
+      for (final ConceptChoice cc : ke.getPossibleConcepts()) {
+        final Concepts concepts = cc.getConcepts();
+        if ((concepts != null) && !concepts.isEmpty()) {
+          for (final Concept con : concepts) {
+            final List<String> fids = (con == null ? null : con.getFeatureIds());
+            if ((fids != null) && fids.contains(featureId)) {
+              // currently we have only primary concepts,
+              // i.e. all concepts contain the same features
+              return concepts;
+            }
+          }
+        }
+      }
+    }
+    return null;
   }
 }

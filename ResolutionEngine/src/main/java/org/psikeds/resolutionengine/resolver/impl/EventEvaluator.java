@@ -42,6 +42,7 @@ import org.psikeds.resolutionengine.transformer.Transformer;
 import org.psikeds.resolutionengine.transformer.impl.Vo2PojoTransformer;
 import org.psikeds.resolutionengine.util.ConceptHelper;
 import org.psikeds.resolutionengine.util.FeatureValueHelper;
+import org.psikeds.resolutionengine.util.KnowledgeEntityHelper;
 import org.psikeds.resolutionengine.util.KnowledgeHelper;
 
 /**
@@ -195,6 +196,7 @@ public class EventEvaluator implements InitializingBean, Resolver {
         stillPossible = true;
         return stillPossible;
       }
+      LOGGER.debug("Nexus {} of Event {} is: {}", e.getVariantID(), eid, shortDisplayKE(root));
       stillPossible = checkKnowledgeEntities(e, ctx, root, true, raeh, metadata);
       if (raeh.isRelevant(e)) {
         if (!stillPossible) {
@@ -219,7 +221,7 @@ public class EventEvaluator implements InitializingBean, Resolver {
     boolean stillPossible = false;
     final String eid = (e == null ? null : e.getEventID());
     try {
-      LOGGER.trace("--> checkKnowledgeEntities(); E = {}", eid);
+      LOGGER.trace("--> checkKnowledgeEntities(); E = {}; Entities = {}", eid, shortDisplayKE(entities));
       for (final KnowledgeEntity ke : entities) {
         if (!raeh.isRelevant(e)) {
           // Fail fast: Event was already triggered or made obsolete
@@ -244,7 +246,7 @@ public class EventEvaluator implements InitializingBean, Resolver {
       return stillPossible;
     }
     finally {
-      LOGGER.trace("<-- checkKnowledgeEntities(); E = {}; Still possible = {}", eid, stillPossible);
+      LOGGER.trace("<-- checkKnowledgeEntities(); E = {}; Entities = {}; Still possible = {}", eid, shortDisplayKE(entities), stillPossible);
     }
   }
 
@@ -269,10 +271,10 @@ public class EventEvaluator implements InitializingBean, Resolver {
         // let's see whether there is a matching Choice
         stillPossible = checkChoices(e, currentPathElement, ke.getPossibleVariants(), isVariant, raeh, metadata);
         if (stillPossible) {
-          LOGGER.debug("Path {} of Event {} is matching to Choice of this KE: {}", path, eid, ke);
+          LOGGER.debug("Path {} of Event {} is matching to Choice of this KE: {}", path, eid, shortDisplayKE(ke));
         }
         else {
-          LOGGER.debug("Path {} of Event {} is matching neither KE nor any Choice.", path, eid);
+          LOGGER.debug("Path {} of Event {} is matching neither KE nor any Choice: {}", path, eid, shortDisplayKE(ke));
         }
         return stillPossible;
       }
@@ -288,7 +290,7 @@ public class EventEvaluator implements InitializingBean, Resolver {
       // Context Path left. Let's see whether next part is matching a Choice, too.
       stillPossible = checkChoices(e, path.subList(1, len), ke, !isVariant, raeh, metadata);
       if (stillPossible) {
-        LOGGER.debug("Next PE of Event {} is also matching to Choice of this KE --> not matching but still possible.", eid);
+        LOGGER.debug("Next PE of Event {} is also matching to Choice of KE {} --> not matching but still possible.", eid, shortDisplayKE(ke));
         matching = false;
         return stillPossible;
       }
@@ -298,19 +300,19 @@ public class EventEvaluator implements InitializingBean, Resolver {
       stillPossible = checkKnowledgeEntity(e, path.subList(1, len), ke, !isVariant, raeh, metadata);
       if (stillPossible) {
         if (len > 2) {
-          LOGGER.debug("Next PE of Event {} is also matching to this KE --> Recursion!", eid);
+          LOGGER.debug("Next PE of Event {} is also matching to KE {} --> Recursion!", eid, shortDisplayKE(ke));
           matching = false;
           stillPossible = checkKnowledgeEntities(e, path.subList(2, len), ke.getChildren(), isVariant, raeh, metadata);
         }
         else { // len <= 2
-          LOGGER.debug("Path {} of Event {} ends at this KE: {}", path, eid, ke);
+          LOGGER.debug("Path {} of Event {} ends at this KE: {}", path, eid, shortDisplayKE(ke));
           matching = checkTrigger(e, ke, !isVariant, raeh, metadata);
           stillPossible = false;
         }
         return stillPossible;
       }
       // Let's do some Recursion ;-)
-      LOGGER.debug("PE of Event {} matching to this KE --> Recursion!", eid);
+      LOGGER.debug("PE of Event {} matching to this KE: {} --> Recursion!", eid, shortDisplayKE(ke));
       matching = false;
       stillPossible = checkKnowledgeEntities(e, path.subList(1, len), ke.getChildren(), !isVariant, raeh, metadata);
       return stillPossible;
@@ -557,5 +559,15 @@ public class EventEvaluator implements InitializingBean, Resolver {
         metadata.addInfo(key, msg);
       }
     }
+  }
+
+  // ----------------------------------------------------------------
+
+  public static String shortDisplayKE(final KnowledgeEntity ke) {
+    return KnowledgeEntityHelper.shortDisplayKE(ke);
+  }
+
+  public static String shortDisplayKE(final KnowledgeEntities entities) {
+    return KnowledgeEntityHelper.shortDisplayKE(entities);
   }
 }

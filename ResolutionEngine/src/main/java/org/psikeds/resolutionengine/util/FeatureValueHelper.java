@@ -14,6 +14,8 @@
  *******************************************************************************/
 package org.psikeds.resolutionengine.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -74,7 +76,7 @@ public abstract class FeatureValueHelper {
               return ret;
             }
             else {
-              LOGGER.debug("Feature has another Value: {}", val);
+              LOGGER.debug("Feature {} has another Value: {}", featureID, val);
               ret = RET_FV_NOT_POSSIBLE;
               return ret;
             }
@@ -93,7 +95,7 @@ public abstract class FeatureValueHelper {
               return ret;
             }
             else {
-              LOGGER.debug("There are Choices for the Feature, but the desired Value is not possible: {}", fc);
+              LOGGER.debug("There are Choices for Feature {}, but the desired Value is not possible: {}", featureID, fc);
               ret = RET_FV_NOT_POSSIBLE;
               return ret;
             }
@@ -114,7 +116,7 @@ public abstract class FeatureValueHelper {
                 return ret;
               }
               else {
-                LOGGER.debug("Possible Concepts contain the Feature, but the desired Value is not possible: {}", cc);
+                LOGGER.debug("Possible Concepts contain Feature {}, but the desired Value is not possible: {}", featureID, cc);
                 ret = RET_FV_NOT_POSSIBLE;
                 return ret;
               }
@@ -161,6 +163,18 @@ public abstract class FeatureValueHelper {
 
   // ----------------------------------------------------------------
 
+  public static org.psikeds.resolutionengine.datalayer.vo.FeatureValue findFeatureValue(final KnowledgeBase kb, final KnowledgeEntity ke, final String featureId) {
+    if ((ke != null) && (featureId != null)) {
+      for (final org.psikeds.resolutionengine.interfaces.pojos.FeatureValue fv : ke.getFeatures()) {
+        if (featureId.equals(fv.getFeatureID())) {
+          // note: a ke has at most one value for a feature
+          return pojo2ValueObject(kb, fv);
+        }
+      }
+    }
+    return null;
+  }
+
   public static boolean removeImpossibleFeatureValues(final KnowledgeEntity ke) {
     boolean removed = false;
     try {
@@ -169,6 +183,7 @@ public abstract class FeatureValueHelper {
         for (final FeatureValue fv : ke.getFeatures()) {
           // remove all choices of this variant for the feature belonging to the value
           if (ChoicesHelper.cleanupFeatureChoices(ke, ke.getVariant().getVariantID(), fv.getFeatureID())) {
+            LOGGER.debug("Removed impossible Feature-Values of KE: {}", shortDisplayKE(ke));
             removed = true;
           }
         }
@@ -178,5 +193,69 @@ public abstract class FeatureValueHelper {
     finally {
       LOGGER.trace("<-- removeImpossibleFeatureValues(); removed = {}; KE = {}", removed, ke);
     }
+  }
+
+  // ----------------------------------------------------------------
+
+  public static org.psikeds.resolutionengine.datalayer.vo.FeatureValue pojo2ValueObject(final KnowledgeBase kb, final FeatureValue pojo) {
+    final String featureValueId = (pojo == null ? null : pojo.getFeatureValueID());
+    return (((kb == null) || StringUtils.isEmpty(featureValueId)) ? null : kb.getFeatureValue(featureValueId)); // lookup fv from kb to ensure clean data
+  }
+
+  public static List<org.psikeds.resolutionengine.datalayer.vo.FeatureValue> pojo2ValueObject(final KnowledgeBase kb, final Collection<? extends FeatureValue> pojo) {
+    List<org.psikeds.resolutionengine.datalayer.vo.FeatureValue> lst = null;
+    if (pojo != null) {
+      lst = new ArrayList<org.psikeds.resolutionengine.datalayer.vo.FeatureValue>();
+      for (final org.psikeds.resolutionengine.interfaces.pojos.FeatureValue pfv : pojo) {
+        final org.psikeds.resolutionengine.datalayer.vo.FeatureValue vofv = pojo2ValueObject(kb, pfv);
+        if (vofv != null) {
+          lst.add(vofv);
+        }
+      }
+    }
+    return lst;
+  }
+
+  // ----------------------------------------------------------------
+
+  public static boolean addAllDistinct(
+      final List<org.psikeds.resolutionengine.datalayer.vo.FeatureValue> targetList,
+      final Collection<? extends org.psikeds.resolutionengine.datalayer.vo.FeatureValue> additionalElements) {
+    return org.psikeds.resolutionengine.datalayer.knowledgebase.util.FeatureValueHelper.addAllDistinct(targetList, additionalElements);
+  }
+
+  public static boolean addAllDistinct(final FeatureValues targetList, final Collection<? extends FeatureValue> additionalElements) {
+    boolean changed = false;
+    if ((targetList != null) && (additionalElements != null)) {
+      for (final FeatureValue elem : additionalElements) {
+        if (!targetList.contains(elem)) {
+          changed = true;
+          targetList.add(elem);
+        }
+      }
+    }
+    return changed;
+  }
+
+  public static FeatureValues combineValues(final Collection<? extends FeatureValue> list1, final Collection<? extends FeatureValue> list2) {
+    return combineValues(new FeatureValues(), list1, list2);
+  }
+
+  public static FeatureValues combineValues(final FeatureValues targetList, final Collection<? extends FeatureValue> list1, final Collection<? extends FeatureValue> list2) {
+    if (targetList != null) {
+      if (list1 != null) {
+        addAllDistinct(targetList, list1);
+      }
+      if (list2 != null) {
+        addAllDistinct(targetList, list2);
+      }
+    }
+    return targetList;
+  }
+
+  // ----------------------------------------------------------------
+
+  public static String shortDisplayKE(final KnowledgeEntity ke) {
+    return KnowledgeEntityHelper.shortDisplayKE(ke);
   }
 }

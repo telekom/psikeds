@@ -25,17 +25,30 @@ import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.InitializingBean;
 
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
+import org.psikeds.resolutionengine.datalayer.vo.Feature;
+import org.psikeds.resolutionengine.datalayer.vo.FeatureValue;
 import org.psikeds.resolutionengine.datalayer.vo.Relation;
+import org.psikeds.resolutionengine.datalayer.vo.RelationOperator;
+import org.psikeds.resolutionengine.datalayer.vo.RelationParameter;
+import org.psikeds.resolutionengine.interfaces.pojos.Concept;
+import org.psikeds.resolutionengine.interfaces.pojos.ConceptChoice;
+import org.psikeds.resolutionengine.interfaces.pojos.Concepts;
 import org.psikeds.resolutionengine.interfaces.pojos.Decission;
+import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoice;
+import org.psikeds.resolutionengine.interfaces.pojos.FeatureValues;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
 import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntities;
+import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity;
 import org.psikeds.resolutionengine.interfaces.pojos.Metadata;
 import org.psikeds.resolutionengine.resolver.ResolutionException;
 import org.psikeds.resolutionengine.resolver.Resolver;
 import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
 import org.psikeds.resolutionengine.transformer.Transformer;
 import org.psikeds.resolutionengine.transformer.impl.Vo2PojoTransformer;
-import org.psikeds.resolutionengine.util.KnowledgeHelper;
+import org.psikeds.resolutionengine.util.ChoicesHelper;
+import org.psikeds.resolutionengine.util.FeatureValueHelper;
+import org.psikeds.resolutionengine.util.KnowledgeEntityHelper;
+import org.psikeds.resolutionengine.util.RelationHelper;
 
 /**
  * This Resolver will evaluate all active Relations and update
@@ -124,8 +137,6 @@ public class RelationEvaluator implements InitializingBean, Resolver {
       if ((knowledge == null) || (raeh == null)) {
         throw new ResolutionException("Knowledge or RulesAndEventsHandler missing!");
       }
-      // Knowledge is clean so far
-      raeh.setKnowledgeDirty(false);
       // Check Relations, i.e. apply or expire Relations depending on their Context and Condition
       stable = checkRelations(knowledge, raeh, metadata);
       if (!stable) {
@@ -168,7 +179,13 @@ public class RelationEvaluator implements InitializingBean, Resolver {
         final String rootVariantId = (r == null ? null : r.getVariantID());
         if (StringUtils.isEmpty(relationId) || StringUtils.isEmpty(rootVariantId)) {
           markRelationObsolete(r, raeh, metadata);
-          throw new ResolutionException("Invalid Relation!");
+          throw new ResolutionException("Invalid Relation: " + relationId);
+        }
+        if (LOGGER.isTraceEnabled()) {
+          LOGGER.trace("Checking: {}", r);
+        }
+        else {
+          LOGGER.debug("Checking Relation {}", relationId);
         }
         // check pre-Condition
         if (r.isConditional()) {
@@ -182,21 +199,338 @@ public class RelationEvaluator implements InitializingBean, Resolver {
             LOGGER.debug("Conditional Event {} of Relation {} is not triggered yet. Skipping Evaluation.", ceid, relationId);
             continue;
           }
+          LOGGER.debug("Precondition (Event {}) of Relation {} is true.", relationId, ceid);
         }
         // check root / nexus
-        final KnowledgeEntities root = KnowledgeHelper.findRoot(r, knowledge);
+        final KnowledgeEntities root = RelationHelper.findRoot(r, knowledge);
         if ((root == null) || root.isEmpty()) {
           LOGGER.debug("Nexus {} of Relation {} is not included in the current Knowledge yet. Skipping Evaluation.", rootVariantId, relationId);
           continue;
         }
+        LOGGER.debug("Nexus {} of Relation {} is: {}", rootVariantId, relationId, shortDisplayKE(root));
         // evaluate relation
-        // TODO
-        stable = true;
+        if (!checkRelation(r, root, raeh, metadata)) {
+          stable = false;
+        }
       }
       return stable;
     }
     finally {
       LOGGER.trace("<-- checkRelations(); stable = {}", stable);
+    }
+  }
+
+  private boolean checkRelation(final Relation r, final KnowledgeEntities root, final RulesAndEventsHandler raeh, final Metadata metadata) {
+    boolean stable = true;
+    for (final KnowledgeEntity ke : root) {
+      if (!raeh.isActive(r)) {
+        // Fail fast: Relation was already made obsolete
+        return stable;
+      }
+      if (!checkRelation(r, ke, raeh, metadata)) {
+        stable = false;
+      }
+    }
+    return stable;
+  }
+
+  private boolean checkRelation(final Relation r, final KnowledgeEntity root, final RulesAndEventsHandler raeh, final Metadata metadata) {
+    boolean stable = true;
+    final String relationId = (r == null ? null : r.getRelationID());
+    try {
+      LOGGER.trace("--> checkRelation(); relationId = {}; root = {}", relationId, shortDisplayKE(root));
+      final RelationParameter left = r.getLeftSide();
+      final RelationParameter right = r.getLeftSide();
+      if (left.isConstant() && right.isConstant()) {
+        // both sides are constants? does not make sense!
+        LOGGER.debug("Ignoring Relation {} because both Parameters are Constants!", relationId);
+        markRelationObsolete(r, raeh, metadata);
+        return stable;
+      }
+      final RelationOperator op = r.getOperator();
+      if (!left.isConstant() && right.isConstant()) {
+        // left side is a feature of an entity, right side is a constant
+        final KnowledgeEntity leftEntity = getTargetEntity(r, root, true, raeh, metadata);
+        LOGGER.debug("Left Target of Relation {} is: {}", relationId, shortDisplayKE(leftEntity));
+        if ((leftEntity != null) && raeh.isActive(r)) {
+          final Feature leftParameter = RelationHelper.getFeatureVariable(this.kb, left);
+          final FeatureValue rightConstant = RelationHelper.getConstantFeatureValue(this.kb, right);
+          stable = evaluateSingleSidedRelation(r, leftEntity, leftParameter, op, rightConstant, raeh, metadata);
+        }
+        return stable;
+      }
+      if (left.isConstant() && !right.isConstant()) {
+        // right side is a feature of an entity, left side is a constant
+        final KnowledgeEntity rightEntity = getTargetEntity(r, root, false, raeh, metadata);
+        LOGGER.debug("Right Target of Relation {} is: {}", relationId, shortDisplayKE(rightEntity));
+        if ((rightEntity != null) && raeh.isActive(r)) {
+          final Feature rightParameter = RelationHelper.getFeatureVariable(this.kb, right);
+          final FeatureValue leftConstant = RelationHelper.getConstantFeatureValue(this.kb, left);
+          // switch sides, invert operator and handle like the case above
+          stable = evaluateSingleSidedRelation(r, rightEntity, rightParameter, RelationHelper.getComplementaryOperator(op), leftConstant, raeh, metadata);
+        }
+        return stable;
+      }
+      // both sides of relation are feature values of entities
+      final KnowledgeEntity leftEntity = getTargetEntity(r, root, true, raeh, metadata);
+      final KnowledgeEntity rightEntity = getTargetEntity(r, root, false, raeh, metadata);
+      LOGGER.debug("Targets of Relation {} are: L = {} ;  R = {}", relationId, shortDisplayKE(leftEntity), shortDisplayKE(rightEntity));
+      if ((leftEntity != null) && (rightEntity != null) && raeh.isActive(r)) {
+        final Feature leftParameter = RelationHelper.getFeatureVariable(this.kb, left);
+        final Feature rightParameter = RelationHelper.getFeatureVariable(this.kb, right);
+        stable = evaluateDoubleSidedRelation(r, leftEntity, leftParameter, op, rightEntity, rightParameter, raeh, metadata);
+      }
+      else {
+        LOGGER.debug("Relation {} is currently not relevant. Skipping!", relationId);
+      }
+      return stable;
+    }
+    finally {
+      LOGGER.trace("<-- checkRelation(); stable = {}; relationId = {}; root = {}", stable, relationId, shortDisplayKE(root));
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  private KnowledgeEntity getTargetEntity(final Relation r, final KnowledgeEntity root, final boolean left, final RulesAndEventsHandler raeh, final Metadata metadata) {
+    KnowledgeEntity target = null;
+    final String relationId = (r == null ? null : r.getRelationID());
+    try {
+      LOGGER.trace("--> getTargetEntity(); relationId = {}; root = {}", relationId, shortDisplayKE(root));
+      final RelationParameter rp = (left ? r.getLeftSide() : r.getRightSide());
+      final List<String> ctx = rp.getContext();
+      target = RelationHelper.getTargetEntity(root, ctx); // throws exception if ctx is not possible
+      if ((target == null) && LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Skipping evaluation of Relation {} because Context of {} Parameter is not fulfilled yet.", relationId, (left ? "left" : "right"));
+      }
+    }
+    catch (final Exception ex) {
+      LOGGER.debug("Relation {} is irrelevant/obsolete because Context of {} Parameter is not possible!", relationId, (left ? "left" : "right"));
+      target = null;
+      markRelationObsolete(r, raeh, metadata);
+    }
+    finally {
+      LOGGER.trace("<-- getTargetEntity(); relationId = {}; root = {}; target = {}", relationId, shortDisplayKE(root), shortDisplayKE(target));
+    }
+    return target;
+  }
+
+  // ----------------------------------------------------------------
+
+  private boolean evaluateSingleSidedRelation(final Relation r,
+      final KnowledgeEntity leftEntity, final Feature leftParameter,
+      final RelationOperator op, final FeatureValue rightConstant,
+      final RulesAndEventsHandler raeh, final Metadata metadata) {
+
+    boolean removedValues = false;
+    final String relationId = (r == null ? null : r.getRelationID());
+    final String featureId = (leftParameter == null ? null : leftParameter.getFeatureID());
+    final String constantValue = (rightConstant == null ? null : rightConstant.getValue());
+    final String operator = String.valueOf(op);
+    try {
+      LOGGER.trace("--> evaluateSingleSidedRelation(); Rel = {}; [ {} {} {} ]", relationId, featureId, operator, constantValue);
+      // Step 1: check whether a value was already assigned for this feature
+      final FeatureValue found = FeatureValueHelper.findFeatureValue(this.kb, leftEntity, featureId);
+      boolean matching = (found == null ? true : RelationHelper.fulfillsOperation(found, op, rightConstant));
+      if (found != null) {
+        if (LOGGER.isTraceEnabled()) {
+          LOGGER.trace("Relation {} is obsolete. KE was already assigned a Value for the Feature: {}", relationId, found);
+        }
+        else {
+          LOGGER.debug("Value of {} for Feature {} was already assigned to KE. Relation {} is therefore obsolete.", constantValue, featureId, relationId);
+        }
+        FeatureValueHelper.removeImpossibleFeatureValues(leftEntity); // just to be sure
+        if (matching) {
+          markRelationObsolete(r, raeh, metadata);
+        }
+        else {
+          markRelationUnFulfillable(r, raeh, metadata);
+        }
+        removedValues = false;
+        return removedValues;
+      }
+      // Step 2: check possible feature choices
+      LOGGER.debug("Checking Feature-Choices of KE {} for Relation {}", shortDisplayKE(leftEntity), relationId);
+      for (final FeatureChoice fc : leftEntity.getPossibleFeatures()) {
+        if (featureId.equals(fc.getFeatureID())) {
+          // this is a choice for the required feature
+          final FeatureValues oldFvs = fc.getPossibleValues();
+          final int oldSize = (oldFvs == null ? 0 : oldFvs.size());
+          if (oldSize > 0) {
+            // get all values that are fulfilling the relation
+            final FeatureValues newFvs = RelationHelper.fulfillsOperation(this.kb, this.trans, oldFvs, op, rightConstant);
+            final int newSize = (newFvs == null ? 0 : newFvs.size());
+            if (oldSize != newSize) {
+              fc.setPossibleValues(newFvs);
+              removedValues = true;
+              if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace("Applied Relation {} to Feature-Choices of KE. Removed {} possible Values: {}", relationId, (oldSize - newSize), fc);
+              }
+              else {
+                LOGGER.debug("Applied Relation {} to Feature-Choices for Feature {} of KE.", relationId, featureId);
+              }
+            }
+            if (newSize <= 0) {
+              markRelationUnFulfillable(r, raeh, metadata);
+            }
+          }
+        }
+      }
+      // Step 3: check possible concept choices
+      LOGGER.debug("Checking Concept-Choices of KE {} for Relation {}", shortDisplayKE(leftEntity), relationId);
+      for (final ConceptChoice cc : leftEntity.getPossibleConcepts()) {
+        final Concepts oldCons = cc.getConcepts();
+        final int oldSize = (oldCons == null ? 0 : oldCons.size());
+        if (oldSize > 0) {
+          final Concepts newCons = new Concepts();
+          for (final Concept con : oldCons) {
+            matching = true;
+            if (con.getFeatureIds().contains(featureId)) {
+              // concept does affect the desired feature
+              for (final org.psikeds.resolutionengine.interfaces.pojos.FeatureValue fv : con.getValues()) {
+                if (featureId.equals(fv.getFeatureID())) {
+                  matching = RelationHelper.fulfillsOperation(this.kb, fv, op, rightConstant);
+                }
+              }
+            }
+            if (matching) {
+              newCons.add(con);
+            }
+          }
+          final int newSize = (newCons == null ? 0 : newCons.size());
+          if (oldSize != newSize) {
+            cc.setConcepts(newCons);
+            removedValues = true;
+            if (LOGGER.isTraceEnabled()) {
+              LOGGER.trace("Applied Relation {} to Concept-Choices of KE. Removed {} possible Concepts: {}", relationId, (oldSize - newSize), cc);
+            }
+            else {
+              LOGGER.debug("Applied Relation {} to Concept-Choices for Feature {} of KE.", relationId, featureId);
+            }
+          }
+          if (newSize <= 0) {
+            markRelationUnFulfillable(r, raeh, metadata);
+          }
+        }
+      }
+      return removedValues;
+    }
+    finally {
+      if (removedValues) {
+        applyRelation(r, raeh, metadata);
+      }
+      LOGGER.trace("<-- evaluateSingleSidedRelation(); Rel = {}; removedValues = {}", relationId, removedValues);
+    }
+  }
+
+  private boolean evaluateDoubleSidedRelation(final Relation r,
+      final KnowledgeEntity leftEntity, final Feature leftParameter,
+      final RelationOperator op,
+      final KnowledgeEntity rightEntity, final Feature rightParameter,
+      final RulesAndEventsHandler raeh, final Metadata metadata) {
+
+    boolean removedValues = false;
+    final String relationId = (r == null ? null : r.getRelationID());
+    final String leftFeatureId = (leftParameter == null ? null : leftParameter.getFeatureID());
+    final String rightFeatureId = (rightParameter == null ? null : rightParameter.getFeatureID());
+    final String operator = String.valueOf(op);
+    try {
+      LOGGER.trace("--> evaluateDoubleSidedRelation(); Rel = {}; [ {} {} {} ]", relationId, leftFeatureId, operator, rightFeatureId);
+      // Step 1: check whether a value was already assigned for this feature
+      final FeatureValue foundLeft = FeatureValueHelper.findFeatureValue(this.kb, leftEntity, leftFeatureId);
+      final FeatureValue foundRight = FeatureValueHelper.findFeatureValue(this.kb, rightEntity, rightFeatureId);
+      if ((foundLeft == null) && (foundRight != null)) {
+        LOGGER.debug("Feature {} has already an assigned Value {} on right Side of Relation {}", rightFeatureId, foundRight.getFeatureValueID(), relationId);
+        removedValues = evaluateSingleSidedRelation(r, leftEntity, leftParameter, op, foundRight, raeh, metadata);
+        return removedValues;
+      }
+      if ((foundLeft != null) && (foundRight == null)) {
+        LOGGER.debug("Feature {} has already an assigned Value {} on left Side of Relation {}", leftFeatureId, foundLeft.getFeatureValueID(), relationId);
+        removedValues = evaluateSingleSidedRelation(r, rightEntity, rightParameter, RelationHelper.getComplementaryOperator(op), foundLeft, raeh, metadata);
+        return removedValues;
+      }
+      if ((foundLeft != null) && (foundRight != null)) {
+        LOGGER.debug("Relation {} is obsolete. There is already a Value assigned on both Sides: {} vs. {}", relationId, foundLeft.getFeatureValueID(), foundRight.getFeatureValueID());
+        FeatureValueHelper.removeImpossibleFeatureValues(leftEntity); // just to be sure
+        FeatureValueHelper.removeImpossibleFeatureValues(rightEntity); // just to be sure
+        final boolean matching = RelationHelper.fulfillsOperation(foundLeft, op, foundRight);
+        if (matching) {
+          markRelationObsolete(r, raeh, metadata);
+        }
+        else {
+          markRelationUnFulfillable(r, raeh, metadata);
+        }
+        removedValues = false;
+        return removedValues;
+      }
+      // Step 2: lookup possible feature values of all choices on both sides
+      LOGGER.debug("Checking choices of left Entity: {}", shortDisplayKE(leftEntity));
+      LOGGER.debug("Checking choices of right Entity: {}", shortDisplayKE(rightEntity));
+      final FeatureValues leftChoiceFvs = ChoicesHelper.getFeatureValues(leftEntity, leftFeatureId);
+      final int leftChoiceSize = (leftChoiceFvs == null ? 0 : leftChoiceFvs.size());
+      final FeatureValues rightChoiceFvs = ChoicesHelper.getFeatureValues(rightEntity, rightFeatureId);
+      final int rightChoiceSize = (rightChoiceFvs == null ? 0 : rightChoiceFvs.size());
+      final Concepts leftConcepts = ChoicesHelper.getConcepts(leftEntity, leftFeatureId);
+      final FeatureValues leftConceptFvs = ChoicesHelper.getFeatureValues(leftConcepts, leftFeatureId);
+      final int leftConceptSize = (leftConceptFvs == null ? 0 : leftConceptFvs.size());
+      final Concepts rightConcepts = ChoicesHelper.getConcepts(rightEntity, rightFeatureId);
+      final FeatureValues rightConceptFvs = ChoicesHelper.getFeatureValues(rightConcepts, rightFeatureId);
+      final int rightConceptSize = (rightConceptFvs == null ? 0 : rightConceptFvs.size());
+      final boolean foundSomething = ((leftChoiceSize + rightChoiceSize + leftConceptSize + rightConceptSize) > 0);
+      if (!foundSomething) {
+        LOGGER.debug("Relation {} is unfulfillable! There are no possible Values on neither Side: {} vs. {}", relationId, leftFeatureId, rightFeatureId);
+        markRelationUnFulfillable(r, raeh, metadata);
+        removedValues = false;
+        return removedValues;
+      }
+      // Step 3: compare all values from both sides against each other
+      final FeatureValues allLeftFvs = FeatureValueHelper.combineValues(leftChoiceFvs, leftConceptFvs);
+      final int oldLeftSize = (allLeftFvs == null ? 0 : allLeftFvs.size());
+      final FeatureValues allRightFvs = FeatureValueHelper.combineValues(rightChoiceFvs, rightConceptFvs);
+      final int oldRightSize = (allRightFvs == null ? 0 : allRightFvs.size());
+      if (oldLeftSize > 0) {
+        LOGGER.debug("Applying Relation {} to left KE: {}", relationId, shortDisplayKE(leftEntity));
+        final FeatureValues newLeftFvs = RelationHelper.fulfillsOperation(this.kb, this.trans, allLeftFvs, op, allRightFvs);
+        final int newLeftSize = (newLeftFvs == null ? 0 : newLeftFvs.size());
+        if (oldLeftSize != newLeftSize) {
+          removedValues = true;
+          KnowledgeEntityHelper.cleanupKnowledgeEntity(leftEntity, newLeftFvs);
+          if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Applied Relation {} to Choices for Feature {} of left KE. Removed {} possible Values: {}", relationId, leftFeatureId, (oldLeftSize - newLeftSize), leftEntity);
+          }
+          else {
+            LOGGER.debug("Applied Relation {} to Choices for Feature {} of left KE: {}", relationId, leftFeatureId, shortDisplayKE(leftEntity));
+          }
+        }
+        if (newLeftSize <= 0) {
+          markRelationUnFulfillable(r, raeh, metadata);
+        }
+      }
+      if (oldRightSize > 0) {
+        LOGGER.debug("Applying Relation {} to right KE: {}", relationId, shortDisplayKE(rightEntity));
+        final FeatureValues newRightFvs = RelationHelper.fulfillsOperation(this.kb, this.trans, allRightFvs, RelationHelper.getComplementaryOperator(op), allLeftFvs);
+        final int newRightSize = (newRightFvs == null ? 0 : newRightFvs.size());
+        if (oldRightSize != newRightSize) {
+          removedValues = true;
+          KnowledgeEntityHelper.cleanupKnowledgeEntity(rightEntity, newRightFvs);
+          if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Applied Relation {} to Choices for Feature {} of right KE. Removed {} possible Values: {}", relationId, rightFeatureId, (oldRightSize - newRightSize), rightEntity);
+          }
+          else {
+            LOGGER.debug("Applied Relation {} to Choices for Feature {} of right KE: {}", relationId, rightFeatureId, shortDisplayKE(rightEntity));
+          }
+        }
+        if (newRightSize <= 0) {
+          markRelationUnFulfillable(r, raeh, metadata);
+        }
+      }
+      return removedValues;
+    }
+    finally {
+      if (removedValues) {
+        applyRelation(r, raeh, metadata);
+      }
+      LOGGER.trace("<-- evaluateDoubleSidedRelation(); Rel = {}; [ {} {} {} ] ; removedValues = {}", relationId, leftFeatureId, operator, rightFeatureId, removedValues);
     }
   }
 
@@ -210,7 +544,6 @@ public class RelationEvaluator implements InitializingBean, Resolver {
       else {
         LOGGER.debug("APPLIED: {}", r.getRelationID());
       }
-      raeh.setKnowledgeDirty(true);
       if ((metadata != null) && LOGGER.isInfoEnabled()) {
         final String key = "R_" + r.getRelationID() + "_applied";
         final String msg = String.valueOf(r);
@@ -234,5 +567,32 @@ public class RelationEvaluator implements InitializingBean, Resolver {
         metadata.addInfo(key, msg);
       }
     }
+  }
+
+  private void markRelationUnFulfillable(final Relation r, final RulesAndEventsHandler raeh, final Metadata metadata) {
+    if (r != null) {
+      if (LOGGER.isTraceEnabled()) {
+        LOGGER.trace("UNFULFILLABLE: {}", r);
+      }
+      else {
+        LOGGER.debug("UNFULFILLABLE: {}", r.getRelationID());
+      }
+      raeh.setObsolete(r);
+      if ((metadata != null) && LOGGER.isInfoEnabled()) {
+        final String key = "R_" + r.getRelationID() + "_unfulfillable";
+        final String msg = String.valueOf(r);
+        metadata.addInfo(key, msg);
+      }
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  public static String shortDisplayKE(final KnowledgeEntity ke) {
+    return KnowledgeEntityHelper.shortDisplayKE(ke);
+  }
+
+  public static String shortDisplayKE(final KnowledgeEntities entities) {
+    return KnowledgeEntityHelper.shortDisplayKE(entities);
   }
 }

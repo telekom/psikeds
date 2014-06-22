@@ -61,6 +61,7 @@ public class RulesAndEventsHandler implements Serializable {
 
   private final RelationStack activeRelations;
   private final RelationStack obsoleteRelations;
+  private final RelationStack unfulfillableRelations;
 
   private RulesAndEventsHandler(final List<Event> relevantEvents, final List<Rule> relevantRules, final List<Relation> activeRelations) {
     this(relevantEvents, MAX_NUM_EVENTS, relevantRules, MAX_NUM_RULES, activeRelations, MAX_NUM_RELATIONS);
@@ -76,6 +77,7 @@ public class RulesAndEventsHandler implements Serializable {
     this.relevantRules = new RuleStack(maxRules);
     this.relevantRules.setRules(relevantRules);
     this.obsoleteRelations = new RelationStack(maxRelations);
+    this.unfulfillableRelations = new RelationStack(maxRelations);
     this.activeRelations = new RelationStack(maxRelations);
     this.activeRelations.setRelations(activeRelations);
   }
@@ -170,8 +172,20 @@ public class RulesAndEventsHandler implements Serializable {
     return this.activeRelations.containsRelation(rid);
   }
 
+  public boolean isUnfulfillable(final Relation r) {
+    return this.unfulfillableRelations.containsRelation(r);
+  }
+
+  public boolean isUnfulfillable(final String rid) {
+    return this.unfulfillableRelations.containsRelation(rid);
+  }
+
   public Relation setObsolete(final Relation r) {
     return this.activeRelations.move2stack(r, this.obsoleteRelations);
+  }
+
+  public Relation setUnfulfillable(final Relation r) {
+    return this.activeRelations.move2stack(r, this.unfulfillableRelations);
   }
 
   public void updateAllConditionalRelations() {
@@ -234,9 +248,8 @@ public class RulesAndEventsHandler implements Serializable {
   }
 
   public static RulesAndEventsHandler init(final KnowledgeBase kb, final Knowledge knowledge) {
-    // sophisticated more performant initialization: only rules and events
-    // currently "visible" in our knowledge are relevant
-    // TODO
+    // TODO sophisticated more performant initialization
+    // only rules and events currently "visible" in our knowledge are relevant
     return init(kb); // fallback to simple init
   }
 
@@ -321,6 +334,8 @@ public class RulesAndEventsHandler implements Serializable {
       this.activeRelations.dumpRelations(sb, verbose);
       sb.append("OBSOLETE: ");
       this.obsoleteRelations.dumpRelations(sb, verbose);
+      sb.append("UNFULFILLABLE: ");
+      this.unfulfillableRelations.dumpRelations(sb, verbose);
     }
   }
 }

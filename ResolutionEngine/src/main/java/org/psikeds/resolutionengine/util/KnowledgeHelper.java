@@ -49,7 +49,7 @@ public abstract class KnowledgeHelper {
     final String eventId = (e == null ? null : e.getEventID());
     final String rootVariantId = (e == null ? null : e.getVariantID());
     final KnowledgeEntities root = findRoot(rootVariantId, knowledge);
-    LOGGER.debug("Root of Event {} is: {}", eventId, root);
+    LOGGER.debug("Root of Event {} is: {}", eventId, shortDisplayKE(root));
     return root;
   }
 
@@ -57,7 +57,7 @@ public abstract class KnowledgeHelper {
     final String ruleId = (r == null ? null : r.getRuleID());
     final String rootVariantId = (r == null ? null : r.getVariantID());
     final KnowledgeEntities root = findRoot(rootVariantId, knowledge);
-    LOGGER.debug("Root of Rule {} is: {}", ruleId, root);
+    LOGGER.debug("Root of Rule {} is: {}", ruleId, shortDisplayKE(root));
     return root;
   }
 
@@ -65,7 +65,7 @@ public abstract class KnowledgeHelper {
     final String relationId = (r == null ? null : r.getRelationID());
     final String rootVariantId = (r == null ? null : r.getVariantID());
     final KnowledgeEntities root = findRoot(rootVariantId, knowledge);
-    LOGGER.debug("Root of Relation {} is: {}", relationId, root);
+    LOGGER.debug("Root of Relation {} is: {}", relationId, shortDisplayKE(root));
     return root;
   }
 
@@ -75,6 +75,7 @@ public abstract class KnowledgeHelper {
     final KnowledgeEntities result = new KnowledgeEntities();
     final KnowledgeEntities entities = (knowledge == null ? null : knowledge.getEntities());
     findRoot(result, rootVariantId, entities);
+    LOGGER.trace("findRoot( V = {} ) --> {}", rootVariantId, shortDisplayKE(result));
     return result;
   }
 
@@ -88,5 +89,15 @@ public abstract class KnowledgeHelper {
       }
     }
     return result;
+  }
+
+  // ----------------------------------------------------------------
+
+  public static String shortDisplayKE(final KnowledgeEntity ke) {
+    return KnowledgeEntityHelper.shortDisplayKE(ke);
+  }
+
+  public static String shortDisplayKE(final KnowledgeEntities entities) {
+    return KnowledgeEntityHelper.shortDisplayKE(entities);
   }
 }

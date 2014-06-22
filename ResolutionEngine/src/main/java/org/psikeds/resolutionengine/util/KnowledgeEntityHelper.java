@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.interfaces.pojos.ConceptChoices;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureChoices;
+import org.psikeds.resolutionengine.interfaces.pojos.FeatureValues;
 import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntities;
 import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity;
 import org.psikeds.resolutionengine.interfaces.pojos.Purpose;
@@ -94,7 +95,7 @@ public abstract class KnowledgeEntityHelper {
 
   public static KnowledgeEntities addNewKnowledgeEntity(final KnowledgeEntities entities, final KnowledgeEntity newke) {
     try {
-      LOGGER.trace("--> addNewKnowledgeEntity()");
+      LOGGER.trace("--> addNewKnowledgeEntity(); Entities = {}; new KE = {}", shortDisplayKE(entities), shortDisplayKE(newke));
       if ((entities != null) && (newke != null)) {
         for (final KnowledgeEntity ke : entities) {
           final Purpose p = (ke == null ? null : ke.getPurpose());
@@ -105,18 +106,72 @@ public abstract class KnowledgeEntityHelper {
             final String vid1 = v.getVariantID();
             final String vid2 = newke.getVariant().getVariantID();
             if (pid1.equals(pid2) && vid1.equals(vid2)) {
-              LOGGER.debug("Entity-List already contains KnowledgeEntity: {}", newke);
+              LOGGER.debug("Entity-List already contains KnowledgeEntity: {}", shortDisplayKE(newke));
               return entities;
             }
           }
         }
-        LOGGER.debug("Adding new KnowledgeEntity: {}", newke);
+        LOGGER.debug("Adding new KnowledgeEntity: {}", shortDisplayKE(newke));
         entities.add(newke);
       }
       return entities;
     }
     finally {
-      LOGGER.trace("<-- addNewKnowledgeEntity()");
+      LOGGER.trace("<-- addNewKnowledgeEntity(); resulting Entities = {}", shortDisplayKE(entities));
     }
+  }
+
+  // ----------------------------------------------------------------
+
+  public static KnowledgeEntity cleanupKnowledgeEntity(final KnowledgeEntity ke, final FeatureValues vals) {
+    return cleanupKnowledgeEntity(ke, vals, true);
+  }
+
+  public static KnowledgeEntity cleanupKnowledgeEntity(final KnowledgeEntity ke, final FeatureValues vals, final boolean keep) {
+    final int num = (vals == null ? 0 : vals.size());
+    try {
+      LOGGER.trace("--> cleanupKnowledgeEntity(); keep = {}; #values = {}; KE = {}", keep, num, shortDisplayKE(ke));
+      if (ke != null) {
+        LOGGER.debug("Cleaning Concept- and Feature-Choices of KnowledgeEntity: {}", shortDisplayKE(ke));
+        ChoicesHelper.cleanupFeatureChoices(ke, vals, keep);
+        ChoicesHelper.cleanupConceptChoices(ke, vals, keep);
+      }
+      return ke;
+    }
+    finally {
+      LOGGER.trace("<-- cleanupKnowledgeEntity(); keep = {}; #values = {}\nResulting KE = {}", keep, num, ke);
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  public static String shortDisplayKE(final KnowledgeEntity ke) {
+    final StringBuilder sb = new StringBuilder();
+    if (ke != null) {
+      sb.append(ke.getPurpose() != null ? ke.getPurpose().getPurposeID() : "<>");
+      sb.append('/');
+      sb.append(ke.getVariant() != null ? ke.getVariant().getVariantID() : "<>");
+    }
+    else {
+      sb.append("<>");
+    }
+    return sb.toString();
+  }
+
+  public static String shortDisplayKE(final KnowledgeEntities entities) {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("[ ");
+    if (entities != null) {
+      boolean added = false;
+      for (final KnowledgeEntity ke : entities) {
+        if (added) {
+          sb.append(", ");
+        }
+        sb.append(shortDisplayKE(ke));
+        added = true;
+      }
+    }
+    sb.append(" ]");
+    return sb.toString();
   }
 }
