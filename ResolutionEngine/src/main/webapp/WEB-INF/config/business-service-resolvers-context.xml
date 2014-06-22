@@ -33,13 +33,4 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
     <ref bean="RelationEvaluator" />
   </util:list>
 
-  <util:list id="ResolversWithoutRulesAndRelations">
-    <ref bean="VariantDecissionEvaluator" />
-    <ref bean="FeatureDecissionEvaluator" />
-    <ref bean="ConceptDecissionEvaluator" />
-    <ref bean="ObsoleteEntitiesRemover" />
-    <ref bean="AutoCompletionResolver" />
-    <ref bean="EventEvaluator" />
-  </util:list>
-
 </beans>
