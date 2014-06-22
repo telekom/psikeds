@@ -16,6 +16,7 @@ package org.psikeds.resolutionengine.datalayer.knowledgebase.util;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -408,7 +409,7 @@ public abstract class FeatureValueHelper {
 
   // ----------------------------------------------------------------
 
-  public static boolean addAllDistinct(final List<FeatureValue> targetList, final List<FeatureValue> additionalElements) {
+  public static boolean addAllDistinct(final List<FeatureValue> targetList, final Collection<? extends FeatureValue> additionalElements) {
     boolean changed = false;
     if ((targetList != null) && (additionalElements != null)) {
       for (final FeatureValue elem : additionalElements) {
@@ -439,11 +440,11 @@ public abstract class FeatureValueHelper {
     }
   }
 
-  public static FeatureValue min(final List<FeatureValue> randomList) {
+  public static FeatureValue min(final Collection<? extends FeatureValue> randomList) {
     return ((randomList == null) || randomList.isEmpty() ? null : Collections.min(randomList, COMPARATOR));
   }
 
-  public static FeatureValue max(final List<FeatureValue> randomList) {
+  public static FeatureValue max(final Collection<? extends FeatureValue> randomList) {
     return ((randomList == null) || randomList.isEmpty() ? null : Collections.max(randomList, COMPARATOR));
   }
 
