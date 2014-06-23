@@ -14,6 +14,8 @@
  *******************************************************************************/
 package org.psikeds.common.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,15 +39,12 @@ public class JSONHelper {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(JSONHelper.class);
 
-  public static final JSONHelper DEFAULT_JSON_HELPER = new JSONHelper();
+  public static final boolean DEFAULT_JSON_PRETTY_PRINTING = true;
+  public static final JSONHelper DEFAULT_JSON_HELPER = new JSONHelper(DEFAULT_JSON_PRETTY_PRINTING);
 
   private boolean prettyPrinting;
   private ObjectMapper mapper;
   private ObjectWriter writer;
-
-  public JSONHelper() {
-    this(true);
-  }
 
   public JSONHelper(final boolean prettyPrinting) {
     this(null, prettyPrinting);
@@ -145,6 +144,50 @@ public class JSONHelper {
 
   public static void writeObjectToJsonFile(final File src, final Object obj) throws JsonProcessingException, IOException {
     DEFAULT_JSON_HELPER.write(src, obj);
+  }
+
+  // ----------------------------------------------------------------
+
+  public static <T> T copy(final T jsonObj, final Class<T> type) throws JsonProcessingException, IOException {
+    T result = null;
+    ByteArrayOutputStream baos = null;
+    ByteArrayInputStream bais = null;
+    try {
+      if (jsonObj != null) {
+        final JSONHelper helper = new JSONHelper(false);
+        baos = new ByteArrayOutputStream();
+        helper.write(baos, jsonObj);
+        final byte[] data = baos.toByteArray();
+        bais = new ByteArrayInputStream(data);
+        result = helper.read(bais, type);
+      }
+      return result;
+    }
+    finally {
+      try {
+        if (bais != null) {
+          bais.close();
+        }
+      }
+      catch (final Exception ex) {
+        // ignore
+      }
+      finally {
+        bais = null;
+      }
+      try {
+        if (baos != null) {
+          baos.close();
+        }
+      }
+      catch (final Exception ex) {
+        // ignore
+      }
+      finally {
+        baos = null;
+      }
+      LOGGER.trace("Copied JSON-Object: {}", result);
+    }
   }
 
   // ----------------------------------------------------------------
