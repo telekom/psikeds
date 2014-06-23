@@ -39,16 +39,6 @@ For details see file LICENSING in the top project directory
       <redirect />
     </navigation-case>
     <navigation-case>
-      <from-outcome>choices</from-outcome>
-      <to-view-id>/gui/choices.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-    <navigation-case>
-      <from-outcome>apppkgs</from-outcome>
-      <to-view-id>/gui/apppkgs.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-    <navigation-case>
       <from-outcome>back</from-outcome>
       <to-view-id>/gui/home.xhtml</to-view-id>
       <redirect />
@@ -58,33 +48,14 @@ For details see file LICENSING in the top project directory
   <navigation-rule>
     <from-view-id>/gui/prediction.xhtml</from-view-id>
     <navigation-case>
-      <from-outcome>success</from-outcome>
-      <to-view-id>/gui/knowledge.xhtml</to-view-id>
-      <redirect />
+      <from-outcome>prediction</from-outcome>
+      <to-view-id>/gui/prediction.xhtml</to-view-id>
     </navigation-case>
-    <navigation-case>
-      <from-outcome>back</from-outcome>
-      <to-view-id>/gui/knowledge.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-  </navigation-rule>
-
-  <navigation-rule>
-    <from-view-id>/gui/choices.xhtml</from-view-id>
     <navigation-case>
       <from-outcome>success</from-outcome>
       <to-view-id>/gui/knowledge.xhtml</to-view-id>
       <redirect />
     </navigation-case>
-    <navigation-case>
-      <from-outcome>back</from-outcome>
-      <to-view-id>/gui/knowledge.xhtml</to-view-id>
-      <redirect />
-    </navigation-case>
-  </navigation-rule>
-
-  <navigation-rule>
-    <from-view-id>/gui/apppkgs.xhtml</from-view-id>
     <navigation-case>
       <from-outcome>back</from-outcome>
       <to-view-id>/gui/knowledge.xhtml</to-view-id>

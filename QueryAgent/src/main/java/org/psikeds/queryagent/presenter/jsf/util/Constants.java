@@ -26,8 +26,6 @@ public final class Constants {
   public static final String RESULT_BACK = "back";
   public static final String RESULT_SUCCESS = "success";
   public static final String RESULT_ERROR = "error";
-  public static final String RESULT_CHOICES = "choices";
-  public static final String RESULT_APPPKGS = "apppkgs";
   public static final String RESULT_PREDICT = "prediction";
 
   private Constants() {
