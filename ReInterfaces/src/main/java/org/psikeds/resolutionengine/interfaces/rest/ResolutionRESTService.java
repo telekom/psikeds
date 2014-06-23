@@ -126,4 +126,24 @@ public class ResolutionRESTService extends AbstractRESTService {
       return buildResponse(ex);
     }
   }
+
+  @POST
+  @Path("/predict")
+  @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+  @Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+  public Response predict(final ResolutionRequest req, final String reqid) {
+    try {
+      if ((req == null) || ((req.getSessionID() == null) && (req.getKnowledge() == null))) {
+        return buildResponse(Status.BAD_REQUEST, String.valueOf(req));
+      }
+      final ResolutionResponse resp = (ResolutionResponse) handleRequest(reqid, getExecutable(this.delegate, "predict"), req);
+      if ((resp != null) && (resp.getKnowledge() != null) && (resp.getSessionID() != null)) {
+        return buildResponse(Status.OK, resp);
+      }
+      return buildResponse(Status.BAD_REQUEST, String.valueOf(req));
+    }
+    catch (final Exception ex) {
+      return buildResponse(ex);
+    }
+  }
 }

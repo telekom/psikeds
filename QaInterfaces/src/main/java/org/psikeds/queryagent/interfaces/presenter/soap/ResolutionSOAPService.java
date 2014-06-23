@@ -120,4 +120,22 @@ public class ResolutionSOAPService extends AbstractSOAPService {
       throw new Fault(ex);
     }
   }
+
+  @WebMethod(operationName = "doPredict")
+  @WebResult(name = "PredictionResponse", targetNamespace = "org.psikeds.queryagent.soap")
+  public ResolutionResponse doPredict(@WebParam(name = "ResolutionRequest") final ResolutionRequest req, final String reqid) {
+    try {
+      if ((req == null) || ((req.getSessionID() == null) && (req.getKnowledge() == null))) {
+        throw new IllegalArgumentException(String.valueOf(req));
+      }
+      final ResolutionResponse resp = (ResolutionResponse) handleRequest(reqid, getExecutable(this.delegate, "predict"), req);
+      if ((resp == null) || (resp.getKnowledge() == null) || (resp.getSessionID() == null)) {
+        throw new IllegalArgumentException(String.valueOf(req));
+      }
+      return resp;
+    }
+    catch (final Exception ex) {
+      throw new Fault(ex);
+    }
+  }
 }
