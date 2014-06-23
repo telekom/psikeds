@@ -26,6 +26,7 @@ import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.InitializingBean;
 
 import org.psikeds.common.idgen.IdGenerator;
+import org.psikeds.common.util.JSONHelper;
 import org.psikeds.resolutionengine.cache.ResolutionCache;
 import org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase;
 import org.psikeds.resolutionengine.datalayer.vo.Fulfills;
@@ -275,13 +276,11 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     boolean freshSession = false;
     try {
       LOGGER.trace("--> handleRequest(); enforceSeparateSession = {}\nResolutionRequest = {}", enforceSeparateSession, req);
-
-      // Step 0: check preconditions
+      // --- Step 0: check preconditions
       if (this.checkValidityAtRuntime) {
         checkValidity();
       }
-
-      // Step 1: get metadata; either from request or kb
+      // --- Step 1: get metadata; either from request or kb
       metadata = (req == null ? null : req.getMetadata());
       if (metadata == null) {
         metadata = this.trans.valueObject2Pojo(this.kb.getMetaData());
@@ -295,31 +294,36 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
           LOGGER.debug("Using Metadata supplied by Client.");
         }
       }
-
-      // Step 2: get or create session
+      // --- Step 2: get or create session
       oldSessionID = (req == null ? null : req.getSessionID());
       if (StringUtils.isEmpty(oldSessionID)) {
         // no session, create new one
+        oldSessionID = this.gen.getNextId();
+        newSessionID = oldSessionID;
         freshSession = true;
-        newSessionID = oldSessionID = this.gen.getNextId();
-        LOGGER.info("Created new Session: {}", newSessionID);
+        LOGGER.info("No Session, created new one: {}", newSessionID);
       }
       else if (enforceSeparateSession) {
         // use data from old session but create a new one (for prediction)
         freshSession = true;
         newSessionID = this.gen.getNextId();
-        LOGGER.info("Created a separate Session: {}  -->  {}", oldSessionID, newSessionID);
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("Created a separate Session:\n{}  -->  {}", oldSessionID, newSessionID);
+        }
+        else {
+          LOGGER.info("Created a separate Session: {}", newSessionID);
+        }
       }
       else {
         // just resume current session
         newSessionID = oldSessionID;
+        freshSession = false;
         LOGGER.debug("Resuming existing Session: {}", newSessionID);
       }
       if (freshSession) {
         this.cache.removeSession(newSessionID); // just to be sure!
       }
-
-      // Step 3: get knowledge; either from request or cache or kb
+      // --- Step 3: get knowledge; either from request or cache or kb
       Knowledge knowledge = (req == null ? null : req.getKnowledge());
       if (knowledge == null) {
         knowledge = (Knowledge) this.cache.getObject(oldSessionID, SESS_KEY_KNOWLEDGE);
@@ -348,25 +352,30 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
           LOGGER.trace("Using Knowledge supplied by Client:\n{}", knowledge);
         }
         else {
-          LOGGER.debug("Using Knowledge supplied by Client.");
+          LOGGER.info("Using Knowledge supplied by Client.");
         }
       }
-      // whatever way we got our Knowledge, update Cache
-      this.cache.saveObject(newSessionID, SESS_KEY_KNOWLEDGE, knowledge);
-
-      // Step 4: get or create raeh
+      this.cache.saveObject(oldSessionID, SESS_KEY_KNOWLEDGE, knowledge);
+      // --- Step 4: get or create raeh
       RulesAndEventsHandler raeh = (RulesAndEventsHandler) this.cache.getObject(oldSessionID, SESS_KEY_RULES_AND_EVENTS);
       if (raeh == null) {
         raeh = RulesAndEventsHandler.init(getKnowledgeBase(), knowledge);
+        this.cache.saveObject(oldSessionID, SESS_KEY_RULES_AND_EVENTS, raeh);
         LOGGER.trace("Created new RAEH based on Session {}:\n{}", oldSessionID, raeh);
       }
       else if (LOGGER.isTraceEnabled()) {
         LOGGER.trace("Got existing RAEH from Cache for Session {}:\n{}", oldSessionID, raeh);
       }
-      // update cache
+      // --- Step 5: clone data if necessary
+      if (!oldSessionID.equals(newSessionID)) {
+        LOGGER.debug("Cloning Knowledge and RAEH for Usage in separate Session.");
+        knowledge = JSONHelper.copy(knowledge, Knowledge.class);
+        raeh = raeh.copy();
+      }
+      // --- Step 6: update cache for new session
+      this.cache.saveObject(newSessionID, SESS_KEY_KNOWLEDGE, knowledge);
       this.cache.saveObject(newSessionID, SESS_KEY_RULES_AND_EVENTS, raeh);
-
-      // Step 5: resolve Knowledge based on Decission(s)
+      // --- Step 7: resolve Knowledge based on Decission(s)
       final Decissions decissions = (req == null ? null : req.getDecissions());
       if (!initialKnowledge || this.resolveInitialKnowledge) {
         // Sometimes there might be some automatic Resolutions also for
@@ -377,8 +386,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
         // Therefore this Functionality is configurable!
         knowledge = resolveDecissions(knowledge, decissions, metadata, raeh);
       }
-
-      // Step 6: create Response-Object
+      // --- Step 8: create Response-Object
       resp = new ResolutionResponse(newSessionID, metadata, knowledge);
       if (resp.isResolved()) {
         // done, cleanup session
