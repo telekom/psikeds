@@ -31,14 +31,14 @@ For details see file LICENSING in the top project directory
   <div id="container">
     <ui:include src="header.xhtml" />
     <div id='main_content'>
-    <ui:fragment rendered="#{Knowledge.notInitialized or Knowledge.withoutData}">
+    <ui:fragment rendered="#{Prediction.notInitialized or Prediction.withoutData}">
       <p><b><h:outputText value="#{msg['knowledge.empty.text']}" /></b></p>
     </ui:fragment>
-    <ui:fragment rendered="#{!Knowledge.notInitialized and !Knowledge.withoutData}">
+    <ui:fragment rendered="#{!Prediction.notInitialized and !Prediction.withoutData}">
       <p><b><h:outputText value="#{msg['knowledge.overview.text']}" /></b></p>
       <h:form id="selectForm">
         <div class="meta row-fluid detail">
-          <ui:repeat var="di" value="#{Knowledge.knowledge}">
+          <ui:repeat var="di" value="#{Prediction.knowledge}">
             <ui:fragment rendered="#{di.type == 'Entity'}">
               <ui:fragment rendered="#{di.level == 0}">
                 <p/>
@@ -46,7 +46,6 @@ For details see file LICENSING in the top project directory
                 <h3 class="#{di.type} level#{di.level}">#{di.value}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.longDescription}</h3>
               </ui:fragment>
               <ui:fragment rendered="#{di.level != 0}">
-                <!-- <h4 class="#{di.type} level#{di.level}">#{di.key}<h:outputText value="&#160;" />#{di.value}<h:outputText value="&#160;" />#{di.longDescription}</h4> -->
                 <h4 class="#{di.type} level#{di.level}">#{di.value}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.longDescription}</h4>
               </ui:fragment>
             </ui:fragment>
@@ -74,10 +73,7 @@ For details see file LICENSING in the top project directory
               <ul class="#{di.type} level#{di.level}">
                 <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">
                   <h:outputText value="#{msg['knowledge.variant.text']}" />
-                  <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />
-                  <h:commandLink id="selectVariant" action="#{Ctrl.resolve(di.selectionKey)}">#{di.value}</h:commandLink>
-                  <h:outputText value="&#160;" />
-                  <h:commandLink id="predictVariant" action="#{Ctrl.predict(di.selectionKey)}" target="prediction"><img src="#{msg['global.prediction.url']}"/></h:commandLink>
+                  <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.value}
                 </li>
               </ul>
             </ui:fragment>
@@ -88,10 +84,7 @@ For details see file LICENSING in the top project directory
               <ul class="#{di.type} level#{di.level}">
                 <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">
                   <h:outputText value="#{msg['knowledge.feature.value.text']}" />
-                  <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />
-                  <h:commandLink id="selectFeatureValue" action="#{Ctrl.resolve(di.selectionKey)}">#{di.value}</h:commandLink>
-                  <h:outputText value="&#160;" />
-                  <h:commandLink id="predictFeatureValue" action="#{Ctrl.predict(di.selectionKey)}" target="prediction"><img src="#{msg['global.prediction.url']}"/></h:commandLink>
+                  <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.value}
                 </li>
               </ul>
             </ui:fragment>
@@ -99,41 +92,21 @@ For details see file LICENSING in the top project directory
               <ul class="#{di.type} level#{di.level}">
                 <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">
                   <h:outputText value="#{msg['knowledge.concept.text']}" />
-                  <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />
-                  <h:commandLink id="selectConcept" action="#{Ctrl.resolve(di.selectionKey)}">#{di.value}</h:commandLink>
-                  <h:outputText value="&#160;" />#{di.additionalInfo}<h:outputText value="&#160;" />
-                  <h:outputText value="&#160;" />
-                  <h:commandLink id="predictConcept" action="#{Ctrl.predict(di.selectionKey)}" target="prediction"><img src="#{msg['global.prediction.url']}"/></h:commandLink>
+                  <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.value}
+                  <h:outputText value="&#160;" />#{di.additionalInfo}
                 </li>
               </ul>
             </ui:fragment>
           </ui:repeat>
         </div> <!-- meta -->
       </h:form>
-      <ui:fragment rendered="#{Knowledge.resolved}">
+      <ui:fragment rendered="#{Prediction.resolved}">
         <p><b><h:outputText value="#{msg['knowledge.resolved.text']}" /></b></p>
       </ui:fragment>
     </ui:fragment>
     <ui:include src="messages.xhtml" />
-    <h:form id="NaviForm">
-    <ui:fragment rendered="#{Knowledge.notInitialized or Knowledge.withoutData}">
-      <h:commandButton class="btn btn-small" value="#{msg['knowledge.home.button']}" action="#{Ctrl.home()}" />
-    </ui:fragment>
-    <ui:fragment rendered="#{!Knowledge.notInitialized and !Knowledge.withoutData}">
-      <h:commandButton class="btn btn-small" value="#{msg['knowledge.back.button']}" action="#{Ctrl.back()}" />
-<!--
-      <h:panelGrid columns="3">
-        <h:commandButton class="btn btn-small" value="#{msg['knowledge.back.button']}" action="#{Ctrl.back()}" />
-        <h:commandButton class="btn btn-small" value="#{msg['knowledge.choices.button']}" action="#{Ctrl.choices()}" />
-        <h:commandButton class="btn btn-small" value="#{msg['knowledge.apppkgs.button']}" action="#{Ctrl.apppkgs()}" />
-      </h:panelGrid>
--->
-    </ui:fragment>
-    </h:form>
+    <a href="javascript:window.close()">#{msg['knowledge.back.button']}</a>
     </div> <!-- main_content -->
-<!--
-    <ui:include src="footer.xhtml" />
--->
   </div> <!-- container -->
   </h:body>
 </f:view>

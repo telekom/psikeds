@@ -34,17 +34,20 @@ For details see file LICENSING in the top project directory
     <h:form id="naviForm">
       <ui:fragment rendered="#{Knowledge.notInitialized or Knowledge.withoutData}">
         <p><b><h:outputText value="#{msg['home.welcome.text']}" /></b></p>
-        <h:panelGrid columns="2">
+        <h:panelGrid columns="3">
           <h:outputLabel for="initcmd" value="#{msg['home.init.label']}" />
+          <h:outputText value="&#160;" />
           <h:commandButton class="btn btn-small" id="initcmd" value="#{msg['home.init.cmd']}" action="#{Ctrl.init()}" />
         </h:panelGrid>
       </ui:fragment>
       <ui:fragment rendered="#{!Knowledge.notInitialized and !Knowledge.withoutData}">
         <p><b><h:outputText value="#{msg['home.running.text']}" /></b></p>
-        <h:panelGrid columns="2">
+        <h:panelGrid columns="3">
           <h:outputLabel for="resumecmd" value="#{msg['home.resume.label']}" />
+          <h:outputText value="&#160;" />
           <h:commandButton class="btn btn-small" id="resumecmd" value="#{msg['home.resume.cmd']}" action="#{Ctrl.resume()}" />
           <h:outputLabel for="restartcmd" value="#{msg['home.restart.label']}" />
+          <h:outputText value="&#160;" />
           <h:commandButton class="btn btn-small" id="restartcmd" value="#{msg['home.restart.cmd']}" action="#{Ctrl.init()}" />
         </h:panelGrid>
       </ui:fragment>

@@ -155,4 +155,34 @@ public class ResolutionController {
     setSelected(selected);
     return select();
   }
+
+  // Requires Servlet 3.0 / EL 2.2: #{Ctrl.resolve(di.selectionKey)}
+  public String predict(final String selected) {
+    setSelected(selected);
+    return predict();
+  }
+
+  public String predict() {
+    String ret = Constants.RESULT_ERROR;
+    ResolutionRequest req = null;
+    ResolutionResponse resp = null;
+    try {
+      LOGGER.trace("--> predict( {} )", this.selected);
+      final String sessionId = this.model.getSessionID();
+      final Decission decission = SelectionHelper.getDecissionFromString(this.selected);
+      req = new ResolutionRequest(sessionId, decission);
+      resp = getService().predict(req);
+      this.model.setPrediction(resp);
+      this.selected = null;
+      ret = Constants.RESULT_PREDICT;
+    }
+    catch (final Exception ex) {
+      ret = Constants.RESULT_ERROR;
+      LOGGER.error("predict() failed!", ex);
+    }
+    finally {
+      LOGGER.trace("<-- predict(); ret = {}\nreq = {}\nresp = {}", ret, req, resp);
+    }
+    return ret;
+  }
 }

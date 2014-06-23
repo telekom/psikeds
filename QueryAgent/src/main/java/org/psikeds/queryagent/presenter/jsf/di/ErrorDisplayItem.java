@@ -12,25 +12,22 @@
  *
  * For details see file LICENSING in the top project directory
  *******************************************************************************/
-package org.psikeds.queryagent.presenter.jsf.util;
+package org.psikeds.queryagent.presenter.jsf.di;
+
+import java.io.Serializable;
+
+import org.psikeds.queryagent.interfaces.presenter.pojos.ErrorMessage;
 
 /**
- * Constants for all Strings/Names/References used at several locations
- * within the application.
+ * A Error-Message.
  * 
  * @author marco@juliano.de
  */
-public final class Constants {
+public class ErrorDisplayItem extends DisplayItem implements Serializable {
 
-  public static final String RESULT_HOME = "home";
-  public static final String RESULT_BACK = "back";
-  public static final String RESULT_SUCCESS = "success";
-  public static final String RESULT_ERROR = "error";
-  public static final String RESULT_CHOICES = "choices";
-  public static final String RESULT_APPPKGS = "apppkgs";
-  public static final String RESULT_PREDICT = "prediction";
+  private static final long serialVersionUID = 1L;
 
-  private Constants() {
-    // prevent instantiation
+  public ErrorDisplayItem(final ErrorMessage err) {
+    super(String.valueOf(err.getCode()), String.valueOf(err.getCode()), err.getMessage(), TYPE_ERROR);
   }
 }

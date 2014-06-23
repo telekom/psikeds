@@ -76,8 +76,6 @@ For details see file LICENSING in the top project directory
                   <h:outputText value="#{msg['knowledge.variant.text']}" />
                   <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />
                   <h:commandLink id="selectVariant" action="#{Ctrl.resolve(di.selectionKey)}">#{di.value}</h:commandLink>
-                  <h:outputText value="&#160;" />
-                  <h:commandLink id="predictVariant" action="#{Ctrl.predict(di.selectionKey)}" target="prediction"><img src="#{msg['global.prediction.url']}"/></h:commandLink>
                 </li>
               </ul>
             </ui:fragment>
@@ -90,8 +88,6 @@ For details see file LICENSING in the top project directory
                   <h:outputText value="#{msg['knowledge.feature.value.text']}" />
                   <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />
                   <h:commandLink id="selectFeatureValue" action="#{Ctrl.resolve(di.selectionKey)}">#{di.value}</h:commandLink>
-                  <h:outputText value="&#160;" />
-                  <h:commandLink id="predictFeatureValue" action="#{Ctrl.predict(di.selectionKey)}" target="prediction"><img src="#{msg['global.prediction.url']}"/></h:commandLink>
                 </li>
               </ul>
             </ui:fragment>
@@ -101,9 +97,7 @@ For details see file LICENSING in the top project directory
                   <h:outputText value="#{msg['knowledge.concept.text']}" />
                   <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />
                   <h:commandLink id="selectConcept" action="#{Ctrl.resolve(di.selectionKey)}">#{di.value}</h:commandLink>
-                  <h:outputText value="&#160;" />#{di.additionalInfo}<h:outputText value="&#160;" />
-                  <h:outputText value="&#160;" />
-                  <h:commandLink id="predictConcept" action="#{Ctrl.predict(di.selectionKey)}" target="prediction"><img src="#{msg['global.prediction.url']}"/></h:commandLink>
+                  <h:outputText value="&#160;" />#{di.longDescription}
                 </li>
               </ul>
             </ui:fragment>
@@ -120,14 +114,13 @@ For details see file LICENSING in the top project directory
       <h:commandButton class="btn btn-small" value="#{msg['knowledge.home.button']}" action="#{Ctrl.home()}" />
     </ui:fragment>
     <ui:fragment rendered="#{!Knowledge.notInitialized and !Knowledge.withoutData}">
-      <h:commandButton class="btn btn-small" value="#{msg['knowledge.back.button']}" action="#{Ctrl.back()}" />
-<!--
       <h:panelGrid columns="3">
         <h:commandButton class="btn btn-small" value="#{msg['knowledge.back.button']}" action="#{Ctrl.back()}" />
+<!--
         <h:commandButton class="btn btn-small" value="#{msg['knowledge.choices.button']}" action="#{Ctrl.choices()}" />
         <h:commandButton class="btn btn-small" value="#{msg['knowledge.apppkgs.button']}" action="#{Ctrl.apppkgs()}" />
-      </h:panelGrid>
 -->
+      </h:panelGrid>
     </ui:fragment>
     </h:form>
     </div> <!-- main_content -->

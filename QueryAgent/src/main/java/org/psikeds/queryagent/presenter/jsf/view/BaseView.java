@@ -46,7 +46,7 @@ public abstract class BaseView {
   }
 
   public boolean hasErrors() {
-    return ((this.model == null) || this.model.hasErrors());
+    return ((this.model != null) && this.model.hasErrors());
   }
 
   public boolean hasWarnings() {

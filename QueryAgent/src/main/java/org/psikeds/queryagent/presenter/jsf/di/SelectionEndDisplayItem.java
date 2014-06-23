@@ -12,25 +12,24 @@
  *
  * For details see file LICENSING in the top project directory
  *******************************************************************************/
-package org.psikeds.queryagent.presenter.jsf.util;
+package org.psikeds.queryagent.presenter.jsf.di;
+
+import java.io.Serializable;
 
 /**
- * Constants for all Strings/Names/References used at several locations
- * within the application.
+ * DI signaling that the current selection list has finished.
  * 
  * @author marco@juliano.de
  */
-public final class Constants {
+public class SelectionEndDisplayItem extends DisplayItem implements Serializable {
 
-  public static final String RESULT_HOME = "home";
-  public static final String RESULT_BACK = "back";
-  public static final String RESULT_SUCCESS = "success";
-  public static final String RESULT_ERROR = "error";
-  public static final String RESULT_CHOICES = "choices";
-  public static final String RESULT_APPPKGS = "apppkgs";
-  public static final String RESULT_PREDICT = "prediction";
+  private static final long serialVersionUID = 1L;
 
-  private Constants() {
-    // prevent instantiation
+  public SelectionEndDisplayItem() {
+    this(null);
+  }
+
+  public SelectionEndDisplayItem(final String key) {
+    super(key, null, null, TYPE_SELECTION_END);
   }
 }

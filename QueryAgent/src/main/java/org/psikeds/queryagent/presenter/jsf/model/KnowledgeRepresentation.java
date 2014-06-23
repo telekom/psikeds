@@ -49,14 +49,16 @@ public class KnowledgeRepresentation implements Serializable {
 
   KnowledgeCache cache;
   ResolutionResponse lastResponse;
+  ResolutionResponse prediction;
 
   public KnowledgeRepresentation() {
-    this(null, null);
+    this(null, null, null);
   }
 
-  public KnowledgeRepresentation(final KnowledgeCache cache, final ResolutionResponse lastResponse) {
+  public KnowledgeRepresentation(final KnowledgeCache cache, final ResolutionResponse lastResponse, final ResolutionResponse prediction) {
     setKnowledgeCache(cache);
     setLastResponse(lastResponse);
+    setPrediction(prediction);
   }
 
   public KnowledgeCache getKnowledgeCache() {
@@ -68,13 +70,22 @@ public class KnowledgeRepresentation implements Serializable {
     this.cache = (cache == null ? DEFAULT_CACHE : cache);
   }
 
+  public ResolutionResponse getPrediction() {
+    return this.prediction;
+  }
+
+  public void setPrediction(final ResolutionResponse prediction) {
+    this.prediction = prediction;
+    updateCache(this.prediction);
+  }
+
   public ResolutionResponse getLastResponse() {
     return this.lastResponse;
   }
 
   public void setLastResponse(final ResolutionResponse lastResponse) {
     this.lastResponse = lastResponse;
-    updateCache();
+    updateCache(this.lastResponse);
   }
 
   // ----------------------------------------------------------------
@@ -92,7 +103,7 @@ public class KnowledgeRepresentation implements Serializable {
    * @see org.psikeds.queryagent.interfaces.presenter.pojos.BaseResolutionContext#getKnowledge()
    */
   public Knowledge getKnowledge() {
-    return this.lastResponse.getKnowledge();
+    return (this.lastResponse == null ? null : this.lastResponse.getKnowledge());
   }
 
   /**
@@ -117,6 +128,10 @@ public class KnowledgeRepresentation implements Serializable {
    */
   public Choices getChoices() {
     return this.lastResponse.getChoices();
+  }
+
+  public Knowledge getPredictedKnowledge() {
+    return (this.prediction == null ? null : this.prediction.getKnowledge());
   }
 
   // ----------------------------------------------------------------
@@ -159,6 +174,10 @@ public class KnowledgeRepresentation implements Serializable {
    */
   public boolean isNotInitialized() {
     return (StringUtils.isEmpty(getSessionID()) || (getKnowledge() == null));
+  }
+
+  public boolean hasPrediction() {
+    return ((this.prediction != null) && (getPredictedKnowledge() != null));
   }
 
   // ----------------------------------------------------------------
@@ -216,9 +235,9 @@ public class KnowledgeRepresentation implements Serializable {
     }
   }
 
-  private void updateCache() {
-    if ((this.cache != null) && (this.lastResponse != null)) {
-      final Knowledge k = this.lastResponse.getKnowledge();
+  private void updateCache(final ResolutionResponse resp) {
+    if (resp != null) {
+      final Knowledge k = resp.getKnowledge();
       final KnowledgeEntities entities = (k == null ? null : k.getEntities());
       updateCache(entities);
     }
@@ -226,7 +245,7 @@ public class KnowledgeRepresentation implements Serializable {
 
   private void updateCache(final KnowledgeEntities entities) {
     // keep references to all objects in the cache for later lookups by the GUI
-    if ((entities != null) && !entities.isEmpty()) {
+    if ((this.cache != null) && (entities != null) && !entities.isEmpty()) {
       for (final KnowledgeEntity ke : entities) {
         if (ke != null) {
           this.cache.put(ke.getFeatures());

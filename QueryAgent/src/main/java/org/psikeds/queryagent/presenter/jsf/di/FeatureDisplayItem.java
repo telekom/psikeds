@@ -12,25 +12,22 @@
  *
  * For details see file LICENSING in the top project directory
  *******************************************************************************/
-package org.psikeds.queryagent.presenter.jsf.util;
+package org.psikeds.queryagent.presenter.jsf.di;
+
+import java.io.Serializable;
+
+import org.psikeds.queryagent.interfaces.presenter.pojos.Feature;
 
 /**
- * Constants for all Strings/Names/References used at several locations
- * within the application.
+ * Feature of a Feature-Choice.
  * 
  * @author marco@juliano.de
  */
-public final class Constants {
+public class FeatureDisplayItem extends DisplayItem implements Serializable {
 
-  public static final String RESULT_HOME = "home";
-  public static final String RESULT_BACK = "back";
-  public static final String RESULT_SUCCESS = "success";
-  public static final String RESULT_ERROR = "error";
-  public static final String RESULT_CHOICES = "choices";
-  public static final String RESULT_APPPKGS = "apppkgs";
-  public static final String RESULT_PREDICT = "prediction";
+  private static final long serialVersionUID = 1L;
 
-  private Constants() {
-    // prevent instantiation
+  public FeatureDisplayItem(final Feature f) {
+    super(f.getFeatureID(), f.getLabel(), f.getDescription(), TYPE_FEATURE);
   }
 }
