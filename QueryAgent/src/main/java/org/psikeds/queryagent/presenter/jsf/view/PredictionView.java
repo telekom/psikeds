@@ -46,9 +46,11 @@ import org.psikeds.queryagent.presenter.jsf.model.KnowledgeRepresentation;
 
 /**
  * A View rendering the current Prediction as a Tree of DisplayItems.
- * The View is backed by a Model/Bean usually cached within Session-Scope.
+ * Similar to the Knowledge-View but based on the Prediction not on
+ * the current Knowledge.
  * 
  * @author marco@juliano.de
+ * 
  */
 public class PredictionView extends BaseView {
 
@@ -63,6 +65,11 @@ public class PredictionView extends BaseView {
   }
 
   // ----------------------------------------------------------------
+
+  @Override
+  public boolean isResolved() {
+    return ((this.model != null) && (this.model.getPrediction() != null) && this.model.getPrediction().isResolved());
+  }
 
   @Override
   public String getSessionID() {

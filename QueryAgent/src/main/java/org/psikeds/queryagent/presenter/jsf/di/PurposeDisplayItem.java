@@ -15,6 +15,8 @@
 package org.psikeds.queryagent.presenter.jsf.di;
 
 import java.io.Serializable;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.psikeds.queryagent.interfaces.presenter.pojos.Purpose;
 
@@ -27,7 +29,31 @@ public class PurposeDisplayItem extends DisplayItem implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
+  protected Map<String, Object> choices;
+
   public PurposeDisplayItem(final Purpose p) {
     super(p.getPurposeID(), p.getLabel(), p.getDescription(), TYPE_PURPOSE);
+    this.choices = null;
+  }
+
+  public Map<String, Object> getChoices() {
+    if (this.choices == null) {
+      this.choices = new LinkedHashMap<String, Object>();
+    }
+    return this.choices;
+  }
+
+  public void setChoices(final Map<String, Object> choices) {
+    this.choices = choices;
+  }
+
+  @Override
+  public void addChild(final DisplayItem item) {
+    if (item != null) {
+      super.addChild(item);
+      if (TYPE_VARIANT.equals(item.getType())) {
+        getChoices().put(item.getValue(), item.getSelectionKey());
+      }
+    }
   }
 }

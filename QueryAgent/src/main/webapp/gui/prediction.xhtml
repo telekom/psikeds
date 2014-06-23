@@ -21,7 +21,7 @@ For details see file LICENSING in the top project directory
   xmlns:t="http://myfaces.apache.org/tomahawk">
 <f:view locale="#{facesContext.externalContext.requestLocale}">
   <h:head>
-    <title>#{msg['knowledge.page.name']}</title>
+    <title>#{msg['prediction.page.name']}</title>
     <meta name="author" content="#{msg['global.author.tag']}" />
     <meta name="keywords" content="#{msg['global.keywords.tag']}" />
     <link href="#{msg['global.stylesheet.url']}" rel="stylesheet" type="text/css" />
@@ -29,13 +29,13 @@ For details see file LICENSING in the top project directory
   </h:head>
   <h:body>
   <div id="container">
-    <ui:include src="header.xhtml" />
+    <ui:include src="predictionheader.xhtml" />
     <div id='main_content'>
     <ui:fragment rendered="#{Prediction.notInitialized or Prediction.withoutData}">
-      <p><b><h:outputText value="#{msg['knowledge.empty.text']}" /></b></p>
+      <p><b><h:outputText value="#{msg['prediction.empty.text']}" /></b></p>
     </ui:fragment>
     <ui:fragment rendered="#{!Prediction.notInitialized and !Prediction.withoutData}">
-      <p><b><h:outputText value="#{msg['knowledge.overview.text']}" /></b></p>
+      <p><b><h:outputText value="#{msg['prediction.overview.text']}" /></b></p>
       <h:form id="selectForm">
         <div class="meta row-fluid detail">
           <ui:repeat var="di" value="#{Prediction.knowledge}">
@@ -63,27 +63,27 @@ For details see file LICENSING in the top project directory
               <ui:fragment rendered="#{di.level == 0}">
                 <p/>
                 <hr class="header_rule" />
-                <h3 class="#{di.type} level#{di.level}"><h:outputText value="#{msg['knowledge.purpose.text']}" /><h:outputText value="&#160;" />#{di.value}</h3>
+                <h3 class="#{di.type} level#{di.level}"><h:outputText value="#{msg['prediction.purpose.text']}" /><h:outputText value="&#160;" />#{di.value}</h3>
               </ui:fragment>
               <ui:fragment rendered="#{di.level != 0}">
-                <h4 class="#{di.type} level#{di.level}"><h:outputText value="#{msg['knowledge.purpose.text']}" /><h:outputText value="&#160;" />#{di.value}</h4>
+                <h4 class="#{di.type} level#{di.level}"><h:outputText value="#{msg['prediction.purpose.text']}" /><h:outputText value="&#160;" />#{di.value}</h4>
               </ui:fragment>
             </ui:fragment>
             <ui:fragment rendered="#{di.type == 'Variant'}">
               <ul class="#{di.type} level#{di.level}">
                 <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">
-                  <h:outputText value="#{msg['knowledge.variant.text']}" />
+                  <h:outputText value="#{msg['prediction.variant.text']}" />
                   <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.value}
                 </li>
               </ul>
             </ui:fragment>
             <ui:fragment rendered="#{di.type == 'Feature'}">
-              <h4 class="#{di.type} level#{di.level}"><h:outputText value="#{msg['knowledge.feature.text']}" /><h:outputText value="&#160;" />#{di.value}</h4>
+              <h4 class="#{di.type} level#{di.level}"><h:outputText value="#{msg['prediction.feature.text']}" /><h:outputText value="&#160;" />#{di.value}</h4>
             </ui:fragment>
             <ui:fragment rendered="#{di.type == 'FeatureValue'}">
               <ul class="#{di.type} level#{di.level}">
                 <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">
-                  <h:outputText value="#{msg['knowledge.feature.value.text']}" />
+                  <h:outputText value="#{msg['prediction.feature.value.text']}" />
                   <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.value}
                 </li>
               </ul>
@@ -91,7 +91,7 @@ For details see file LICENSING in the top project directory
             <ui:fragment rendered="#{di.type == 'Concept'}">
               <ul class="#{di.type} level#{di.level}">
                 <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">
-                  <h:outputText value="#{msg['knowledge.concept.text']}" />
+                  <h:outputText value="#{msg['prediction.concept.text']}" />
                   <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.value}
                   <h:outputText value="&#160;" />#{di.additionalInfo}
                 </li>
@@ -101,11 +101,16 @@ For details see file LICENSING in the top project directory
         </div> <!-- meta -->
       </h:form>
       <ui:fragment rendered="#{Prediction.resolved}">
-        <p><b><h:outputText value="#{msg['knowledge.resolved.text']}" /></b></p>
+        <p><b><h:outputText value="#{msg['prediction.resolved.text']}" /></b></p>
       </ui:fragment>
     </ui:fragment>
     <ui:include src="messages.xhtml" />
-    <a href="javascript:window.close()">#{msg['knowledge.back.button']}</a>
+<!--
+    <a href="javascript:window.close()">#{msg['prediction.finished.button']}</a>
+-->
+    <h:form id="NaviForm">
+      <h:commandButton class="btn btn-small" value="#{msg['prediction.finished.button']}" type="button" onclick="window.close();" />
+    </h:form>
     </div> <!-- main_content -->
   </div> <!-- container -->
   </h:body>

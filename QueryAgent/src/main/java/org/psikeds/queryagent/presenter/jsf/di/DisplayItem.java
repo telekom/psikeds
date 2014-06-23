@@ -39,10 +39,10 @@ public class DisplayItem implements Serializable {
   public static final String TYPE_VARIANT = "Variant";
   public static final String TYPE_FEATURE = "Feature";
   public static final String TYPE_FEATURE_VALUE = "FeatureValue";
+  public static final String TYPE_SELECTED_FEATURE_VALUE = "SelectedFeatureValue";
+  public static final String TYPE_CONCEPT_CHOICE = "ConceptChoice";
   public static final String TYPE_CONCEPT = "Concept";
   public static final String TYPE_LABEL = "Label";
-  public static final String TYPE_SELECTION_START = "SelectionStart";
-  public static final String TYPE_SELECTION_END = "SelectionEnd";
 
   public static final int DEFAULT_LEVEL = 0;
 

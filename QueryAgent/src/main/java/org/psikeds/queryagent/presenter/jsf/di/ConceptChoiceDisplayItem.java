@@ -18,21 +18,19 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.psikeds.queryagent.interfaces.presenter.pojos.Feature;
-
 /**
- * Feature of a Feature-Choice.
+ * A Choice of possible Concepts.
  * 
  * @author marco@juliano.de
  */
-public class FeatureDisplayItem extends DisplayItem implements Serializable {
+public class ConceptChoiceDisplayItem extends DisplayItem implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
   protected Map<String, Object> choices;
 
-  public FeatureDisplayItem(final Feature f) {
-    super(f.getFeatureID(), f.getLabel(), f.getDescription(), TYPE_FEATURE);
+  public ConceptChoiceDisplayItem(final String key) {
+    super(key, key, null, TYPE_CONCEPT_CHOICE);
     this.choices = null;
   }
 
@@ -51,8 +49,13 @@ public class FeatureDisplayItem extends DisplayItem implements Serializable {
   public void addChild(final DisplayItem item) {
     if (item != null) {
       super.addChild(item);
-      if (TYPE_FEATURE_VALUE.equals(item.getType())) {
-        getChoices().put(item.getValue(), item.getSelectionKey());
+      if (TYPE_CONCEPT.equals(item.getType())) {
+        String label = item.getValue();
+        if (item instanceof ConceptDisplayItem) {
+          final ConceptDisplayItem cdi = (ConceptDisplayItem) item;
+          label = label + " " + cdi.getAdditionalInfo();
+        }
+        getChoices().put(label, item.getSelectionKey());
       }
     }
   }

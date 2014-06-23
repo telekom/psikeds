@@ -16,20 +16,19 @@ package org.psikeds.queryagent.presenter.jsf.di;
 
 import java.io.Serializable;
 
+import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureValue;
+import org.psikeds.queryagent.interfaces.presenter.pojos.POJO;
+
 /**
- * DI signaling that a new selection list begins.
+ * Selected/Assigned Feature-Value of a KE.
  * 
  * @author marco@juliano.de
  */
-public class SelectionStartDisplayItem extends DisplayItem implements Serializable {
+public class SelectedFeatureValueDisplayItem extends DisplayItem implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  public SelectionStartDisplayItem() {
-    this(null);
-  }
-
-  public SelectionStartDisplayItem(final String key) {
-    super(key, null, null, TYPE_SELECTION_START);
+  public SelectedFeatureValueDisplayItem(final FeatureValue fv) {
+    super(POJO.composeId(fv.getFeatureID(), fv.getFeatureValueID()), null, fv.getFeatureID() + " = " + fv.getValue(), TYPE_SELECTED_FEATURE_VALUE);
   }
 }

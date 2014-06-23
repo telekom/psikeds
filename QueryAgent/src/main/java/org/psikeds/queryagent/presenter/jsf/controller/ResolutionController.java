@@ -156,7 +156,7 @@ public class ResolutionController {
     return select();
   }
 
-  // Requires Servlet 3.0 / EL 2.2: #{Ctrl.resolve(di.selectionKey)}
+  // Requires Servlet 3.0 / EL 2.2: #{Ctrl.predict(di.selectionKey)}
   public String predict(final String selected) {
     setSelected(selected);
     return predict();

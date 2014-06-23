@@ -36,80 +36,72 @@ For details see file LICENSING in the top project directory
     </ui:fragment>
     <ui:fragment rendered="#{!Knowledge.notInitialized and !Knowledge.withoutData}">
       <p><b><h:outputText value="#{msg['knowledge.overview.text']}" /></b></p>
-      <h:form id="selectForm">
         <div class="meta row-fluid detail">
           <ui:repeat var="di" value="#{Knowledge.knowledge}">
+            <ui:fragment rendered="#{di.level == 0}">
+              <p/>
+              <hr class="header_rule" />
+            </ui:fragment>
             <ui:fragment rendered="#{di.type == 'Entity'}">
-              <ui:fragment rendered="#{di.level == 0}">
-                <p/>
-                <hr class="header_rule" />
-                <h3 class="#{di.type} level#{di.level}">#{di.value}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.longDescription}</h3>
-              </ui:fragment>
               <ui:fragment rendered="#{di.level != 0}">
-                <!-- <h4 class="#{di.type} level#{di.level}">#{di.key}<h:outputText value="&#160;" />#{di.value}<h:outputText value="&#160;" />#{di.longDescription}</h4> -->
-                <h4 class="#{di.type} level#{di.level}">#{di.value}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.longDescription}</h4>
+                <p/>
               </ui:fragment>
+              <h3 class="#{di.type} level#{di.level}">#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.longDescription}</h3>
+              <ul class="#{di.type} level#{di.level}">
+              <ui:repeat var="feat" value="#{di.child}">
+                <ui:fragment rendered="#{feat.type == 'SelectedFeatureValue'}">
+                  <li class="#{feat.type} level#{feat.level}">#{feat.longDescription}</li>
+                </ui:fragment>
+              </ui:repeat>
+              </ul>
             </ui:fragment>
             <ui:fragment rendered="#{di.type == 'Label'}">
-              <ui:fragment rendered="#{di.level == 0}">
-                <h4 class="#{di.type} level#{di.level}">#{di.longDescription}</h4>
-              </ui:fragment>
-              <ui:fragment rendered="#{di.level != 0}">
-              <ul class="#{di.type} level#{di.level}">
-                <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">#{di.longDescription}</li>
-              </ul>
-              </ui:fragment>
+              <h4 class="#{di.type} level#{di.level}">#{di.longDescription}</h4>
             </ui:fragment>
             <ui:fragment rendered="#{di.type == 'Purpose'}">
-              <ui:fragment rendered="#{di.level == 0}">
-                <p/>
-                <hr class="header_rule" />
-                <h3 class="#{di.type} level#{di.level}"><h:outputText value="#{msg['knowledge.purpose.text']}" /><h:outputText value="&#160;" />#{di.value}</h3>
-              </ui:fragment>
               <ui:fragment rendered="#{di.level != 0}">
-                <h4 class="#{di.type} level#{di.level}"><h:outputText value="#{msg['knowledge.purpose.text']}" /><h:outputText value="&#160;" />#{di.value}</h4>
+                <p/>
               </ui:fragment>
-            </ui:fragment>
-            <ui:fragment rendered="#{di.type == 'Variant'}">
-              <ul class="#{di.type} level#{di.level}">
-                <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">
-                  <h:outputText value="#{msg['knowledge.variant.text']}" />
-                  <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />
-                  <h:commandLink id="selectVariant" action="#{Ctrl.resolve(di.selectionKey)}">#{di.value}</h:commandLink>
-                  <h:outputText value="&#160;" />
-                  <h:commandLink id="predictVariant" action="#{Ctrl.predict(di.selectionKey)}" target="prediction"><img src="#{msg['global.prediction.url']}"/></h:commandLink>
-                </li>
-              </ul>
+              <h:form>
+                <h3 class="#{di.type} level#{di.level}">
+                  <h:outputText value="#{msg['knowledge.purpose.text']}" />
+                  <h:outputText value="&#160;" />#{di.value}<h:outputText value="&#160;" />
+                  <h:selectOneMenu value="#{Ctrl.selected}" class="inline">
+                    <f:selectItems value="#{di.choices}" />
+                  </h:selectOneMenu>
+                  <h:commandLink id="select#{di.type}#{di.key}" action="#{Ctrl.select()}"><img class="icon-psikeds" src="#{msg['global.selection.url']}"/></h:commandLink>
+                  <h:commandLink id="predict#{di.type}#{di.key}" action="#{Ctrl.predict()}" target="prediction"><img class="icon-psikeds" src="#{msg['global.prediction.url']}"/></h:commandLink>
+                </h3>
+              </h:form>
             </ui:fragment>
             <ui:fragment rendered="#{di.type == 'Feature'}">
-              <h4 class="#{di.type} level#{di.level}"><h:outputText value="#{msg['knowledge.feature.text']}" /><h:outputText value="&#160;" />#{di.value}</h4>
+              <h:form>
+                <h4 class="#{di.type} level#{di.level}">
+                  <h:outputText value="#{msg['knowledge.feature.text']}" />
+                  <h:outputText value="&#160;" />#{di.value}<h:outputText value="&#160;" />
+                  <h:selectOneMenu value="#{Ctrl.selected}" class="inline">
+                    <f:selectItems value="#{di.choices}" />
+                  </h:selectOneMenu>
+                  <h:commandLink id="select#{di.type}#{di.key}" action="#{Ctrl.select()}"><img class="icon-psikeds" src="#{msg['global.selection.url']}"/></h:commandLink>
+                  <h:commandLink id="predict#{di.type}#{di.key}" action="#{Ctrl.predict()}" target="prediction"><img class="icon-psikeds" src="#{msg['global.prediction.url']}"/></h:commandLink>
+                </h4>
+              </h:form>
             </ui:fragment>
-            <ui:fragment rendered="#{di.type == 'FeatureValue'}">
-              <ul class="#{di.type} level#{di.level}">
-                <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">
-                  <h:outputText value="#{msg['knowledge.feature.value.text']}" />
-                  <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />
-                  <h:commandLink id="selectFeatureValue" action="#{Ctrl.resolve(di.selectionKey)}">#{di.value}</h:commandLink>
-                  <h:outputText value="&#160;" />
-                  <h:commandLink id="predictFeatureValue" action="#{Ctrl.predict(di.selectionKey)}" target="prediction"><img src="#{msg['global.prediction.url']}"/></h:commandLink>
-                </li>
-              </ul>
-            </ui:fragment>
-            <ui:fragment rendered="#{di.type == 'Concept'}">
-              <ul class="#{di.type} level#{di.level}">
-                <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">
+            <ui:fragment rendered="#{di.type == 'ConceptChoice'}">
+              <h:form>
+                <h4 class="#{di.type} level#{di.level}">
                   <h:outputText value="#{msg['knowledge.concept.text']}" />
-                  <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />
-                  <h:commandLink id="selectConcept" action="#{Ctrl.resolve(di.selectionKey)}">#{di.value}</h:commandLink>
-                  <h:outputText value="&#160;" />#{di.additionalInfo}<h:outputText value="&#160;" />
                   <h:outputText value="&#160;" />
-                  <h:commandLink id="predictConcept" action="#{Ctrl.predict(di.selectionKey)}" target="prediction"><img src="#{msg['global.prediction.url']}"/></h:commandLink>
-                </li>
-              </ul>
+                  <h:selectOneMenu value="#{Ctrl.selected}" class="inline">
+                    <f:selectItems value="#{di.choices}" />
+                  </h:selectOneMenu>
+                  <h:commandLink id="select#{di.type}#{di.key}" action="#{Ctrl.select()}"><img class="icon-psikeds" src="#{msg['global.selection.url']}"/></h:commandLink>
+                  <h:commandLink id="predict#{di.type}#{di.key}" action="#{Ctrl.predict()}" target="prediction"><img class="icon-psikeds" src="#{msg['global.prediction.url']}"/></h:commandLink>
+                </h4>
+              </h:form>
             </ui:fragment>
           </ui:repeat>
         </div> <!-- meta -->
-      </h:form>
       <ui:fragment rendered="#{Knowledge.resolved}">
         <p><b><h:outputText value="#{msg['knowledge.resolved.text']}" /></b></p>
       </ui:fragment>
@@ -121,13 +113,6 @@ For details see file LICENSING in the top project directory
     </ui:fragment>
     <ui:fragment rendered="#{!Knowledge.notInitialized and !Knowledge.withoutData}">
       <h:commandButton class="btn btn-small" value="#{msg['knowledge.back.button']}" action="#{Ctrl.back()}" />
-<!--
-      <h:panelGrid columns="3">
-        <h:commandButton class="btn btn-small" value="#{msg['knowledge.back.button']}" action="#{Ctrl.back()}" />
-        <h:commandButton class="btn btn-small" value="#{msg['knowledge.choices.button']}" action="#{Ctrl.choices()}" />
-        <h:commandButton class="btn btn-small" value="#{msg['knowledge.apppkgs.button']}" action="#{Ctrl.apppkgs()}" />
-      </h:panelGrid>
--->
     </ui:fragment>
     </h:form>
     </div> <!-- main_content -->
