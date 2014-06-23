@@ -21,6 +21,8 @@ import org.apache.commons.lang.StringUtils;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Choices;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Concept;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Concepts;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Decission;
+import org.psikeds.queryagent.interfaces.presenter.pojos.Decissions;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Errors;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Feature;
 import org.psikeds.queryagent.interfaces.presenter.pojos.FeatureValue;
@@ -49,16 +51,16 @@ public class KnowledgeRepresentation implements Serializable {
 
   KnowledgeCache cache;
   ResolutionResponse lastResponse;
+  Decissions madeDecissions;
   ResolutionResponse prediction;
+  Decission predictedDecission;
 
   public KnowledgeRepresentation() {
-    this(null, null, null);
+    this(null);
   }
 
-  public KnowledgeRepresentation(final KnowledgeCache cache, final ResolutionResponse lastResponse, final ResolutionResponse prediction) {
+  public KnowledgeRepresentation(final KnowledgeCache cache) {
     setKnowledgeCache(cache);
-    setLastResponse(lastResponse);
-    setPrediction(prediction);
   }
 
   public KnowledgeCache getKnowledgeCache() {
@@ -77,6 +79,25 @@ public class KnowledgeRepresentation implements Serializable {
   public void setPrediction(final ResolutionResponse prediction) {
     this.prediction = prediction;
     updateCache(this.prediction);
+  }
+
+  public Decissions getMadeDecissions() {
+    if (this.madeDecissions == null) {
+      this.madeDecissions = new Decissions();
+    }
+    return this.madeDecissions;
+  }
+
+  public void setMadeDecissions(final Decissions madeDecissions) {
+    this.madeDecissions = madeDecissions;
+  }
+
+  public Decission getPredictedDecission() {
+    return this.predictedDecission;
+  }
+
+  public void setPredictedDecission(final Decission predictedDecission) {
+    this.predictedDecission = predictedDecission;
   }
 
   public ResolutionResponse getLastResponse() {
@@ -264,5 +285,26 @@ public class KnowledgeRepresentation implements Serializable {
         }
       }
     }
+  }
+
+  // ----------------------------------------------------------------
+
+  public void clearSelection() {
+    if (this.madeDecissions != null) {
+      this.madeDecissions.clear();
+      this.madeDecissions = null;
+    }
+    this.lastResponse = null;
+  }
+
+  public void clearPrediction() {
+    this.prediction = null;
+    this.predictedDecission = null;
+  }
+
+  public void clear() {
+    clearPrediction();
+    clearSelection();
+    clearCache();
   }
 }

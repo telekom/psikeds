@@ -75,16 +75,6 @@ public class ResolutionController {
     return Constants.RESULT_BACK;
   }
 
-  public String choices() {
-    return Constants.RESULT_CHOICES;
-  }
-
-  public String apppkgs() {
-    return Constants.RESULT_APPPKGS;
-  }
-
-  // ------------------------------------------------------
-
   public String resume() {
     if ((this.model == null) || (this.service == null)) {
       LOGGER.error("Model or Service missing! Check configuration of JSF- and Spring-Beans.");
@@ -101,12 +91,14 @@ public class ResolutionController {
     ResolutionResponse resp = null;
     try {
       LOGGER.trace("--> init()");
+      this.model.clear();
       resp = this.service.init();
       this.model.setLastResponse(resp);
       this.selected = null;
       ret = Constants.RESULT_SUCCESS;
     }
     catch (final Exception ex) {
+      this.model.clear();
       ret = Constants.RESULT_ERROR;
       LOGGER.error("init() failed!", ex);
     }
@@ -132,8 +124,10 @@ public class ResolutionController {
     ResolutionResponse resp = null;
     try {
       LOGGER.trace("--> select( {} )", this.selected);
+      this.model.clearPrediction();
       final String sessionId = this.model.getSessionID();
       final Decission decission = SelectionHelper.getDecissionFromString(this.selected);
+      this.model.getMadeDecissions().add(decission);
       req = new ResolutionRequest(sessionId, decission);
       resp = getService().select(req);
       this.model.setLastResponse(resp);
@@ -168,8 +162,10 @@ public class ResolutionController {
     ResolutionResponse resp = null;
     try {
       LOGGER.trace("--> predict( {} )", this.selected);
+      this.model.clearPrediction();
       final String sessionId = this.model.getSessionID();
       final Decission decission = SelectionHelper.getDecissionFromString(this.selected);
+      this.model.setPredictedDecission(decission);
       req = new ResolutionRequest(sessionId, decission);
       resp = getService().predict(req);
       this.model.setPrediction(resp);
