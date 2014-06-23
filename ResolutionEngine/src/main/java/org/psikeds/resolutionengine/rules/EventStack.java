@@ -44,6 +44,14 @@ public class EventStack extends LimitedHashMap<String, Event> implements Seriali
     super(maxSize);
   }
 
+  // copy constructor
+  public EventStack(final EventStack events) {
+    super(events.getMaxSize());
+    addEvents(events.getEvents());
+  }
+
+  // ----------------------------------------------------------------
+
   public List<Event> getEvents() {
     return new ArrayList<Event>(this.values());
   }
@@ -75,7 +83,7 @@ public class EventStack extends LimitedHashMap<String, Event> implements Seriali
     return (StringUtils.isEmpty(eid) ? null : this.remove(eid));
   }
 
-  // ------------------------------------------------------
+  // ----------------------------------------------------------------
 
   public boolean containsEvent(final Event e) {
     return containsEvent(e == null ? null : e.getEventID());
@@ -95,7 +103,7 @@ public class EventStack extends LimitedHashMap<String, Event> implements Seriali
     return ((e == null) || (destination == null) ? null : destination.addEvent(e));
   }
 
-  // ------------------------------------------------------
+  // ----------------------------------------------------------------
 
   public StringBuilder dumpEvents(final StringBuilder sb, final boolean verbose) {
     sb.append("#Events = ");

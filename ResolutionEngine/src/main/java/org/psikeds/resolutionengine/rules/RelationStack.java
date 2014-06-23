@@ -44,6 +44,14 @@ public class RelationStack extends LimitedHashMap<String, Relation> implements S
     super(maxSize);
   }
 
+  // copy constructor
+  public RelationStack(final RelationStack rels) {
+    super(rels.getMaxSize());
+    addRelations(rels.getRelations());
+  }
+
+  // ----------------------------------------------------------------
+
   public List<Relation> getRelations() {
     return new ArrayList<Relation>(this.values());
   }
@@ -75,7 +83,7 @@ public class RelationStack extends LimitedHashMap<String, Relation> implements S
     return (StringUtils.isEmpty(rid) ? null : this.remove(rid));
   }
 
-  // ------------------------------------------------------
+  // ----------------------------------------------------------------
 
   public boolean containsRelation(final Relation r) {
     return containsRelation(r == null ? null : r.getRelationID());
@@ -95,7 +103,7 @@ public class RelationStack extends LimitedHashMap<String, Relation> implements S
     return ((r == null) || (destination == null) ? null : destination.addRelation(r));
   }
 
-  // ------------------------------------------------------
+  // ----------------------------------------------------------------
 
   public StringBuilder dumpRelations(final StringBuilder sb, final boolean verbose) {
     sb.append("#Relations = ");

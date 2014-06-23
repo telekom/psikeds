@@ -37,7 +37,7 @@ public class LimitedHashMap<K, V> extends LinkedHashMap<K, V> {
   public static final int DEFAULT_MAX_MAP_SIZE = DEFAULT_INITIAL_CAPACITY << 5;
   public static final boolean LRU_ACCESS_ORDER = true;
 
-  private int maxSize;
+  protected int maxSize;
 
   protected LimitedHashMap() {
     this(DEFAULT_MAX_MAP_SIZE);

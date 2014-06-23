@@ -82,6 +82,19 @@ public class RulesAndEventsHandler implements Serializable {
     this.activeRelations.setRelations(activeRelations);
   }
 
+  // copy constructor
+  private RulesAndEventsHandler(final RulesAndEventsHandler raeh) {
+    this.obsoleteEvents = new EventStack(raeh.obsoleteEvents);
+    this.triggeredEvents = new EventStack(raeh.triggeredEvents);
+    this.relevantEvents = new EventStack(raeh.relevantEvents);
+    this.obsoleteRules = new RuleStack(raeh.obsoleteRules);
+    this.triggeredRules = new RuleStack(raeh.triggeredRules);
+    this.relevantRules = new RuleStack(raeh.relevantRules);
+    this.obsoleteRelations = new RelationStack(raeh.obsoleteRelations);
+    this.unfulfillableRelations = new RelationStack(raeh.unfulfillableRelations);
+    this.activeRelations = new RelationStack(raeh.activeRelations);
+  }
+
   // ----------------------------------------------------------------
 
   public List<Event> getRelevantEvents() {
@@ -264,6 +277,16 @@ public class RulesAndEventsHandler implements Serializable {
     final RulesAndEventsHandler raeh = new RulesAndEventsHandler(relevantEvents, relevantRules, activeRelations);
     logContents(raeh);
     return raeh;
+  }
+
+  // ----------------------------------------------------------------
+
+  public static RulesAndEventsHandler copy(final RulesAndEventsHandler raeh) {
+    return new RulesAndEventsHandler(raeh);
+  }
+
+  public RulesAndEventsHandler copy() {
+    return copy(this);
   }
 
   // ----------------------------------------------------------------

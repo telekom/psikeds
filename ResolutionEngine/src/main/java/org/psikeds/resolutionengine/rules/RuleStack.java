@@ -44,6 +44,14 @@ public class RuleStack extends LimitedHashMap<String, Rule> implements Serializa
     super(maxSize);
   }
 
+  // copy constructor
+  public RuleStack(final RuleStack rules) {
+    super(rules.getMaxSize());
+    addRules(rules.getRules());
+  }
+
+  // ----------------------------------------------------------------
+
   public List<Rule> getRules() {
     return new ArrayList<Rule>(this.values());
   }
@@ -75,7 +83,7 @@ public class RuleStack extends LimitedHashMap<String, Rule> implements Serializa
     return (StringUtils.isEmpty(rid) ? null : this.remove(rid));
   }
 
-  // ------------------------------------------------------
+  // ----------------------------------------------------------------
 
   public boolean containsRule(final Rule r) {
     return containsRule(r == null ? null : r.getRuleID());
@@ -95,7 +103,7 @@ public class RuleStack extends LimitedHashMap<String, Rule> implements Serializa
     return ((r == null) || (destination == null) ? null : destination.addRule(r));
   }
 
-  // ------------------------------------------------------
+  // ----------------------------------------------------------------
 
   public StringBuilder dumpRules(final StringBuilder sb, final boolean verbose) {
     sb.append("#Rules = ");
