@@ -42,6 +42,7 @@ public class DisplayItem implements Serializable {
   public static final String TYPE_SELECTED_FEATURE_VALUE = "SelectedFeatureValue";
   public static final String TYPE_CONCEPT_CHOICE = "ConceptChoice";
   public static final String TYPE_CONCEPT = "Concept";
+  public static final String TYPE_DECISSION = "Decission";
   public static final String TYPE_LABEL = "Label";
 
   public static final int DEFAULT_LEVEL = 0;
@@ -171,8 +172,8 @@ public class DisplayItem implements Serializable {
    */
   @Override
   public String toString() {
-    if (TYPE_LABEL.equalsIgnoreCase(this.type) || TYPE_WARNING.equalsIgnoreCase(this.type) || TYPE_ERROR.equalsIgnoreCase(this.type)) {
-      return getValue(); // just a string, nothing else
+    if (TYPE_LABEL.equalsIgnoreCase(this.type)) {
+      return getValue();
     }
     else {
       // display all fields for debugging and logging

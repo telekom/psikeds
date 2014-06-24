@@ -32,82 +32,102 @@ For details see file LICENSING in the top project directory
     <ui:include src="predictionheader.xhtml" />
     <div id='main_content'>
     <ui:fragment rendered="#{Prediction.notInitialized or Prediction.withoutData}">
-      <p><b><h:outputText value="#{msg['prediction.empty.text']}" /></b></p>
+      <p><h3><h:outputText value="#{msg['prediction.empty.text']}" /></h3></p>
     </ui:fragment>
     <ui:fragment rendered="#{!Prediction.notInitialized and !Prediction.withoutData}">
-      <p><b><h:outputText value="#{msg['prediction.overview.text']}" /></b></p>
-      <h:form id="selectForm">
+      <p><h3><h:outputText value="#{msg['prediction.overview.text']}" /><h:outputText value="&#160;" /><h:outputText value="&#160;" /><i>#{Prediction.decission}</i></h3></p>
         <div class="meta row-fluid detail">
           <ui:repeat var="di" value="#{Prediction.knowledge}">
+            <ui:fragment rendered="#{di.level == 0}">
+              <p/>
+              <hr class="header_rule" />
+            </ui:fragment>
             <ui:fragment rendered="#{di.type == 'Entity'}">
-              <ui:fragment rendered="#{di.level == 0}">
-                <p/>
-                <hr class="header_rule" />
-                <h3 class="#{di.type} level#{di.level}">#{di.value}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.longDescription}</h3>
-              </ui:fragment>
               <ui:fragment rendered="#{di.level != 0}">
-                <h4 class="#{di.type} level#{di.level}">#{di.value}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.longDescription}</h4>
+                <p/>
               </ui:fragment>
+              <h3 class="#{di.type} level#{di.level}">#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.longDescription}</h3>
+              <ul class="#{di.type} level#{di.level}">
+              <ui:repeat var="feat" value="#{di.child}">
+                <ui:fragment rendered="#{feat.type == 'SelectedFeatureValue'}">
+                  <li class="#{feat.type} level#{feat.level}">#{feat.longDescription}</li>
+                </ui:fragment>
+              </ui:repeat>
+              </ul>
             </ui:fragment>
             <ui:fragment rendered="#{di.type == 'Label'}">
-              <ui:fragment rendered="#{di.level == 0}">
-                <h4 class="#{di.type} level#{di.level}">#{di.longDescription}</h4>
-              </ui:fragment>
-              <ui:fragment rendered="#{di.level != 0}">
-              <ul class="#{di.type} level#{di.level}">
-                <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">#{di.longDescription}</li>
-              </ul>
-              </ui:fragment>
+              <h4 class="#{di.type} level#{di.level}">#{di.longDescription}</h4>
             </ui:fragment>
             <ui:fragment rendered="#{di.type == 'Purpose'}">
-              <ui:fragment rendered="#{di.level == 0}">
-                <p/>
-                <hr class="header_rule" />
-                <h3 class="#{di.type} level#{di.level}"><h:outputText value="#{msg['prediction.purpose.text']}" /><h:outputText value="&#160;" />#{di.value}</h3>
-              </ui:fragment>
               <ui:fragment rendered="#{di.level != 0}">
-                <h4 class="#{di.type} level#{di.level}"><h:outputText value="#{msg['prediction.purpose.text']}" /><h:outputText value="&#160;" />#{di.value}</h4>
+                <p/>
               </ui:fragment>
-            </ui:fragment>
-            <ui:fragment rendered="#{di.type == 'Variant'}">
+              <h3 class="#{di.type} level#{di.level}">
+                <h:outputText value="#{msg['prediction.purpose.text']}" />
+                <h:outputText value="&#160;" />#{di.value}
+                <h:selectOneMenu value="#{Ctrl.selected}" class="inline">
+                  <f:selectItems value="#{di.choices}" />
+                </h:selectOneMenu>
+              </h3>
+<!--
               <ul class="#{di.type} level#{di.level}">
-                <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">
-                  <h:outputText value="#{msg['prediction.variant.text']}" />
-                  <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.value}
-                </li>
+              <ui:repeat var="var" value="#{di.child}">
+                <ui:fragment rendered="#{var.type == 'Variant'}">
+                  <li class="#{var.type} level#{var.level}">
+                    <h:outputText value="#{msg['prediction.variant.text']}" />
+                    <h:outputText value="&#160;" />#{var.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{var.value}
+                  </li>
+                </ui:fragment>
+              </ui:repeat>
               </ul>
+-->
             </ui:fragment>
             <ui:fragment rendered="#{di.type == 'Feature'}">
-              <h4 class="#{di.type} level#{di.level}"><h:outputText value="#{msg['prediction.feature.text']}" /><h:outputText value="&#160;" />#{di.value}</h4>
-            </ui:fragment>
-            <ui:fragment rendered="#{di.type == 'FeatureValue'}">
+              <h4 class="#{di.type} level#{di.level}">
+                <h:outputText value="#{msg['prediction.feature.text']}" />
+                <h:outputText value="&#160;" />#{di.value}
+                <h:selectOneMenu value="#{Ctrl.selected}" class="inline">
+                  <f:selectItems value="#{di.choices}" />
+                </h:selectOneMenu>
+              </h4>
+<!--
               <ul class="#{di.type} level#{di.level}">
-                <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">
-                  <h:outputText value="#{msg['prediction.feature.value.text']}" />
-                  <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.value}
-                </li>
+              <ui:repeat var="feat" value="#{di.child}">
+                <ui:fragment rendered="#{feat.type == 'FeatureValue'}">
+                  <li class="#{feat.type} level#{feat.level}">
+                    <h:outputText value="#{msg['prediction.feature.value.text']}" />
+                    <h:outputText value="&#160;" />#{feat.key}
+                    <h:outputText value="&#160;" />#{feat.longDescription}
+                  </li>
+                </ui:fragment>
+              </ui:repeat>
               </ul>
+-->
             </ui:fragment>
-            <ui:fragment rendered="#{di.type == 'Concept'}">
+            <ui:fragment rendered="#{di.type == 'ConceptChoice'}">
+              <h4 class="#{di.type} level#{di.level}">
+                <h:outputText value="#{msg['prediction.concept.text']}" />
+                <h:selectOneMenu value="#{Ctrl.selected}" class="inline">
+                  <f:selectItems value="#{di.choices}" />
+                </h:selectOneMenu>
+              </h4>
+<!--
               <ul class="#{di.type} level#{di.level}">
-                <li id="#{di.type}#{di.selectionKey}" class="#{di.type} level#{di.level}">
-                  <h:outputText value="#{msg['prediction.concept.text']}" />
-                  <h:outputText value="&#160;" />#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.value}
-                  <h:outputText value="&#160;" />#{di.additionalInfo}
-                </li>
+              <ui:repeat var="con" value="#{di.child}">
+                <ui:fragment rendered="#{con.type == 'Concept'}">
+                  <li class="#{con.type} level#{con.level}">#{con.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{con.value}<h:outputText value="&#160;" />#{con.additionalInfo}</li>
+                </ui:fragment>
+              </ui:repeat>
               </ul>
+-->
             </ui:fragment>
           </ui:repeat>
         </div> <!-- meta -->
-      </h:form>
       <ui:fragment rendered="#{Prediction.resolved}">
         <p><b><h:outputText value="#{msg['prediction.resolved.text']}" /></b></p>
       </ui:fragment>
     </ui:fragment>
     <ui:include src="messages.xhtml" />
-<!--
-    <a href="javascript:window.close()">#{msg['prediction.finished.button']}</a>
--->
     <h:form id="NaviForm">
       <h:commandButton class="btn btn-small" value="#{msg['prediction.finished.button']}" type="button" onclick="window.close();" />
     </h:form>

@@ -32,10 +32,10 @@ For details see file LICENSING in the top project directory
     <ui:include src="header.xhtml" />
     <div id='main_content'>
     <ui:fragment rendered="#{Knowledge.notInitialized or Knowledge.withoutData}">
-      <p><b><h:outputText value="#{msg['knowledge.empty.text']}" /></b></p>
+      <p><h3><h:outputText value="#{msg['knowledge.empty.text']}" /></h3></p>
     </ui:fragment>
     <ui:fragment rendered="#{!Knowledge.notInitialized and !Knowledge.withoutData}">
-      <p><b><h:outputText value="#{msg['knowledge.overview.text']}" /></b></p>
+      <p><h3><h:outputText value="#{msg['knowledge.overview.text']}" /></h3></p>
         <div class="meta row-fluid detail">
           <ui:repeat var="di" value="#{Knowledge.knowledge}">
             <ui:fragment rendered="#{di.level == 0}">

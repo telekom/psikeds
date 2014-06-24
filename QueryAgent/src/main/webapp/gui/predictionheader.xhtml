@@ -27,7 +27,7 @@ For details see file LICENSING in the top project directory
       <ui:fragment rendered="#{!Prediction.notInitialized and !Prediction.withoutData}">
         <h:form id="HeaderForm">
           <span>
-            <h:commandLink id="finished" action="javascript:window.close()"><h:outputText value="#{msg['global.header.session']}" /><h:outputText value="&#160;" />#{Prediction.sessionID}</h:commandLink>
+            <h:commandLink onclick="window.close();"><h:outputText value="#{msg['prediction.header.session']}" /><h:outputText value="&#160;" />#{Prediction.sessionID}</h:commandLink>
           </span>
         </h:form>
       </ui:fragment>

@@ -35,12 +35,15 @@ import org.psikeds.queryagent.interfaces.presenter.pojos.Purpose;
 import org.psikeds.queryagent.interfaces.presenter.pojos.Variant;
 import org.psikeds.queryagent.interfaces.presenter.pojos.VariantChoice;
 import org.psikeds.queryagent.interfaces.presenter.pojos.VariantChoices;
+import org.psikeds.queryagent.presenter.jsf.di.ConceptChoiceDisplayItem;
 import org.psikeds.queryagent.presenter.jsf.di.ConceptDisplayItem;
+import org.psikeds.queryagent.presenter.jsf.di.DecissionDisplayItem;
 import org.psikeds.queryagent.presenter.jsf.di.DisplayItem;
 import org.psikeds.queryagent.presenter.jsf.di.FeatureDisplayItem;
 import org.psikeds.queryagent.presenter.jsf.di.FeatureValueDisplayItem;
 import org.psikeds.queryagent.presenter.jsf.di.KnowledgeEntityDisplayItem;
 import org.psikeds.queryagent.presenter.jsf.di.PurposeDisplayItem;
+import org.psikeds.queryagent.presenter.jsf.di.SelectedFeatureValueDisplayItem;
 import org.psikeds.queryagent.presenter.jsf.di.VariantDisplayItem;
 import org.psikeds.queryagent.presenter.jsf.model.KnowledgeRepresentation;
 
@@ -87,6 +90,10 @@ public class PredictionView extends BaseView {
     return isNotInitialized();
   }
 
+  public DisplayItem getDecission() {
+    return new DecissionDisplayItem(isWithoutData() ? null : this.model.getPredictedDecission());
+  }
+
   public List<DisplayItem> getKnowledge() {
     final List<DisplayItem> knowledge = new ArrayList<DisplayItem>();
     try {
@@ -115,13 +122,13 @@ public class PredictionView extends BaseView {
   private void addVariantChoices(final List<DisplayItem> knowledge, final VariantChoices choices, final DisplayItem parent) {
     for (final VariantChoice vc : choices) {
       final Purpose p = vc.getPurpose();
-      final DisplayItem dp = new PurposeDisplayItem(p);
+      final PurposeDisplayItem dp = new PurposeDisplayItem(p);
       if (parent != null) {
         parent.addChild(dp);
       }
       knowledge.add(dp);
       for (final Variant v : vc.getVariants()) {
-        final VariantDisplayItem dv = new VariantDisplayItem(v);
+        final VariantDisplayItem dv = new VariantDisplayItem(p, v);
         dp.addChild(dv);
         knowledge.add(dv);
       }
@@ -134,7 +141,7 @@ public class PredictionView extends BaseView {
     for (final FeatureChoice fc : choices) {
       final String fid = fc.getFeatureID();
       final Feature f = this.model.getFeature(fid);
-      final DisplayItem df = new FeatureDisplayItem(f);
+      final FeatureDisplayItem df = new FeatureDisplayItem(f);
       if (parent != null) {
         parent.addChild(df);
       }
@@ -152,15 +159,17 @@ public class PredictionView extends BaseView {
 
   private void addConceptChoices(final List<DisplayItem> knowledge, final ConceptChoices choices, final DisplayItem parent) {
     for (final ConceptChoice cc : choices) {
+      final String key = POJO.composeId("CC", (parent == null ? cc.getParentVariantID() : parent.getKey()));
+      final ConceptChoiceDisplayItem dcc = new ConceptChoiceDisplayItem(key);
+      if (parent != null) {
+        parent.addChild(dcc);
+      }
+      knowledge.add(dcc);
       for (final Concept con : cc.getConcepts()) {
-        if (con != null) {
-          final ConceptDisplayItem dc = new ConceptDisplayItem(con);
-          if (parent != null) {
-            parent.addChild(dc);
-          }
-          dc.setLevel(dc.getLevel() - 1); // hack for displaying concepts on the correct level
-          knowledge.add(dc);
-        }
+        final ConceptDisplayItem dc = new ConceptDisplayItem(cc, con);
+        dcc.addChild(dc);
+        dc.setLevel(dc.getLevel() - 2); // hack for displaying concepts on the correct level
+        knowledge.add(dc);
       }
     }
   }
@@ -179,11 +188,9 @@ public class PredictionView extends BaseView {
       }
       knowledge.add(dke);
       for (final FeatureValue fv : ke.getFeatures()) {
-        final String id = POJO.composeId(fv.getFeatureID(), fv.getFeatureValueID());
-        final String txt = fv.getFeatureID() + " = " + fv.getValue();
-        final DisplayItem label = new DisplayItem(id, txt);
-        dke.addChild(label);
-        knowledge.add(label);
+        final SelectedFeatureValueDisplayItem dsfv = new SelectedFeatureValueDisplayItem(fv);
+        dke.addChild(dsfv);
+        knowledge.add(dsfv);
       }
       addEntities(knowledge, ke.getChildren(), dke);
       addVariantChoices(knowledge, ke.getPossibleVariants(), dke);

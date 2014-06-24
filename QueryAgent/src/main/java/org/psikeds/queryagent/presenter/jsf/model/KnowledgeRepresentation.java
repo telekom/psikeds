@@ -198,7 +198,7 @@ public class KnowledgeRepresentation implements Serializable {
   }
 
   public boolean hasPrediction() {
-    return ((this.prediction != null) && (getPredictedKnowledge() != null));
+    return ((this.prediction != null) && (getPredictedKnowledge() != null) && (getPredictedDecission() != null));
   }
 
   // ----------------------------------------------------------------
