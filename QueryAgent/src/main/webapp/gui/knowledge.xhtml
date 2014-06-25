@@ -46,7 +46,7 @@ For details see file LICENSING in the top project directory
               <ui:fragment rendered="#{di.level != 0}">
                 <p/>
               </ui:fragment>
-              <h3 class="#{di.type} level#{di.level}">#{di.key}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.longDescription}</h3>
+              <h3 class="#{di.type} level#{di.level}">#{di.value}<h:outputText value="&#160;" />-<h:outputText value="&#160;" />#{di.longDescription}</h3>
               <ul class="#{di.type} level#{di.level}">
               <ui:repeat var="feat" value="#{di.child}">
                 <ui:fragment rendered="#{feat.type == 'SelectedFeatureValue'}">
