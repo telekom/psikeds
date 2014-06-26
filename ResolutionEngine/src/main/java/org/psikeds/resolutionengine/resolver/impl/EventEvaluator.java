@@ -183,12 +183,16 @@ public class EventEvaluator implements InitializingBean, Resolver {
       LOGGER.trace("--> checkEvent(); E = {}", eid);
       final List<String> ctx = (e == null ? null : e.getContext());
       if (StringUtils.isEmpty(eid) || (ctx == null) || ctx.isEmpty()) {
+        final String msg = "Invalid Event: " + eid;
+        LOGGER.debug(msg);
         markEventObsolete(e, raeh, metadata);
-        throw new ResolutionException("Invalid Event: " + eid);
+        throw new ResolutionException(msg);
       }
       if (StringUtils.isEmpty(e.getTriggerID()) || StringUtils.isEmpty(e.getTriggerType())) {
+        final String msg = "No Trigger in Event: " + eid;
+        LOGGER.debug(msg);
         markEventObsolete(e, raeh, metadata);
-        throw new ResolutionException("No Trigger in Event: " + eid);
+        throw new ResolutionException(msg);
       }
       final KnowledgeEntities root = KnowledgeHelper.findRoot(e, knowledge);
       if ((root == null) || root.isEmpty()) {
@@ -255,7 +259,7 @@ public class EventEvaluator implements InitializingBean, Resolver {
     boolean matching = false;
     final String eid = (e == null ? null : e.getEventID());
     try {
-      LOGGER.trace("--> checkKnowledgeEntity(); E = {}; Path = {}", eid, path);
+      LOGGER.trace("--> checkKnowledgeEntity(); E = {}; KE = {}; Path = {}", eid, shortDisplayKE(ke), path);
       final int len = (path == null ? 0 : path.size());
       if (len <= 0) {
         // we walked the complete path
@@ -281,7 +285,7 @@ public class EventEvaluator implements InitializingBean, Resolver {
       // Current Element was matching, Event is still possible ...  
       if (len == 1) {
         // ... and this was the last Element.
-        LOGGER.debug("Path {} of Event {} ends at this KE: {}", path, eid, ke);
+        LOGGER.debug("Path {} of Event {} ends at this KE: {}", path, eid, shortDisplayKE(ke));
         matching = checkTrigger(e, ke, isVariant, raeh, metadata);
         stillPossible = false;
         return stillPossible;
@@ -318,17 +322,20 @@ public class EventEvaluator implements InitializingBean, Resolver {
       return stillPossible;
     }
     finally {
-      LOGGER.trace("<-- checkKnowledgeEntity(); E = {}; Path = {}; matching = {}; stillPossible = {}", eid, path, matching, stillPossible);
+      LOGGER.trace("<-- checkKnowledgeEntity(); E = {}; KE = {}; Path = {}; matching = {}; stillPossible = {}", eid, shortDisplayKE(ke), path, matching, stillPossible);
     }
   }
 
   private boolean checkCurrentPathElement(final Event e, final String currentPathElement, final KnowledgeEntity ke, final boolean isVariant, final RulesAndEventsHandler raeh, final Metadata metadata) {
     boolean matching = false;
+    final String eid = (e == null ? null : e.getEventID());
     try {
-      LOGGER.trace("--> checkCurrentPathElement(); E = {}; PE = {}; isVariant = {}", e.getEventID(), currentPathElement, isVariant);
+      LOGGER.trace("--> checkCurrentPathElement(); E = {}; KE = {}; PE = {}; isVariant = {}", eid, shortDisplayKE(ke), currentPathElement, isVariant);
       if (StringUtils.isEmpty(currentPathElement)) {
+        final String msg = "Current Path Element is empty!";
+        LOGGER.debug(msg);
         markEventObsolete(e, raeh, metadata);
-        throw new ResolutionException("Current Path Element is empty!");
+        throw new ResolutionException(msg);
       }
       if (isVariant) {
         // we are expecting a variant
@@ -353,7 +360,7 @@ public class EventEvaluator implements InitializingBean, Resolver {
       return matching;
     }
     finally {
-      LOGGER.trace("<-- checkCurrentPathElement(); E = {}; PE = {}; isVariant = {}; matching = {}", e.getEventID(), currentPathElement, isVariant, matching);
+      LOGGER.trace("<-- checkCurrentPathElement(); E = {}; KE = {}; PE = {}; isVariant = {}; matching = {}", eid, shortDisplayKE(ke), currentPathElement, isVariant, matching);
     }
   }
 
@@ -367,10 +374,11 @@ public class EventEvaluator implements InitializingBean, Resolver {
     final String tid = (e == null ? null : e.getTriggerID());
     final String type = (e == null ? null : e.getTriggerType());
     try {
-      LOGGER.trace("--> checkTrigger(); E = {}; TID = {}; TYP = {}; NOT = {}; VAR = {}", eid, tid, type, notEvent, isVariant);
+      LOGGER.trace("--> checkTrigger(); E = {}; KE = {}; TID = {}; TYP = {}; NOT = {}; VAR = {}", eid, shortDisplayKE(ke), tid, type, notEvent, isVariant);
       if (isVariant) {
         // current/last element of context path was a variant, so trigger could be a feature-value or a concept
         if (Event.TRIGGER_TYPE_FEATURE_VALUE.equals(type)) {
+          LOGGER.debug("Checking Trigger {} of Feature-Value-Event {}", tid, eid);
           final String fid = tid;
           final String ret = FeatureValueHelper.checkFeatureValue(this.kb, this.trans, ke, fid);
           if (FeatureValueHelper.RET_FV_ASSIGNED.equalsIgnoreCase(ret)) {
@@ -390,6 +398,7 @@ public class EventEvaluator implements InitializingBean, Resolver {
           }
         }
         else if (Event.TRIGGER_TYPE_CONCEPT.equals(type)) {
+          LOGGER.debug("Checking Trigger {} of Concept-Event {}", tid, eid);
           final String cid = tid;
           final String ret = ConceptHelper.checkConcept(this.kb, this.trans, ke, cid);
           if (ConceptHelper.RET_CONCEPT_FULFILLED.equals(ret)) {
@@ -409,6 +418,7 @@ public class EventEvaluator implements InitializingBean, Resolver {
           }
         }
         else {
+          LOGGER.debug("Cannot check Trigger ... invalid Event: {}", e);
           matching = false;
           undecided = true;
           throw new ResolutionException("Invalid Event " + eid + " -- Expected a Feature- or Concept-Trigger, but encountered: " + type);
@@ -417,6 +427,7 @@ public class EventEvaluator implements InitializingBean, Resolver {
       else {
         // current/last element of context path was a purpose, so only reasonable trigger is a variant
         if (Event.TRIGGER_TYPE_VARIANT.equals(type)) {
+          LOGGER.debug("Checking Trigger {} of Variant-Event {}", tid, eid);
           final Variant v = (ke == null ? null : ke.getVariant());
           final String vid = (v == null ? null : v.getVariantID());
           if (tid.equals(vid)) {
@@ -426,6 +437,7 @@ public class EventEvaluator implements InitializingBean, Resolver {
           }
         }
         else {
+          LOGGER.debug("Cannot check Trigger ... invalid Event: {}", e);
           matching = false;
           undecided = true;
           throw new ResolutionException("Invalid Event " + eid + " -- Expected a Variant-Trigger, but encountered: " + type);
@@ -443,38 +455,46 @@ public class EventEvaluator implements InitializingBean, Resolver {
       }
       if (!undecided) {
         if (matching) {
+          LOGGER.debug("Event {} is not undecided and matching --> Triggering {} ", eid, tid);
           triggerEvent(e, raeh, metadata);
         }
         else {
+          LOGGER.debug("Event {} is not undecided and also not matching --> Obsolete!", eid);
           markEventObsolete(e, raeh, metadata);
         }
       }
       else {
-        LOGGER.debug("Trigger {} of Event {} is still undecided: {}", tid, eid);
+        LOGGER.debug("Trigger {} of Event {} is still undecided.", tid, eid);
       }
       return matching;
     }
     finally {
-      LOGGER.trace("<-- checkTrigger(); E = {}; TID = {}; TYP = {}; NOT = {}; VAR = {}; matching = {}; undecided = {}", eid, tid, type, notEvent, isVariant, matching, undecided);
+      LOGGER.trace("<-- checkTrigger(); E = {}; KE = {}; TID = {}; TYP = {}; NOT = {}; VAR = {}; matching = {}; undecided = {}", eid, shortDisplayKE(ke), tid, type, notEvent, isVariant, matching,
+          undecided);
     }
   }
 
   // ----------------------------------------------------------------
 
+//  private boolean checkChoices(final Event e, final List<String> path, final KnowledgeEntity ke, final boolean isVariant, final RulesAndEventsHandler raeh, final Metadata metadata) {
+//    final String currentPathElement = path.get(0);
+//    if (Event.TRIGGER_TYPE_VARIANT.equals(e.getTriggerType())) {
+//      final VariantChoices choices = ke.getPossibleVariants();
+//      return checkChoices(e, currentPathElement, choices, isVariant, raeh, metadata);
+//    }
+//    // features and concepts cannot be part of the context path
+//    return false;
+//  }
+
   private boolean checkChoices(final Event e, final List<String> path, final KnowledgeEntity ke, final boolean isVariant, final RulesAndEventsHandler raeh, final Metadata metadata) {
-    final String currentPathElement = path.get(0);
-    if (Event.TRIGGER_TYPE_VARIANT.equals(e.getTriggerType())) {
-      final VariantChoices choices = ke.getPossibleVariants();
-      return checkChoices(e, currentPathElement, choices, isVariant, raeh, metadata);
-    }
-    // features and concepts cannot be part of the context path
-    return false;
+    return checkChoices(e, path.get(0), ke.getPossibleVariants(), isVariant, raeh, metadata);
   }
 
   private boolean checkChoices(final Event e, final String currentPathElement, final VariantChoices choices, final boolean isVariant, final RulesAndEventsHandler raeh, final Metadata metadata) {
     boolean matchingChoice = false;
+    final String eid = (e == null ? null : e.getEventID());
     try {
-      LOGGER.trace("--> checkChoices(); E = {}; PE = {}; isVariant = {}", e.getEventID(), currentPathElement, isVariant);
+      LOGGER.trace("--> checkChoices(); E = {}; PE = {}; isVariant = {}\nChoices = {}", eid, currentPathElement, isVariant, choices);
       for (final VariantChoice vc : choices) {
         // Loop over all Choices and as soon as one is matching we are finished
         matchingChoice = checkChoice(e, currentPathElement, vc, isVariant, raeh, metadata);
@@ -483,17 +503,19 @@ public class EventEvaluator implements InitializingBean, Resolver {
           return matchingChoice;
         }
       }
+      LOGGER.debug("PE {} of Event {} is not matching to any of the Variant-Choices.", currentPathElement, eid);
       return matchingChoice;
     }
     finally {
-      LOGGER.trace("<-- checkChoices(); E = {}; PE = {}; matchingChoice = {}", e.getEventID(), currentPathElement, matchingChoice);
+      LOGGER.trace("<-- checkChoices(); E = {}; PE = {}; isVariant = {}; matchingChoice = {}", eid, currentPathElement, isVariant, matchingChoice);
     }
   }
 
   private boolean checkChoice(final Event e, final String currentPathElement, final VariantChoice vc, final boolean isVariant, final RulesAndEventsHandler raeh, final Metadata metadata) {
     boolean matchingChoice = false;
+    final String eid = (e == null ? null : e.getEventID());
     try {
-      LOGGER.trace("--> checkChoice(); PE = {}; isVariant = {}\nVariantChoice = {}", currentPathElement, isVariant, vc);
+      LOGGER.trace("--> checkChoice(); E = {}; PE = {}; isVariant = {}\nVariantChoice = {}", eid, currentPathElement, isVariant, vc);
       if (isVariant) {
         // Is Path Element matching any selectable Variant of this Choice?
         final List<Variant> lst = vc.getVariants();
@@ -502,7 +524,7 @@ public class EventEvaluator implements InitializingBean, Resolver {
             final String vid = (v == null ? null : v.getVariantID());
             matchingChoice = currentPathElement.equals(vid);
             if (matchingChoice) {
-              LOGGER.debug("PE {} is matching Variant of VariantChoice {}", currentPathElement, vc);
+              LOGGER.debug("PE {} is matching Variant {} of VariantChoice {}", currentPathElement, vid, vc);
               return matchingChoice;
             }
           }
@@ -514,14 +536,14 @@ public class EventEvaluator implements InitializingBean, Resolver {
         final String pid = (p == null ? null : p.getPurposeID());
         matchingChoice = currentPathElement.equals(pid);
         if (matchingChoice) {
-          LOGGER.debug("PE {} is matching Purpose of VariantChoice {}", currentPathElement, vc);
+          LOGGER.debug("PE {} is matching Purpose {} of VariantChoice {}", currentPathElement, pid, vc);
           return matchingChoice;
         }
       }
       return matchingChoice;
     }
     finally {
-      LOGGER.trace("<-- checkChoice(); PE = {}; isVariant = {}; matchingChoice = {}", currentPathElement, isVariant, matchingChoice);
+      LOGGER.trace("<-- checkChoice(); E = {}; PE = {}; isVariant = {}; matchingChoice = {}", eid, currentPathElement, isVariant, matchingChoice);
     }
   }
 
@@ -535,6 +557,7 @@ public class EventEvaluator implements InitializingBean, Resolver {
       else {
         LOGGER.debug("TRIGGERED: {}", e.getEventID());
       }
+      LOGGER.debug(e.getEventID(), new Exception()); // TODO remove
       raeh.setTriggered(e);
       if ((metadata != null) && LOGGER.isInfoEnabled()) {
         final String key = "E_" + e.getEventID() + "_triggered";
@@ -552,6 +575,7 @@ public class EventEvaluator implements InitializingBean, Resolver {
       else {
         LOGGER.debug("OBSOLETE: {}", e.getEventID());
       }
+      LOGGER.debug(e.getEventID(), new Exception()); // TODO remove
       raeh.setObsolete(e);
       if ((metadata != null) && LOGGER.isInfoEnabled()) {
         final String key = "E_" + e.getEventID() + "_obsolete";
