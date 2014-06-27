@@ -67,6 +67,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
   public static final boolean DEFAULT_RESOLVE_INITIAL_KNOWLEDGE = false;
   public static final boolean DEFAULT_CHECK_VALIDITY_ON_STARTUP = true;
   public static final boolean DEFAULT_CHECK_VALIDITY_AT_RUNTIME = true;
+  public static final int DEFAULT_MAX_RESOLUTION_ITERATIONS = 10;
 
   private KnowledgeBase kb;
   private List<Resolver> resolverChain;
@@ -76,6 +77,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
   private boolean resolveInitialKnowledge;
   private boolean checkValidityOnStartup;
   private boolean checkValidityAtRuntime;
+  private int maxResolutionIterations;
 
   public ResolutionBusinessService() {
     this(null, null, null, null, null);
@@ -87,6 +89,11 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
 
   public ResolutionBusinessService(final KnowledgeBase kb, final List<Resolver> resolverChain, final ResolutionCache cache, final Transformer trans, final IdGenerator gen,
       final boolean resolve, final boolean startup, final boolean runtime) {
+    this(kb, resolverChain, cache, trans, gen, resolve, startup, runtime, DEFAULT_MAX_RESOLUTION_ITERATIONS);
+  }
+
+  public ResolutionBusinessService(final KnowledgeBase kb, final List<Resolver> resolverChain, final ResolutionCache cache, final Transformer trans, final IdGenerator gen,
+      final boolean resolve, final boolean startup, final boolean runtime, final int iterations) {
     this.kb = kb;
     this.resolverChain = resolverChain;
     this.cache = cache;
@@ -95,6 +102,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     this.resolveInitialKnowledge = resolve;
     this.checkValidityOnStartup = startup;
     this.checkValidityAtRuntime = runtime;
+    this.maxResolutionIterations = iterations;
   }
 
   public boolean isCheckValidityOnStartup() {
@@ -119,6 +127,14 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
 
   public void setResolveInitialKnowledge(final boolean resolveInitialKnowledge) {
     this.resolveInitialKnowledge = resolveInitialKnowledge;
+  }
+
+  public int getMaxResolutionIterations() {
+    return this.maxResolutionIterations;
+  }
+
+  public void setMaxResolutionIterations(final int maxResolutionIterations) {
+    this.maxResolutionIterations = maxResolutionIterations;
   }
 
   public KnowledgeBase getKnowledgeBase() {
@@ -181,14 +197,16 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     if (LOGGER.isInfoEnabled()) {
       final StringBuilder sb = new StringBuilder("Config: Resolve initial Knowledge: {}\n");
       sb.append("Check validity of Knowledge-Base on Startup: {}\n");
-      sb.append("Check validity of Knowledge-Base at Runtime: {}");
-      LOGGER.info(sb.toString(), this.resolveInitialKnowledge, this.checkValidityOnStartup, this.checkValidityAtRuntime);
+      sb.append("Check validity of Knowledge-Base at Runtime: {}\n");
+      sb.append("Maximum Iterations of Resolution per Decission: {}");
+      LOGGER.info(sb.toString(), this.resolveInitialKnowledge, this.checkValidityOnStartup, this.checkValidityAtRuntime, this.maxResolutionIterations);
     }
     Validate.notNull(this.kb, "No Knowledge-Base!");
     Validate.notNull(this.trans, "No Transformer!");
     Validate.notNull(this.gen, "No Session-ID-Generator!");
     Validate.notNull(this.cache, "No Resolution-Cache!");
     Validate.isTrue(getResolvers().size() > 0, "No Resolver-Chain!");
+    Validate.isTrue(this.maxResolutionIterations > 0, "No Iterations for Resolution!?!?");
     if (this.checkValidityOnStartup) {
       LOGGER.info("Checking validity of Knowledge-Base.");
       checkValidity();
@@ -454,6 +472,8 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     }
   }
 
+  // ----------------------------------------------------------------
+
   private Knowledge resolveDecissions(Knowledge knowledge, final List<Decission> decissions, final Metadata metadata, final RulesAndEventsHandler raeh) {
     try {
       LOGGER.trace("--> resolveDecissions()");
@@ -464,12 +484,12 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
         throw new ResolutionException("Cannot resolve Decissions, RulesAndEventsHandler is NULL!!!");
       }
       if ((decissions == null) || decissions.isEmpty()) {
-        knowledge = autoResolve(knowledge, metadata, raeh);
+        knowledge = autoResolve(knowledge, metadata, raeh, this.maxResolutionIterations);
       }
       else {
         LOGGER.debug("Total of {} Decission(s)", decissions.size());
         for (final Decission decission : decissions) {
-          knowledge = resolve(knowledge, decission, metadata, raeh);
+          knowledge = resolve(knowledge, decission, metadata, raeh, this.maxResolutionIterations);
         }
       }
       return knowledge;
@@ -479,15 +499,15 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     }
   }
 
-  private Knowledge autoResolve(final Knowledge knowledge, final Metadata metadata, final RulesAndEventsHandler raeh) {
+  private Knowledge autoResolve(final Knowledge knowledge, final Metadata metadata, final RulesAndEventsHandler raeh, final int iterationCountDown) {
     LOGGER.debug("Auto-Resolution!");
-    return resolve(knowledge, null, metadata, raeh);
+    return resolve(knowledge, null, metadata, raeh, iterationCountDown);
   }
 
-  private Knowledge resolve(Knowledge knowledge, final Decission decission, final Metadata metadata, final RulesAndEventsHandler raeh) {
+  private Knowledge resolve(Knowledge knowledge, final Decission decission, final Metadata metadata, final RulesAndEventsHandler raeh, int iterationCountDown) {
     boolean ok = false;
     try {
-      LOGGER.trace("--> resolve(); Decission = {}", decission);
+      LOGGER.trace("--> resolve(); iterationCountDown = {}; Decission = {}", iterationCountDown, decission);
       // in the beginning knowledge is clean/stable
       knowledge.setStable(true);
       // Invoke every Resolver in Chain
@@ -500,14 +520,19 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
         // was applied or Choices with only one Variant were auto-completed.
         // Note: We do not supply any Decission because this was triggered
         // automatically and not by a Client-Interaction.
-        knowledge = autoResolve(knowledge, metadata, raeh);
+        if (iterationCountDown > 0) {
+          knowledge = autoResolve(knowledge, metadata, raeh, --iterationCountDown);
+        }
+        else {
+          throw new ResolutionException("Resolution exceeds Maximum of " + this.maxResolutionIterations + " Iterations!");
+        }
       }
       // done
       ok = true;
       return knowledge;
     }
     finally {
-      LOGGER.trace("<-- resolve(); " + (ok ? "OK." : "ERROR!") + "\nKnowledge = {}", knowledge);
+      LOGGER.trace("<-- resolve(); iterationCountDown = {}; Result = " + (ok ? "OK." : "ERROR!") + "\nKnowledge = {}", iterationCountDown, knowledge);
     }
   }
 }
