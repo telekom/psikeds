@@ -80,7 +80,13 @@ public abstract class RelationHelper {
     }
     // constants are just references to feature values, without a context
     if (rp.isConstant()) {
-      final FeatureValue fv = kb.getFeatureValue(paramValue);
+      FeatureValue fv = null;
+      try {
+        fv = getConstantFeatureValue(kb, rp);
+      }
+      catch (final Exception ex) {
+        fv = null;
+      }
       if ((fv == null) || !paramValue.equals(fv.getFeatureValueID())) {
         LOGGER.warn("Constant Feature-Value {} referenced by Relation-Parameter {} of Relation {} does not exist!", paramValue, parameterID, relationId);
         return false;
@@ -88,7 +94,13 @@ public abstract class RelationHelper {
       return true;
     }
     // variable parameters are references to features with a given context
-    final Feature f = kb.getFeature(paramValue);
+    Feature f = null;
+    try {
+      f = getFeatureVariable(kb, rp);
+    }
+    catch (final Exception ex) {
+      f = null;
+    }
     if ((f == null) || !paramValue.equals(f.getFeatureID())) {
       LOGGER.warn("Variable Feature-ID {} referenced by Relation-Parameter {} of Relation {} does not exist!", paramValue, parameterID, relationId);
       return false;
@@ -113,18 +125,40 @@ public abstract class RelationHelper {
 
   public static FeatureValue getConstantFeatureValue(final KnowledgeBase kb, final RelationParameter rp) {
     FeatureValue fv = null;
-    if ((kb != null) && (rp != null) && rp.isConstant()) {
-      fv = kb.getFeatureValue(rp.getParameterID());
+    final String paramID = (rp == null ? null : rp.getParameterID());
+    final String paramValue = (rp == null ? null : rp.getParameterValue());
+    try {
+      LOGGER.trace("--> getConstantFeatureValue(); Param = {}; Value = {}", paramID, paramValue);
+      if ((kb != null) && (rp != null) && rp.isConstant()) {
+        fv = kb.getFeatureValue(paramValue);
+      }
+      if (fv == null) {
+        throw new IllegalArgumentException("Not a Constant: " + paramID);
+      }
+      return fv;
     }
-    return fv;
+    finally {
+      LOGGER.trace("<-- getConstantFeatureValue(); Param = {}; Value = {}; FeatureValue = {}", paramID, paramValue, fv);
+    }
   }
 
   public static Feature getFeatureVariable(final KnowledgeBase kb, final RelationParameter rp) {
     Feature f = null;
-    if ((kb != null) && (rp != null) && !rp.isConstant()) {
-      f = kb.getFeature(rp.getParameterID());
+    final String paramID = (rp == null ? null : rp.getParameterID());
+    final String paramValue = (rp == null ? null : rp.getParameterValue());
+    try {
+      LOGGER.trace("--> getFeatureVariable(); Param = {}; Value = {}", paramID, paramValue);
+      if ((kb != null) && (rp != null) && !rp.isConstant()) {
+        f = kb.getFeature(paramValue);
+      }
+      if (f == null) {
+        throw new IllegalArgumentException("Not a Variable: " + paramID);
+      }
+      return f;
     }
-    return f;
+    finally {
+      LOGGER.trace("<-- getFeatureVariable(); Param = {}; Value = {}; Feature = {}", paramID, paramValue, f);
+    }
   }
 
   // ----------------------------------------------------------------
