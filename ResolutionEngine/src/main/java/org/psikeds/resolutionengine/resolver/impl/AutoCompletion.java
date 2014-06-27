@@ -215,9 +215,13 @@ public class AutoCompletion implements InitializingBean, Resolver {
               LOGGER.debug("Skipping Auto-Completion for Root-Purpose: {}", pid);
               continue;
             }
-            LOGGER.info("Auto-Completion for Purpose: {}", pid);
-            // exactly one variant
-            if (!vars.isEmpty()) {
+            if (vars.isEmpty()) {
+              LOGGER.info("Purpose {} or Parent-Variant {} cannot be fulfilled!", pid, vc.getParentVariantID());
+              unfulfillableMessage(metadata, vc);
+              continue;
+            }
+            else { // exactly one variant
+              LOGGER.info("Auto-Completion for Purpose {} or Parent-Variant {}", pid, vc.getParentVariantID());
               // Create a new KnowledgeEntity for the selected Variant
               Variant v = vars.get(0);
               final String vid = v.getVariantID();
@@ -235,8 +239,8 @@ public class AutoCompletion implements InitializingBean, Resolver {
               KnowledgeEntityHelper.addNewKnowledgeEntity(entities, ke);
               completionMessage(metadata, vc);
               vars.clear();
+              removed = true;
             }
-            removed = true;
           }
         }
         // Is this a Choice for a Value of a Feature?
@@ -245,15 +249,18 @@ public class AutoCompletion implements InitializingBean, Resolver {
           final FeatureValues values = fc.getPossibleValues();
           if (values.size() < 2) {
             LOGGER.trace("Found: {}", fc);
-            final String fid = fc.getFeatureID();
-            LOGGER.info("Auto-Completion for Feature {}", fid);
-            if (!values.isEmpty()) {
-              //exactly one feature value
+            if (values.isEmpty()) {
+              LOGGER.info("Feature {} of Variant {} cannot be fulfilled!", fc.getFeatureID(), fc.getParentVariantID());
+              unfulfillableMessage(metadata, fc);
+              continue;
+            }
+            else { //exactly one feature value
+              LOGGER.info("Auto-Completion for Feature {} of Variant {}", fc.getFeatureID(), fc.getParentVariantID());
               FeatureValueHelper.applyFeatureValue(parentEntity, values.get(0));
               completionMessage(metadata, fc);
               values.clear();
+              removed = true;
             }
-            removed = true;
           }
         }
         // Is this a Choice for a Concept?
@@ -262,15 +269,19 @@ public class AutoCompletion implements InitializingBean, Resolver {
           final Concepts cons = cc.getConcepts();
           if (cons.size() < 2) {
             LOGGER.trace("Found: {}", cc);
-            if (!cons.isEmpty()) {
-              // exactly one concept
+            if (cons.isEmpty()) {
+              LOGGER.info("Concepts of Variant {} cannot be fulfilled!", cc.getParentVariantID());
+              unfulfillableMessage(metadata, cc);
+              continue;
+            }
+            else { // exactly one concept
               final Concept con = cons.get(0);
-              LOGGER.info("Auto-Completion for Concept {}", con.getConceptID());
+              LOGGER.info("Auto-Completion for Concept {} of Variant {}", con.getConceptID(), cc.getParentVariantID());
               ConceptHelper.applyConcept(parentEntity, con);
               completionMessage(metadata, cc);
               cons.clear();
+              removed = true;
             }
-            removed = true;
           }
         }
         else {
@@ -334,6 +345,41 @@ public class AutoCompletion implements InitializingBean, Resolver {
       LOGGER.debug(msg);
       if (metadata != null) {
         final String key = String.format("AutoCompletion_CC_%s_%s", cc.getParentVariantID(), cc.getConcepts().get(0).getConceptID()); // we are sure that these objects exist!
+        metadata.addInfo(key, msg);
+      }
+    }
+  }
+
+  // ----------------------------------------------------------------
+
+  private void unfulfillableMessage(final Metadata metadata, final VariantChoice vc) {
+    if (vc != null) {
+      final String msg = String.format("Unfulfillable VariantChoice: %s", vc);
+      LOGGER.debug(msg);
+      if (metadata != null) {
+        final String key = String.format("Unfulfillable_VC_%s_%s", vc.getParentVariantID(), vc.getPurpose().getPurposeID());
+        metadata.addInfo(key, msg);
+      }
+    }
+  }
+
+  private void unfulfillableMessage(final Metadata metadata, final FeatureChoice fc) {
+    if (fc != null) {
+      final String msg = String.format("Unfulfillable FeatureChoice: %s", fc);
+      LOGGER.debug(msg);
+      if (metadata != null) {
+        final String key = String.format("Unfulfillable_FC_%s_%s", fc.getParentVariantID(), fc.getFeatureID());
+        metadata.addInfo(key, msg);
+      }
+    }
+  }
+
+  private void unfulfillableMessage(final Metadata metadata, final ConceptChoice cc) {
+    if (cc != null) {
+      final String msg = String.format("Unfulfillable ConceptChoice: %s", cc);
+      LOGGER.debug(msg);
+      if (metadata != null) {
+        final String key = String.format("Unfulfillable_CC_%s", cc.getParentVariantID());
         metadata.addInfo(key, msg);
       }
     }
