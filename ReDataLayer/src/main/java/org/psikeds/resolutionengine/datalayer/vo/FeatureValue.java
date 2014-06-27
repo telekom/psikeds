@@ -138,4 +138,9 @@ public class FeatureValue extends ValueObject implements Serializable {
   public boolean isIntegerValue() {
     return Feature.VALUE_TYPE_INTEGER.equals(this.type);
   }
+
+  @JsonIgnore
+  public boolean isStringValue() {
+    return Feature.VALUE_TYPE_STRING.equals(this.type);
+  }
 }
