@@ -56,6 +56,12 @@ public abstract class RelationHelper {
   }
 
   public static boolean checkRelationParameter(final KnowledgeBase kb, final String relationId, final String rootVariantId, final RelationParameter rp) {
+    // double check relation
+    final Relation rel = (StringUtils.isEmpty(relationId) ? null : kb.getRelation(relationId));
+    if ((rel == null) || !relationId.equals(rel.getRelationID())) {
+      LOGGER.warn("Relation {} does not exist!", relationId);
+      return false;
+    }
     final String parameterID = (rp == null ? null : rp.getParameterID());
     if (StringUtils.isEmpty(parameterID)) {
       LOGGER.warn("Relation {} has illegal Relation-Parameter: {}", relationId, rp);
@@ -72,7 +78,7 @@ public abstract class RelationHelper {
       LOGGER.warn("Relation-Parameter {} of Relation {} has no Value.", paramValue, relationId);
       return false;
     }
-    // constants are just references to feature values
+    // constants are just references to feature values, without a context
     if (rp.isConstant()) {
       final FeatureValue fv = kb.getFeatureValue(paramValue);
       if ((fv == null) || !paramValue.equals(fv.getFeatureValueID())) {
@@ -92,6 +98,14 @@ public abstract class RelationHelper {
       LOGGER.warn("Relation-Parameter {} of Relation {} has no Context-Path.", parameterID, relationId);
       return false;
     }
+    // check for matching nexus of relation and parameter
+    final String nexus1 = rel.getVariantID();
+    final String nexus2 = rp.getVariantID();
+    if (StringUtils.isEmpty(nexus1) || StringUtils.isEmpty(nexus2) || !nexus1.equals(nexus2)) {
+      LOGGER.warn("Relation {} and Parameter {} are not attached to the same Nexus-Variant: {} vs. {}", relationId, rp, nexus1, nexus2);
+      return false;
+    }
+    // check context
     return checkContextPath(kb, relationId, rootVariantId, ctx, paramValue);
   }
 

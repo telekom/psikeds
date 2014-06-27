@@ -105,6 +105,9 @@ public class RelationValidator implements Validator {
               valid = false;
               LOGGER.warn("Conditional-Event-ID {} referenced by Relation {} does not exists.", ceid, rid);
             }
+            else {
+              LOGGER.debug("Relation {} is conditional and depends on Event {}", rid, ceid);
+            }
           }
           // --- Step 2: check left and right side of Relation  ---
           final RelationParameter left = r.getLeftSide();
