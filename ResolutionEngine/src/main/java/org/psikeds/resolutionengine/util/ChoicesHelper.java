@@ -61,7 +61,7 @@ public abstract class ChoicesHelper {
   public static boolean cleanupChoices(final KnowledgeBase kb, final Event e, final KnowledgeEntity ke) {
     boolean removed = false;
     try {
-      LOGGER.trace("--> cleanupChoices(); E = {}; KE = {}", e.getEventID(), ke);
+      LOGGER.trace("--> cleanupChoices(); E = {}; KE = {}", e.getEventID(), shortDisplayKE(ke));
       if (Event.TRIGGER_TYPE_VARIANT.equals(e.getTriggerType())) {
         removed = cleanupVariantChoices(e, ke, null);
       }
@@ -71,14 +71,14 @@ public abstract class ChoicesHelper {
       return removed;
     }
     finally {
-      LOGGER.trace("<-- cleanupChoices(); E = {}; removed = {}", e.getEventID(), removed);
+      LOGGER.trace("<-- cleanupChoices(); E = {}; removed = {}", e.getEventID(), shortDisplayKE(ke));
     }
   }
 
   public static boolean cleanupVariantChoices(final Event e, final KnowledgeEntity ke, final String purposeId) {
     boolean removed = false;
     try {
-      LOGGER.trace("--> cleanupVariantChoices(); PID = {}; TID = {}; E = {}; KE = {}", purposeId, e.getTriggerID(), e.getEventID(), ke);
+      LOGGER.trace("--> cleanupVariantChoices(); PID = {}; TID = {}; E = {}; KE = {}", purposeId, e.getTriggerID(), e.getEventID(), shortDisplayKE(ke));
       if (Event.TRIGGER_TYPE_VARIANT.equals(e.getTriggerType())) {
         removed = ChoicesHelper.cleanupVariantChoices(ke, purposeId, e.getTriggerID());
         return removed;
@@ -95,7 +95,7 @@ public abstract class ChoicesHelper {
   public static boolean cleanupFeatureOrConceptChoices(final KnowledgeBase kb, final Event e, final KnowledgeEntity ke, final String variantId) {
     boolean removed = false;
     try {
-      LOGGER.trace("--> cleanupFeatureChoices(); VID = {}; TID = {}, E = {}; KE = {}", variantId, e.getTriggerID(), e.getEventID(), ke);
+      LOGGER.trace("--> cleanupFeatureOrConceptChoices(); VID = {}; TID = {}, E = {}; KE = {}", variantId, e.getTriggerID(), e.getEventID(), shortDisplayKE(ke));
       if (Event.TRIGGER_TYPE_FEATURE_VALUE.equals(e.getTriggerType())) {
         final String featureValueId = e.getTriggerID();
         final org.psikeds.resolutionengine.datalayer.vo.FeatureValue fv = kb.getFeatureValue(featureValueId);
@@ -114,7 +114,7 @@ public abstract class ChoicesHelper {
       }
     }
     finally {
-      LOGGER.trace("<-- cleanupFeatureChoices(); VID = {}; TID = {}, E = {}; removed = {}", variantId, e.getTriggerID(), e.getEventID(), removed);
+      LOGGER.trace("<-- cleanupFeatureOrConceptChoices(); VID = {}; TID = {}, E = {}; removed = {}", variantId, e.getTriggerID(), e.getEventID(), removed);
     }
   }
 
@@ -127,7 +127,7 @@ public abstract class ChoicesHelper {
   public static boolean cleanupVariantChoices(final KnowledgeEntity ke, final String purposeId, final String variantId) {
     boolean removed = false;
     try {
-      LOGGER.trace("--> cleanupVariantChoices(); PID = {}; VID = {}; KE = {}", purposeId, variantId, ke);
+      LOGGER.trace("--> cleanupVariantChoices(); PID = {}; VID = {}; KE = {}", purposeId, variantId, shortDisplayKE(ke));
       final VariantChoices choices = ke.getPossibleVariants();
       final Iterator<VariantChoice> vciter = choices.iterator();
       while (vciter.hasNext()) {
@@ -164,7 +164,7 @@ public abstract class ChoicesHelper {
   public static boolean cleanupFeatureChoices(final KnowledgeEntity ke, final String variantId, final String featureId, final String featureValueId) {
     boolean removed = false;
     try {
-      LOGGER.trace("--> cleanupFeatureChoices(); VID = {}; FID = {}; FVID = {}; KE = {}", variantId, featureId, featureValueId, ke);
+      LOGGER.trace("--> cleanupFeatureChoices(); VID = {}; FID = {}; FVID = {}; KE = {}", variantId, featureId, featureValueId, shortDisplayKE(ke));
       final FeatureChoices choices = ke.getPossibleFeatures();
       final Iterator<FeatureChoice> fciter = choices.iterator();
       while (fciter.hasNext()) {
@@ -194,32 +194,36 @@ public abstract class ChoicesHelper {
     }
   }
 
-  public static boolean cleanupFeatureChoices(final KnowledgeEntity ke, final FeatureValues vals, final boolean keep) {
+  public static boolean cleanupFeatureChoices(final KnowledgeEntity ke, final String featureId, final FeatureValues vals, final boolean keep) {
     boolean removed = false;
     final int num = (vals == null ? 0 : vals.size());
     try {
-      LOGGER.trace("--> cleanupFeatureChoices(); keep = {}; #values = {}", keep, num);
+      LOGGER.trace("--> cleanupFeatureChoices(); keep = {}; #Values = {}; Feature = {}; KE = {}", keep, num, featureId, shortDisplayKE(ke));
       if (ke != null) {
         final FeatureChoices choices = ke.getPossibleFeatures();
         final Iterator<FeatureChoice> fciter = choices.iterator();
         while (fciter.hasNext()) {
           final FeatureChoice fc = fciter.next();
-          final FeatureValues values = fc.getPossibleValues();
-          final Iterator<FeatureValue> valiter = values.iterator();
-          while (valiter.hasNext()) {
-            final FeatureValue fv = valiter.next();
-            if (keep) {
-              if ((num <= 0) || !vals.contains(fv)) {
-                LOGGER.debug("Removing FeatureValue {} of Feature {} from Choices for Variant {}", fv.getFeatureValueID(), fv.getFeatureID(), fc.getParentVariantID());
-                valiter.remove();
-                removed = true;
+          final String fid = fc.getFeatureID();
+          // touch values/choices of the required feature only
+          if (StringUtils.isEmpty(featureId) || featureId.equals(fid)) {
+            final FeatureValues values = fc.getPossibleValues();
+            final Iterator<FeatureValue> valiter = values.iterator();
+            while (valiter.hasNext()) {
+              final FeatureValue fv = valiter.next();
+              if (keep) {
+                if ((num <= 0) || !vals.contains(fv)) {
+                  LOGGER.debug("Removing FeatureValue {} of Feature {} from Choices for Variant {}", fv.getFeatureValueID(), fv.getFeatureID(), fc.getParentVariantID());
+                  valiter.remove();
+                  removed = true;
+                }
               }
-            }
-            else {
-              if ((num > 0) && vals.contains(fv)) {
-                LOGGER.debug("Removing FeatureValue {} of Feature {} from Choices for Variant {}", fv.getFeatureValueID(), fv.getFeatureID(), fc.getParentVariantID());
-                valiter.remove();
-                removed = true;
+              else {
+                if ((num > 0) && vals.contains(fv)) {
+                  LOGGER.debug("Removing FeatureValue {} of Feature {} from Choices for Variant {}", fv.getFeatureValueID(), fv.getFeatureID(), fc.getParentVariantID());
+                  valiter.remove();
+                  removed = true;
+                }
               }
             }
           }
@@ -228,7 +232,7 @@ public abstract class ChoicesHelper {
       return removed;
     }
     finally {
-      LOGGER.trace("<-- cleanupFeatureChoices(); keep = {}; removed = {}\nResulting KE = {}", keep, removed, ke);
+      LOGGER.trace("<-- cleanupFeatureChoices(); keep = {}; #Values = {}; Feature = {}; removed = {}\nResulting KE = {}", keep, num, featureId, removed, ke);
     }
   }
 
@@ -250,7 +254,7 @@ public abstract class ChoicesHelper {
   public static boolean cleanupConceptChoices(final KnowledgeEntity ke, final String variantId, final List<String> conceptIDs) {
     boolean removed = false;
     try {
-      LOGGER.trace("--> cleanupConceptChoices(); VID = {}; CIDs = {}; KE = {}", variantId, conceptIDs, ke);
+      LOGGER.trace("--> cleanupConceptChoices(); VID = {}; CIDs = {}; KE = {}", variantId, conceptIDs, shortDisplayKE(ke));
       if (ke != null) {
         final ConceptChoices choices = ke.getPossibleConcepts();
         final Iterator<ConceptChoice> cciter = choices.iterator();
@@ -279,11 +283,11 @@ public abstract class ChoicesHelper {
     }
   }
 
-  public static boolean cleanupConceptChoices(final KnowledgeEntity ke, final FeatureValues vals, final boolean keep) {
+  public static boolean cleanupConceptChoices(final KnowledgeEntity ke, final String featureId, final FeatureValues vals, final boolean keep) {
     boolean removed = false;
     final int num = (vals == null ? 0 : vals.size());
     try {
-      LOGGER.trace("--> cleanupConceptChoices(); keep = {}; #values = {}", keep, num);
+      LOGGER.trace("--> cleanupConceptChoices();  keep = {}; #Values = {}; Feature = {}; KE = {}", keep, num, featureId, shortDisplayKE(ke));
       if (ke != null) {
         final ConceptChoices choices = ke.getPossibleConcepts();
         final Iterator<ConceptChoice> cciter = choices.iterator();
@@ -292,17 +296,23 @@ public abstract class ChoicesHelper {
           final Concepts cons = cc.getConcepts();
           final Iterator<Concept> coniter = cons.iterator();
           while (coniter.hasNext()) {
-            boolean found = false;
+            boolean foundFeature = false;
+            boolean foundValue = false;
             final Concept c = coniter.next();
             final FeatureValues feats = c.getValues();
             final Iterator<FeatureValue> fviter = feats.iterator();
             while (fviter.hasNext()) {
               final FeatureValue fv = fviter.next();
-              if ((num > 0) && vals.contains(fv)) {
-                found = true;
+              final String fid = fv.getFeatureID();
+              if (StringUtils.isEmpty(featureId) || featureId.equals(fid)) {
+                foundFeature = true;
+                if ((num > 0) && vals.contains(fv)) {
+                  foundValue = true;
+                }
               }
             }
-            if ((keep && !found) || (!keep && found)) {
+            // touch concepts including the required feature only
+            if (foundFeature && ((keep && !foundValue) || (!keep && foundValue))) {
               LOGGER.debug("Removing Concept {} from Choices for Variant {}", c.getConceptID(), cc.getParentVariantID());
               coniter.remove();
               removed = true;
@@ -313,7 +323,7 @@ public abstract class ChoicesHelper {
       return removed;
     }
     finally {
-      LOGGER.trace("<-- cleanupConceptChoices(); keep = {}; removed = {}\nResulting KE = {}", keep, removed, ke);
+      LOGGER.trace("<-- cleanupConceptChoices(); keep = {}; #Values = {}; Feature = {}; removed = {}\nResulting KE = {}", keep, num, featureId, removed, ke);
     }
   }
 
@@ -448,5 +458,11 @@ public abstract class ChoicesHelper {
       }
     }
     return null;
+  }
+
+  // ----------------------------------------------------------------
+
+  public static String shortDisplayKE(final KnowledgeEntity ke) {
+    return KnowledgeEntityHelper.shortDisplayKE(ke);
   }
 }

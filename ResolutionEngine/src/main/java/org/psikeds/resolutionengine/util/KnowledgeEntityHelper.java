@@ -123,23 +123,23 @@ public abstract class KnowledgeEntityHelper {
 
   // ----------------------------------------------------------------
 
-  public static KnowledgeEntity cleanupKnowledgeEntity(final KnowledgeEntity ke, final FeatureValues vals) {
-    return cleanupKnowledgeEntity(ke, vals, true);
+  public static KnowledgeEntity cleanupKnowledgeEntity(final KnowledgeEntity ke, final String featureId, final FeatureValues vals) {
+    return cleanupKnowledgeEntity(ke, featureId, vals, true);
   }
 
-  public static KnowledgeEntity cleanupKnowledgeEntity(final KnowledgeEntity ke, final FeatureValues vals, final boolean keep) {
+  public static KnowledgeEntity cleanupKnowledgeEntity(final KnowledgeEntity ke, final String featureId, final FeatureValues vals, final boolean keep) {
     final int num = (vals == null ? 0 : vals.size());
     try {
-      LOGGER.trace("--> cleanupKnowledgeEntity(); keep = {}; #values = {}; KE = {}", keep, num, shortDisplayKE(ke));
+      LOGGER.trace("--> cleanupKnowledgeEntity(); keep = {}; #Values = {}; Feature = {}; KE = {}", keep, num, featureId, shortDisplayKE(ke));
       if (ke != null) {
-        LOGGER.debug("Cleaning Concept- and Feature-Choices of KnowledgeEntity: {}", shortDisplayKE(ke));
-        ChoicesHelper.cleanupFeatureChoices(ke, vals, keep);
-        ChoicesHelper.cleanupConceptChoices(ke, vals, keep);
+        LOGGER.debug("Cleaning Concept- and Feature-Choices regarding Feature {} of KnowledgeEntity: {}", featureId, shortDisplayKE(ke));
+        ChoicesHelper.cleanupFeatureChoices(ke, featureId, vals, keep);
+        ChoicesHelper.cleanupConceptChoices(ke, featureId, vals, keep);
       }
       return ke;
     }
     finally {
-      LOGGER.trace("<-- cleanupKnowledgeEntity(); keep = {}; #values = {}\nResulting KE = {}", keep, num, ke);
+      LOGGER.trace("<-- cleanupKnowledgeEntity(); keep = {}; #Values = {}; Feature = {}\nResulting KE = {}", keep, num, featureId, ke);
     }
   }
 
