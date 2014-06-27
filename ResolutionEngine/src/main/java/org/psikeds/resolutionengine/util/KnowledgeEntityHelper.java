@@ -153,7 +153,7 @@ public abstract class KnowledgeEntityHelper {
       sb.append(ke.getVariant() != null ? ke.getVariant().getVariantID() : "<>");
     }
     else {
-      sb.append("<>");
+      sb.append("<null>");
     }
     return sb.toString();
   }

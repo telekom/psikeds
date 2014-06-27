@@ -45,10 +45,15 @@ public abstract class ContextHelper {
 
   // ----------------------------------------------------------------
 
-  public static KnowledgeEntity walkContextPath(final KnowledgeEntity root, final List<String> ctx) {
-    final KnowledgeEntity result = walkContextPath(root, ctx, true);
-    LOGGER.debug("walkContextPath: {} --> {}  -->  {}", shortDisplayKE(root), ctx, shortDisplayKE(result));
-    return result;
+  public static KnowledgeEntity walkContextPath(final KnowledgeEntity root, final List<String> ctx) throws ResolutionException {
+    KnowledgeEntity target = null;
+    try {
+      target = walkContextPath(root, ctx, true);
+      return target;
+    }
+    finally {
+      LOGGER.debug("walkContextPath: R: {}  --> CTX: {}  -->  T: {}", shortDisplayKE(root), ctx, shortDisplayKE(target));
+    }
   }
 
   private static KnowledgeEntity walkContextPath(final KnowledgeEntity ke, final List<String> ctx, final boolean isVariant) {
@@ -56,7 +61,7 @@ public abstract class ContextHelper {
     boolean stillPossible = false;
     boolean matching = false;
     try {
-      LOGGER.trace("--> walkContextPath(); isVariant = {}; Path = {}\nKE = {}", isVariant, ctx, ke);
+      LOGGER.trace("--> walkContextPath(); isVariant = {}; KE = {}; Path = {}", isVariant, shortDisplayKE(ke), ctx);
       final int len = (ctx == null ? 0 : ctx.size());
       if (len <= 0) {
         // we walked the complete path
@@ -123,7 +128,8 @@ public abstract class ContextHelper {
       throw new ResolutionException("Context-Path is not possible!");
     }
     finally {
-      LOGGER.trace("<-- walkContextPath(); isVariant = {}; matching = {}; stillPossible = {}; Path = {}\nResult = {}", isVariant, matching, stillPossible, ctx, result);
+      LOGGER.trace("<-- walkContextPath(); isVariant = {}; KE = {}; Path = {}; matching = {}; stillPossible = {}; Result = {}", isVariant, shortDisplayKE(ke), ctx, matching, stillPossible,
+          shortDisplayKE(result));
     }
   }
 
@@ -159,7 +165,7 @@ public abstract class ContextHelper {
       return result;
     }
     finally {
-      LOGGER.trace("<-- walkContextPath(); isVariant = {}; Path = {}; Parent = {}; possible = {}\nResult = {}", isVariant, ctx, shortDisplayKE(parent), possible, result);
+      LOGGER.trace("<-- walkContextPath(); isVariant = {}; Path = {}; Parent = {}; possible = {}; Result = {}", isVariant, ctx, shortDisplayKE(parent), possible, shortDisplayKE(result));
     }
   }
 
@@ -202,12 +208,19 @@ public abstract class ContextHelper {
   // ----------------------------------------------------------------
 
   private static boolean checkChoices(final KnowledgeEntity ke, final List<String> ctx, final boolean isVariant) {
-    if ((ke != null) && (ctx != null) && !ctx.isEmpty()) {
-      final String currentPathElement = ctx.get(0);
-      final VariantChoices choices = ke.getPossibleVariants();
-      return checkChoices(choices, currentPathElement, isVariant);
+    boolean matchingChoice = false;
+    try {
+      LOGGER.trace("--> checkChoices(); KE = {}; CTX = {}; isVariant = {}", shortDisplayKE(ke), ctx, isVariant);
+      if ((ke != null) && (ctx != null) && !ctx.isEmpty()) {
+        final String currentPathElement = ctx.get(0);
+        final VariantChoices choices = ke.getPossibleVariants();
+        matchingChoice = checkChoices(choices, currentPathElement, isVariant);
+      }
+      return matchingChoice;
     }
-    return false;
+    finally {
+      LOGGER.trace("<-- checkChoices(); KE = {}; CTX = {}; isVariant = {}; matching = {}", shortDisplayKE(ke), ctx, isVariant, matchingChoice);
+    }
   }
 
   private static boolean checkChoices(final VariantChoices choices, final String currentPathElement, final boolean isVariant) {
@@ -225,7 +238,7 @@ public abstract class ContextHelper {
       return matchingChoice;
     }
     finally {
-      LOGGER.trace("<-- checkChoices(); PE = {}; matchingChoice = {}", currentPathElement, matchingChoice);
+      LOGGER.trace("<-- checkChoices(); PE = {}; isVariant = {}; matching = {}", currentPathElement, isVariant, matchingChoice);
     }
   }
 
