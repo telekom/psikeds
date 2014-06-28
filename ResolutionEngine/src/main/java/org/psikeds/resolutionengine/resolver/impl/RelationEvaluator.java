@@ -153,7 +153,7 @@ public class RelationEvaluator implements InitializingBean, Resolver {
       throw re;
     }
     catch (final Exception ex) {
-      LOGGER.warn("Unexpected Error while evaluating Relations: " + ex.getMessage(), ex);
+      LOGGER.warn("Technical Error while evaluating Relations: " + ex.getMessage(), ex);
       throw new ResolutionException("Could not evaluate Relations", ex);
     }
     finally {
@@ -183,7 +183,12 @@ public class RelationEvaluator implements InitializingBean, Resolver {
           markRelationObsolete(r, raeh, metadata);
           throw new ResolutionException(msg);
         }
-        LOGGER.debug("Checking Relation: {}", r);
+        if (LOGGER.isTraceEnabled()) {
+          LOGGER.trace("Checking Relation: {}", r);
+        }
+        else if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("Checking Relation: {}", relationId);
+        }
         // check pre-Condition
         if (r.isConditional()) {
           final String ceid = r.getConditionalEventID();
@@ -244,23 +249,35 @@ public class RelationEvaluator implements InitializingBean, Resolver {
     try {
       LOGGER.trace("--> checkRelation(); Relation = {}; root = {}", r.getRelationID(), shortDisplayKE(root));
       final RelationParameter left = r.getLeftSide();
-      final RelationParameter right = r.getLeftSide();
+      LOGGER.trace("Left RelationParameter = {}", left);
+      final RelationParameter right = r.getRightSide();
+      LOGGER.trace("Right RelationParameter = {}", right);
+      if ((left == null) || (right == null)) {
+        // no parameters? does not make sense!
+        LOGGER.warn("Ignoring Relation {} because Parameters are missing!", r.getRelationID());
+        markRelationObsolete(r, raeh, metadata);
+        stable = true;
+        return stable;
+      }
       if (left.isConstant() && right.isConstant()) {
         // both sides are constants? does not make sense!
-        LOGGER.debug("Ignoring Relation {} because both Parameters are Constants!", r.getRelationID());
+        LOGGER.warn("Ignoring Relation {} because both Parameters are Constants!", r.getRelationID());
         markRelationObsolete(r, raeh, metadata);
         stable = true;
         return stable;
       }
       final RelationOperator op = r.getOperator();
+      LOGGER.debug("Operator of Relation {} is: {}", r.getRelationID(), op);
       if (!left.isConstant() && right.isConstant()) {
         // left side is a feature of an entity, right side is a constant
         final KnowledgeEntity leftEntity = getTargetEntity(r, root, true, raeh, metadata);
         if (leftEntity != null) {
-          LOGGER.debug("Found left Target of Relation {} --> {}", r.getRelationID(), shortDisplayKE(leftEntity));
+          LOGGER.debug("Right side is a Constant, found left Target of Relation {} --> {}", r.getRelationID(), shortDisplayKE(leftEntity));
           if (raeh.isActive(r)) {
             final Feature leftParameter = RelationHelper.getFeatureVariable(this.kb, left);
+            LOGGER.trace("Left Parameter = {}", leftParameter);
             final FeatureValue rightConstant = RelationHelper.getConstantFeatureValue(this.kb, right);
+            LOGGER.trace("Right Constant = {}", rightConstant);
             if (evaluateSingleSidedRelation(r, leftEntity, leftParameter, op, rightConstant, raeh, metadata)) {
               stable = false;
               LOGGER.debug("Relation {} removed some Values/Choices of left Entity {}", r.getRelationID(), shortDisplayKE(leftEntity));
@@ -277,12 +294,16 @@ public class RelationEvaluator implements InitializingBean, Resolver {
         // right side is a feature of an entity, left side is a constant
         final KnowledgeEntity rightEntity = getTargetEntity(r, root, false, raeh, metadata);
         if (rightEntity != null) {
-          LOGGER.debug("Found right Target of Relation {} --> {}", r.getRelationID(), shortDisplayKE(rightEntity));
+          LOGGER.debug("Left side is a Constant, found right Target of Relation {} --> {}", r.getRelationID(), shortDisplayKE(rightEntity));
           if (raeh.isActive(r)) {
             final Feature rightParameter = RelationHelper.getFeatureVariable(this.kb, right);
+            LOGGER.trace("Right Parameter = {}", rightParameter);
             final FeatureValue leftConstant = RelationHelper.getConstantFeatureValue(this.kb, left);
+            LOGGER.trace("Left Constant = {}", leftConstant);
             // switch sides, invert operator and handle like the case above
-            if (evaluateSingleSidedRelation(r, rightEntity, rightParameter, RelationHelper.getComplementaryOperator(op), leftConstant, raeh, metadata)) {
+            final RelationOperator comp = RelationHelper.getComplementaryOperator(op);
+            LOGGER.debug("Changing Operator from {} to {}", op, comp);
+            if (evaluateSingleSidedRelation(r, rightEntity, rightParameter, comp, leftConstant, raeh, metadata)) {
               stable = false;
               LOGGER.debug("Relation {} removed some Values/Choices of right Entity {}", r.getRelationID(), shortDisplayKE(rightEntity));
             }
@@ -298,10 +319,12 @@ public class RelationEvaluator implements InitializingBean, Resolver {
       final KnowledgeEntity leftEntity = getTargetEntity(r, root, true, raeh, metadata);
       final KnowledgeEntity rightEntity = getTargetEntity(r, root, false, raeh, metadata);
       if ((leftEntity != null) && (rightEntity != null)) {
-        LOGGER.debug("Found both Targets of Relation {} --> L = {} ;  R = {}", r.getRelationID(), shortDisplayKE(leftEntity), shortDisplayKE(rightEntity));
+        LOGGER.debug("Both sides are Variables, found both Targets of Relation {} --> L = {} ;  R = {}", r.getRelationID(), shortDisplayKE(leftEntity), shortDisplayKE(rightEntity));
         if (raeh.isActive(r)) {
           final Feature leftParameter = RelationHelper.getFeatureVariable(this.kb, left);
+          LOGGER.trace("Left Parameter = {}", leftParameter);
           final Feature rightParameter = RelationHelper.getFeatureVariable(this.kb, right);
+          LOGGER.trace("Right Parameter = {}", rightParameter);
           if (evaluateDoubleSidedRelation(r, leftEntity, leftParameter, op, rightEntity, rightParameter, raeh, metadata)) {
             stable = false;
             LOGGER.debug("Relation {} removed some Values/Choices of either left Entity {} or right Entity {}", r.getRelationID(), shortDisplayKE(leftEntity), shortDisplayKE(rightEntity));
@@ -309,7 +332,8 @@ public class RelationEvaluator implements InitializingBean, Resolver {
         }
       }
       else {
-        LOGGER.debug("Skipping Relation {}. Either left or right Target is not contained in Knowledge (yet).", r.getRelationID());
+        LOGGER.debug("Skipping Relation {}. Either left or right Target is not contained in Knowledge (yet): L = {} ;  R = {}",
+            r.getRelationID(), shortDisplayKE(leftEntity), shortDisplayKE(rightEntity));
         stable = true;
       }
       // done
@@ -324,18 +348,20 @@ public class RelationEvaluator implements InitializingBean, Resolver {
 
   private KnowledgeEntity getTargetEntity(final Relation r, final KnowledgeEntity root, final boolean left, final RulesAndEventsHandler raeh, final Metadata metadata) {
     KnowledgeEntity target = null;
+    RelationParameter rp = null;
+    List<String> ctx = null;
     try {
       LOGGER.trace("--> getTargetEntity(); Relation = {}; root = {}", r.getRelationID(), shortDisplayKE(root));
-      final RelationParameter rp = (left ? r.getLeftSide() : r.getRightSide());
-      final List<String> ctx = rp.getContext();
+      rp = (left ? r.getLeftSide() : r.getRightSide());
+      ctx = rp.getContext();
       target = RelationHelper.getTargetEntity(root, ctx); // throws exception if ctx is not possible
       if ((target == null) && LOGGER.isDebugEnabled()) {
-        LOGGER.debug("Skipping evaluation of Relation {} because Context of {} Parameter {} is not fulfilled yet.", r.getRelationID(), (left ? "left" : "right"), rp.getParameterID());
+        LOGGER.debug("Skipping evaluation of Relation {} because Context {} of {} Parameter {} is not fulfilled yet.", r.getRelationID(), ctx, (left ? "left" : "right"), rp.getParameterID());
       }
     }
     catch (final Exception ex) {
       target = null;
-      LOGGER.debug("Relation {} is irrelevant/obsolete because Context of {} Parameter is not possible!", r.getRelationID(), (left ? "left" : "right"));
+      LOGGER.debug("Relation {} is irrelevant/obsolete because Context {} of {} Parameter {} is not possible!", r.getRelationID(), ctx, (left ? "left" : "right"), rp.getParameterID());
       markRelationObsolete(r, raeh, metadata);
     }
     finally {
@@ -357,9 +383,15 @@ public class RelationEvaluator implements InitializingBean, Resolver {
     final String constantValue = (rightConstant == null ? null : rightConstant.getValue());
     final String operator = String.valueOf(op);
     try {
-      LOGGER.trace("--> evaluateSingleSidedRelation(); Rel = {}; [ {} {} {} ]", relationId, featureId, operator, constantValue);
+      if (LOGGER.isTraceEnabled()) {
+        LOGGER.trace("--> evaluateSingleSidedRelation(); Relation = {}; [ {}/{} {} {} ]", relationId, shortDisplayKE(leftEntity), featureId, operator, constantValue);
+      }
+      else {
+        LOGGER.debug("Evaluating single sided Relation = {}; [ {}/{} {} {} ]", relationId, shortDisplayKE(leftEntity), featureId, operator, constantValue);
+      }
       // Step 1: check whether a value was already assigned for this feature
       final FeatureValue found = FeatureValueHelper.findFeatureValue(this.kb, leftEntity, featureId);
+      LOGGER.trace("Found = {}", found);
       boolean matching = (found == null ? true : RelationHelper.fulfillsOperation(found, op, rightConstant));
       if (found != null) {
         if (matching) {
@@ -381,9 +413,12 @@ public class RelationEvaluator implements InitializingBean, Resolver {
           final FeatureValues oldFvs = fc.getPossibleValues();
           final int oldSize = (oldFvs == null ? 0 : oldFvs.size());
           if (oldSize > 0) {
+            LOGGER.trace("{} old Feature-Values = {}", oldSize, oldFvs);
             // get all values that are fulfilling the relation
+            LOGGER.debug("Checking possible Feature-Values of KE {} against {} {} = {}", shortDisplayKE(leftEntity), operator, rightConstant.getFeatureValueID(), rightConstant.getValue());
             final FeatureValues newFvs = RelationHelper.fulfillsOperation(this.kb, this.trans, oldFvs, op, rightConstant);
             final int newSize = (newFvs == null ? 0 : newFvs.size());
+            LOGGER.trace("{} new Feature-Values = {}", newSize, newFvs);
             if (oldSize != newSize) {
               fc.setPossibleValues(newFvs);
               removedValues = true;
@@ -402,23 +437,37 @@ public class RelationEvaluator implements InitializingBean, Resolver {
         final Concepts oldCons = cc.getConcepts();
         final int oldSize = (oldCons == null ? 0 : oldCons.size());
         if (oldSize > 0) {
+          LOGGER.trace("{} old Concepts = {}", oldSize, oldCons);
           final Concepts newCons = new Concepts();
           for (final Concept con : oldCons) {
-            matching = true; // a concept without the desired feature is always matching
+            matching = true;
             if (con.getFeatureIds().contains(featureId)) {
-              // concept does affect the desired feature
+              LOGGER.debug("Concept {} contains the desired Feature {}", con.getConceptID(), featureId);
               for (final org.psikeds.resolutionengine.interfaces.pojos.FeatureValue fv : con.getValues()) {
                 if (featureId.equals(fv.getFeatureID())) {
-                  LOGGER.debug("Checking FV {} of Concept {} against {}", fv.getFeatureValueID(), con.getConceptID(), rightConstant.getFeatureValueID());
+                  LOGGER.debug("Checking FV {}/{} = {} of Concept {} against {} {}/{} = {}",
+                      fv.getFeatureID(), fv.getFeatureValueID(), fv.getValue(),
+                      con.getConceptID(), operator,
+                      rightConstant.getFeatureID(), rightConstant.getFeatureValueID(), rightConstant.getValue());
                   matching = RelationHelper.fulfillsOperation(this.kb, fv, op, rightConstant);
+                  LOGGER.trace("{} {} {} = {}", fv, operator, rightConstant, matching);
                 }
               }
             }
+            else {
+              LOGGER.debug("Concept {} is not relevant for Feature {}", con.getConceptID(), featureId);
+              matching = true; // a concept without the desired feature is always matching, i.e. must not be removed
+            }
             if (matching) {
+              LOGGER.trace("Concept {} is matching.", con.getConceptID());
               newCons.add(con);
+            }
+            else {
+              LOGGER.trace("Concept {} is not matching and will be removed.", con.getConceptID());
             }
           }
           final int newSize = (newCons == null ? 0 : newCons.size());
+          LOGGER.trace("{} new Concepts = {}", newSize, newCons);
           if (oldSize != newSize) {
             cc.setConcepts(newCons);
             removedValues = true;
@@ -434,10 +483,11 @@ public class RelationEvaluator implements InitializingBean, Resolver {
     }
     finally {
       if (removedValues) {
-        LOGGER.debug("Removed some Values of KE {} for Relation {}", shortDisplayKE(leftEntity), relationId);
+        LOGGER.debug("Single sided Evaluation of Relation {} removed some possible Values of {}/{}", relationId, shortDisplayKE(leftEntity), featureId);
         applyRelation(r, raeh, metadata);
       }
-      LOGGER.trace("<-- evaluateSingleSidedRelation(); Rel = {}; removedValues = {}", relationId, removedValues);
+      LOGGER.trace("<-- evaluateSingleSidedRelation(); Relation = {}; [ {}/{} {} {} ]; removedValues = {}; Resulting KE = {}",
+          relationId, shortDisplayKE(leftEntity), featureId, operator, constantValue, removedValues, leftEntity);
     }
   }
 
@@ -453,96 +503,130 @@ public class RelationEvaluator implements InitializingBean, Resolver {
     final String rightFeatureId = (rightParameter == null ? null : rightParameter.getFeatureID());
     final String operator = String.valueOf(op);
     try {
-      LOGGER.trace("--> evaluateDoubleSidedRelation(); Rel = {}; [ {} {} {} ]", relationId, leftFeatureId, operator, rightFeatureId);
+      if (LOGGER.isTraceEnabled()) {
+        LOGGER.trace("--> evaluateDoubleSidedRelation(); Relation = {}; [ {}/{} {} {}/{} ]",
+            relationId, shortDisplayKE(leftEntity), leftFeatureId, operator, shortDisplayKE(rightEntity), rightFeatureId);
+      }
+      else {
+        LOGGER.debug("Evaluating double sided Relation = {}; [ {}/{} {} {}/{} ]",
+            relationId, shortDisplayKE(leftEntity), leftFeatureId, operator, shortDisplayKE(rightEntity), rightFeatureId);
+      }
       // Step 1: check whether a value was already assigned for this feature
       final FeatureValue foundLeft = FeatureValueHelper.findFeatureValue(this.kb, leftEntity, leftFeatureId);
+      LOGGER.trace("Found Left = {}", foundLeft);
       final FeatureValue foundRight = FeatureValueHelper.findFeatureValue(this.kb, rightEntity, rightFeatureId);
+      LOGGER.trace("Found Right = {}", foundRight);
       if ((foundLeft == null) && (foundRight != null)) {
-        LOGGER.debug("Feature {} has already an assigned Value {} on right Side of Relation {}", rightFeatureId, foundRight.getFeatureValueID(), relationId);
+        LOGGER.debug("Feature {} has already an assigned Value {} = {} on right Side {} of Relation {}. Switching to single sided Evaluation. Operator remains {}",
+            rightFeatureId, foundRight.getFeatureValueID(), foundRight.getValue(), shortDisplayKE(rightEntity), relationId, operator);
         removedValues = evaluateSingleSidedRelation(r, leftEntity, leftParameter, op, foundRight, raeh, metadata);
         return removedValues;
       }
       if ((foundLeft != null) && (foundRight == null)) {
-        LOGGER.debug("Feature {} has already an assigned Value {} on left Side of Relation {}", leftFeatureId, foundLeft.getFeatureValueID(), relationId);
-        removedValues = evaluateSingleSidedRelation(r, rightEntity, rightParameter, RelationHelper.getComplementaryOperator(op), foundLeft, raeh, metadata);
+        final RelationOperator comp = RelationHelper.getComplementaryOperator(op);
+        LOGGER.debug("Feature {} has already an assigned Value {} = {} on left Side {} of Relation {}. Switching to complementary single sided Evaluation. Operator changes from {} to {}",
+            leftFeatureId, foundLeft.getFeatureValueID(), foundLeft.getValue(), shortDisplayKE(leftEntity), relationId, operator, String.valueOf(comp));
+        removedValues = evaluateSingleSidedRelation(r, rightEntity, rightParameter, comp, foundLeft, raeh, metadata);
         return removedValues;
       }
       if ((foundLeft != null) && (foundRight != null)) {
         final boolean matching = RelationHelper.fulfillsOperation(foundLeft, op, foundRight);
         if (matching) {
-          LOGGER.debug("Relation {} is obsolete. There is already a matching Value assigned on both Sides: {} vs. {}", relationId, foundLeft.getFeatureValueID(), foundRight.getFeatureValueID());
+          LOGGER.debug("Relation {} is obsolete. There is already a matching Value assigned on both Sides: {}/{} = {} and {}/{} = {}",
+              relationId, shortDisplayKE(leftEntity), leftFeatureId, foundLeft.getFeatureValueID(), shortDisplayKE(rightEntity), rightFeatureId, foundRight.getFeatureValueID());
           markRelationObsolete(r, raeh, metadata);
         }
         else {
-          LOGGER.debug("Relation {} is unfulfillable. There is already a Value assigned on both Sides, but is not matching: {} vs. {}", relationId, foundLeft.getFeatureValueID(),
-              foundRight.getFeatureValueID());
+          LOGGER.debug("Relation {} is unfulfillable. There is already a Value assigned on both Sides, but they are not matching: {}/{} = {} vs. {}/{} = {}",
+              relationId, shortDisplayKE(leftEntity), leftFeatureId, foundLeft.getFeatureValueID(), shortDisplayKE(rightEntity), rightFeatureId, foundRight.getFeatureValueID());
           markRelationUnFulfillable(r, raeh, metadata);
         }
-        removedValues = (FeatureValueHelper.removeImpossibleFeatureValues(leftEntity) || FeatureValueHelper.removeImpossibleFeatureValues(rightEntity)); // just to be sure
+        // nothing happened
+        removedValues = false;
         return removedValues;
       }
       // Step 2: lookup possible feature values of all choices on both sides
-      LOGGER.debug("Checking choices of left Entity: {}", shortDisplayKE(leftEntity));
-      LOGGER.debug("Checking choices of right Entity: {}", shortDisplayKE(rightEntity));
+      LOGGER.debug("Getting choices of left Entity {} and right Entity {}", shortDisplayKE(leftEntity), shortDisplayKE(rightEntity));
       final FeatureValues leftChoiceFvs = ChoicesHelper.getFeatureValues(leftEntity, leftFeatureId);
       final int leftChoiceSize = (leftChoiceFvs == null ? 0 : leftChoiceFvs.size());
+      LOGGER.trace("{} choosable Feature-Values on left Side: {}", leftChoiceSize, leftChoiceFvs);
       final FeatureValues rightChoiceFvs = ChoicesHelper.getFeatureValues(rightEntity, rightFeatureId);
       final int rightChoiceSize = (rightChoiceFvs == null ? 0 : rightChoiceFvs.size());
+      LOGGER.trace("{} choosable Feature-Values on right Side: {}", rightChoiceSize, rightChoiceFvs);
       final Concepts leftConcepts = ChoicesHelper.getConcepts(leftEntity, leftFeatureId);
       final FeatureValues leftConceptFvs = ChoicesHelper.getFeatureValues(leftConcepts, leftFeatureId);
       final int leftConceptSize = (leftConceptFvs == null ? 0 : leftConceptFvs.size());
+      LOGGER.trace("{} relevant Concepts on left Side. Feature-Values = {}", leftConceptSize, leftConceptFvs);
       final Concepts rightConcepts = ChoicesHelper.getConcepts(rightEntity, rightFeatureId);
       final FeatureValues rightConceptFvs = ChoicesHelper.getFeatureValues(rightConcepts, rightFeatureId);
       final int rightConceptSize = (rightConceptFvs == null ? 0 : rightConceptFvs.size());
+      LOGGER.trace("{} relevant Concepts on right Side. Feature-Values = {}", rightConceptSize, rightConceptFvs);
       final boolean foundSomething = ((leftChoiceSize + rightChoiceSize + leftConceptSize + rightConceptSize) > 0);
       if (!foundSomething) {
-        LOGGER.debug("Relation {} is unfulfillable! There are no possible Values on neither Side: {} vs. {}", relationId, leftFeatureId, rightFeatureId);
+        LOGGER.debug("Relation {} is unfulfillable! There are no possible Values on neither Side: {}/{} vs. {}/{}",
+            relationId, shortDisplayKE(leftEntity), leftFeatureId, shortDisplayKE(rightEntity), rightFeatureId);
         markRelationUnFulfillable(r, raeh, metadata);
+        // nothing happened
         removedValues = false;
         return removedValues;
       }
       // Step 3: compare all values from both sides against each other
       final FeatureValues allLeftFvs = FeatureValueHelper.combineValues(leftChoiceFvs, leftConceptFvs);
       final int oldLeftSize = (allLeftFvs == null ? 0 : allLeftFvs.size());
+      LOGGER.debug("Total of {} old combined Feature-Values on left Side:\n{}", oldLeftSize, allLeftFvs);
       final FeatureValues allRightFvs = FeatureValueHelper.combineValues(rightChoiceFvs, rightConceptFvs);
       final int oldRightSize = (allRightFvs == null ? 0 : allRightFvs.size());
+      LOGGER.debug("Total of {} old combined Feature-Values on right Side:\n{}", oldRightSize, allRightFvs);
       if (oldLeftSize > 0) {
         LOGGER.debug("Applying Relation {} to left KE {}", relationId, shortDisplayKE(leftEntity));
         final FeatureValues newLeftFvs = RelationHelper.fulfillsOperation(this.kb, this.trans, allLeftFvs, op, allRightFvs);
         final int newLeftSize = (newLeftFvs == null ? 0 : newLeftFvs.size());
+        LOGGER.debug("Total of {} new matching Feature-Values on left Side:\n{}", newLeftSize, newLeftFvs);
         if (oldLeftSize != newLeftSize) {
           removedValues = true;
           KnowledgeEntityHelper.cleanupKnowledgeEntity(leftEntity, leftFeatureId, newLeftFvs);
           LOGGER.debug("Applied Relation {} to Concept- and Feature-Choices regarding Feature {} of left KE {}. Removed {} possible Values.", relationId, leftFeatureId, shortDisplayKE(leftEntity),
               (oldLeftSize - newLeftSize));
+          LOGGER.trace("Resulting left KE = {}", leftEntity);
         }
         if (newLeftSize <= 0) {
           LOGGER.debug("Relation {} is unfulfillable. No matching Concept- or Feature-Choices regarding Feature {} left on left side KE {}", relationId, leftFeatureId, shortDisplayKE(leftEntity));
           markRelationUnFulfillable(r, raeh, metadata);
         }
       }
+      else {
+        LOGGER.debug("No relevant Feature-Values for Relation {} on left Side {}/{}", relationId, shortDisplayKE(leftEntity), leftFeatureId);
+      }
       if (oldRightSize > 0) {
         LOGGER.debug("Applying Relation {} to right KE {}", relationId, shortDisplayKE(rightEntity));
         final FeatureValues newRightFvs = RelationHelper.fulfillsOperation(this.kb, this.trans, allRightFvs, RelationHelper.getComplementaryOperator(op), allLeftFvs);
         final int newRightSize = (newRightFvs == null ? 0 : newRightFvs.size());
+        LOGGER.debug("Total of {} new matching Feature-Values on right Side:\n{}", newRightSize, newRightFvs);
         if (oldRightSize != newRightSize) {
           removedValues = true;
           KnowledgeEntityHelper.cleanupKnowledgeEntity(rightEntity, rightFeatureId, newRightFvs);
           LOGGER.debug("Applied Relation {} to Concept- and Feature-Choices regarding Feature {} of right KE {}. Removed {} possible Values.", relationId, rightFeatureId, shortDisplayKE(rightEntity),
               (oldRightSize - newRightSize));
+          LOGGER.trace("Resulting right KE = {}", rightEntity);
         }
         if (newRightSize <= 0) {
           LOGGER.debug("Relation {} is unfulfillable. No matching Concept- or Feature-Choices regarding Feature {} left on right side KE {}", relationId, rightFeatureId, shortDisplayKE(rightEntity));
           markRelationUnFulfillable(r, raeh, metadata);
         }
       }
+      else {
+        LOGGER.debug("No relevant Feature-Values for Relation {} on right Side {}/{}", relationId, shortDisplayKE(rightEntity), rightFeatureId);
+      }
       return removedValues;
     }
     finally {
-      LOGGER.trace("<-- evaluateDoubleSidedRelation(); Rel = {}; [ {} {} {} ] ; removedValues = {}", relationId, leftFeatureId, operator, rightFeatureId, removedValues);
       if (removedValues) {
+        LOGGER.debug("Double sided Evaluation of Relation {} removed some possible Values of {}/{} and {}/{}",
+            relationId, shortDisplayKE(leftEntity), leftFeatureId, shortDisplayKE(rightEntity), rightFeatureId);
         applyRelation(r, raeh, metadata);
       }
+      LOGGER.trace("<-- evaluateDoubleSidedRelation(); Relation = {}; [ {}/{} {} {}/{} ]; removedValues = {}\nResulting lef Side = {}\nResulting right Side = {}",
+          relationId, shortDisplayKE(leftEntity), leftFeatureId, operator, shortDisplayKE(rightEntity), rightFeatureId, removedValues, leftEntity, rightEntity);
     }
   }
 
@@ -556,7 +640,6 @@ public class RelationEvaluator implements InitializingBean, Resolver {
       else {
         LOGGER.debug("APPLIED: {}", r.getRelationID());
       }
-      LOGGER.debug(r.getRelationID(), new Exception()); // TODO remove
       if ((metadata != null) && LOGGER.isInfoEnabled()) {
         final String key = "R_" + r.getRelationID() + "_applied";
         final String msg = String.valueOf(r);
@@ -573,7 +656,6 @@ public class RelationEvaluator implements InitializingBean, Resolver {
       else {
         LOGGER.debug("OBSOLETE: {}", r.getRelationID());
       }
-      LOGGER.debug(r.getRelationID(), new Exception()); // TODO remove
       raeh.setObsolete(r);
       if ((metadata != null) && LOGGER.isInfoEnabled()) {
         final String key = "R_" + r.getRelationID() + "_obsolete";
@@ -591,7 +673,6 @@ public class RelationEvaluator implements InitializingBean, Resolver {
       else {
         LOGGER.debug("UNFULFILLABLE: {}", r.getRelationID());
       }
-      LOGGER.debug(r.getRelationID(), new Exception()); // TODO remove
       raeh.setUnfulfillable(r);
       if ((metadata != null) && LOGGER.isInfoEnabled()) {
         final String key = "R_" + r.getRelationID() + "_unfulfillable";
