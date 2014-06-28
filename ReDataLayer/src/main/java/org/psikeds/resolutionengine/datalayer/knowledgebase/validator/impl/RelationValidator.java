@@ -98,6 +98,17 @@ public class RelationValidator implements Validator {
             valid = false;
             LOGGER.warn("Relation {} contains no Relation-Operator!", rid);
           }
+          else {
+            LOGGER.trace("Operator = {}", op);
+          }
+          final RelationOperator comp = RelationHelper.getComplementaryOperator(op);
+          if (comp == null) {
+            valid = false;
+            LOGGER.warn("There is no complementary Operator for {} (referenced in Relation {}) defined!?!?", op, rid);
+          }
+          else {
+            LOGGER.trace("Complementary = {}", comp);
+          }
           if (r.isConditional()) {
             final String ceid = r.getConditionalEventID();
             final Event e = kb.getEvent(ceid);
