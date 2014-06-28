@@ -22,7 +22,7 @@ For details see file LICENSING in the top project directory
   <parent>
     <groupId>org.psikeds</groupId>
     <artifactId>psikeds</artifactId>
-    <version>0.8.0-SNAPSHOT</version>
+    <version>0.9.5-SNAPSHOT</version>
   </parent>
 
   <artifactId>ResolutionEngine</artifactId>
