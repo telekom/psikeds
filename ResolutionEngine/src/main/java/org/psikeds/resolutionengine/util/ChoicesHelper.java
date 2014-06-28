@@ -307,6 +307,7 @@ public abstract class ChoicesHelper {
               if (StringUtils.isEmpty(featureId) || featureId.equals(fid)) {
                 foundFeature = true;
                 if ((num > 0) && vals.contains(fv)) {
+                  LOGGER.debug("Concept {} includes a matching Feature-Value: {}", c.getConceptID(), fv);
                   foundValue = true;
                 }
               }
@@ -409,55 +410,89 @@ public abstract class ChoicesHelper {
   // ----------------------------------------------------------------
 
   public static FeatureValues getFeatureValues(final KnowledgeEntity ke, final String featureId) {
-    if ((ke != null) && !StringUtils.isEmpty(featureId)) {
-      for (final FeatureChoice fc : ke.getPossibleFeatures()) {
-        if (featureId.equals(fc.getFeatureID())) {
-          // there is at most one choice for a feature
-          return fc.getPossibleValues();
+    FeatureValues result = null;
+    try {
+      LOGGER.trace("--> getFeatureValues(); KE = {}; featureId = {}", shortDisplayKE(ke), featureId);
+      if ((ke != null) && !StringUtils.isEmpty(featureId)) {
+        for (final FeatureChoice fc : ke.getPossibleFeatures()) {
+          if (featureId.equals(fc.getFeatureID())) {
+            // there is at most one choice for a feature
+            result = fc.getPossibleValues();
+            if (!LOGGER.isTraceEnabled()) {
+              LOGGER.debug("Possible Feature Values of KE {} for Feature {}", shortDisplayKE(ke), featureId, result);
+            }
+            return result;
+          }
         }
       }
+      return result;
     }
-    return null;
+    finally {
+      LOGGER.trace("<-- getFeatureValues(); KE = {}; featureId = {}\nResult = {}", shortDisplayKE(ke), featureId, result);
+    }
   }
 
   public static FeatureValues getFeatureValues(final Concepts concepts, final String featureId) {
     FeatureValues result = null;
-    if ((concepts != null) && !concepts.isEmpty() && !StringUtils.isEmpty(featureId)) {
-      for (final Concept con : concepts) {
-        for (final FeatureValue fv : con.getValues()) {
-          if (featureId.equals(fv.getFeatureID())) {
-            if (result == null) {
-              result = new FeatureValues();
+    try {
+      LOGGER.trace("--> getFeatureValues(); featureId = {}; Concepts = {}", featureId, concepts);
+      if ((concepts != null) && !StringUtils.isEmpty(featureId)) {
+        for (final Concept con : concepts) {
+          LOGGER.debug("Checking Concept {} regarding Feature {}", con.getConceptID(), featureId);
+          for (final FeatureValue fv : con.getValues()) {
+            if (featureId.equals(fv.getFeatureID())) {
+              LOGGER.debug("Feature-Value {} of Concept {} is relevant regarding Feature {}", fv.getFeatureValueID(), con.getConceptID(), fv.getFeatureID());
+              if (result == null) {
+                result = new FeatureValues();
+              }
+              if (!result.contains(fv)) {
+                result.add(fv);
+              }
             }
-            if (!result.contains(fv)) {
-              result.add(fv);
-            }
-            // every concept has exactly one value per feature
-            continue;
           }
         }
       }
+      if (!LOGGER.isTraceEnabled()) {
+        LOGGER.debug("Found Feature-Values: {}", result);
+      }
+      return result;
     }
-    return result;
+    finally {
+      LOGGER.trace("<-- getFeatureValues(); featureId = {}; Result = {}", featureId, result);
+    }
   }
 
   public static Concepts getConcepts(final KnowledgeEntity ke, final String featureId) {
-    if ((ke != null) && !StringUtils.isEmpty(featureId)) {
-      for (final ConceptChoice cc : ke.getPossibleConcepts()) {
-        final Concepts concepts = cc.getConcepts();
-        if ((concepts != null) && !concepts.isEmpty()) {
+    Concepts result = null;
+    try {
+      LOGGER.trace("--> getConcepts(); KE = {}; featureId = {}", shortDisplayKE(ke), featureId);
+      if ((ke != null) && !StringUtils.isEmpty(featureId)) {
+        for (final ConceptChoice cc : ke.getPossibleConcepts()) {
+          final Concepts concepts = cc.getConcepts();
           for (final Concept con : concepts) {
-            final List<String> fids = (con == null ? null : con.getFeatureIds());
-            if ((fids != null) && fids.contains(featureId)) {
-              // currently we have only primary concepts,
-              // i.e. all concepts contain the same features
-              return concepts;
+            LOGGER.debug("Checking Concept {} of KE {} regarding Feature {}", con.getConceptID(), shortDisplayKE(ke), featureId);
+            for (final FeatureValue fv : con.getValues()) {
+              if (featureId.equals(fv.getFeatureID())) {
+                LOGGER.debug("Feature-Value {} of Concept {} is relevant regarding Feature {}", fv.getFeatureValueID(), con.getConceptID(), fv.getFeatureID());
+                if (result == null) {
+                  result = new Concepts();
+                }
+                if (!result.contains(con)) {
+                  result.add(con);
+                }
+              }
             }
           }
         }
       }
+      if (!LOGGER.isTraceEnabled()) {
+        LOGGER.debug("Found Concepts: {}", result);
+      }
+      return result;
     }
-    return null;
+    finally {
+      LOGGER.trace("<-- getConcepts(); KE = {}; featureId = {}\nResult = {}", shortDisplayKE(ke), featureId, result);
+    }
   }
 
   // ----------------------------------------------------------------

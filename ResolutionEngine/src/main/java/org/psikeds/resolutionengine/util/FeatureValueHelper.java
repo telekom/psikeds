@@ -231,6 +231,7 @@ public abstract class FeatureValueHelper {
         if (!targetList.contains(elem)) {
           changed = true;
           targetList.add(elem);
+          LOGGER.trace("Added additional Element: {}", elem);
         }
       }
     }
@@ -250,6 +251,7 @@ public abstract class FeatureValueHelper {
         addAllDistinct(targetList, list2);
       }
     }
+    LOGGER.trace("Combined Values = {}", targetList);
     return targetList;
   }
 
