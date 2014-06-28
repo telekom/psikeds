@@ -1290,6 +1290,7 @@ You should have got a version of this license together with this file.
         Rule 2.G: relation
         </kb:description>
       </kb:relation>
+<!--
       <kb:relation id="EnvelopeDinSizeOfCompLettIsLessThanPaperDinSize"
         nexusRef="CompressedLetter"
         lpType="vVal" lpRef="compressedLetterEnvelopeSize"
@@ -1299,6 +1300,18 @@ You should have got a version of this license together with this file.
         <kb:label>the-size-of-an-compressed-letter-envelope-is-less-than-its-paper-din-size</kb:label>
         <kb:description>
         Rule 3.B : relation
+        </kb:description>
+      </kb:relation>
+-->
+      <kb:relation id="EnvelopeDinSizeOfCompLettIsLessThanPaperDinSize"
+        nexusRef="CompressedLetter"
+        lpType="vVal" lpRef="compressedLetterPaperSize"
+        relType="less"
+        rpType="vVal" rpRef="compressedLetterEnvelopeSize"
+         >
+        <kb:label>the-size-of-an-compressed-letter-envelope-is-less-than-its-paper-din-size</kb:label>
+        <kb:description>
+        Rule 3.B : relation ... MJ: switched left and right
         </kb:description>
       </kb:relation>
       <kb:relation id="SizeOfComLettIsSizeOfEnevlope"
