@@ -41,9 +41,12 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
     <jaxws:properties>
       <entry key="schema-validation-enabled" value="false" />
     </jaxws:properties>
+    <!-- Enable Feature cxf:logging if you want to see Requests and Responses on the Console -->
+    <!--
     <jaxws:features>
       <cxf:logging />
     </jaxws:features>
+    -->
     <jaxws:inInterceptors>
       <ref bean="requestIdGenerationInterceptor" />  <!-- defined in cxf-interceptor-context.xml -->
     </jaxws:inInterceptors>

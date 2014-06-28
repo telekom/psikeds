@@ -44,9 +44,12 @@ http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
       <ref bean="jsonProvider" />  <!-- defined in providers-context.xml -->
       <ref bean="xmlProvider" />
     </jaxrs:providers>
+    <!-- Enable Feature cxf:logging if you want to see Requests and Responses on the Console -->
+    <!--
     <jaxrs:features>
       <cxf:logging />
     </jaxrs:features>
+    -->
     <jaxrs:extensionMappings>
       <entry key="json" value="application/json" />
       <entry key="xml" value="application/xml" />
