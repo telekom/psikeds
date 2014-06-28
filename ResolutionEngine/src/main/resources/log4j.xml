@@ -68,10 +68,6 @@
     <priority value="INFO" />
   </category>
 
-  <category name="org.psikeds.resolutionengine.resolver">
-    <priority value="DEBUG" />
-  </category>
-
   <category name="org.psikeds.resolutionengine.rules">
     <priority value="DEBUG" />
   </category>
@@ -85,20 +81,40 @@
     <priority value="DEBUG" />
   </category>
 
-  <category name="org.psikeds.resolutionengine.resolver.impl.AutoCompletion">
-    <priority value="TRACE" />
+  <category name="org.psikeds.resolutionengine.util.ContextHelper">
+    <priority value="DEBUG" />
+  </category>
+
+  <category name="org.psikeds.resolutionengine.util.ChoicesHelper">
+    <priority value="DEBUG" />
+  </category>
+
+  <category name="org.psikeds.resolutionengine.util.ConceptHelper">
+    <priority value="DEBUG" />
+  </category>
+
+  <category name="org.psikeds.resolutionengine.util.FeatureValueHelper">
+    <priority value="DEBUG" />
+  </category>
+
+  <category name="org.psikeds.resolutionengine.util.KnowledgeEntityHelper">
+    <priority value="DEBUG" />
+  </category>
+
+  <category name="org.psikeds.resolutionengine.resolver">
+    <priority value="DEBUG" />
   </category>
 
   <category name="org.psikeds.resolutionengine.resolver.impl.EventEvaluator">
-    <priority value="TRACE" />
+    <priority value="DEBUG" />
   </category>
 
   <category name="org.psikeds.resolutionengine.resolver.impl.RulesEvaluator">
-    <priority value="TRACE" />
+    <priority value="DEBUG" />
   </category>
 
   <category name="org.psikeds.resolutionengine.resolver.impl.RelationEvaluator">
-    <priority value="TRACE" />
+    <priority value="DEBUG" />
   </category>
 -->
 
