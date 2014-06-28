@@ -472,7 +472,23 @@ public class Xml2VoTransformer implements InitializingBean, Transformer {
    */
   @Override
   public RelationOperator xml2ValueObject(final org.psikeds.knowledgebase.jaxb.RelationType xml) {
-    return RelationOperator.fromValue(xml == null ? null : xml.value());
+    RelationOperator op = null;
+    // map xml/xsd constants to datalayer representation
+    if (xml != null) {
+      if (org.psikeds.knowledgebase.jaxb.RelationType.EQ.equals(xml)) {
+        op = RelationOperator.EQUAL;
+      }
+      else if (org.psikeds.knowledgebase.jaxb.RelationType.NEQ.equals(xml)) {
+        op = RelationOperator.NOT_EQUAL;
+      }
+      else if (org.psikeds.knowledgebase.jaxb.RelationType.LESS.equals(xml)) {
+        op = RelationOperator.LESS_THAN;
+      }
+      else if (org.psikeds.knowledgebase.jaxb.RelationType.LEQ.equals(xml)) {
+        op = RelationOperator.LESS_OR_EQUAL;
+      }
+    }
+    return (op == null ? RelationOperator.DEFAULT_OPERATOR : op);
   }
 
   /**
