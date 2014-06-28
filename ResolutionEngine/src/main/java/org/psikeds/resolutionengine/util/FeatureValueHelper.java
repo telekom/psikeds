@@ -58,66 +58,63 @@ public abstract class FeatureValueHelper {
   public static String checkFeatureValue(final KnowledgeBase kb, final Transformer trans, final KnowledgeEntity ke, final String featureValueID) {
     String ret = RET_FV_POSSIBLE;
     try {
-      LOGGER.trace("--> checkFeatureValue(); FV = {}\nKE = {}", featureValueID, ke);
-      // ensure clean data from kb
+      LOGGER.trace("--> checkFeatureValue(); KE = {}; FV = {}", shortDisplayKE(ke), featureValueID);
+      // Step 0: ensure clean data from kb
       final FeatureValue fv = (StringUtils.isEmpty(featureValueID) ? null : trans.valueObject2Pojo(kb.getFeatureValue(featureValueID)));
       final String featureID = (fv == null ? null : fv.getFeatureID());
       if (StringUtils.isEmpty(featureID)) {
-        throw new IllegalArgumentException("No Feature-Value!");
+        LOGGER.warn("No Feature found for Feature-Value {}", featureValueID);
+        ret = RET_FV_NOT_POSSIBLE;
+        return ret;
       }
-      // first check features of ke
+      // Step 1: check features and assigned values of ke
+      LOGGER.debug("Checking assigned Features of KE {} regarding Feature {} and Value {}", shortDisplayKE(ke), featureID, featureValueID);
       final FeatureValues fvlst = (ke == null ? null : ke.getFeatures());
       if ((fvlst != null) && !fvlst.isEmpty()) {
         for (final FeatureValue val : fvlst) {
           if (featureID.equals(val.getFeatureID())) {
             if (featureValueID.equals(val.getFeatureValueID())) {
-              LOGGER.debug("Found matching Feature-Value: {}", val);
+              LOGGER.debug("Found matching Feature-Value {} assigned to KE {}", featureValueID, shortDisplayKE(ke));
               ret = RET_FV_ASSIGNED;
               return ret;
             }
             else {
-              LOGGER.debug("Feature {} has another Value: {}", featureID, val);
+              LOGGER.debug("Feature {} of KE {} has another assigned Value {}", featureID, shortDisplayKE(ke), featureValueID);
               ret = RET_FV_NOT_POSSIBLE;
               return ret;
             }
           }
         }
       }
-      // second check still possible features of ke
+      // Step 2: check still possible choices for features of ke
+      LOGGER.debug("Checking possible Feature-Values of KE {} regarding Feature {} and Value {}", shortDisplayKE(ke), featureID, featureValueID);
       final FeatureChoices fclst = (ke == null ? null : ke.getPossibleFeatures());
       if ((fclst != null) && !fclst.isEmpty()) {
         for (final FeatureChoice fc : fclst) {
           if (featureID.equals(fc.getFeatureID())) {
             final FeatureValues vals = fc.getPossibleValues();
             if ((vals != null) && vals.contains(fv)) {
-              LOGGER.debug("Found matching Feature-Value within Feature-Choice: {}", fc);
+              LOGGER.debug("Found matching Feature-Value {} within Feature-Choice of KE {}", featureValueID, shortDisplayKE(ke));
               ret = RET_FV_POSSIBLE;
               return ret;
             }
             else {
-              LOGGER.debug("There are Choices for Feature {}, but the desired Value is not possible: {}", featureID, fc);
+              LOGGER.debug("There are Choices for Feature {}, but the desired Value {} is not possible: {}", featureID, featureValueID, fc);
               ret = RET_FV_NOT_POSSIBLE;
               return ret;
             }
           }
         }
       }
-      // third check still possible concepts of ke
+      // Step 3: check still possible choices for concepts of ke
       final ConceptChoices cclst = (ke == null ? null : ke.getPossibleConcepts());
       if ((cclst != null) && !cclst.isEmpty()) {
         for (final ConceptChoice cc : cclst) {
           for (final Concept con : cc.getConcepts()) {
-            final List<String> fids = con.getFeatureIds();
-            if ((fids != null) && fids.contains(featureID)) {
-              final FeatureValues vals = con.getValues();
-              if ((vals != null) && vals.contains(fv)) {
-                LOGGER.debug("Found matching Feature-Value within Concept-Choice: {}", cc);
+            for (final FeatureValue val : con.getValues()) {
+              if (featureID.equals(val.getFeatureID()) && featureValueID.equals(val.getFeatureValueID())) {
+                LOGGER.debug("Possible Concept {} contains matching Value {}", con.getConceptID(), featureValueID);
                 ret = RET_FV_POSSIBLE;
-                return ret;
-              }
-              else {
-                LOGGER.debug("Possible Concepts contain Feature {}, but the desired Value is not possible: {}", featureID, cc);
-                ret = RET_FV_NOT_POSSIBLE;
                 return ret;
               }
             }
@@ -126,6 +123,7 @@ public abstract class FeatureValueHelper {
       }
       // at this point, the fv was neither assigned nor within any concept or choice,
       // i.e. it is not possible any more!
+      LOGGER.debug("Feature-Value {} is not possible for Feature {} of KE {}", featureValueID, featureID, shortDisplayKE(ke));
       ret = RET_FV_NOT_POSSIBLE;
       return ret;
     }
@@ -138,7 +136,7 @@ public abstract class FeatureValueHelper {
       throw new ResolutionException("Cannot check Feature-Value!", ex);
     }
     finally {
-      LOGGER.trace("<-- checkFeatureValue(); FV = {}; RET = {}", featureValueID, ret);
+      LOGGER.trace("<-- checkFeatureValue(); KE = {}; FV = {}; RET = {}", shortDisplayKE(ke), featureValueID, ret);
     }
   }
 
@@ -146,14 +144,24 @@ public abstract class FeatureValueHelper {
 
   public static void applyFeatureValue(final KnowledgeEntity ke, final FeatureValue fv) {
     if ((ke != null) && (fv != null)) {
-      LOGGER.trace("Adding new FeatureValue: {}", fv);
+      if (LOGGER.isTraceEnabled()) {
+        LOGGER.trace("Adding new FeatureValue {}\nto KE {}", fv, ke);
+      }
+      else {
+        LOGGER.debug("Adding new FeatureValue {} to KE {}", fv.getFeatureValueID(), shortDisplayKE(ke));
+      }
       ke.addFeature(fv);
     }
   }
 
   public static void applyConcept(final KnowledgeEntity ke, final Concept con) {
     if ((ke != null) && (con != null)) {
-      LOGGER.trace("Setting FeatureValues according to Concept: {}", con);
+      if (LOGGER.isTraceEnabled()) {
+        LOGGER.trace("Setting FeatureValues for KE {}\naccording to Concept {}", ke, con);
+      }
+      else {
+        LOGGER.debug("Setting FeatureValues for KE {} according to Concept {}", shortDisplayKE(ke), con.getConceptID());
+      }
       final FeatureValues values = con.getValues();
       for (final FeatureValue fv : values) {
         applyFeatureValue(ke, fv);
@@ -168,7 +176,9 @@ public abstract class FeatureValueHelper {
       for (final org.psikeds.resolutionengine.interfaces.pojos.FeatureValue fv : ke.getFeatures()) {
         if (featureId.equals(fv.getFeatureID())) {
           // note: a ke has at most one value for a feature
-          return pojo2ValueObject(kb, fv);
+          final org.psikeds.resolutionengine.datalayer.vo.FeatureValue ret = pojo2ValueObject(kb, fv);
+          LOGGER.trace("Found Feature-Value: {}", ret);
+          return ret;
         }
       }
     }
