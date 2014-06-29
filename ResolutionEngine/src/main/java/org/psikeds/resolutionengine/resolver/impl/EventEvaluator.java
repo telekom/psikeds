@@ -449,9 +449,22 @@ public class EventEvaluator implements InitializingBean, Resolver {
           final Variant v = (ke == null ? null : ke.getVariant());
           final String vid = (v == null ? null : v.getVariantID());
           if (tid.equals(vid)) {
-            LOGGER.debug("Found matching Variant: {}", vid);
+            LOGGER.debug("Trigger {} matches to Variant of this KE {}", tid, shortDisplayKE(ke));
             matching = true;
             undecided = false;
+          }
+          else {
+            LOGGER.debug("Trigger {} is not matching to Variant of this KE {} ... checking Choices.", tid, shortDisplayKE(ke));
+            matching = false;
+            undecided = false;
+            for (final VariantChoice vc : ke.getPossibleVariants()) {
+              for (final Variant var : vc.getVariants()) {
+                if (tid.equals(var.getVariantID())) {
+                  LOGGER.debug("Trigger {} of Variant-Event {} is still undecided. Found corresponding Choice: {}", tid, eid, vc);
+                  undecided = true;
+                }
+              }
+            }
           }
         }
         else {
