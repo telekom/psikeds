@@ -243,16 +243,13 @@ public class AutoCompletion implements InitializingBean, Resolver {
           final FeatureValues values = fc.getPossibleValues();
           if (values.size() < 2) {
             LOGGER.trace("Found FC: {}", fc);
-            if (values.isEmpty()) {
-              unfulfillableMessage(fid, parent, state, fc);
-              continue;
-            }
-            else { //exactly one feature value
+            if (!values.isEmpty()) {
+              //exactly one feature value
               FeatureValueHelper.applyFeatureValue(parentEntity, values.get(0));
               completionMessage(fid, parent, state, fc);
               values.clear();
-              removed = true;
             }
+            removed = true;
           }
         }
         // Is this a Choice for a Concept?
@@ -262,19 +259,15 @@ public class AutoCompletion implements InitializingBean, Resolver {
           final Concepts cons = cc.getConcepts();
           if (cons.size() < 2) {
             LOGGER.trace("Found CC: {}", cc);
-            if (cons.isEmpty()) {
-              unfulfillableMessage(parent, state, cc);
-              continue;
-            }
-            else {
+            if (!cons.isEmpty()) {
               // exactly one concept
               final Concept con = cons.get(0);
               ConceptHelper.applyConcept(parentEntity, con);
               final String cid = con.getConceptID();
               completionMessage(cid, parent, state, cc);
               cons.clear();
-              removed = true;
             }
+            removed = true;
           }
         }
         else {
@@ -307,6 +300,8 @@ public class AutoCompletion implements InitializingBean, Resolver {
       LOGGER.trace("<-- autocompleteKnowledgeEntities() = " + (ok ? "OK." : "ERROR!"));
     }
   }
+
+  // QQQ is there a need to handle unfulfillable choices here?
 
   // ----------------------------------------------------------------
 
@@ -346,6 +341,7 @@ public class AutoCompletion implements InitializingBean, Resolver {
 //  }
 
   // ----------------------------------------------------------------
+
   private void completionMessage(final String fid, final String parent, final SessionState state, final FeatureChoice fc) {
     String msg = null;
     if (LOGGER.isDebugEnabled() && (fc != null)) {
@@ -363,23 +359,23 @@ public class AutoCompletion implements InitializingBean, Resolver {
     }
   }
 
-  private void unfulfillableMessage(final String fid, final String parent, final SessionState state, final FeatureChoice fc) {
-    String msg = null;
-    if (LOGGER.isDebugEnabled() && (fc != null)) {
-      msg = String.format("Feature %s of Variant %s is unfulfillable: %s", fid, parent, fc);
-      LOGGER.debug(msg);
-    }
-    else {
-      msg = String.format("Feature %s of Variant %s is unfulfillable!", fid, parent);
-      LOGGER.info(msg);
-    }
-    final Metadata metadata = (state == null ? null : state.getMetadata());
-    if (metadata != null) {
-      final String key = String.format("Unfulfillable_FC_%s_%s", parent, fid);
-      metadata.addInfo(key, msg);
-      state.addWarning(msg);
-    }
-  }
+//  private void unfulfillableMessage(final String fid, final String parent, final SessionState state, final FeatureChoice fc) {
+//    String msg = null;
+//    if (LOGGER.isDebugEnabled() && (fc != null)) {
+//      msg = String.format("Feature %s of Variant %s is unfulfillable: %s", fid, parent, fc);
+//      LOGGER.debug(msg);
+//    }
+//    else {
+//      msg = String.format("Feature %s of Variant %s is unfulfillable!", fid, parent);
+//      LOGGER.info(msg);
+//    }
+//    final Metadata metadata = (state == null ? null : state.getMetadata());
+//    if (metadata != null) {
+//      final String key = String.format("Unfulfillable_FC_%s_%s", parent, fid);
+//      metadata.addInfo(key, msg);
+//      state.addWarning(msg);
+//    }
+//  }
 
   // ----------------------------------------------------------------
 
@@ -400,21 +396,21 @@ public class AutoCompletion implements InitializingBean, Resolver {
     }
   }
 
-  private void unfulfillableMessage(final String parent, final SessionState state, final ConceptChoice cc) {
-    String msg = null;
-    if (LOGGER.isDebugEnabled() && (cc != null)) {
-      msg = String.format("Concepts of Variant {} cannot be fulfilled: %s", parent, cc);
-      LOGGER.debug(msg);
-    }
-    else {
-      msg = String.format("Concepts of Variant {} cannot be fulfilled!", parent);
-      LOGGER.info(msg);
-    }
-    final Metadata metadata = (state == null ? null : state.getMetadata());
-    if (metadata != null) {
-      final String key = String.format("Unfulfillable_CC_%s", parent);
-      metadata.addInfo(key, msg);
-      state.addWarning(msg);
-    }
-  }
+//  private void unfulfillableMessage(final String parent, final SessionState state, final ConceptChoice cc) {
+//    String msg = null;
+//    if (LOGGER.isDebugEnabled() && (cc != null)) {
+//      msg = String.format("Concepts of Variant {} cannot be fulfilled: %s", parent, cc);
+//      LOGGER.debug(msg);
+//    }
+//    else {
+//      msg = String.format("Concepts of Variant {} cannot be fulfilled!", parent);
+//      LOGGER.info(msg);
+//    }
+//    final Metadata metadata = (state == null ? null : state.getMetadata());
+//    if (metadata != null) {
+//      final String key = String.format("Unfulfillable_CC_%s", parent);
+//      metadata.addInfo(key, msg);
+//      state.addWarning(msg);
+//    }
+//  }
 }

@@ -208,6 +208,16 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     Validate.notNull(this.cache, "No Resolution-Cache!");
     Validate.isTrue(getResolvers().size() > 0, "No Resolver-Chain!");
     Validate.isTrue(this.maxResolutionIterations > 0, "No Iterations for Resolution!?!?");
+    if (LOGGER.isDebugEnabled()) {
+      final StringBuilder sb = new StringBuilder("Total of ");
+      sb.append(getResolvers().size());
+      sb.append(" Resolvers:");
+      for (final Resolver res : getResolvers()) {
+        sb.append('\n');
+        sb.append(res.getClass().getName());
+      }
+      LOGGER.debug(sb.toString());
+    }
     if (this.checkValidityOnStartup) {
       LOGGER.info("Checking validity of Knowledge-Base.");
       checkValidity();

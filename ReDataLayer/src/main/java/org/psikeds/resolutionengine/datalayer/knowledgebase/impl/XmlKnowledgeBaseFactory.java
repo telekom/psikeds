@@ -98,6 +98,19 @@ public class XmlKnowledgeBaseFactory implements InitializingBean, KnowledgeBaseF
     if (!this.validate) {
       LOGGER.info("Knowledge-Base is NOT validated!");
     }
+    if ((this.validatorChain == null) || this.validatorChain.isEmpty()) {
+      LOGGER.info("No Validators for Knowledge-Base defined!");
+    }
+    else if (LOGGER.isDebugEnabled()) {
+      final StringBuilder sb = new StringBuilder("Total of ");
+      sb.append(getValidators().size());
+      sb.append(" Validators:");
+      for (final Validator val : getValidators()) {
+        sb.append('\n');
+        sb.append(val.getClass().getName());
+      }
+      LOGGER.debug(sb.toString());
+    }
   }
 
   // ----------------------------------------------------------------
