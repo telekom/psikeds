@@ -252,8 +252,8 @@ public class ResolutionServiceTest {
     final FeatureValue fv21 = new FeatureValue(f2.getFeatureID(), "FV21", "1.0");
     final FeatureValue fv22 = new FeatureValue(f2.getFeatureID(), "FV22", "2.0");
     final FeatureValue fv23 = new FeatureValue(f2.getFeatureID(), "FV23", "3.0");
-    final FeatureValue fv31 = new FeatureValue(f3.getFeatureID(), "FV31", "foo");
-    final FeatureValue fv32 = new FeatureValue(f3.getFeatureID(), "FV32", "bar");
+//    final FeatureValue fv31 = new FeatureValue(f3.getFeatureID(), "FV31", "foo");
+//    final FeatureValue fv32 = new FeatureValue(f3.getFeatureID(), "FV32", "bar");
 
     final Purpose p1 = new Purpose("P1", true);
     final Purpose p2 = new Purpose("P2", true);
