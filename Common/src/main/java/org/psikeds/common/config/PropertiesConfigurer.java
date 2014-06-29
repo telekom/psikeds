@@ -35,7 +35,7 @@ public class PropertiesConfigurer extends PropertyPlaceholderConfigurer {
   private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesConfigurer.class);
 
   public static final String PROPERTIES_FILE_ENCODING = "UTF-8";
-  public static final boolean IGNORE_MISSING_RESOURCES_AND_PLACEHOLDER = true;
+  public static final boolean IGNORE_MISSING_RESOURCES_AND_PLACEHOLDER = false;
   public static final int DEFAULT_SYSTEM_PROPERTIES_MODE = PropertyPlaceholderConfigurer.SYSTEM_PROPERTIES_MODE_FALLBACK;
 
   public PropertiesConfigurer() {

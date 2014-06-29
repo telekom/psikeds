@@ -22,11 +22,101 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
+  <bean id="ResolutionCache" class="org.psikeds.resolutionengine.cache.ResolutionCache">
+    <constructor-arg index="0" value="${resolutionengine.cache.sessions.per.server}" />
+    <constructor-arg index="1" value="${resolutionengine.cache.objects.per.session}" />
+  </bean>
+
+  <bean id="PojoTransformer" class="org.psikeds.resolutionengine.transformer.impl.Vo2PojoTransformer" />
+
+  <bean id="SessionIdGenerator" class="org.psikeds.common.idgen.impl.SessionIdGenerator" />
+
+  <!-- ============================================================== -->
+
+  <bean id="VariantDecissionEvaluator" class="org.psikeds.resolutionengine.resolver.impl.VariantDecissionEvaluator">
+    <constructor-arg index="0" value="${resolutionengine.resolver.decission.optional.root.purposes}" />
+  </bean>
+
+  <bean id="FeatureDecissionEvaluator" class="org.psikeds.resolutionengine.resolver.impl.FeatureDecissionEvaluator" />
+
+  <bean id="ConceptDecissionEvaluator" class="org.psikeds.resolutionengine.resolver.impl.ConceptDecissionEvaluator" />
+
+  <bean id="ObsoleteEntitiesRemover" class="org.psikeds.resolutionengine.resolver.impl.ObsoleteEntitiesRemover" />
+
+  <bean id="AutoCompletionResolver" class="org.psikeds.resolutionengine.resolver.impl.AutoCompletion">
+    <constructor-arg index="0" type="org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase" ref="knowledgeBase" />  <!-- defined in knowledgebase-context.xml -->
+    <constructor-arg index="1" type="org.psikeds.resolutionengine.transformer.Transformer" ref="PojoTransformer" />
+    <constructor-arg index="2" value="${resolutionengine.resolver.autocomplete.root.purposes}" />
+  </bean>
+
+  <bean id="EventEvaluator" class="org.psikeds.resolutionengine.resolver.impl.EventEvaluator">
+    <constructor-arg index="0" type="org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase" ref="knowledgeBase" />
+    <constructor-arg index="1" type="org.psikeds.resolutionengine.transformer.Transformer" ref="PojoTransformer" />
+    <constructor-arg index="2" value="${resolutionengine.resolver.events.update.conditional.relations}" />
+  </bean>
+
+  <bean id="RulesEvaluator" class="org.psikeds.resolutionengine.resolver.impl.RulesEvaluator">
+    <constructor-arg index="0" type="org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase" ref="knowledgeBase" />
+    <constructor-arg index="1" type="org.psikeds.resolutionengine.transformer.Transformer" ref="PojoTransformer" />
+    <constructor-arg index="2" value="${resolutionengine.resolver.rules.create.missing.conclusion.path}" />
+    <constructor-arg index="3" value="${resolutionengine.resolver.rules.create.non.choosable.entities}" />
+    <constructor-arg index="4" value="${resolutionengine.resolver.rules.keep.modus.tollens.for.later}" />
+  </bean>
+
+  <bean id="RelationEvaluator" class="org.psikeds.resolutionengine.resolver.impl.RelationEvaluator">
+    <constructor-arg index="0" type="org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase" ref="knowledgeBase" />
+    <constructor-arg index="1" type="org.psikeds.resolutionengine.transformer.Transformer" ref="PojoTransformer" />
+  </bean>
+
+  <!-- ============================================================== -->
+
+  <util:list id="AllResolvers">
+    <ref bean="VariantDecissionEvaluator" />
+    <ref bean="FeatureDecissionEvaluator" />
+    <ref bean="ConceptDecissionEvaluator" />
+    <ref bean="ObsoleteEntitiesRemover" />
+    <ref bean="AutoCompletionResolver" />
+    <ref bean="EventEvaluator" />
+    <ref bean="RulesEvaluator" />
+    <ref bean="RelationEvaluator" />
+  </util:list>
+
+  <util:list id="ResolversWithoutRules">
+    <ref bean="VariantDecissionEvaluator" />
+    <ref bean="FeatureDecissionEvaluator" />
+    <ref bean="ConceptDecissionEvaluator" />
+    <ref bean="ObsoleteEntitiesRemover" />
+    <ref bean="AutoCompletionResolver" />
+    <ref bean="EventEvaluator" />
+    <ref bean="RelationEvaluator" />
+  </util:list>
+
+  <util:list id="ResolversWithoutRelations">
+    <ref bean="VariantDecissionEvaluator" />
+    <ref bean="FeatureDecissionEvaluator" />
+    <ref bean="ConceptDecissionEvaluator" />
+    <ref bean="ObsoleteEntitiesRemover" />
+    <ref bean="AutoCompletionResolver" />
+    <ref bean="EventEvaluator" />
+    <ref bean="RulesEvaluator" />
+  </util:list>
+
+  <util:list id="ResolversWithoutRulesAndRelations">
+    <ref bean="VariantDecissionEvaluator" />
+    <ref bean="FeatureDecissionEvaluator" />
+    <ref bean="ConceptDecissionEvaluator" />
+    <ref bean="ObsoleteEntitiesRemover" />
+    <ref bean="AutoCompletionResolver" />
+    <ref bean="EventEvaluator" />
+  </util:list>
+
+  <!-- ============================================================== -->
+
   <bean id="resolutionBusinessService" class="org.psikeds.resolutionengine.services.ResolutionBusinessService">
     <constructor-arg index="0" type="org.psikeds.resolutionengine.datalayer.knowledgebase.KnowledgeBase" ref="knowledgeBase" />  <!-- defined in knowledgebase-context.xml -->
-    <constructor-arg index="1" type="java.util.List" ref="${resolutionengine.service.resolvers.name}" />  <!-- defined in resolutionengine.properties and business-service-resolvers-context.xml -->
+    <constructor-arg index="1" type="java.util.List" ref="${resolutionengine.service.resolvers.name}" />
     <constructor-arg index="2" type="org.psikeds.resolutionengine.cache.ResolutionCache" ref="ResolutionCache" />
-    <constructor-arg index="3" type="org.psikeds.resolutionengine.transformer.Transformer" ref="PojoTransformer" />  <!-- defined in business-service-components-context.xml -->
+    <constructor-arg index="3" type="org.psikeds.resolutionengine.transformer.Transformer" ref="PojoTransformer" />
     <constructor-arg index="4" type="org.psikeds.common.idgen.IdGenerator" ref="SessionIdGenerator" />
     <constructor-arg index="5" value="${resolutionengine.service.resolve.initial.knowledge}" />
     <constructor-arg index="6" value="${resolutionengine.service.check.validity.on.startup}" />

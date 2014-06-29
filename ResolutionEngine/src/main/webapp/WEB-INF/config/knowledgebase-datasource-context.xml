@@ -31,13 +31,12 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
              /psikeds/config/knowledgebase-datasource-context.xml
   -->
 
+  <!--
+  This Definition will use the packaged Default-KB from within
+  the JAR-File using a Standard-Spring-ClassPathResource
+  -->
   <bean id="DefaultKnowledgebase" class="org.springframework.core.io.ClassPathResource">
     <constructor-arg index="0" type="java.lang.String" value="default.knowledgebase.xml" />
   </bean>
-  <bean id="LDReweKnowledgebase" class="org.psikeds.common.config.FileSystemResource"> 
-    <constructor-arg index="0" type="java.lang.String" value="ldrewe.xml" />
-  </bean>
-  <bean id="SoftwareStackKnowledgebase" class="org.psikeds.common.config.FileSystemResource"> 
-    <constructor-arg index="0" type="java.lang.String" value="software-stack-demo-kb.xml" />
-  </bean>
+
 </beans>
