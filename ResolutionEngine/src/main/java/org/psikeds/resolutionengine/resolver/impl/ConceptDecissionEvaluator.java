@@ -27,7 +27,7 @@ import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity;
 import org.psikeds.resolutionengine.interfaces.pojos.Metadata;
 import org.psikeds.resolutionengine.resolver.ResolutionException;
 import org.psikeds.resolutionengine.resolver.Resolver;
-import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
+import org.psikeds.resolutionengine.resolver.SessionState;
 
 /**
  * Based on the made Concept-Decission this Resolver will reduce the
@@ -45,25 +45,23 @@ public class ConceptDecissionEvaluator implements Resolver {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConceptDecissionEvaluator.class);
 
   /**
-   * @param knowledge
-   *          current Knowledge
+   * @param state
+   *          current State of Resolution-Session
    * @param decission
-   *          some Decission, ignored if not a ConceptDecission
-   * @param raeh
-   *          all Rules and Events currently relevant (ignored!)
-   * @param metadata
-   *          Metadata (optional, can be null)
+   *          made Decission (can be null)
    * @return Knowledge
    *         resulting new Knowledge
    * @throws ResolutionException
    *           if any error occurs
    */
   @Override
-  public Knowledge resolve(final Knowledge knowledge, final Decission decission, final RulesAndEventsHandler raeh, final Metadata metadata) throws ResolutionException {
+  public Knowledge resolve(final SessionState state, final Decission decission) throws ResolutionException {
     boolean ok = false;
     boolean found = false;
     try {
       LOGGER.debug("Evaluating made Decission ...");
+      final Knowledge knowledge = state.getKnowledge();
+      final Metadata metadata = state.getMetadata();
       if (decission instanceof ConceptDecission) {
         final ConceptDecission cd = (ConceptDecission) decission;
         found = updateKnowledge(knowledge, cd, metadata);

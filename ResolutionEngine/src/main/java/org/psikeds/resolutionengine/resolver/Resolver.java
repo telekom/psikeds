@@ -16,8 +16,6 @@ package org.psikeds.resolutionengine.resolver;
 
 import org.psikeds.resolutionengine.interfaces.pojos.Decission;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
-import org.psikeds.resolutionengine.interfaces.pojos.Metadata;
-import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
 
 /**
  * The chain of all Resolvers is our actual Resolution-Engine, i.e. this
@@ -35,22 +33,15 @@ public interface Resolver {
    * without Client-Interaction and that therefore the Decission can be null
    * (e.g. for Initial Knowledge or for Recursive-Auto-Completion)
    * 
-   * @param knowledge
-   *          current/old Knowledge
+   * @param state
+   *          current State of Resolution-Session
    * @param decission
    *          made Decission (can be null)
-   * @param raeh
-   *          all Rules and Events currently relevant
-   * @param metadata
-   *          optional Metadata (can be null)
-   * @return Knowledge resulting new Knowledge
+   * @return Knowledge
+   *         resulting new Knowledge
    * @throws ResolutionException
    *           if any error occurs
    */
-  Knowledge resolve(
-      Knowledge knowledge,
-      Decission decission,
-      RulesAndEventsHandler raeh,
-      Metadata metadata) throws ResolutionException;
+  Knowledge resolve(SessionState state, Decission decission) throws ResolutionException;
 
 }

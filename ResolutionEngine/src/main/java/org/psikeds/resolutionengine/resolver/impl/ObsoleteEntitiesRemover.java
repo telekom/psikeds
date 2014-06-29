@@ -25,10 +25,9 @@ import org.psikeds.resolutionengine.interfaces.pojos.Decission;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
 import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntities;
 import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity;
-import org.psikeds.resolutionengine.interfaces.pojos.Metadata;
 import org.psikeds.resolutionengine.resolver.ResolutionException;
 import org.psikeds.resolutionengine.resolver.Resolver;
-import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
+import org.psikeds.resolutionengine.resolver.SessionState;
 import org.psikeds.resolutionengine.util.ConceptHelper;
 import org.psikeds.resolutionengine.util.FeatureValueHelper;
 
@@ -44,24 +43,21 @@ public class ObsoleteEntitiesRemover implements Resolver {
   private static final Logger LOGGER = LoggerFactory.getLogger(ObsoleteEntitiesRemover.class);
 
   /**
-   * @param knowledge
-   *          current Knowledge
+   * @param state
+   *          current State of Resolution-Session
    * @param decission
-   *          Decission made by Client (ignored!)
-   * @param raeh
-   *          all Rules and Events currently relevant (ignored!)
-   * @param metadata
-   *          Metadata (optional, can be null)
+   *          made Decission (can be null)
    * @return Knowledge
    *         resulting new Knowledge
    * @throws ResolutionException
    *           if any error occurs
    */
   @Override
-  public Knowledge resolve(final Knowledge knowledge, final Decission decission, final RulesAndEventsHandler raeh, final Metadata metadata) throws ResolutionException {
+  public Knowledge resolve(final SessionState state, final Decission decission) throws ResolutionException {
     boolean stable = true;
     try {
       LOGGER.debug("Removing obsolete Entities ...");
+      final Knowledge knowledge = state.getKnowledge();
       stable = cleanKnowledge(knowledge);
       if (!stable) {
         // We removed some Entities, therefore it is neccessary to execute the full Resolver-Chain once again

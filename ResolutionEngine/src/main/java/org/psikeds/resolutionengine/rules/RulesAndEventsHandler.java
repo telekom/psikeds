@@ -261,9 +261,10 @@ public class RulesAndEventsHandler implements Serializable {
   }
 
   public static RulesAndEventsHandler init(final KnowledgeBase kb, final Knowledge knowledge) {
-    // TODO sophisticated more performant initialization
-    // only rules and events currently "visible" in our knowledge are relevant
-    return init(kb); // fallback to simple init
+    // QQQ if performance should be an issue, we could do a more sophisticated
+    // initialization: only events, rules and relations attached to a nexus/variant
+    // currently "visible" in our knowledge are relevant and must be added
+    return init(kb); // meanwhile fallback to simple init
   }
 
   public static RulesAndEventsHandler init(final Events relevantEvents, final Rules relevantRules, final Relations activeRelations) {

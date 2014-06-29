@@ -46,6 +46,7 @@ import org.psikeds.resolutionengine.interfaces.pojos.VariantChoices;
 import org.psikeds.resolutionengine.interfaces.services.ResolutionService;
 import org.psikeds.resolutionengine.resolver.ResolutionException;
 import org.psikeds.resolutionengine.resolver.Resolver;
+import org.psikeds.resolutionengine.resolver.SessionState;
 import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
 import org.psikeds.resolutionengine.transformer.Transformer;
 
@@ -394,6 +395,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
       this.cache.saveObject(newSessionID, SESS_KEY_KNOWLEDGE, knowledge);
       this.cache.saveObject(newSessionID, SESS_KEY_RULES_AND_EVENTS, raeh);
       // --- Step 7: resolve Knowledge based on Decission(s)
+      final SessionState state = new SessionState(newSessionID, metadata, knowledge, raeh);
       final Decissions decissions = (req == null ? null : req.getDecissions());
       if (!initialKnowledge || this.resolveInitialKnowledge) {
         // Sometimes there might be some automatic Resolutions also for
@@ -402,10 +404,11 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
         // However this automatic Resolution might not be desired, e.g.
         // if Root-Purposes are just Alternatives and not all mandatory.
         // Therefore this Functionality is configurable!
-        knowledge = resolveDecissions(knowledge, decissions, metadata, raeh);
+        knowledge = resolveDecissions(state, decissions);
+        state.setKnowledge(knowledge);
       }
       // --- Step 8: create Response-Object
-      resp = new ResolutionResponse(newSessionID, metadata, knowledge);
+      resp = state.createResolutionResponse();
       if (resp.isResolved()) {
         // done, cleanup session
         this.cache.removeSession(newSessionID);
@@ -419,9 +422,10 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
       }
     }
     catch (final Exception ex) {
-      LOGGER.warn("Could not handle Request: " + ex.getMessage(), ex);
+      final String message = "Could not handle Resolution-Request: " + ex.getMessage();
+      LOGGER.warn(message, ex);
       final Errors errors = new Errors();
-      errors.add(new ErrorMessage(ex));
+      errors.add(new ErrorMessage(message));
       resp = new ResolutionResponse(newSessionID, metadata, errors);
     }
     finally {
@@ -474,22 +478,23 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
 
   // ----------------------------------------------------------------
 
-  private Knowledge resolveDecissions(Knowledge knowledge, final List<Decission> decissions, final Metadata metadata, final RulesAndEventsHandler raeh) {
+  private Knowledge resolveDecissions(final SessionState state, final List<Decission> decissions) {
     try {
       LOGGER.trace("--> resolveDecissions()");
-      if (knowledge == null) {
-        throw new ResolutionException("Cannot resolve Decissions, Knowledge is NULL!!!");
+      if (state == null) {
+        throw new ResolutionException("Session-State is NULL!!!");
       }
-      if (raeh == null) {
-        throw new ResolutionException("Cannot resolve Decissions, RulesAndEventsHandler is NULL!!!");
+      Knowledge knowledge = state.getKnowledge();
+      if (knowledge == null) {
+        throw new ResolutionException("Knowledge is NULL!!!");
       }
       if ((decissions == null) || decissions.isEmpty()) {
-        knowledge = autoResolve(knowledge, metadata, raeh, this.maxResolutionIterations);
+        knowledge = autoResolve(state, this.maxResolutionIterations);
       }
       else {
         LOGGER.debug("Total of {} Decission(s)", decissions.size());
         for (final Decission decission : decissions) {
-          knowledge = resolve(knowledge, decission, metadata, raeh, this.maxResolutionIterations);
+          knowledge = resolve(state, decission, this.maxResolutionIterations);
         }
       }
       return knowledge;
@@ -499,20 +504,22 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
     }
   }
 
-  private Knowledge autoResolve(final Knowledge knowledge, final Metadata metadata, final RulesAndEventsHandler raeh, final int iterationCountDown) {
+  private Knowledge autoResolve(final SessionState state, final int iterationCountDown) {
     LOGGER.debug("Auto-Resolution!");
-    return resolve(knowledge, null, metadata, raeh, iterationCountDown);
+    return resolve(state, null, iterationCountDown);
   }
 
-  private Knowledge resolve(Knowledge knowledge, final Decission decission, final Metadata metadata, final RulesAndEventsHandler raeh, int iterationCountDown) {
+  private Knowledge resolve(final SessionState state, final Decission decission, int iterationCountDown) {
     boolean ok = false;
+    Knowledge knowledge = null;
     try {
       LOGGER.trace("--> resolve(); iterationCountDown = {}; Decission = {}", iterationCountDown, decission);
       // in the beginning knowledge is clean/stable
+      knowledge = state.getKnowledge();
       knowledge.setStable(true);
       // Invoke every Resolver in Chain
       for (final Resolver res : getResolvers()) {
-        knowledge = res.resolve(knowledge, decission, raeh, metadata);
+        knowledge = res.resolve(state, decission);
       }
       if (!knowledge.isStable()) {
         // Some Resolver signaled that the Knowledge is not stable yet, i.e.
@@ -521,10 +528,10 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
         // Note: We do not supply any Decission because this was triggered
         // automatically and not by a Client-Interaction.
         if (iterationCountDown > 0) {
-          knowledge = autoResolve(knowledge, metadata, raeh, --iterationCountDown);
+          knowledge = autoResolve(state, --iterationCountDown);
         }
         else {
-          throw new ResolutionException("Resolution exceeds Maximum of " + this.maxResolutionIterations + " Iterations!");
+          throw new ResolutionException("Aborted Resolution! Number of Iterations exceeds Maximum of " + this.maxResolutionIterations);
         }
       }
       // done
@@ -532,6 +539,7 @@ public class ResolutionBusinessService implements InitializingBean, ResolutionSe
       return knowledge;
     }
     finally {
+      state.setKnowledge(knowledge);
       LOGGER.trace("<-- resolve(); iterationCountDown = {}; Result = " + (ok ? "OK." : "ERROR!") + "\nKnowledge = {}", iterationCountDown, knowledge);
     }
   }

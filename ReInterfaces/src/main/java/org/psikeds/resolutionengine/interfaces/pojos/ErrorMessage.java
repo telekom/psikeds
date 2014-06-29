@@ -38,11 +38,19 @@ public class ErrorMessage extends ResolutionMessage implements Serializable {
     super(code, message);
   }
 
+  public ErrorMessage(final String message) {
+    this(Status.INTERNAL_SERVER_ERROR.getStatusCode(), message);
+  }
+
   public ErrorMessage(final Status status) {
     this(status.getStatusCode(), status.getReasonPhrase());
   }
 
   public ErrorMessage(final Throwable t) {
-    this(Status.INTERNAL_SERVER_ERROR.getStatusCode(), t.getMessage());
+    this(t.getMessage());
+  }
+
+  public ErrorMessage(final String message, final Throwable t) {
+    this(message + " " + t.getMessage());
   }
 }

@@ -44,7 +44,7 @@ import org.psikeds.resolutionengine.interfaces.pojos.VariantChoice;
 import org.psikeds.resolutionengine.interfaces.pojos.VariantChoices;
 import org.psikeds.resolutionengine.resolver.ResolutionException;
 import org.psikeds.resolutionengine.resolver.Resolver;
-import org.psikeds.resolutionengine.rules.RulesAndEventsHandler;
+import org.psikeds.resolutionengine.resolver.SessionState;
 import org.psikeds.resolutionengine.transformer.Transformer;
 import org.psikeds.resolutionengine.transformer.impl.Vo2PojoTransformer;
 import org.psikeds.resolutionengine.util.ChoicesHelper;
@@ -146,25 +146,22 @@ public class AutoCompletion implements InitializingBean, Resolver {
   // ----------------------------------------------------------------
 
   /**
-   * @param knowledge
-   *          current Knowledge
+   * @param state
+   *          current State of Resolution-Session
    * @param decission
-   *          Decission Interactive decission by Client if not null,
-   *          otherwise an automatic Resolution
-   * @param raeh
-   *          all Rules and Events currently relevant (ignored!)
-   * @param metadata
-   *          Metadata (optional, can be null)
+   *          made Decission (can be null)
    * @return Knowledge
    *         resulting new Knowledge
    * @throws ResolutionException
    *           if any error occurs
    */
   @Override
-  public Knowledge resolve(final Knowledge knowledge, final Decission decission, final RulesAndEventsHandler raeh, final Metadata metadata) throws ResolutionException {
+  public Knowledge resolve(final SessionState state, final Decission decission) throws ResolutionException {
     boolean ok = false;
     try {
       LOGGER.debug("Autocompleting all Choices ...");
+      final Knowledge knowledge = state.getKnowledge();
+      final Metadata metadata = state.getMetadata();
       ok = autocompleteKnowledge(knowledge, decission, metadata);
       return knowledge;
     }
