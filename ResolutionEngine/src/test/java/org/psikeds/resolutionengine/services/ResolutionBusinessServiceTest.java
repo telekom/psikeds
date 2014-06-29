@@ -253,7 +253,7 @@ public class ResolutionBusinessServiceTest {
       final Knowledge k3 = cres.getKnowledge();
       assertNotNull("No Knowledge in Current-Response!", k3);
 
-      // TODO: additional tests here
+      // QQQ additional tests
 
       LOGGER.info("... done. Resolution-Business-Service worked as expected.");
     }

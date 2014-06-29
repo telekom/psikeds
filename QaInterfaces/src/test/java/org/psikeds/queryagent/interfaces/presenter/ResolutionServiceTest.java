@@ -230,7 +230,7 @@ public class ResolutionServiceTest {
       assertFalse("No current Choices!", choices3.isEmpty());
       assertFalse("Current Knowledge is already resolved!?!?", cres2.isResolved());
 
-      // TODO: additional tests for concepts and features
+      // QQQ additional tests for concepts and features
 
       LOGGER.info("... done. Handling of POJOs for Resolution worked as expected.");
     }
@@ -334,7 +334,7 @@ public class ResolutionServiceTest {
       JSONHelper.writeObjectToJsonFile(SELECT_FEATURE_KNOWLEDGE, selectFeatureKnowledge);
     }
 
-    // TODO: add data for concepts
+    // QQQ additional data for concepts and relations
 
     LOGGER.info("... finished generating Test-Data. ");
   }

@@ -44,7 +44,7 @@ import org.psikeds.resolutionengine.interfaces.pojos.VariantDecission;
 
 /**
  * Simple Client for invoking Services of Resolution-Engine
- * (i.e. perform manually what the Query-Agent would do)
+ * (i.e. an example of what the Query-Agent would do)
  * 
  * @author marco@juliano.de
  * 
@@ -55,6 +55,8 @@ public class ResolutionEngineClientTool {
 
   private static String LOG4J;
   private static File TEST_DATA_DIR;
+
+  // QQQ add suport for more sophisticated requests
 
   private static boolean doInvokeInit = true;
   private static boolean doInvokeCurrent = true;

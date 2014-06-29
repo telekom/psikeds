@@ -71,6 +71,8 @@ public class QueryAgentIT {
 
   @Test
   public void testAgainstApplicationServer() throws Exception {
+    // just check that everything was deployed and that
+    // services and a wadl are available
     final String wadlUrl = this.baseUrl + "/?_wadl";
     LOGGER.info("Checking deployed REST-Services: " + wadlUrl);
     final WebClient wadlClient = WebClient.create(wadlUrl);
@@ -83,7 +85,5 @@ public class QueryAgentIT {
     final String wadl = IOUtils.toString((InputStream) wadlResp.getEntity());
     LOGGER.debug("WADL = " + wadl);
     assertFalse("No WADL!", StringUtils.isEmpty(wadl));
-
-    // TODO: additional tests
   }
 }

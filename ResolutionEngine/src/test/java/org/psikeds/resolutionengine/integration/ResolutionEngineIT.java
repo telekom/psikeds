@@ -16,8 +16,10 @@ package org.psikeds.resolutionengine.integration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -102,18 +104,31 @@ public class ResolutionEngineIT {
 
   @Test
   public void testAgainstApplicationServer() throws Exception {
-    LOGGER.info("Testing against Application Server ...");
+    boolean ok = false;
     try {
+      LOGGER.info("Testing against Application Server ...");
       checkDeployedServices();
       final ResolutionResponse ires = checkInitService();
       final String sessionID = ires.getSessionID();
       final Choices choices = ires.getChoices();
       final Decission decission = makeDecission(choices);
+      checkPredictionService(sessionID, decission);
       checkSelectService(sessionID, decission);
-      // TODO: additional tests
+      ok = true;
+    }
+    catch (final AssertionError ae) {
+      ok = false;
+      LOGGER.error("Functional error while testing Resolution-Engine against Application-Server: " + ae.getMessage(), ae);
+      throw ae;
+    }
+    catch (final Exception ex) {
+      ok = false;
+      final String msg = "Technical error while testing Resolution-Engine against Application-Server: " + ex.getMessage();
+      LOGGER.error(msg, ex);
+      fail(msg);
     }
     finally {
-      LOGGER.info("... tests against Application Server finished.");
+      LOGGER.info("... tests against Application Server finished " + (ok ? "succesfully." : "with Errors!!!"));
     }
   }
 
@@ -141,11 +156,9 @@ public class ResolutionEngineIT {
       final String initServiceUrl = this.baseUrl + "/resolution/init";
       LOGGER.debug("URL = {}", initServiceUrl);
       final WebClient initClient = WebClient.create(initServiceUrl);
-
       final Response initResp = initClient.accept(MediaType.APPLICATION_JSON).get();
       checkHttpResponse(initResp);
       ires = getContent(initResp, ResolutionResponse.class);
-
       assertNotNull("No Init-ResolutionResponse!", ires);
       assertNotNull("No SessionID in Init-ResolutionResponse!", ires.getSessionID());
       assertNotNull("No Knowledge in Init-ResolutionResponse!", ires.getKnowledge());
@@ -181,6 +194,32 @@ public class ResolutionEngineIT {
     }
   }
 
+  private ResolutionResponse checkPredictionService(final String sessionID, final Decission decission) throws JsonParseException, IOException {
+    ResolutionResponse pres = null;
+    LOGGER.info("... checking Prediction-Service ...");
+    try {
+      final String predictServiceUrl = this.baseUrl + "/resolution/predict";
+      LOGGER.debug("URL = {}", predictServiceUrl);
+      final WebClient predictClient = WebClient.create(predictServiceUrl, this.providers, true);
+
+      final ResolutionRequest preq = new ResolutionRequest(sessionID, decission);
+      LOGGER.trace("Req = {}", preq);
+      final Response predictResp = predictClient.type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).post(preq);
+      checkHttpResponse(predictResp);
+      pres = getContent(predictResp, ResolutionResponse.class);
+      assertNotNull("No Prediction-ResolutionResponse!", pres);
+      final String newSessionID = pres.getSessionID();
+      assertNotNull("No SessionID in Prediction-ResolutionResponse!", newSessionID);
+      assertNotEquals("Old and new SessionID are identical, but must be different!", sessionID, newSessionID);
+      assertNotNull("No Knowledge in Select-ResolutionResponse!", pres.getKnowledge());
+      return pres;
+    }
+    finally {
+      LOGGER.info("... finished check of Select-Service ...");
+      LOGGER.trace("Resp = {}", pres);
+    }
+  }
+
   private ResolutionResponse checkSelectService(final String sessionID, final Decission decission) throws JsonParseException, IOException {
     ResolutionResponse sres = null;
     LOGGER.info("... checking Select-Service ...");
@@ -194,11 +233,10 @@ public class ResolutionEngineIT {
       final Response selectResp = selectClient.type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).post(sreq);
       checkHttpResponse(selectResp);
       sres = getContent(selectResp, ResolutionResponse.class);
-
       assertNotNull("No Select-ResolutionResponse!", sres);
       final String newSessionID = sres.getSessionID();
       assertNotNull("No SessionID in Select-ResolutionResponse!", newSessionID);
-      assertEquals("Old and new SessionID are note identical!", sessionID, newSessionID);
+      assertEquals("Old and new SessionID are different, but must be identical!", sessionID, newSessionID);
       assertNotNull("No Knowledge in Select-ResolutionResponse!", sres.getKnowledge());
       return sres;
     }
