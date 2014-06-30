@@ -22,7 +22,7 @@ For details see file LICENSING in the top project directory
   <parent>
     <artifactId>psikeds</artifactId>
     <groupId>org.psikeds</groupId>
-    <version>0.9.5-SNAPSHOT</version>
+    <version>0.9.6-SNAPSHOT</version>
   </parent>
 
   <artifactId>QueryAgent</artifactId>
@@ -138,12 +138,6 @@ For details see file LICENSING in the top project directory
     <dependency>
       <groupId>org.psikeds</groupId>
       <artifactId>QaInterfaces</artifactId>
-      <version>${psikeds.version}</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.psikeds</groupId>
-      <artifactId>QaDataLayer</artifactId>
       <version>${psikeds.version}</version>
       <scope>compile</scope>
     </dependency>
