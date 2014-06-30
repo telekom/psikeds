@@ -29,6 +29,15 @@ LICENSING: Components of psikeds are licensed in the following way:
     licensing statements. It is up to the psiKeds project to deal with the 
     license compatibility. For details of the used sub components and their 
     licenses, see the psikeds-os-sub-component-mindmap]
+
+    As an exception, whenever the license requires you to 'convey' the
+    'Corresponding Source' you are allowed to omit from the 'Corresponding Source'
+    the source code for the unmodified Java packages, frameworks, and libraries
+    that are included as Maven dependencies during the build provided that:
+    1. The Java package, framework, or library is distributed under an OSI
+       approved open source license.
+    2. The corresponding Maven artefacts are available on the Maven Central
+       repository.
 --------------------------------------------------------------------------------
 
 [B] The psikeds:client:server (QueryAgent) as whole is free software: you can 
