@@ -100,7 +100,17 @@ public abstract class ChoicesHelper {
         final String featureValueId = e.getTriggerID();
         final org.psikeds.resolutionengine.datalayer.vo.FeatureValue fv = kb.getFeatureValue(featureValueId);
         final String featureId = fv.getFeatureID();
-        removed = ChoicesHelper.cleanupFeatureChoices(ke, variantId, featureId, featureValueId);
+        LOGGER.debug("Removing Feature-Value {} of Feature {} from Feature-Choices of KE {}", featureValueId, featureId, shortDisplayKE(ke));
+        if (ChoicesHelper.cleanupFeatureChoices(ke, variantId, featureId, featureValueId)) {
+          removed = true;
+        }
+        LOGGER.debug("Removing Feature-Value {} of Feature {} from Concept-Choices of KE {}", featureValueId, featureId, shortDisplayKE(ke));
+        final FeatureValues vals = new FeatureValues();
+        final FeatureValue val = new FeatureValue(fv.getFeatureID(), fv.getFeatureValueID(), fv.getValue());
+        vals.add(val);
+        if (cleanupConceptChoices(ke, featureId, vals, false)) {
+          removed = true;
+        }
         return removed;
       }
       else if (Event.TRIGGER_TYPE_CONCEPT.equals(e.getTriggerType())) {

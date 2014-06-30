@@ -30,6 +30,7 @@ import org.psikeds.resolutionengine.datalayer.vo.Rule;
 import org.psikeds.resolutionengine.interfaces.pojos.Concept;
 import org.psikeds.resolutionengine.interfaces.pojos.Decission;
 import org.psikeds.resolutionengine.interfaces.pojos.FeatureValue;
+import org.psikeds.resolutionengine.interfaces.pojos.FeatureValues;
 import org.psikeds.resolutionengine.interfaces.pojos.Knowledge;
 import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntities;
 import org.psikeds.resolutionengine.interfaces.pojos.KnowledgeEntity;
@@ -331,16 +332,18 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       final Event e = this.kb.getEvent(eventId);
       final List<String> ctx = e.getContext();
       if (e.isNotEvent()) {
-        LOGGER.debug("Event {} is a Not-Event --> disable = {}", eventId, disable);
         disable = !disable;
+        LOGGER.debug("Event {} is a NOT-Event --> disable = {}", eventId, disable);
       }
       for (final KnowledgeEntity ke : root) {
         if (disable) {
+          LOGGER.debug("Disabling Trigger of Event {} for KE {}", eventId, shortDisplayKE(ke));
           if (removeTriggerFromChoices(e, ke, ctx)) {
             modified = true;
           }
         }
         else {
+          LOGGER.debug("Enabling Trigger of Event {} for KE {}", eventId, shortDisplayKE(ke));
           if (createPathEntries(e, ke, ctx)) {
             modified = true;
           }
@@ -365,18 +368,18 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       // and so on.
       final int len = (path == null ? 0 : path.size());
       if (len <= 0) {
-        // nothing to do
+        LOGGER.debug("No Context, nothing to do.");
         return created;
       }
       final String currentVarId = path.get(0);
       if (len == 1) {
-        // Context-Path contains just the current Variant-ID, so this must be a Feature- or Concept-Trigger
+        LOGGER.debug("Context-Path {} of Event {} contains just the current Variant-ID, so this must be a Feature- or Concept-Trigger: {}", path, e.getEventID(), e.getTriggerID());
         created = applyFeatureOrConceptTrigger(e, currentKE, currentVarId);
         return created;
       }
       final String nextPurpId = path.get(1);
       if (len == 2) {
-        // Context-Path ends with a Purpose-ID, so this must be a Variant-Trigger
+        LOGGER.debug("Context-Path {} of Event {} ends with a Purpose-ID {}, so this must be a Variant-Trigger: {}", path, e.getEventID(), nextPurpId, e.getTriggerID());
         created = applyVariantTrigger(e, currentKE, nextPurpId);
         return created;
       }
@@ -511,7 +514,14 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       final String featureValueId = e.getTriggerID();
       final FeatureValue fv = this.trans.valueObject2Pojo(this.kb.getFeatureValue(featureValueId));
       final String featureId = fv.getFeatureID();
+      LOGGER.debug("Removing all Concepts containing Feature-Value {} from KE {}", featureValueId, shortDisplayKE(ke));
+      final FeatureValues vals = new FeatureValues();
+      final FeatureValue val = new FeatureValue(fv.getFeatureID(), fv.getFeatureValueID(), fv.getValue());
+      vals.add(val);
+      ChoicesHelper.cleanupConceptChoices(ke, featureId, vals, true);
+      LOGGER.debug("Removing all Choices for Feature {} from KE {}", featureId, shortDisplayKE(ke));
       ChoicesHelper.cleanupFeatureChoices(ke, variantId, featureId);
+      LOGGER.debug("Applying Feature-Value {} to Feature {} of KE {}", featureValueId, featureId, shortDisplayKE(ke));
       FeatureValueHelper.applyFeatureValue(ke, fv);
       return true;
     }
@@ -546,7 +556,8 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       LOGGER.trace("--> removeTriggerFromChoices(); Path = {}; KE = {}", path, currentKE);
       final int len = (path == null ? 0 : path.size());
       if (len < 1) {
-        // Walked complete Context-Path, now check Trigger and cleanup corresponding Choices
+        LOGGER.debug("Walked complete Context-Path of Event {}, now checking Trigger {} and cleaning corresponding Choices of current KE {}", e.getEventID(), e.getTriggerID(),
+            shortDisplayKE(currentKE));
         removed = ChoicesHelper.cleanupChoices(this.kb, e, currentKE);
         return removed;
       }
@@ -560,6 +571,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
       if (len == 1) {
         // There is just one PE, which is the Variant of this KE
         // --> remove Trigger from Feature- and Concept-Choices
+        LOGGER.debug("Removing Trigger {} of Event {} from Feature- and Concept-Choices of current KE {}", e.getTriggerID(), e.getEventID(), shortDisplayKE(currentKE));
         removed = ChoicesHelper.cleanupFeatureOrConceptChoices(this.kb, e, currentKE, expectedVariantId);
         return removed;
       }
@@ -567,6 +579,7 @@ public class RulesEvaluator implements InitializingBean, Resolver {
         // There is one additional PE left, which is a Purpose
         // --> remove Trigger from all Variant-Choices for this Purpose
         final String purposeId = path.get(1);
+        LOGGER.debug("Removing Trigger {} of Event {} from Variant-Choices for Purpose {} of current KE {}", e.getTriggerID(), e.getEventID(), purposeId, shortDisplayKE(currentKE));
         removed = ChoicesHelper.cleanupVariantChoices(e, currentKE, purposeId);
         return removed;
       }
@@ -642,5 +655,11 @@ public class RulesEvaluator implements InitializingBean, Resolver {
         metadata.addInfo(key, msg);
       }
     }
+  }
+
+  // ----------------------------------------------------------------
+
+  public static String shortDisplayKE(final KnowledgeEntity ke) {
+    return KnowledgeEntityHelper.shortDisplayKE(ke);
   }
 }
