@@ -55,7 +55,7 @@ For details see file LICENSING in the top project directory
               </ui:repeat>
               </ul>
             </ui:fragment>
-            <ui:fragment rendered="#{di.type == 'Label'}">
+            <ui:fragment rendered="#{di.type == 'Label' or di.type == 'Warning' or di.type == 'Error'}">
               <h4 class="#{di.type} level#{di.level}">#{di.longDescription}</h4>
             </ui:fragment>
             <ui:fragment rendered="#{di.type == 'Purpose'}">

@@ -92,8 +92,10 @@ public class KnowledgeView extends BaseView {
           }
         }
         final Knowledge k = this.model.getKnowledge();
-        addEntities(knowledge, k.getEntities());
-        addVariantChoices(knowledge, k.getChoices());
+        if (k != null) {
+          addVariantChoices(knowledge, k.getChoices());
+          addEntities(knowledge, k.getEntities());
+        }
       }
     }
     catch (final Exception ex) {
@@ -181,10 +183,10 @@ public class KnowledgeView extends BaseView {
         dke.addChild(dsfv);
         knowledge.add(dsfv);
       }
-      addEntities(knowledge, ke.getChildren(), dke);
-      addVariantChoices(knowledge, ke.getPossibleVariants(), dke);
       addConceptChoices(knowledge, ke.getPossibleConcepts(), dke);
       addFeatureChoices(knowledge, ke.getPossibleFeatures(), dke);
+      addVariantChoices(knowledge, ke.getPossibleVariants(), dke);
+      addEntities(knowledge, ke.getChildren(), dke);
     }
   }
 }

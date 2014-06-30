@@ -100,8 +100,8 @@ public class PredictionView extends BaseView {
       LOGGER.trace("--> getKnowledge()");
       if (!isWithoutData()) {
         final Knowledge k = this.model.getPredictedKnowledge();
-        addEntities(knowledge, k.getEntities());
         addVariantChoices(knowledge, k.getChoices());
+        addEntities(knowledge, k.getEntities());
       }
     }
     catch (final Exception ex) {
@@ -192,10 +192,10 @@ public class PredictionView extends BaseView {
         dke.addChild(dsfv);
         knowledge.add(dsfv);
       }
-      addEntities(knowledge, ke.getChildren(), dke);
-      addVariantChoices(knowledge, ke.getPossibleVariants(), dke);
       addConceptChoices(knowledge, ke.getPossibleConcepts(), dke);
       addFeatureChoices(knowledge, ke.getPossibleFeatures(), dke);
+      addVariantChoices(knowledge, ke.getPossibleVariants(), dke);
+      addEntities(knowledge, ke.getChildren(), dke);
     }
   }
 }

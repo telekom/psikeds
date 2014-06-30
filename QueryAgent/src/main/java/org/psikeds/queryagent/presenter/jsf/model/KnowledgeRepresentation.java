@@ -170,7 +170,7 @@ public class KnowledgeRepresentation implements Serializable {
    * @see org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionResponse#hasErrors()
    */
   public boolean hasErrors() {
-    return (this.lastResponse == null) || this.lastResponse.hasErrors();
+    return (this.lastResponse != null) && this.lastResponse.hasErrors();
   }
 
   /**
@@ -194,7 +194,7 @@ public class KnowledgeRepresentation implements Serializable {
    * @see org.psikeds.queryagent.interfaces.presenter.pojos.ResolutionResponse#isNotInitialized()
    */
   public boolean isNotInitialized() {
-    return (StringUtils.isEmpty(getSessionID()) || (getKnowledge() == null));
+    return (StringUtils.isEmpty(getSessionID()) || ((getKnowledge() == null) && !hasErrors() && !hasWarnings()));
   }
 
   public boolean hasPrediction() {

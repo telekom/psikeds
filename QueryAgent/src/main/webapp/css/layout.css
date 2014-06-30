@@ -4963,18 +4963,18 @@ h1.brand a {
      Knowledge Tree
 --------------------------------------------------------------------------------*/
 .level0 { font-weight:bold; font-variant:small-caps; }
-.level1 { margin-left: 20px; font-weight:bold; }
-.level2 { margin-left: 40px; }
-.level3 { margin-left: 60px; font-style:italic; }
-.level4 { margin-left: 80px; font-style:italic; }
-.level5 { margin-left: 100px; font-style:italic; }
-.level6 { margin-left: 120px; font-style:italic; }
-.level7 { margin-left: 140px; font-style:italic; }
+.level1 { margin-left: 25px; font-weight:bold; }
+.level2 { margin-left: 50px; font-weight:bold; font-style:italic; }
+.level3 { margin-left: 75px; font-style:italic; }
+.level4 { margin-left: 100px; font-style:italic; }
+.level5 { margin-left: 115px; font-style:italic; }
+.level6 { margin-left: 130px; font-style:italic; }
+.level7 { margin-left: 145px; font-style:italic; }
 .level8 { margin-left: 160px; font-style:italic; }
-.level9 { margin-left: 160px; font-style:italic; }
-.level10 { margin-left: 160px; font-style:italic; }
-.level11 { margin-left: 160px; font-style:italic; }
-.level12 { margin-left: 160px; font-style:italic; }
+.level9 { margin-left: 175px; font-style:italic; }
+.level10 { margin-left: 175px; font-style:italic; }
+.level11 { margin-left: 175px; font-style:italic; }
+.level12 { margin-left: 175px; font-style:italic; }
 
 .psikeds_footer {
   padding: 10px 25px;
