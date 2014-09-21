@@ -1276,7 +1276,7 @@ You should have got a version of this license together with this file.
          >
         <kb:label>color-of-an-uncompressed-letter-is-color-of-its-envelope</kb:label>
         <kb:description>
-        Rule 2.G : relation
+        Rule 2.E : relation
         </kb:description>
       </kb:relation>
       <kb:relation id="PaperDinSizeGreaterThenDinA3inUncompressedLetters"
@@ -1292,11 +1292,11 @@ You should have got a version of this license together with this file.
       </kb:relation>
       <kb:relation id="EnvelopeDinSizeOfCompLettIsLessThanPaperDinSize"
         nexusRef="CompressedLetter"
-        lpType="vVal" lpRef="compressedLetterEnvelopeSize"
+        lpType="vVal" lpRef="compressedLetterPaperSize"
         relType="less"
-        rpType="vVal" rpRef="compressedLetterPaperSize"
+        rpType="vVal" rpRef="compressedLetterEnvelopeSize"
          >
-        <kb:label>the-size-of-an-compressed-letter-envelope-is-less-than-its-paper-din-size</kb:label>
+        <kb:label>the-size-of-an-compressed-letter-envelope-is-less-than-its-paper-size</kb:label>
         <kb:description>
         Rule 3.B : relation
         </kb:description>

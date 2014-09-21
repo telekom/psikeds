@@ -89,6 +89,20 @@ LICENSING: Components of psikeds are licensed in the following way:
     (and/or their hiring companies). The psiKeds project does not require to 
     publish these knowledge bases as open documents. It is up to the copyright
     holder to distribute them as free or closed sources.
+
+    psikeds itself comes along with a set of knowledge bases which are 
+    licensed as follows:
+
+    1. KnowledgeBase/src/main/resources/candidates/
+       a) ldrewe (linux day 2014 rewe discounter sketch) 
+          :- CC-BY-SA 4.0
+       b) w7LampDemo** (software stack knowledge) 
+          :- CC-BY-SA 4.0
+    2. find KnowledgeBaseEditor/src/psiKedsXtxKrl/pkb.mat/
+       a) psiKedsLetterEnvelope (German rules of post prepayment/franking)
+          :- CC-BY-SA 4.0
+       b) psikedsTemplate.pkb (basic kb form)
+          :- CC-BY 4.0
 --------------------------------------------------------------------------------
 
 [E] The psiKeds knowledge base XSD is a free document: you can redistribute it 
@@ -107,6 +121,10 @@ LICENSING: Components of psikeds are licensed in the following way:
     published under specific open source licenses. The licensing files
     will be integrated into the specific directories. [For a first overview
     see the psikeds-os-sub-component-mindmap]
+
+[F.1] All parts of the psikeds Xtext Knowledge Base Editor itself are
+      licensed under the Eclipse Public License 1.0 so that they can
+      easily be used as plugin of Eclipse and Xtext
 
 
 

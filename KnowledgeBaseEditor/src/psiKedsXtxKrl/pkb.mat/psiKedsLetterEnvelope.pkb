@@ -654,7 +654,7 @@ event.int stamp045AsPostcardEnabler (
   context [ 
     *pv> Postcard 
     *ps> enableMessageTransport
-    *pv> Stamp
+    *pv> Stamp 
   ]
   fact *int> Euro045 
 )
@@ -1146,7 +1146,7 @@ relation.normal SizeOfUncomLettIsSizeOfEnevlope (
 /* RULE-2.E */
 relation.normal ColorOfUncompLetterIsColorOfEnvelope (
   label "color-of-an-uncompressed-letter-is-color-of-its-envelope"
-  description "Rule 2.G : relation"
+  description "Rule 2.E : relation"
   nexus *pv> UncompressedLetter 
   means [ *val> uncompressedLetterColor 
        eq *val> uncompressedLetterEnvelopColor]    
@@ -1199,13 +1199,18 @@ logic.enforcer IFcompressedLetterTHENusePaper (
   evokes *ev> compressedLetterWithPaper 
 )
 
-/* RULE 3.B */  
+/* RULE 3.B */ 
+/* If the real envelope-size shall be smaller than the real paper size, 
+ * then the envelope din-size-number must be greater than the paper 
+ * din-size-number. Hence the paper-din-size-number must be lower
+ * than the envelope din-size-number.
+ */ 
 relation.normal EnvelopeDinSizeOfCompLettIsLessThanPaperDinSize (
-  label "the-size-of-an-compressed-letter-envelope-is-less-than-its-paper-din-size"
+  label "the-size-of-an-compressed-letter-envelope-is-less-than-its-paper-size"
   description "Rule 3.B : relation"
   nexus *pv> CompressedLetter 
-  means [ *val> compressedLetterEnvelopeSize 
-     less *val> compressedLetterPaperSize ]    
+  means [ *val> compressedLetterPaperSize 
+     less *val>  compressedLetterEnvelopeSize]    
 )
 
 /* A2 paper only in C4 envelope by using the method 'quarter in size' */
