@@ -1,0 +1,106 @@
+/* typo.css - Typographisches CSS
+ * Stylesheet fuer Webapplikationen
+ * Version: $Revision: 64 $
+ * Date: $Date: 2008-07-01 13:03:16 +0200 (Di, 01 Jul 2008) $
+ * Author: Deutsche Telekom AG, Products & Innovation
+ * Contact: Daniel Schroeder - schroeder.daniel@telekom.de
+ */
+
+
+.successMarker {
+    color: #00aa00;
+    font-weight: bold;
+}
+
+table { 
+	border-top:0px #088 solid; 
+	border-bottom:0px #888 solid; 
+}
+
+  th,td { padding:0.2em; }
+  
+
+.componentDelimiter {
+	text-align: center;
+}
+
+.componentType {
+  color: #666666;
+  font-weight: bold;
+  font-style: italic;
+  text-align:center;
+  border-top:2px #888 solid; 
+  border-left:2px #888 solid;
+  border-right:2px #888 solid;  	
+}
+
+.componentCollection {
+  color: #444444;
+
+  border-bottom:2px #888 solid; 
+  border-left:2px #888 solid;
+  border-right:2px #888 solid;    
+}
+
+.componentLabel {
+  color: #0000000;
+  font-weight: bold;
+  text-align:center;
+  border-bottom:2px #888 solid; 
+  border-left:2px #888 solid;
+  border-right:2px #888 solid;   
+}
+
+
+.componentLabelwLic {
+  color: #880000;
+  font-weight: bold;
+  text-align:right;
+  border-bottom:2px #888 solid; 
+  border-left:2px #888 solid;
+  border-right:0px #888 solid;  
+}
+
+.componentLicense {
+  color: #00aaaa;
+  font-weight: bold;
+  text-align:left;
+  border-bottom:2px #888 solid; 
+  border-left:0px #888 solid;
+  border-right:2px #888 solid;
+}
+
+.libLabel {
+	color: #880000;
+	font-style: italic;
+	text-align: center;
+	border-top:2px #888 solid; 
+  border-left:2px #888 solid;
+  border-right:2px #888 solid;
+	
+}
+
+.libLicense {
+  border-bottom:2px #888 solid; 
+  border-left:2px #888 solid;
+  border-right:2px #888 solid;
+  text-align: center;
+}
+
+.libPpLabel {
+  color: #0000ff;
+  font-style: italic;
+  text-align: center;
+  border-top:2px #888 solid; 
+  border-left:2px #888 solid;
+  border-right:2px #888 solid;
+  
+}
+
+.libPpLicense {
+  border-bottom:2px #888 solid; 
+  border-left:2px #888 solid;
+  border-right:2px #888 solid;
+  text-align: center;
+}
+

@@ -1,0 +1,143 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?xml version="1.0" encoding="utf-8"?>
+<html xml:lang="de" lang="de" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!-- 
+	psikeds - ps induced knowledge entity delivery system
+
+	This website is powered by TYPO3 - inspiring people to share!
+	TYPO3 is a free open source Content Management Framework initially created by Kasper Skaarhoj and licensed under GNU/GPL.
+	TYPO3 is copyright 1998-2014 of Kasper Skaarhoj. Extensions are copyright of their respective owners.
+	Information and contribution at http://typo3.org/
+-->
+
+
+
+<title>psikeds: System</title>
+<meta name="generator" content="TYPO3 6.2 CMS" />
+<meta name="revisit-after" content="7 days" />
+<meta name="robots" content="index,follow" />
+<meta name="author" content="Karsten Reincke" />
+<meta name="copyright" content="Karsten Reincke, Frankfurt a.M. 2013-2014...; Licence: AGPL, GPL, LGPL, CC-BY-SA" />
+<meta name="email" content="info@psikeds.org" />
+<meta name="language" content="de" />
+<meta name="description" content="Über die psikeds Systemarchitektur" />
+<meta name="keywords" content="Deutsche Telekom AG, DTAD, psikeds, purpose system induced Knowledge entity delivery system, Architektur" />
+<meta name="date" content="2014-09-21T16:04:30" />
+
+
+<link rel="stylesheet" type="text/css" href="../../typo3temp/stylesheet_011e972a59.css" media="all" />
+<link rel="stylesheet" type="text/css" href="../../fileadmin/css/2lfc.css" media="all" />
+
+
+
+
+
+
+<meta name="google-site-verification" content="" />
+  <!--
+    * @copyright       (c) Copyright 2012-2014 by Karsten Reincke, Frankfurt am Main, Germany [sponsored by Deutsche Telekom AG]
+    * @license         CC BY-SA 3.0 (http://creativecommons.org/licenses/by-sa/3.0/de/deed.en)
+    * @link            http://www.telekom.com/
+    * @release         0.6.1 
+   -->
+
+<!--[if lte IE 7]>
+<link href="../../fileadmin/css/patches/patch-2lfc.css" rel="stylesheet" type="text/css" />
+<![endif]-->
+<script type="text/javascript" src="../../fileadmin/js/jquery-1.11.0.js"></script>
+<script type="text/javascript" src="../../fileadmin/js/hoverIntent.js"></script>
+<script type="text/javascript" src="../../fileadmin/js/superfish.js"></script>
+<script type="text/javascript">
+  // initialise plugins
+  jQuery(function(){jQuery('ul.sf-menu').superfish();});
+</script>
+</head>
+<body>
+
+  <!-- skip link navigation -->
+  <ul id="skiplinks">
+    <li><a class="skip" href="#nav">Skip to navigation (Press Enter).</a></li>
+    <li><a class="skip" href="#col3">Skip to main content (Press Enter).</a></li>
+  </ul>
+
+  <div class="page_margins">
+    <div class="page">
+      <div id="header" role="banner">
+        <div id="topnav">
+          <div id="topnavline" class="langMenu"><a href="../../en/project/system.html"><img src="../../fileadmin/images/flagEn.png" alt="Englisch" /></a><a href="../../de/projekt/system.html"><img class="act" src="../../fileadmin/images/flagDe.png" alt="Deutsch" /></a><a href="../../de/psikeds/lizenzierung.html" title="License">Lizenz</a><a href="../../de/site/impressum.html" title="Imprint">Impressum</a><a href="../../de/site/html-sitemap.html" title="SITEMAP">Sitemap</a></div>
+        </div>
+        <div id="toplogo"><img src="../../fileadmin/images/psikeds-logo-60x60.png" width="60" height="60" alt="" border="0" /></div>
+        <div id="topteaser"><div id="topTeaserSlideShow"><span style="color:#800;">p</span>urpose <span style="color:#800">s</span>ystem <span style="color:#800">i</span>nduced <span style="color:#800">K</span>nowledge <span style="color:#800">e</span>ntity <span style="color:#800">d</span>elivery <span style="color:#800">s</span>ystem</div><div id="teaserText"><a href="../../de/psikeds/manifest.html" title="Manifesto">verbessern</a>&nbsp;meint&nbsp;teilen.</div></div>
+        <div id="topslogan">Lieber künstlich intelligent, als natürlich doof*<br /><span class="topSloganSource">*Pece Ravel</span></div>
+      </div>
+      <!-- begin: main navigation #nav -->
+
+      <div id="nav" role="navigation">
+        <div id="ddnavline" class="hlist"><ul class="sf-menu"><li><a href="../../de/psikeds/manifest.html">PSIKEDS</a><ul><li><a href="../../de/psikeds/manifest.html">Manifest</a></li><li><a href="../../de/psikeds/lizenzierung.html">Lizenzierung</a></li><li><a href="../../de/psikeds/initiatoren.html">Initiatoren</a></li></ul></li><li class="active"><a href="../../de/projekt/system.html">PROJEKT</a><ul><li class="current"><a href="../../de/projekt/system.html">System</a></li><li><a href="../../de/projekt/backlog.html">Backlog</a></li><li><a href="../../de/projekt/targets.html">Ziele</a></li></ul></li><li><a href="../../de/software/vorbereiten.html">SOFTWARE</a><ul><li><a href="../../de/software/vorbereiten.html">vorbereiten</a></li><li><a href="../../de/software/holen.html">holen</a></li><li><a href="../../de/software/nutzen.html">nutzen</a></li></ul></li></ul></div>
+      </div>
+
+      <!-- end: main navigation -->
+
+
+      <!-- begin: main content area #main -->
+      <div id="main">
+        <!-- begin: #col1 - first float column -->
+        <div id="col1" role="complementary">
+          <div id="col1_content" class="clearfix">
+            <div id="sidenav"><ul id="sideMenuList"><li><span id="smTitle">Target:</span></li><li class="current"><a href="../../de/projekt/system.html">System</a></li><li><a href="../../de/projekt/backlog.html">Backlog</a></li><li><a href="../../de/projekt/targets.html">Ziele</a></li></ul></div>
+            <div id="sideteaser">
+	<!--  CONTENT ELEMENT, uid:180/image [begin] -->
+		<div id="c180" class="csc-default">
+		<!--  Image block: [begin] -->
+			<div class="csc-textpic csc-textpic-center csc-textpic-above"><div class="csc-textpic-imagewrap"><div class="csc-textpic-center-outer"><div class="csc-textpic-center-inner"><div class="csc-textpic-image csc-textpic-last"><img src="../../fileadmin/images/cc-seal-127x127.png" width="127" height="127" alt="" border="0" /></div></div></div></div></div>
+		<!--  Image block: [end] -->
+			</div>
+	<!--  CONTENT ELEMENT, uid:180/image [end] -->
+		</div>
+            <!--  CONTENT ELEMENT, uid:4/text [end] -->
+          </div>
+        </div>
+        <!-- end: #col1 -->
+        <!-- begin: #col3 static column -->
+        <div id="col3" role="main">
+          <div id="col3_content" class="clearfix">
+	<!--  CONTENT ELEMENT, uid:55/text [begin] -->
+		<div id="c55" class="csc-default">
+		<!--  Text: [begin] -->
+			<div class="huge box"><h2>The Scope of psiKeds</h2><blockquote style="margin-bottom:0;margin-top:0;"><p class="bodytext">Karsten Reincke, Marco Juliano and Deutsche Telekom AG (DTAG) together are writing a purpose system induced knowledge entity delivery systems which is opened for the whole open source community ...</p></blockquote><p class="bodytext">The real challenge of making AI usable is the process of representing the knowledge: It is simply too expensive to start the work of representing the knowledge for each new domain from the scratch - again and again.&nbsp;We need a domain independent method to do our work as knowledge engineer. We need a domain independent recipe to represent the domain specific knowledge.So,&nbsp;</p><blockquote style="margin-bottom:0;margin-top:0;"><p class="bodytext">we need a knowledge representation environment with an integrated inference system which is designed in accordance to a general domain independent representation method and which is able to deliver descriptions of domain objects as knowledge entities.</p></blockquote><p class="bodytext"> Following the spirit of open source software, DTAG&nbsp;publishes and licenses the central server component of the 'purpose system induced knowledge entity delivery system' under the AGPL, the query server component under the GPL and its libraries under the LGPL:</p></div>
+		<!--  Text: [end] -->
+			</div>
+	<!--  CONTENT ELEMENT, uid:55/text [end] -->
+		
+	<!--  CONTENT ELEMENT, uid:179/text [begin] -->
+		<div id="c179" class="csc-default">
+		<!--  Text: [begin] -->
+			<div class="huge box"><h2>The Structure of psiKeds</h2><table class=""> <tbody><tr><td class="componentType">Client:Client</td><td rowspan="1" class="componentDelimiter"></td><td colspan="3" class="componentType">psiKeds:Client:Server</td><td rowspan="1" class="componentDelimiter"></td><td colspan="3" class="componentType">psiKeds:Server:Server</td></tr><tr><td class="componentLabel">Tools</td><td class="componentDelimiter">⇔</td><td colspan="2" class="componentLabelwLic">Query Agent </td><td class="componentLicense"><img style="" src="../../fileadmin/_processed_/csm_gnu-gplv3-logo-88x31_26b7debb8d.png" width="45" height="16" alt="" title="" /></td><td class="componentDelimiter">⇔</td><td colspan="2" class="componentLabelwLic">Resolution Engine</td><td class="componentLicense"><img style="" src="../../fileadmin/_processed_/csm_gnu-agplv3-logo-88x31_49746e8e59.png" width="45" height="16" alt="" title="" /></td></tr> <tr><td rowspan="2" class="componentCollection">❍ Browser<br />❍ App<br />❍ ...</td><td class="componentDelimiter" rowspan="2"></td><td rowspan="1" class="libLabel">Presentor</td><td rowspan="2">↔</td><td rowspan="1" class="libLabel">Requestor </td><td class="componentDelimiter" rowspan="2"></td><td rowspan="1" class="libLabel">Traverser</td><td rowspan="2">↔</td><td rowspan="1" class="libLabel">Loader</td></tr><tr> <td rowspan="1" class="libLicense"><img style="" src="../../fileadmin/_processed_/csm_gnu-lgplv3-logo-88x31_e9045cbf7c.png" width="45" height="16" alt="" title="" /></td><td rowspan="1" class="libLicense"><img style="" src="../../fileadmin/_processed_/csm_gnu-lgplv3-logo-88x31_e9045cbf7c.png" width="45" height="16" alt="" title="" /><br /> </td><td rowspan="1" class="libLicense"><img style="" src="../../fileadmin/_processed_/csm_gnu-agplv3-logo-88x31_49746e8e59.png" width="45" height="16" alt="" title="" /></td><td rowspan="1" class="libLicense"> <img style="" src="../../fileadmin/_processed_/csm_gnu-agplv3-logo-88x31_3297a1d04b.png" width="48" height="17" alt="" title="" /></td></tr><tr><td colspan="8"></td><td class="componentDelimiter">⇑</td></tr><tr><td rowspan="1" colspan="6"></td><td rowspan="1" class="libLabel">XSD</td><td class="componentDelimiter">⇐</td><td rowspan="1" class="libPpLabel">knowledge base</td></tr><tr><td rowspan="1" colspan="6"></td><td rowspan="1" class="libPpLicense"><img style="" src="../../fileadmin/_processed_/csm_cc-by-sa-403x141_51597e6a7a.png" width="46" height="16" alt="" title="" /></td><td></td><td rowspan="1" class="libLicense"><img style="" src="../../fileadmin/_processed_/csm_pp-403x141_eacacfe912.png" width="46" height="16" alt="" title="" /></td></tr><tr><td colspan="6"></td><td rowspan="1" class="componentDelimiter">⇓</td><td></td><td class="componentDelimiter">⇑</td></tr> <tr><td colspan="6">&nbsp;</td><td colspan="3" class="componentType">psiKeds:Knowledge-Base:Editor</td></tr> <tr><td colspan="6"></td><td rowspan="1" colspan="3" class="componentCollection">❍ XML Editor<br />❍ Xtext Based Eclipse Editor<br />❍ ... </td></tr> </tbody></table></div>
+		<!--  Text: [end] -->
+			</div>
+	<!--  CONTENT ELEMENT, uid:179/text [end] -->
+		</div>
+        </div>
+
+        <div id="ie_clearing">&nbsp;</div>
+
+        <!-- End: IE Column Clearing -->
+      </div>
+      <!-- end: #col3 -->
+    </div>
+    <!-- end: #main -->
+    <!-- begin: #footer -->
+    <div id="footer" role="contentinfo"><p>psikeds-0.6.1  &copy; 2013-2014&nbsp;Karsten Reincke, powered by&nbsp;<a href="../../de/site/impressum.html" title="Deutsche Telekom AG">Deutsche Telekom AG</a>&nbsp;|&nbsp;<a href="../../de/site/floss-auxiliaries.html" title="FLOSS components">FLOSS Komponenten</a>&nbsp;in dieser Seite</p></div>
+    <!-- end: #footer -->
+  </div>
+
+
+
+
+</body>
+</html>
