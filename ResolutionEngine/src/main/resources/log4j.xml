@@ -25,8 +25,8 @@
     <param name="Threshold" value="TRACE" />
     <param name="DatePattern" value="'.'yyyy-MM-dd" />
     <param name="Append" value="true" />
-    <param name="File" value="/var/logs/psikeds/psikeds.resolutionengine.log" />
-    <param name="File" value="D:/logs/psikeds.resolutionengine.log" />
+    <param name="File" value="/var/log/psikeds/psikeds.resolutionengine.log" />
+    <param name="File" value="D:/log/psikeds.resolutionengine.log" />
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern"
         value="%d %-5r %-5p [%c] [%X{REQ}] [%X{SRVC}] [%X{CTX}] %m%n" />
