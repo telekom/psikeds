@@ -11,14 +11,14 @@
 
 	This website is powered by TYPO3 - inspiring people to share!
 	TYPO3 is a free open source Content Management Framework initially created by Kasper Skaarhoj and licensed under GNU/GPL.
-	TYPO3 is copyright 1998-2014 of Kasper Skaarhoj. Extensions are copyright of their respective owners.
+	TYPO3 is copyright 1998-2015 of Kasper Skaarhoj. Extensions are copyright of their respective owners.
 	Information and contribution at http://typo3.org/
 -->
 
 
 
 <title>psikeds: System</title>
-<meta name="generator" content="TYPO3 6.2 CMS" />
+<meta name="generator" content="TYPO3 CMS" />
 <meta name="revisit-after" content="7 days" />
 <meta name="robots" content="index,follow" />
 <meta name="author" content="Karsten Reincke" />
@@ -27,10 +27,10 @@
 <meta name="language" content="en" />
 <meta name="description" content="The system architecture of psiKeds, the purpose system induced Knowledge entity delivery system, sponsored by Deutsche Telekom AG" />
 <meta name="keywords" content="Deutsche Telekom AG, DTAD, psikeds, purpose system induced Knowledge entity delivery system, Scope" />
-<meta name="date" content="2014-09-21T16:04:27" />
+<meta name="date" content="2016-02-16T22:25:45" />
 
 
-<link rel="stylesheet" type="text/css" href="../../typo3temp/stylesheet_011e972a59.css" media="all" />
+<link rel="stylesheet" type="text/css" href="../../typo3temp/stylesheet_25c0b61fa0.css" media="all" />
 <link rel="stylesheet" type="text/css" href="../../fileadmin/css/2lfc.css" media="all" />
 
 
@@ -43,7 +43,7 @@
     * @copyright       (c) Copyright 2012-2014 by Karsten Reincke, Frankfurt am Main, Germany [sponsored by Deutsche Telekom AG]
     * @license         CC BY-SA 3.0 (http://creativecommons.org/licenses/by-sa/3.0/de/deed.en)
     * @link            http://www.telekom.com/
-    * @release         0.6.1 
+    * @release         0.6.8 
    -->
 
 <!--[if lte IE 7]>
@@ -117,7 +117,7 @@
 	<!--  CONTENT ELEMENT, uid:179/text [begin] -->
 		<div id="c179" class="csc-default">
 		<!--  Text: [begin] -->
-			<div class="huge box"><h2>The Structure of psiKeds</h2><table class=""> <tbody><tr><td class="componentType">Client:Client</td><td rowspan="1" class="componentDelimiter"></td><td colspan="3" class="componentType">psiKeds:Client:Server</td><td rowspan="1" class="componentDelimiter"></td><td colspan="3" class="componentType">psiKeds:Server:Server</td></tr><tr><td class="componentLabel">Tools</td><td class="componentDelimiter">⇔</td><td colspan="2" class="componentLabelwLic">Query Agent </td><td class="componentLicense"><img style="" src="../../fileadmin/_processed_/csm_gnu-gplv3-logo-88x31_26b7debb8d.png" width="45" height="16" alt="" title="" /></td><td class="componentDelimiter">⇔</td><td colspan="2" class="componentLabelwLic">Resolution Engine</td><td class="componentLicense"><img style="" src="../../fileadmin/_processed_/csm_gnu-agplv3-logo-88x31_49746e8e59.png" width="45" height="16" alt="" title="" /></td></tr> <tr><td rowspan="2" class="componentCollection">❍ Browser<br />❍ App<br />❍ ...</td><td class="componentDelimiter" rowspan="2"></td><td rowspan="1" class="libLabel">Presentor</td><td rowspan="2">↔</td><td rowspan="1" class="libLabel">Requestor </td><td class="componentDelimiter" rowspan="2"></td><td rowspan="1" class="libLabel">Traverser</td><td rowspan="2">↔</td><td rowspan="1" class="libLabel">Loader</td></tr><tr> <td rowspan="1" class="libLicense"><img style="" src="../../fileadmin/_processed_/csm_gnu-lgplv3-logo-88x31_e9045cbf7c.png" width="45" height="16" alt="" title="" /></td><td rowspan="1" class="libLicense"><img style="" src="../../fileadmin/_processed_/csm_gnu-lgplv3-logo-88x31_e9045cbf7c.png" width="45" height="16" alt="" title="" /><br /> </td><td rowspan="1" class="libLicense"><img style="" src="../../fileadmin/_processed_/csm_gnu-agplv3-logo-88x31_49746e8e59.png" width="45" height="16" alt="" title="" /></td><td rowspan="1" class="libLicense"> <img style="" src="../../fileadmin/_processed_/csm_gnu-agplv3-logo-88x31_3297a1d04b.png" width="48" height="17" alt="" title="" /></td></tr><tr><td colspan="8"></td><td class="componentDelimiter">⇑</td></tr><tr><td rowspan="1" colspan="6"></td><td rowspan="1" class="libLabel">XSD</td><td class="componentDelimiter">⇐</td><td rowspan="1" class="libPpLabel">knowledge base</td></tr><tr><td rowspan="1" colspan="6"></td><td rowspan="1" class="libPpLicense"><img style="" src="../../fileadmin/_processed_/csm_cc-by-sa-403x141_51597e6a7a.png" width="46" height="16" alt="" title="" /></td><td></td><td rowspan="1" class="libLicense"><img style="" src="../../fileadmin/_processed_/csm_pp-403x141_eacacfe912.png" width="46" height="16" alt="" title="" /></td></tr><tr><td colspan="6"></td><td rowspan="1" class="componentDelimiter">⇓</td><td></td><td class="componentDelimiter">⇑</td></tr> <tr><td colspan="6">&nbsp;</td><td colspan="3" class="componentType">psiKeds:Knowledge-Base:Editor</td></tr> <tr><td colspan="6"></td><td rowspan="1" colspan="3" class="componentCollection">❍ XML Editor<br />❍ Xtext Based Eclipse Editor<br />❍ ... </td></tr> </tbody></table></div>
+			<div class="huge box"><h2>The Structure of psiKeds</h2><table class=""> <tbody><tr><td class="componentType">Client:Client</td><td rowspan="1" class="componentDelimiter"></td><td colspan="3" class="componentType">psiKeds:Client:Server</td><td rowspan="1" class="componentDelimiter"></td><td colspan="3" class="componentType">psiKeds:Server:Server</td></tr><tr><td class="componentLabel">Tools</td><td class="componentDelimiter">⇔</td><td colspan="2" class="componentLabelwLic">Query Agent </td><td class="componentLicense"><img style="" src="../../fileadmin/_processed_/csm_gnu-gplv3-logo-88x31_ce92b61f52.png" width="45" height="16" alt="" title="" /></td><td class="componentDelimiter">⇔</td><td colspan="2" class="componentLabelwLic">Resolution Engine</td><td class="componentLicense"><img style="" src="../../fileadmin/_processed_/csm_gnu-agplv3-logo-88x31_8792ecee1b.png" width="45" height="16" alt="" title="" /></td></tr> <tr><td rowspan="2" class="componentCollection">❍ Browser<br />❍ App<br />❍ ...</td><td class="componentDelimiter" rowspan="2"></td><td rowspan="1" class="libLabel">Presentor</td><td rowspan="2">↔</td><td rowspan="1" class="libLabel">Requestor </td><td class="componentDelimiter" rowspan="2"></td><td rowspan="1" class="libLabel">Traverser</td><td rowspan="2">↔</td><td rowspan="1" class="libLabel">Loader</td></tr><tr> <td rowspan="1" class="libLicense"><img style="" src="../../fileadmin/_processed_/csm_gnu-lgplv3-logo-88x31_171d9ca903.png" width="45" height="16" alt="" title="" /></td><td rowspan="1" class="libLicense"><img style="" src="../../fileadmin/_processed_/csm_gnu-lgplv3-logo-88x31_171d9ca903.png" width="45" height="16" alt="" title="" /><br /> </td><td rowspan="1" class="libLicense"><img style="" src="../../fileadmin/_processed_/csm_gnu-agplv3-logo-88x31_8792ecee1b.png" width="45" height="16" alt="" title="" /></td><td rowspan="1" class="libLicense"> <img style="" src="../../fileadmin/_processed_/csm_gnu-agplv3-logo-88x31_215ef22a72.png" width="48" height="17" alt="" title="" /></td></tr><tr><td colspan="8"></td><td class="componentDelimiter">⇑</td></tr><tr><td rowspan="1" colspan="6"></td><td rowspan="1" class="libLabel">XSD</td><td class="componentDelimiter">⇐</td><td rowspan="1" class="libPpLabel">knowledge base</td></tr><tr><td rowspan="1" colspan="6"></td><td rowspan="1" class="libPpLicense"><img style="" src="../../fileadmin/_processed_/csm_cc-by-sa-403x141_c792457ce5.png" width="46" height="16" alt="" title="" /></td><td></td><td rowspan="1" class="libLicense"><img style="" src="../../fileadmin/_processed_/csm_pp-403x141_0ab0efcdb4.png" width="46" height="16" alt="" title="" /></td></tr><tr><td colspan="6"></td><td rowspan="1" class="componentDelimiter">⇓</td><td></td><td class="componentDelimiter">⇑</td></tr> <tr><td colspan="6">&nbsp;</td><td colspan="3" class="componentType">psiKeds:Knowledge-Base:Editor</td></tr> <tr><td colspan="6"></td><td rowspan="1" colspan="3" class="componentCollection">❍ XML Editor<br />❍ Xtext Based Eclipse Editor<br />❍ ... </td></tr> </tbody></table></div>
 		<!--  Text: [end] -->
 			</div>
 	<!--  CONTENT ELEMENT, uid:179/text [end] -->
@@ -132,7 +132,7 @@
     </div>
     <!-- end: #main -->
     <!-- begin: #footer -->
-    <div id="footer" role="contentinfo"><p>psikeds-0.6.1  &copy; 2013-2014&nbsp;Karsten Reincke, powered by&nbsp;<a href="../../en/site/imprint.html" title="Deutsche Telekom AG">Deutsche Telekom AG</a>&nbsp;|&nbsp;<a href="../../en/site/floss-auxiliaries.html" title="FLOSS components">FLOSS components</a>&nbsp;used by this site/page</p></div>
+    <div id="footer" role="contentinfo"><p>psikeds-0.6.8  &copy; 2013-2016&nbsp;Karsten Reincke, powered by&nbsp;<a href="../../en/site/imprint.html" title="Deutsche Telekom AG">Deutsche Telekom AG</a>&nbsp;|&nbsp;<a href="../../en/site/floss-auxiliaries.html" title="FLOSS components">FLOSS components</a>&nbsp;used by this site/page</p></div>
     <!-- end: #footer -->
   </div>
 

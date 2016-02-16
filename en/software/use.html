@@ -11,14 +11,14 @@
 
 	This website is powered by TYPO3 - inspiring people to share!
 	TYPO3 is a free open source Content Management Framework initially created by Kasper Skaarhoj and licensed under GNU/GPL.
-	TYPO3 is copyright 1998-2014 of Kasper Skaarhoj. Extensions are copyright of their respective owners.
+	TYPO3 is copyright 1998-2015 of Kasper Skaarhoj. Extensions are copyright of their respective owners.
 	Information and contribution at http://typo3.org/
 -->
 
 
 
 <title>psikeds: use</title>
-<meta name="generator" content="TYPO3 6.2 CMS" />
+<meta name="generator" content="TYPO3 CMS" />
 <meta name="revisit-after" content="7 days" />
 <meta name="robots" content="index,follow" />
 <meta name="author" content="Karsten Reincke" />
@@ -27,10 +27,10 @@
 <meta name="language" content="en" />
 <meta name="description" content="How to use psikeds" />
 <meta name="keywords" content="Deutsche Telekom AG, Community, Download, using psikeds" />
-<meta name="date" content="2014-09-21T16:04:57" />
+<meta name="date" content="2016-02-16T22:25:52" />
 
 
-<link rel="stylesheet" type="text/css" href="../../typo3temp/stylesheet_d5a346f3fc.css" media="all" />
+<link rel="stylesheet" type="text/css" href="../../typo3temp/stylesheet_5a17574694.css" media="all" />
 <link rel="stylesheet" type="text/css" href="../../fileadmin/css/2lfc.css" media="all" />
 
 
@@ -43,7 +43,7 @@
     * @copyright       (c) Copyright 2012-2014 by Karsten Reincke, Frankfurt am Main, Germany [sponsored by Deutsche Telekom AG]
     * @license         CC BY-SA 3.0 (http://creativecommons.org/licenses/by-sa/3.0/de/deed.en)
     * @link            http://www.telekom.com/
-    * @release         0.6.1 
+    * @release         0.6.8 
    -->
 
 <!--[if lte IE 7]>
@@ -103,7 +103,7 @@
 		<!--  Image block: [begin] -->
 			<div class="csc-textpic-text">
 		<!--  Text: [begin] -->
-			<div class="huge box"><h2>Installing and using <span style="color:#880000">psiKeds</span> on a GNU/Linux system</h2><ul><li><b>Configure</b> and start your tomcat system as you used to do<ul style="font-size:smaller; font-style:italic"><li>For example in Ubuntu 12.04 you can call sudo /usr/share/tomcat7/bin/catalina.sh version for getting the information concerning CATALINA_BASE or CATALINA_HOME. Or you can analyze /etc/default/tomcat7. Or you can insert the environment variables CATALINA_HOME, CATALINA_BASE, etc. into your .bashrc file.</li></ul></li><li><i><b>Verify</b> the system by opening a browser, calling 127.0.0.1:8080, and getting the Tomcat 'It works' page.</i></li><li><b>Open</b> a (bash) shell and change into your clone of the psiKeds git repository.</li><li><b>Type</b> mvn install.</li><li><i><b>Verifiy</b> the build process by getting the mvn success protocol.</i></li><li><b>Copy</b> the directory 'config' into your home directory and rename it to 'psikeds'.</li><li><b>Delete </b>all existing queryagent* and resolutionengine* directories and war-files in your tomcat web-app directory (e.g.&nbsp;/var/lib/tomcat7/webapps/ )</li><li><b>Copy</b> ResolutionEngine/target/resolutionengine.war and QueryAgent/target/queryagent.war into your tomcat 7 web-app directory</li><li><b>Let</b> the war-files be extracted by your running tomcat instance. If tomcat does not automatically extract the war files, then extract them manually by<br /><ul><li>creating the directories queryagent and resolutionengine inside of your tomcat 7 web-app directory</li><li>changing into the directory queryagent and unzip ../queryagent.war</li><li>changing into the directory resolutionengine and unzip ../resolutionengine.war</li><li>making the resulting file trees recrsively readable and writable for the tomcat7 user</li><li>(re)starting your tomcat instance</li></ul></li><li><i><b>Verify</b> the installed psikeds system by opening a browser: call 127.0.0.1:8080/queryagent, read the psikeds welcome frontend, and explore the current software stack knowledge base by using  the psikeds default gui</i>.</li></ul></div>
+			<div class="huge box"><h2>Installing and using <span style="color:#880000">psiKeds</span> on a GNU/Linux system</h2><ul><p class="bodytext"><li><b>Configure</b> and start your tomcat system as you used to do</p><ul style="font-size:smaller; font-style:italic"><li>For example in Ubuntu 12.04 you can call sudo /usr/share/tomcat7/bin/catalina.sh version for getting the information concerning CATALINA_BASE or CATALINA_HOME. Or you can analyze /etc/default/tomcat7. Or you can insert the environment variables CATALINA_HOME, CATALINA_BASE, etc. into your .bashrc file.</li></ul><p class="bodytext"></li><li><i><b>Verify</b> the system by opening a browser, calling 127.0.0.1:8080, and getting the Tomcat 'It works' page.</i></li><li><b>Open</b> a (bash) shell and change into your clone of the psiKeds git repository.</li><li><b>Type</b> mvn install.</li><li><i><b>Verifiy</b> the build process by getting the mvn success protocol.</i></li><li><b>Copy</b> the directory 'config' into your home directory and rename it to 'psikeds'.</li><li><b>Delete </b>all existing queryagent* and resolutionengine* directories and war-files in your tomcat web-app directory (e.g.&nbsp;/var/lib/tomcat7/webapps/ )</li><li><b>Copy</b> ResolutionEngine/target/resolutionengine.war and QueryAgent/target/queryagent.war into your tomcat 7 web-app directory</li><li><b>Let</b> the war-files be extracted by your running tomcat instance. If tomcat does not automatically extract the war files, then extract them manually by<br /></p><ul><li>creating the directories queryagent and resolutionengine inside of your tomcat 7 web-app directory</li><li>changing into the directory queryagent and unzip ../queryagent.war</li><li>changing into the directory resolutionengine and unzip ../resolutionengine.war</li><li>making the resulting file trees recrsively readable and writable for the tomcat7 user</li><li>(re)starting your tomcat instance</li></ul><p class="bodytext"></li><li><i><b>Verify</b> the installed psikeds system by opening a browser: call 127.0.0.1:8080/queryagent, read the psikeds welcome frontend, and explore the current software stack knowledge base by using  the psikeds default gui</i>.</li></p></ul></div>
 		<!--  Text: [end] -->
 			</div>
 		<!--  Image block: [end] -->
@@ -115,7 +115,7 @@
 		<!--  Text: [begin] -->
 			<div class="huge box"><h2>Customizing the <span style="color:#880000">psiKeds instance</span> on a GNU/Linux system</h2>
 <p class="bodytext">For customizing network specific parameters, please use the Tomcat configuration system. Currently, psiKeds itself allows you to modify two specific aspects. First, you can configure where psikeds looks for its own configuration directory. Second, you can determine, which knowledge base is served by your psikeds instance:</p>
-<h3>Specifying the&nbsp;configuration directory evaluted by the running psiKeds process.</h3><ul><li>Without any modifications psiKeds is looking for a directory named 'psikeds' in the home directory of the user who executes the java application server (Tomcat etc.).</li><li>For modifying this directory one has to expand the Java options by the 'command' <b>-Dorg.psikeds.config.dir=ABSOLUTE-PATH-TO-THE-COPIED-PSIKEDS-CONFIG-DIRECTORY</b>. <ul style="font-size:smaller; font-style:italic"><li>For example, in Ubuntu 12.04 you can expand the variable JAVA_OPTS in /etc/default/tomcat7. Or you can expand the bashrc file of the user who executes your java application server</li></ul> </li></ul><h3>Specifying the&nbsp;knowledge base evaluted by the running psiKeds process.</h3><ul><li>Change into your psiKeds configuration directory</li><li>Edit knowledgebase-datasource-context.xml and replace the value of the sping bean 'kbXmlSource' [Default: software-stack-demo-kb.xml, located int the psiKeds configuration directory]</li></ul></div>
+<h3>Specifying the&nbsp;configuration directory evaluted by the running psiKeds process.</h3><ul><p class="bodytext"><li>Without any modifications psiKeds is looking for a directory named 'psikeds' in the home directory of the user who executes the java application server (Tomcat etc.).</li><li>For modifying this directory one has to expand the Java options by the 'command' <b>-Dorg.psikeds.config.dir=ABSOLUTE-PATH-TO-THE-COPIED-PSIKEDS-CONFIG-DIRECTORY</b>. </p><ul style="font-size:smaller; font-style:italic"><li>For example, in Ubuntu 12.04 you can expand the variable JAVA_OPTS in /etc/default/tomcat7. Or you can expand the bashrc file of the user who executes your java application server</li></ul><p class="bodytext"> </li></p></ul><h3>Specifying the&nbsp;knowledge base evaluted by the running psiKeds process.</h3><ul><li>Change into your psiKeds configuration directory</li><li>Edit knowledgebase-datasource-context.xml and replace the value of the sping bean 'kbXmlSource' [Default: software-stack-demo-kb.xml, located int the psiKeds configuration directory]</li></ul></div>
 		<!--  Text: [end] -->
 			</div>
 	<!--  CONTENT ELEMENT, uid:219/text [end] -->
@@ -130,7 +130,7 @@
     </div>
     <!-- end: #main -->
     <!-- begin: #footer -->
-    <div id="footer" role="contentinfo"><p>psikeds-0.6.1  &copy; 2013-2014&nbsp;Karsten Reincke, powered by&nbsp;<a href="../../en/site/imprint.html" title="Deutsche Telekom AG">Deutsche Telekom AG</a>&nbsp;|&nbsp;<a href="../../en/site/floss-auxiliaries.html" title="FLOSS components">FLOSS components</a>&nbsp;used by this site/page</p></div>
+    <div id="footer" role="contentinfo"><p>psikeds-0.6.8  &copy; 2013-2016&nbsp;Karsten Reincke, powered by&nbsp;<a href="../../en/site/imprint.html" title="Deutsche Telekom AG">Deutsche Telekom AG</a>&nbsp;|&nbsp;<a href="../../en/site/floss-auxiliaries.html" title="FLOSS components">FLOSS components</a>&nbsp;used by this site/page</p></div>
     <!-- end: #footer -->
   </div>
 
